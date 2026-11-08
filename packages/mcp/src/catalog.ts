@@ -13,7 +13,7 @@ function dataFile(name: string): string {
 }
 
 /**
- * Load the catalog. Uses KURA_REGISTRY_URL (e.g. https://kura-ui.dev) when set so the server
+ * Load the catalog. Uses KURA_REGISTRY_URL (e.g. https://kuro.abstergo.fyi) when set so the server
  * always reflects the live registry; otherwise the snapshot bundled at publish time.
  */
 export async function loadCatalog(): Promise<Catalog> {

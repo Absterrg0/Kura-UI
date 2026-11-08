@@ -27,20 +27,21 @@ Generated (gitignored, never edit, never commit): `registry.json`, `apps/docs/pu
 
 ## Commands
 
-| Command                                                              | What it does                                                                                           |
-| -------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
-| `pnpm install`                                                       | Install (Node ≥ 24, pnpm 12)                                                                           |
-| `pnpm dev`                                                           | Generate + docs at :3000, regenerating when component folders change                                   |
-| `pnpm new <slug> --category <id>`                                    | Scaffold a component folder with all five files                                                        |
-| `pnpm generate`                                                      | Rebuild docs index, registry, llms files, catalog, MCP/CLI data                                        |
-| `pnpm validate:meta`                                                 | Contract check for every component folder (see below)                                                  |
-| `pnpm --filter @kura-ui/react test`                                  | Library tests (Vitest + Testing Library + axe)                                                         |
-| `pnpm --filter @kura-ui/react exec vitest run src/components/<slug>` | Tests for one component                                                                                |
-| `pnpm lint` / `pnpm lint:fix`                                        | Biome                                                                                                  |
-| `pnpm typecheck`                                                     | tsc for every package                                                                                  |
-| `pnpm check`                                                         | generate + validate:meta + lint + typecheck + test — must be green before you commit                   |
-| `pnpm build`                                                         | Library, MCP, CLI, docs                                                                                |
-| `pnpm test:visual`                                                   | Playwright screenshots of every component page, light + dark (needs `pnpm build` first, or `PW_DEV=1`) |
+| Command                                                              | What it does                                                                                              |
+| -------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| `pnpm install`                                                       | Install (Node ≥ 24, pnpm 12)                                                                              |
+| `pnpm dev`                                                           | Generate + docs at :3000, regenerating when component folders change                                      |
+| `pnpm new <slug> --category <id>`                                    | Scaffold a component folder with all five files                                                           |
+| `pnpm generate`                                                      | Rebuild docs index, registry, llms files, catalog, MCP/CLI data                                           |
+| `pnpm validate:meta`                                                 | Contract check for every component folder (see below)                                                     |
+| `pnpm --filter @kura-ui/react test`                                  | Library tests (Vitest + Testing Library + axe)                                                            |
+| `pnpm --filter @kura-ui/react exec vitest run src/components/<slug>` | Tests for one component                                                                                   |
+| `pnpm lint` / `pnpm lint:fix`                                        | Biome                                                                                                     |
+| `pnpm typecheck`                                                     | tsc for every package                                                                                     |
+| `pnpm check`                                                         | generate + validate:meta + lint + typecheck + test — must be green before you commit                      |
+| `pnpm build`                                                         | Library, MCP, CLI, docs                                                                                   |
+| `pnpm build:site`                                                    | Static export of the docs to `apps/docs/out` — what Cloudflare Pages deploys to https://kuro.abstergo.fyi |
+| `pnpm test:visual`                                                   | Playwright screenshots of every component page, light + dark (needs `pnpm build` first, or `PW_DEV=1`)    |
 
 ## Add a component — the checklist
 

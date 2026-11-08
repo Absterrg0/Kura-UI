@@ -25,3 +25,4 @@ packages/mcp/data/
 packages/cli/data/
 .screenshots/
 next-env.d.ts
+.wrangler/

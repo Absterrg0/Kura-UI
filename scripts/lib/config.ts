@@ -11,7 +11,10 @@ export const DOCS_PUBLIC = join(DOCS_DIR, "public");
 export const DOCS_GENERATED = join(DOCS_DIR, "src/generated");
 
 /** Public docs/registry origin. Override with KURA_SITE_URL when deploying elsewhere. */
-export const SITE_URL = (process.env.KURA_SITE_URL ?? "https://kura-ui.dev").replace(/\/$/, "");
+export const SITE_URL = (process.env.KURA_SITE_URL ?? "https://kuro.abstergo.fyi").replace(
+  /\/$/,
+  "",
+);
 export const NPM_PACKAGE = "@kura-ui/react";
 
 /** Slugs that would collide with package.json export keys or docs routes. */

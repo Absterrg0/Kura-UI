@@ -52,8 +52,8 @@ export const Status = () => <ShimmerText>Thinking…</ShimmerText>;
 **Copy the source (shadcn-compatible)**
 
 ```bash
-npx shadcn@latest add https://kura-ui.dev/r/kura-theme.json   # tokens, once
-npx shadcn@latest add https://kura-ui.dev/r/shimmer-text.json
+npx shadcn@latest add https://kuro.abstergo.fyi/r/kura-theme.json   # tokens, once
+npx shadcn@latest add https://kuro.abstergo.fyi/r/shimmer-text.json
 # or
 npx @kura-ui/cli add shimmer-text
 ```

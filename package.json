@@ -11,6 +11,7 @@
   "scripts": {
     "dev": "tsx scripts/dev.ts",
     "build": "pnpm generate && pnpm --filter @kura-ui/react build && pnpm --filter @kura-ui/mcp --filter @kura-ui/cli build && pnpm --filter @kura-ui/docs build",
+    "build:site": "pnpm --filter @kura-ui/docs build:static",
     "generate": "tsx scripts/generate.ts",
     "validate:meta": "tsx scripts/validate-meta.ts",
     "test": "pnpm -r --if-present test",
