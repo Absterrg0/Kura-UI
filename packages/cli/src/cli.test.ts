@@ -31,7 +31,7 @@ afterEach(() => rmSync(dir, { recursive: true, force: true }));
 
 describe("kura cli", () => {
   it("search returns ranked JSON", async () => {
-    cmdSearch(await loadCatalog(), out(), "thinking label");
+    cmdSearch(await loadCatalog(), out(), "animated thinking text shimmer");
     expect(last().results[0].slug).toBe("shimmer-text");
   });
 

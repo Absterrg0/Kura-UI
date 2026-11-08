@@ -80,9 +80,15 @@ for (const folder of folders) {
   else metas.push({ folder, meta });
 }
 if (loadErrors.length) {
-  console.error(`✗ generate: invalid component meta\n  ${loadErrors.join("\n  ")}`);
-  console.error("  Run `pnpm validate:meta` for the full report.");
-  process.exit(1);
+  // Skip broken folders instead of failing: one half-written component must not block the docs
+  // index for everyone else. `pnpm validate:meta` (and so `pnpm check`) still fails on them.
+  // Set KURA_STRICT=1 to fail here too.
+  const log = process.env.KURA_STRICT ? console.error : console.warn;
+  log(
+    `${process.env.KURA_STRICT ? "✗" : "⚠"} generate: skipped ${loadErrors.length} component(s) with invalid meta\n  ${loadErrors.join("\n  ")}`,
+  );
+  log("  Run `pnpm validate:meta` for the full report.");
+  if (process.env.KURA_STRICT) process.exit(1);
 }
 const hookMetas = await loadHooks();
 const css = parseTokens();

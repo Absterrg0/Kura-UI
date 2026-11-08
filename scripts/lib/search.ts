@@ -28,6 +28,21 @@ const SYNONYMS: Record<string, string[]> = {
   menu: ["popover", "dropdown", "command"],
   dropdown: ["popover", "menu"],
   agent: ["tool", "approval", "timeline", "status"],
+  approve: ["approval", "permission", "confirm"],
+  permission: ["approval", "confirm"],
+  confirm: ["approval", "permission"],
+  allow: ["approval", "permission"],
+  source: ["citation", "reference"],
+  sources: ["citation", "reference"],
+  cite: ["citation"],
+  reference: ["citation"],
+  artifact: ["document", "preview", "canvas"],
+  document: ["artifact", "preview"],
+  generated: ["artifact"],
+  syntax: ["code", "highlight"],
+  tokens: ["context", "usage"],
+  steps: ["timeline", "plan"],
+  plan: ["timeline", "steps"],
 };
 
 export function tokenize(text: string): string[] {

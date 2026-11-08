@@ -35,10 +35,10 @@ describe("kura MCP server", () => {
     const r = json(
       await client.callTool({
         name: "search_components",
-        arguments: { query: "show that the model is thinking" },
+        arguments: { query: "user must approve a shell command" },
       }),
     );
-    expect(r.results[0].slug).toBe("shimmer-text");
+    expect(r.results[0].slug).toBe("approval-prompt");
   });
 
   it("gets a component and its source with dependencies", async () => {
