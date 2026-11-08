@@ -1,4 +1,4 @@
-import { GLSL_COLOR } from "./shader-color";
+import { GLSL_COLOR } from "../../lib/shader-color";
 
 /**
  * Aurora: three layers of light curtains. Each curtain has a bright, sharp lower edge that wanders

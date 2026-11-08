@@ -1,4 +1,4 @@
-import { GLSL_COLOR } from "./shader-color";
+import { GLSL_COLOR } from "../../lib/shader-color";
 
 /**
  * The agent orb: an analytic sphere (no geometry) shaded like thick glass holding a luminous

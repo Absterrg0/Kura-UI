@@ -4,9 +4,9 @@ import * as React from "react";
 import { useReducedMotion } from "../../hooks/use-reduced-motion";
 import { cn } from "../../lib/cn";
 import { mergeRefs } from "../../lib/merge-refs";
+import { useResolvedColors } from "../../lib/shader-color";
 import { ShaderCanvas } from "../shader-canvas";
 import { MAX_COLORS, MESH_GRADIENT_FRAG } from "./mesh-gradient.glsl";
-import { useResolvedColors } from "./shader-color";
 
 export type MeshGradientPreset = "signal" | "paper" | "jade" | "dusk" | "ember" | "glacier";
 
@@ -149,6 +149,8 @@ export function MeshGradient({
     };
   }, [interactive]);
 
+  // `version` bumps when the theme flips: a new uniforms object repaints a still frame.
+  // biome-ignore lint/correctness/useExhaustiveDependencies: version is the repaint trigger
   const uniforms = React.useMemo(() => {
     const color = (i: number) => () => {
       const c = resolved.current;
@@ -178,7 +180,7 @@ export function MeshGradient({
         return [p.x, p.y, p.z] as const;
       },
     };
-  }, [resolved, distortion, swirl, grain, seed]);
+  }, [resolved, version, distortion, swirl, grain, seed]);
 
   const isStill = reducedMotion || paused || speed === 0;
 
@@ -191,8 +193,6 @@ export function MeshGradient({
       {...props}
     >
       <ShaderCanvas
-        // A still frame does not redraw on its own: remount it when the theme flips.
-        key={isStill ? `still-${version}` : "live"}
         data-slot="mesh-gradient-canvas"
         fragmentShader={MESH_GRADIENT_FRAG}
         uniforms={uniforms}

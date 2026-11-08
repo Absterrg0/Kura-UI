@@ -270,6 +270,13 @@ export function ShaderCanvas({
     if (!paused || isStatic) kickRef.current();
   }, [paused, isStatic]);
 
+  // A new `uniforms` object (theme flip, colour or prop change) repaints one frame even while
+  // paused or static, so frozen canvases never show stale colours. While running this is a no-op.
+  // biome-ignore lint/correctness/useExhaustiveDependencies: `uniforms` identity is the trigger
+  React.useEffect(() => {
+    kickRef.current();
+  }, [uniforms]);
+
   return (
     <div
       ref={mergeRefs(containerRef, ref)}

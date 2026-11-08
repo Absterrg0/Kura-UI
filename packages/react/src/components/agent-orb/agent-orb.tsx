@@ -5,9 +5,9 @@ import type { AudioAnalyser } from "../../hooks/use-audio-analyser";
 import { useReducedMotion } from "../../hooks/use-reduced-motion";
 import { cn } from "../../lib/cn";
 import { mergeRefs } from "../../lib/merge-refs";
+import { useResolvedColors, type Vec3 } from "../../lib/shader-color";
 import { ShaderCanvas } from "../shader-canvas";
 import { AGENT_ORB_FRAG } from "./agent-orb.glsl";
-import { useResolvedColors, type Vec3 } from "./shader-color";
 
 export type AgentOrbState = "idle" | "listening" | "thinking" | "speaking" | "error";
 export type AgentOrbPreset = "jade" | "ocean" | "amber" | "graphite";

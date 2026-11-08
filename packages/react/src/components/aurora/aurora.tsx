@@ -4,9 +4,9 @@ import * as React from "react";
 import { useReducedMotion } from "../../hooks/use-reduced-motion";
 import { cn } from "../../lib/cn";
 import { mergeRefs } from "../../lib/merge-refs";
+import { useResolvedColors } from "../../lib/shader-color";
 import { ShaderCanvas } from "../shader-canvas";
 import { AURORA_FRAG } from "./aurora.glsl";
-import { useResolvedColors } from "./shader-color";
 
 export type AuroraPreset = "signal" | "polar" | "ember" | "mist";
 
@@ -61,6 +61,8 @@ export function Aurora({
   const list = React.useMemo(() => [...palette, "var(--kura-canvas)"], [palette]);
   const { colors: resolved, version } = useResolvedColors(rootRef, list);
 
+  // `version` bumps when the theme flips: a new uniforms object repaints a still frame.
+  // biome-ignore lint/correctness/useExhaustiveDependencies: version is the repaint trigger
   const uniforms = React.useMemo(() => {
     const col = (i: number) => () =>
       (resolved.current[i]?.linear ?? [0.3, 0.6, 0.5]) as [number, number, number];
@@ -72,7 +74,7 @@ export function Aurora({
       u_stars: stars ? 1 : 0,
       u_light: () => ((resolved.current[3]?.oklab[0] ?? 1) > 0.55 ? 1 : 0),
     };
-  }, [resolved, intensity, stars]);
+  }, [resolved, version, intensity, stars]);
 
   const isStill = reducedMotion || paused || speed === 0;
   const [low, mid, high] = palette;
@@ -86,7 +88,6 @@ export function Aurora({
       {...props}
     >
       <ShaderCanvas
-        key={isStill ? `still-${version}` : "live"}
         data-slot="aurora-canvas"
         fragmentShader={AURORA_FRAG}
         uniforms={uniforms}

@@ -1,8 +1,8 @@
 import { describe, expect, it, vi } from "vitest";
 import { axe, fireEvent, render, screen, setReducedMotion } from "../../../test/utils";
+import { linearToOklab, oklabToLinear, parseColor } from "../../lib/shader-color";
 import { MeshGradient } from "./mesh-gradient";
 import { MeshGradientFull, MeshGradientHero, MeshGradientMinimal } from "./mesh-gradient.examples";
-import { linearToOklab, oklabToLinear, parseColor } from "./shader-color";
 
 describe("MeshGradient", () => {
   it("renders a root with data-slot, children on top and className last", () => {

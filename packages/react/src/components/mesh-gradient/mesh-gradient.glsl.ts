@@ -1,4 +1,4 @@
-import { GLSL_COLOR } from "./shader-color";
+import { GLSL_COLOR } from "../../lib/shader-color";
 
 /** Max colours the shader blends. */
 export const MAX_COLORS = 6;
