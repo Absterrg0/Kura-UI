@@ -1,0 +1,315 @@
+"use client";
+
+import { Check, ChevronRight, Hand, Wrench, X } from "lucide-react";
+import * as React from "react";
+import { useControllableState } from "../../hooks/use-controllable-state";
+import { cn } from "../../lib/cn";
+import { CodeBlock } from "../code-block";
+import { ShimmerText } from "../shimmer-text";
+
+export type ToolCallStatus = "pending" | "running" | "success" | "error" | "awaiting-approval";
+
+export interface ToolCallProps extends Omit<React.ComponentProps<"div">, "title"> {
+  /** The tool's identifier, e.g. "search_web". Rendered in mono. */
+  name: string;
+  /** Human label, e.g. "Searching the web". Shown instead of `name` when given. */
+  title?: React.ReactNode;
+  /** Icon for the tool, e.g. `<Globe />`. Default a wrench. */
+  icon?: React.ReactNode;
+  /** Lifecycle state. Default "running". */
+  status?: ToolCallStatus;
+  /** Arguments the model passed. Objects are pretty-printed as JSON; strings are shown as-is. */
+  args?: unknown;
+  /** The tool's output. Objects are pretty-printed as JSON; strings are shown as-is. */
+  result?: unknown;
+  /** Error message for status="error". */
+  error?: React.ReactNode;
+  /** One-line summary next to the title. Default: the first primitive value in `args`. Pass null to hide. */
+  summary?: React.ReactNode;
+  /** When the call started (for the live timer). Default: when status became "running". */
+  startedAt?: Date | number;
+  /** Final duration in ms. Default: measured from running → done. */
+  duration?: number;
+  /** `card` = a bordered card (default); `inline` = a compact row inside message text. */
+  variant?: "card" | "inline";
+  /** Details (args/result) expanded (controlled). */
+  open?: boolean;
+  /** Initial expanded state when uncontrolled. Default: true for "error" and "awaiting-approval". */
+  defaultOpen?: boolean;
+  onOpenChange?: (open: boolean) => void;
+  /** Always-visible footer, e.g. Approve / Deny buttons while awaiting approval. */
+  actions?: React.ReactNode;
+}
+
+export function formatDuration(ms: number): string {
+  if (ms < 1000) return `${Math.max(0, Math.round(ms / 10) * 10)}ms`;
+  if (ms < 60_000) return `${(ms / 1000).toFixed(1)}s`;
+  const s = Math.round(ms / 1000);
+  return `${Math.floor(s / 60)}m ${s % 60}s`;
+}
+
+const statusText: Record<ToolCallStatus, string> = {
+  pending: "Queued",
+  running: "Running",
+  success: "Completed",
+  error: "Failed",
+  "awaiting-approval": "Waiting for approval",
+};
+
+function toText(value: unknown): string {
+  if (typeof value === "string") return value;
+  try {
+    return JSON.stringify(value, null, 2) ?? String(value);
+  } catch {
+    return String(value);
+  }
+}
+
+function deriveSummary(args: unknown): string | null {
+  if (args == null) return null;
+  if (typeof args !== "object") return String(args);
+  for (const v of Object.values(args as Record<string, unknown>)) {
+    if (typeof v === "string" || typeof v === "number" || typeof v === "boolean") return String(v);
+  }
+  return null;
+}
+
+function StatusGlyph({ status, small }: { status: ToolCallStatus; small?: boolean }) {
+  return (
+    <span
+      aria-hidden
+      data-slot="tool-call-status"
+      className={cn(
+        "relative grid shrink-0 place-items-center rounded-full transition-colors duration-(--kura-duration-base) ease-kura-out",
+        small ? "size-4 [&_svg]:size-2.5" : "size-5 [&_svg]:size-3",
+        status === "pending" &&
+          "text-kura-fg-subtle shadow-[inset_0_0_0_1px_var(--kura-border-strong)]",
+        status === "running" && "bg-kura-accent-subtle text-kura-accent-text",
+        status === "success" && "bg-kura-hover text-kura-success-text",
+        status === "error" && "bg-kura-danger-subtle text-kura-danger-text",
+        status === "awaiting-approval" && "bg-kura-accent-subtle text-kura-accent-text",
+      )}
+    >
+      {status === "running" && (
+        <span className="size-1.5 animate-kura-pulse rounded-full bg-current motion-reduce:animate-none" />
+      )}
+      {status === "success" && <Check strokeWidth={2.5} className="animate-kura-pop-in" />}
+      {status === "error" && <X strokeWidth={2.5} className="animate-kura-pop-in" />}
+      {status === "awaiting-approval" && <Hand className="animate-kura-pop-in" />}
+    </span>
+  );
+}
+
+function useElapsed(status: ToolCallStatus, startedAt?: Date | number, duration?: number) {
+  const start = React.useRef<number | null>(startedAt != null ? +new Date(startedAt) : null);
+  const [now, setNow] = React.useState<number | null>(null);
+  const [final, setFinal] = React.useState<number | null>(null);
+  React.useEffect(() => {
+    if (status === "running") {
+      start.current = startedAt != null ? +new Date(startedAt) : Date.now();
+      setFinal(null);
+      setNow(Date.now());
+      const id = setInterval(() => setNow(Date.now()), 100);
+      return () => clearInterval(id);
+    }
+    const began = start.current;
+    if ((status === "success" || status === "error") && began != null) {
+      setFinal((f) => f ?? Date.now() - began);
+    }
+  }, [status, startedAt]);
+  if (duration != null) return duration;
+  if (status === "running" && start.current != null && now != null) return now - start.current;
+  return final;
+}
+
+/**
+ * One tool invocation: name and icon, a status glyph (queued, running, done, failed, awaiting
+ * approval), a live elapsed timer, and collapsible pretty-printed arguments and result.
+ */
+export function ToolCall({
+  name,
+  title,
+  icon,
+  status = "running",
+  args,
+  result,
+  error,
+  summary,
+  startedAt,
+  duration,
+  variant = "card",
+  open: openProp,
+  defaultOpen,
+  onOpenChange,
+  actions,
+  className,
+  ...props
+}: ToolCallProps) {
+  const [open, setOpen] = useControllableState({
+    value: openProp,
+    defaultValue: defaultOpen ?? (status === "error" || status === "awaiting-approval"),
+    onChange: onOpenChange,
+  });
+  const elapsed = useElapsed(status, startedAt, duration);
+  const id = React.useId();
+  const hasDetails = args !== undefined || result !== undefined || error != null;
+  const line = summary === undefined ? deriveSummary(args) : summary;
+  const inline = variant === "inline";
+  const running = status === "running";
+
+  const label = title ?? <span className="font-kura-mono text-[0.93em]">{name}</span>;
+
+  const headerContent = (
+    <>
+      <StatusGlyph status={status} small={inline} />
+      <span
+        aria-hidden
+        className="shrink-0 text-kura-fg-subtle [&_svg]:size-3.5"
+        data-slot="tool-call-icon"
+      >
+        {icon ?? <Wrench />}
+      </span>
+      <span className="flex min-w-0 flex-1 items-baseline gap-2">
+        <span data-slot="tool-call-title" className="shrink-0 font-medium text-kura-fg">
+          {running ? <ShimmerText>{label}</ShimmerText> : label}
+        </span>
+        {line != null && line !== "" && (
+          <span data-slot="tool-call-summary" className="truncate text-kura-fg-subtle">
+            {line}
+          </span>
+        )}
+      </span>
+      <span className="sr-only">, {statusText[status]}</span>
+      {elapsed != null && (
+        <span
+          data-slot="tool-call-elapsed"
+          className="shrink-0 font-kura-mono text-kura-fg-subtle text-xs tabular-nums"
+        >
+          {formatDuration(elapsed)}
+        </span>
+      )}
+      {hasDetails && (
+        <ChevronRight
+          aria-hidden
+          className={cn(
+            "size-3.5 shrink-0 text-kura-fg-subtle transition-transform duration-(--kura-duration-base) ease-kura-out motion-reduce:transition-none",
+            open && "rotate-90",
+          )}
+        />
+      )}
+    </>
+  );
+
+  const headerClass = cn(
+    "flex w-full min-w-0 items-center gap-2 text-left outline-none",
+    inline ? "h-7 rounded-kura-sm px-1.5 text-[13px]" : "h-11 px-3 text-sm",
+  );
+
+  return (
+    <div
+      data-slot="tool-call"
+      data-status={status}
+      data-variant={variant}
+      data-state={hasDetails ? (open ? "open" : "closed") : undefined}
+      className={cn(
+        "flex min-w-0 flex-col font-kura-sans",
+        inline
+          ? "-mx-1.5 w-fit max-w-full"
+          : "overflow-hidden rounded-kura-lg bg-kura-surface shadow-kura-sm",
+        className,
+      )}
+      {...props}
+    >
+      {hasDetails ? (
+        <button
+          type="button"
+          data-slot="tool-call-trigger"
+          aria-expanded={open}
+          aria-controls={`${id}-details`}
+          onClick={() => setOpen(!open)}
+          className={cn(
+            headerClass,
+            "cursor-pointer transition-[background-color,box-shadow] duration-(--kura-duration-fast) ease-kura-out hover:bg-kura-hover focus-visible:shadow-[inset_0_0_0_2px_var(--kura-ring)]",
+            inline && "focus-visible:shadow-kura-focus",
+          )}
+        >
+          {headerContent}
+        </button>
+      ) : (
+        <div data-slot="tool-call-trigger" className={headerClass}>
+          {headerContent}
+        </div>
+      )}
+      <span className="sr-only" role="status">
+        {name} {statusText[status]}
+      </span>
+
+      {hasDetails && (
+        <div
+          id={`${id}-details`}
+          data-slot="tool-call-details"
+          inert={!open || undefined}
+          className={cn(
+            "grid transition-[grid-template-rows,opacity] duration-(--kura-duration-slow) ease-kura-out motion-reduce:transition-opacity",
+            open ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0",
+          )}
+        >
+          <div className="min-h-0 overflow-hidden">
+            <div
+              className={cn(
+                "flex flex-col gap-3",
+                inline
+                  ? "mt-1 mb-2 ml-[18px] border-kura-border border-l pl-4"
+                  : "px-3 pt-1 pb-3 shadow-[inset_0_1px_0_var(--kura-border-subtle)] [&>:first-child]:mt-2",
+              )}
+            >
+              {args !== undefined && <Section label="Arguments" value={args} />}
+              {error != null && (
+                <div
+                  data-slot="tool-call-error"
+                  className="rounded-kura-md bg-kura-danger-subtle px-3 py-2 font-kura-mono text-kura-danger-text text-xs leading-relaxed"
+                >
+                  {error}
+                </div>
+              )}
+              {result !== undefined && <Section label="Result" value={result} />}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {actions != null && (
+        <div
+          data-slot="tool-call-actions"
+          className={cn(
+            "flex items-center justify-end gap-2",
+            inline ? "py-1.5" : "px-3 py-2.5 shadow-[inset_0_1px_0_var(--kura-border-subtle)]",
+          )}
+        >
+          {actions}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function Section({ label, value }: { label: string; value: unknown }) {
+  const text = toText(value);
+  const json = typeof value !== "string";
+  return (
+    <div data-slot="tool-call-section" className="flex flex-col gap-1.5">
+      <span className="font-medium text-[11px] text-kura-fg-subtle uppercase tracking-wider">
+        {label}
+      </span>
+      <CodeBlock
+        code={text}
+        filename={label}
+        language={json ? "json" : "text"}
+        header={false}
+        wrap
+        maxHeight={220}
+        className="rounded-kura-md text-xs shadow-[0_0_0_1px_var(--kura-border-subtle)] [&_[data-slot=code-block-line]]:px-3 [&_section]:py-2"
+      />
+    </div>
+  );
+}
