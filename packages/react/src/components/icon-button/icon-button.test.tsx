@@ -2,7 +2,11 @@ import { Copy } from "lucide-react";
 import { describe, expect, it, vi } from "vitest";
 import { axe, render, screen, userEvent } from "../../../test/utils";
 import { IconButton } from "./icon-button";
-import { IconButtonFull, IconButtonMinimal } from "./icon-button.examples";
+import {
+  IconButtonFull,
+  IconButtonMessageActions,
+  IconButtonMinimal,
+} from "./icon-button.examples";
 
 describe("IconButton", () => {
   it("uses label as the accessible name", () => {
@@ -39,7 +43,7 @@ describe("IconButton", () => {
   });
 
   it("examples are accessible", async () => {
-    for (const Example of [IconButtonMinimal, IconButtonFull]) {
+    for (const Example of [IconButtonMinimal, IconButtonFull, IconButtonMessageActions]) {
       const { container, unmount } = render(<Example />);
       await axe(container);
       unmount();

@@ -1,8 +1,10 @@
 "use client";
 
-import { Globe, Lightbulb } from "lucide-react";
+import { ChartLine, Code, FileText, Globe, Lightbulb, Mail } from "lucide-react";
 import * as React from "react";
 import { ModelPicker, type ModelPickerModel } from "../model-picker";
+import { type PromptSuggestion, PromptSuggestions } from "../prompt-suggestions";
+import { VoiceDictation } from "../voice-dictation";
 import {
   Composer,
   ComposerActions,
@@ -185,6 +187,98 @@ export function ComposerStates() {
         </ComposerToolbar>
       </Composer>
       <Composer disabled placeholder="Upgrade to continue the conversation" />
+    </div>
+  );
+}
+
+const starters: PromptSuggestion[] = [
+  {
+    title: "Analyze a CSV",
+    prompt: "Find the three biggest drivers of churn in the attached CSV.",
+    icon: <ChartLine />,
+  },
+  {
+    title: "Summarize a doc",
+    prompt: "Summarize this doc in five bullets for an exec audience.",
+    icon: <FileText />,
+  },
+  {
+    title: "Review a diff",
+    prompt: "Review this diff for bugs and missing tests.",
+    icon: <Code />,
+  },
+  {
+    title: "Draft a reply",
+    prompt: "Draft a friendly reply that moves the meeting to next week.",
+    icon: <Mail />,
+  },
+];
+
+export function ComposerNewChat() {
+  const [value, setValue] = React.useState("");
+  const [interim, setInterim] = React.useState("");
+  const [model, setModel] = React.useState("opus");
+  const [status, setStatus] = React.useState<ComposerStatus>("idle");
+  const inputRef = React.useRef<HTMLTextAreaElement>(null);
+  const timer = React.useRef<ReturnType<typeof setTimeout>>(undefined);
+  React.useEffect(() => () => clearTimeout(timer.current), []);
+
+  return (
+    <div className="flex w-full max-w-xl flex-col items-center gap-5">
+      <div className="flex flex-col items-center gap-1 text-center">
+        <h3 className="font-medium text-2xl text-kura-fg tracking-tight">
+          What are we working on?
+        </h3>
+        <p className="text-kura-fg-muted text-sm">
+          Start typing, dictate, or pick a starting point.
+        </p>
+      </div>
+      <Composer
+        value={value}
+        onValueChange={setValue}
+        status={status}
+        accept="image/*,.pdf,.csv,.md,.txt"
+        className="w-full"
+        onSubmit={() => {
+          setStatus("submitted");
+          timer.current = setTimeout(() => setStatus("idle"), 1400);
+        }}
+        onStop={() => {
+          clearTimeout(timer.current);
+          setStatus("idle");
+        }}
+      >
+        <ComposerAttachments />
+        <ComposerInput ref={inputRef} placeholder={interim || "Message Kura…"} minRows={2} />
+        <ComposerToolbar>
+          <ComposerTools>
+            <ComposerAttachButton />
+            <ModelPicker models={models} value={model} onValueChange={setModel} side="top" />
+          </ComposerTools>
+          <ComposerActions>
+            <VoiceDictation
+              simulate="Compare our Q3 pricing page with the two closest competitors."
+              showTranscript={false}
+              hotkey={null}
+              onInterim={setInterim}
+              onStatusChange={(s) => s === "idle" && setInterim("")}
+              onTranscript={(text) => setValue((v) => (v ? `${v.trimEnd()} ${text}` : text))}
+            />
+            <ComposerSubmit />
+          </ComposerActions>
+        </ComposerToolbar>
+      </Composer>
+      <PromptSuggestions
+        variant="chips"
+        label="Starting points"
+        suggestions={starters}
+        disabled={status !== "idle"}
+        onSelect={(prompt) => {
+          setValue(prompt);
+          inputRef.current?.focus();
+        }}
+        className="justify-center"
+      />
     </div>
   );
 }

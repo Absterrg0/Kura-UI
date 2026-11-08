@@ -44,6 +44,13 @@ export default defineComponent({
   examples: [
     { name: "SpinnerMinimal", kind: "minimal", title: "Default" },
     { name: "SpinnerFull", kind: "full", title: "Sizes and colors" },
+    {
+      name: "SpinnerSourcesList",
+      kind: "composition",
+      title: "Syncing knowledge sources",
+      description:
+        "Per-row spinners for indexing, a loading Sync now Button and a Reconnect action for a failed source.",
+    },
   ],
   agentNotes: ["Color it with a text-* class on the spinner or a parent; it uses currentColor."],
 });

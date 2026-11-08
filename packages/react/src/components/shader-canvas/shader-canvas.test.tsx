@@ -1,7 +1,11 @@
 import { describe, expect, it, vi } from "vitest";
 import { axe, render, setReducedMotion } from "../../../test/utils";
 import { ShaderCanvas } from "./shader-canvas";
-import { ShaderCanvasFull, ShaderCanvasMinimal } from "./shader-canvas.examples";
+import {
+  ShaderCanvasFeatureCard,
+  ShaderCanvasFull,
+  ShaderCanvasMinimal,
+} from "./shader-canvas.examples";
 
 const frag = "void main() { fragColor = vec4(1.0); }";
 
@@ -60,7 +64,7 @@ describe("ShaderCanvas", () => {
   });
 
   it("examples are accessible", async () => {
-    for (const Example of [ShaderCanvasMinimal, ShaderCanvasFull]) {
+    for (const Example of [ShaderCanvasMinimal, ShaderCanvasFull, ShaderCanvasFeatureCard]) {
       const { container, unmount } = render(<Example />);
       await axe(container);
       unmount();

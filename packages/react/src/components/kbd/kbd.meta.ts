@@ -60,6 +60,13 @@ export default defineComponent({
   examples: [
     { name: "KbdMinimal", kind: "minimal", title: "Single key" },
     { name: "KbdFull", kind: "full", title: "Combos, variants, sizes" },
+    {
+      name: "KbdShortcutSheet",
+      kind: "composition",
+      title: "Keyboard shortcut sheet",
+      description:
+        "A grouped help sheet of combos and alternatives with an IconButton close bound to Esc.",
+    },
   ],
   agentNotes: ["Use `mod` for the primary modifier; never hard-code ⌘ or Ctrl glyphs."],
 });

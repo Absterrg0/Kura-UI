@@ -72,6 +72,13 @@ export default defineComponent({
   examples: [
     { name: "IconButtonMinimal", kind: "minimal", title: "Basic" },
     { name: "IconButtonFull", kind: "full", title: "Composer toolbar" },
+    {
+      name: "IconButtonMessageActions",
+      kind: "composition",
+      title: "Message action bar",
+      description:
+        "Copy with a confirm swap, pressed feedback toggles, a loading regenerate and shortcut tooltips under an assistant reply.",
+    },
   ],
   agentNotes: [
     "Never pass aria-label; use `label`. The shortcut is display-only — bind it with useHotkey or kbd-shortcut.",

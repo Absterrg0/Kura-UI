@@ -1,7 +1,7 @@
 import { describe, expect, it, vi } from "vitest";
 import { axe, render, screen, userEvent } from "../../../test/utils";
 import { Popover, PopoverClose, PopoverContent, PopoverTrigger } from "./popover";
-import { PopoverFull, PopoverMinimal } from "./popover.examples";
+import { PopoverFull, PopoverMinimal, PopoverShareChat } from "./popover.examples";
 
 function Demo(props: { onOpenChange?: (open: boolean) => void }) {
   return (
@@ -56,6 +56,19 @@ describe("Popover", () => {
     const { container } = render(<PopoverMinimal />);
     await axe(container);
     await userEvent.click(screen.getByRole("button", { name: "Open" }));
+    await axe(document.body);
+  });
+
+  it("share composition switches visibility and stays accessible open", async () => {
+    const { container } = render(<PopoverShareChat />);
+    await axe(container);
+    await userEvent.click(screen.getByRole("button", { name: "Share" }));
+    const dialog = await screen.findByRole("dialog", { name: "Share this chat" });
+    expect(screen.getByRole("button", { name: /copy link/i })).toBeDisabled();
+    await userEvent.click(screen.getByRole("radio", { name: /anyone with the link/i }));
+    expect(screen.getByRole("radio", { name: /anyone with the link/i })).toBeChecked();
+    expect(screen.getByRole("button", { name: /copy link/i })).toBeEnabled();
+    expect(dialog).toBeInTheDocument();
     await axe(document.body);
   });
 });

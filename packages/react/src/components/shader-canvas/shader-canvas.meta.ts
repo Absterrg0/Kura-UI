@@ -94,6 +94,13 @@ export default defineComponent({
       title: "Silk with custom uniforms",
       description: "Custom color uniforms, speed control, pause and pointer response.",
     },
+    {
+      name: "ShaderCanvasFeatureCard",
+      kind: "composition",
+      title: "Feature card with a live band",
+      description:
+        "A ShaderCanvas header behind a glass chip, with copy, stats and Buttons on a token surface.",
+    },
   ],
   agentNotes: [
     'Give the container an explicit size (e.g. `className="h-64 w-full rounded-kura-xl"`); the canvas fills it.',

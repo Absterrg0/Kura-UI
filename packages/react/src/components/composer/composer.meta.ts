@@ -274,6 +274,13 @@ export default defineComponent({
       kind: "state",
       title: "Submitted, streaming, over limit and disabled",
     },
+    {
+      name: "ComposerNewChat",
+      kind: "composition",
+      title: "New chat home",
+      description:
+        "An empty-chat start: ModelPicker and VoiceDictation in the toolbar, PromptSuggestions chips that fill and focus the input.",
+    },
   ],
   agentNotes: [
     'Drive `status` from your chat hook: set "submitted" when you send, "streaming" on the first token, back to "idle" when done; pass `onStop` to abort.',

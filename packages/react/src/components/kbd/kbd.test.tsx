@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it } from "vitest";
 import { axe, render, screen, setApplePlatform } from "../../../test/utils";
 import { Kbd } from "./kbd";
-import { KbdFull, KbdMinimal } from "./kbd.examples";
+import { KbdFull, KbdMinimal, KbdShortcutSheet } from "./kbd.examples";
 
 describe("Kbd", () => {
   afterEach(() => setApplePlatform(false));
@@ -34,7 +34,7 @@ describe("Kbd", () => {
   });
 
   it("examples are accessible", async () => {
-    for (const Example of [KbdMinimal, KbdFull]) {
+    for (const Example of [KbdMinimal, KbdFull, KbdShortcutSheet]) {
       const { container, unmount } = render(<Example />);
       await axe(container);
       unmount();

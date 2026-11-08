@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { axe, render, screen } from "../../../test/utils";
 import { Spinner } from "./spinner";
-import { SpinnerFull, SpinnerMinimal } from "./spinner.examples";
+import { SpinnerFull, SpinnerMinimal, SpinnerSourcesList } from "./spinner.examples";
 
 describe("Spinner", () => {
   it("renders a labelled status by default", () => {
@@ -25,7 +25,7 @@ describe("Spinner", () => {
   });
 
   it("examples are accessible", async () => {
-    for (const Example of [SpinnerMinimal, SpinnerFull]) {
+    for (const Example of [SpinnerMinimal, SpinnerFull, SpinnerSourcesList]) {
       const { container, unmount } = render(<Example />);
       await axe(container);
       unmount();

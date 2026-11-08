@@ -18,7 +18,12 @@ import {
   ComposerSubmit,
   ComposerToolbar,
 } from "./composer";
-import { ComposerFull, ComposerMinimal, ComposerStates } from "./composer.examples";
+import {
+  ComposerFull,
+  ComposerMinimal,
+  ComposerNewChat,
+  ComposerStates,
+} from "./composer.examples";
 
 const file = (name: string, type: string, size = 10) =>
   new File(["x".repeat(size)], name, { type });
@@ -189,7 +194,7 @@ describe("Composer", () => {
   });
 
   it("examples render without a11y violations", async () => {
-    for (const Example of [ComposerMinimal, ComposerFull, ComposerStates]) {
+    for (const Example of [ComposerMinimal, ComposerFull, ComposerStates, ComposerNewChat]) {
       const { container, unmount } = render(<Example />);
       await act(async () => {});
       await axe(container);

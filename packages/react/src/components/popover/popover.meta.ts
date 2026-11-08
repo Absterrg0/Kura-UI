@@ -81,6 +81,13 @@ export default defineComponent({
   examples: [
     { name: "PopoverMinimal", kind: "minimal", title: "Basic" },
     { name: "PopoverFull", kind: "full", title: "Controlled settings panel" },
+    {
+      name: "PopoverShareChat",
+      kind: "composition",
+      title: "Share a chat",
+      description:
+        "A chat header whose Share button opens a visibility picker and a copy-link row.",
+    },
   ],
   agentNotes: [
     "Always use `<PopoverTrigger asChild><Button …/></PopoverTrigger>` to avoid nested buttons.",
