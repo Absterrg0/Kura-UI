@@ -172,14 +172,14 @@ export function Attachment({
       aria-label={`Remove ${name}`}
       onClick={onRemove}
       className={cn(
-        "-top-1.5 -right-1.5 absolute z-10 flex size-[18px] cursor-pointer items-center justify-center rounded-full bg-kura-ink text-kura-fg-inverted shadow-kura-sm outline-none",
+        "-top-1.5 -right-1.5 absolute z-10 flex size-5 cursor-pointer items-center justify-center rounded-full bg-kura-surface-raised text-kura-fg-muted shadow-kura-sm outline-none",
         "after:-inset-1 after:absolute after:rounded-full",
         "scale-90 opacity-0 transition-[opacity,transform,color] duration-(--kura-duration-fast) ease-kura-out",
         "group-hover/attachment:scale-100 group-hover/attachment:opacity-100 group-focus-within/attachment:scale-100 group-focus-within/attachment:opacity-100",
-        "pointer-coarse:scale-100 pointer-coarse:opacity-100 hover:bg-kura-ink-hover focus-visible:shadow-kura-focus active:scale-90 motion-reduce:scale-100",
+        "pointer-coarse:scale-100 pointer-coarse:opacity-100 hover:text-kura-fg focus-visible:shadow-kura-focus active:scale-90 motion-reduce:scale-100",
       )}
     >
-      <X className="size-2.5" strokeWidth={2.5} aria-hidden />
+      <X className="size-3" strokeWidth={2.25} aria-hidden />
     </button>
   );
 
@@ -192,7 +192,7 @@ export function Attachment({
         data-status={status}
         title={title ?? (status === "error" && error ? error : name)}
         className={cn(
-          "group/attachment relative isolate inline-flex size-11 shrink-0 rounded-kura-md bg-kura-surface-sunken shadow-kura-xs",
+          "group/attachment relative isolate inline-flex size-11 shrink-0 rounded-kura-lg bg-kura-surface-sunken shadow-kura-xs",
           className,
         )}
         {...props}
@@ -210,7 +210,7 @@ export function Attachment({
             />
           ) : (
             <span className="flex size-full items-center justify-center text-kura-fg-subtle">
-              <Icon className="size-4 stroke-[1.5]" aria-hidden />
+              <Icon className="size-4" aria-hidden />
               <span className="sr-only">{name}</span>
             </span>
           )}
@@ -264,9 +264,7 @@ export function Attachment({
       data-status={status}
       title={title ?? (status === "error" && error ? error : name)}
       className={cn(
-        // A paper slip: a sheet of the page's own stock with a hairline edge, the file's kind
-        // pressed into a small well on the left and its details set in mono on the right.
-        "group/attachment relative inline-flex h-11 min-w-0 max-w-64 shrink-0 items-center gap-2.5 rounded-kura-md bg-kura-surface py-1 pr-3.5 pl-1 font-kura-sans shadow-kura-xs",
+        "group/attachment relative inline-flex h-11 min-w-0 max-w-64 shrink-0 items-center gap-2.5 rounded-kura-lg bg-kura-surface-raised py-1 pr-3 pl-1 font-kura-sans shadow-kura-xs",
         "transition-[background-color,box-shadow] duration-(--kura-duration-fast) ease-kura-out",
         status === "error" &&
           "shadow-[0_0_0_1px_color-mix(in_oklch,var(--kura-danger)_35%,transparent)]",
@@ -277,10 +275,10 @@ export function Attachment({
       <span
         data-slot="attachment-icon"
         className={cn(
-          "relative flex size-9 shrink-0 items-center justify-center rounded-kura-xs transition-colors duration-(--kura-duration-base) [&_svg]:stroke-[1.5]",
+          "relative flex size-9 shrink-0 items-center justify-center rounded-kura-sm transition-colors duration-(--kura-duration-base)",
           status === "error"
             ? "bg-kura-danger-subtle text-kura-danger-text"
-            : "bg-kura-surface-sunken text-kura-fg-muted shadow-[inset_0_0_0_1px_var(--kura-border-subtle)]",
+            : "bg-kura-hover text-kura-fg-muted shadow-[inset_0_0_0_1px_var(--kura-border-subtle)]",
         )}
       >
         {status === "uploading" ? (
@@ -298,14 +296,14 @@ export function Attachment({
           <Icon className="size-4" aria-hidden />
         )}
       </span>
-      <span className="flex min-w-0 flex-col gap-1 leading-none">
+      <span className="flex min-w-0 flex-col gap-0.5 leading-none">
         <span data-slot="attachment-name" className="truncate font-medium text-[13px] text-kura-fg">
           {name}
         </span>
         <span
           data-slot="attachment-meta"
           className={cn(
-            "flex items-center gap-1 font-kura-mono text-[10.5px] tabular-nums tracking-[0.02em]",
+            "flex items-center gap-1 text-[11px] tabular-nums",
             status === "error" ? "text-kura-danger-text" : "text-kura-fg-subtle",
           )}
         >
@@ -321,7 +319,7 @@ export function Attachment({
                 data-slot="attachment-retry"
                 onClick={onRetry}
                 aria-label={`Retry uploading ${name}`}
-                className="cursor-pointer rounded-kura-xs font-kura-sans font-medium text-kura-fg underline decoration-kura-border-strong underline-offset-2 outline-none hover:decoration-current focus-visible:shadow-kura-focus"
+                className="cursor-pointer rounded-kura-xs font-medium text-kura-fg underline decoration-kura-border-strong underline-offset-2 outline-none hover:decoration-current focus-visible:shadow-kura-focus"
               >
                 Retry
               </button>
@@ -424,22 +422,22 @@ export function AttachmentList({
                 .map((i) => i.name)
                 .join("\n")}
               className={cn(
-                "group/overflow relative isolate mr-2.5 flex h-11 min-w-11 cursor-pointer items-center justify-center rounded-kura-md px-2.5 font-kura-mono text-[12px] text-kura-fg-muted tabular-nums outline-none",
+                "group/overflow relative isolate mr-2.5 flex h-11 min-w-11 cursor-pointer items-center justify-center rounded-kura-lg px-2.5 font-kura-sans font-medium text-[13px] text-kura-fg-muted tabular-nums outline-none",
                 "transition-[color,transform] duration-(--kura-duration-fast) ease-kura-out hover:text-kura-fg focus-visible:shadow-kura-focus active:scale-[0.97] motion-reduce:active:scale-100",
               )}
             >
               {/* the "deck": two cards peeking out behind the counter's face */}
               <span
                 aria-hidden
-                className="-z-20 absolute inset-0 translate-x-[10px] scale-[0.78] rounded-[inherit] bg-kura-surface shadow-kura-xs transition-transform duration-(--kura-duration-base) ease-kura-out group-hover/overflow:translate-x-[13px] motion-reduce:transition-none"
+                className="-z-20 absolute inset-0 translate-x-[10px] scale-[0.78] rounded-[inherit] bg-kura-surface-raised shadow-kura-xs transition-transform duration-(--kura-duration-base) ease-kura-out group-hover/overflow:translate-x-[13px] motion-reduce:transition-none"
               />
               <span
                 aria-hidden
-                className="-z-10 absolute inset-0 translate-x-[5px] scale-[0.89] rounded-[inherit] bg-kura-surface shadow-kura-xs transition-transform duration-(--kura-duration-base) ease-kura-out group-hover/overflow:translate-x-[7px] motion-reduce:transition-none"
+                className="-z-10 absolute inset-0 translate-x-[5px] scale-[0.89] rounded-[inherit] bg-kura-surface-raised shadow-kura-xs transition-transform duration-(--kura-duration-base) ease-kura-out group-hover/overflow:translate-x-[7px] motion-reduce:transition-none"
               />
               <span
                 aria-hidden
-                className="absolute inset-0 rounded-[inherit] bg-kura-surface shadow-kura-xs"
+                className="absolute inset-0 rounded-[inherit] bg-kura-surface-raised shadow-kura-xs"
               />
               <span className="relative">+{hidden}</span>
             </button>
@@ -531,7 +529,7 @@ export function AttachmentDropzone({
         deliver(filesFromDataTransfer(e.dataTransfer));
       }}
       className={cn(
-        "group/dropzone relative isolate flex min-h-36 w-full rounded-kura-lg font-kura-sans",
+        "group/dropzone relative isolate flex min-h-36 w-full rounded-kura-xl font-kura-sans",
         "bg-kura-surface-sunken transition-[background-color] duration-(--kura-duration-base) ease-kura-out",
         "data-dragging:bg-kura-hover",
         disabled && "cursor-not-allowed opacity-50",
@@ -542,12 +540,12 @@ export function AttachmentDropzone({
       {/* dashed hairline drawn in SVG so the dash, radius and color are precise */}
       <svg
         aria-hidden
-        className="pointer-events-none absolute inset-0 size-full overflow-visible text-kura-border-strong transition-colors duration-(--kura-duration-base) group-hover/dropzone:text-kura-fg-subtle group-data-dragging/dropzone:text-kura-fg"
+        className="pointer-events-none absolute inset-0 size-full overflow-visible text-kura-border-strong transition-colors duration-(--kura-duration-base) group-data-dragging/dropzone:text-kura-fg-subtle"
       >
         <rect
           x="0.5"
           y="0.5"
-          rx="11.5"
+          rx="13.5"
           fill="none"
           stroke="currentColor"
           strokeWidth="1"
@@ -565,21 +563,18 @@ export function AttachmentDropzone({
         <span
           aria-hidden
           className={cn(
-            "flex size-10 items-center justify-center rounded-kura-md bg-kura-surface-raised text-kura-fg-muted shadow-kura-sm",
+            "flex size-10 items-center justify-center rounded-kura-lg bg-kura-surface text-kura-fg-muted shadow-kura-sm",
             "transition-transform duration-(--kura-duration-base) ease-kura-out group-hover/dropzone:-translate-y-0.5 group-data-dragging/dropzone:-translate-y-1 group-data-dragging/dropzone:text-kura-fg motion-reduce:translate-y-0",
           )}
         >
-          <CloudUpload className="size-[18px]" strokeWidth={1.5} />
+          <CloudUpload className="size-[18px]" strokeWidth={1.75} />
         </span>
         <span className="flex flex-col gap-1">
           <span className="font-medium text-kura-fg text-sm">
             {dragging ? "Release to attach" : title}
           </span>
           {description && (
-            <span
-              id={descId}
-              className="font-kura-mono text-[10px] text-kura-fg-subtle uppercase tracking-[0.12em]"
-            >
+            <span id={descId} className="text-kura-fg-subtle text-xs">
               {description}
             </span>
           )}

@@ -6,7 +6,7 @@ export default defineComponent({
   category: "effects",
   status: "beta",
   description:
-    "A brush-red stroke that travels around its parent's border — a quiet “an agent is working in here” signal for composers, cards and panels.",
+    "Animated light beam that travels around its parent's border — a quiet “an agent is working in here” signal for composers, cards and panels.",
   whenToUse: [
     "A composer, card or panel whose content an agent is currently editing or generating.",
     "A running tool call or background task row that should read as live without a spinner.",
@@ -26,7 +26,12 @@ export default defineComponent({
       description:
         "Show the beam. Toggling fades it in/out over 480ms and pauses the animation while hidden — keep it mounted.",
     },
-    { name: "duration", type: "number", default: "6", description: "Seconds per lap." },
+    {
+      name: "duration",
+      type: "number",
+      default: "8",
+      description: "Seconds per lap. Slow laps (6–10s) read as calm work; faster ones as urgency.",
+    },
     {
       name: "size",
       type: "number",
@@ -38,14 +43,14 @@ export default defineComponent({
       name: "colors",
       type: "readonly string[]",
       description:
-        "CSS colours from tail to head. Default: a dry vermilion tail (transparent → accent 18% → accent 55% → accent) gathering into a seal-red `--kura-shu` head. Tokens and color-mix() work.",
+        "CSS colours from tail to head. Default: transparent → accent at 30% → accent (the blue signal). Tokens and color-mix() work.",
     },
     {
       name: "glow",
       type: "boolean",
       default: "false",
       description:
-        "Add a softly blurred copy of the stroke so it bleeds into the surface like ink on washi (not clipped by the parent unless it has overflow-hidden). Keep it subtle: no neon.",
+        "Add a blurred copy of the beam for a soft glow (not clipped by the parent unless it has overflow-hidden).",
     },
     {
       name: "reverse",
@@ -71,7 +76,7 @@ export default defineComponent({
     {
       name: "Glow",
       dataSlot: "border-beam-glow",
-      description: "Ink-bleed layer: a lightly blurred, thicker ring; only rendered with `glow`.",
+      description: "Blurred wrapper around a thicker ring; only rendered with `glow`.",
     },
     {
       name: "Ring",
@@ -90,7 +95,7 @@ export default defineComponent({
   },
   dependencies: { npm: [], kura: [] },
   related: ["thinking-indicator", "shimmer-text", "composer", "tool-call", "mesh-gradient"],
-  tags: ["border", "beam", "glow", "loading", "busy", "agent", "conic-gradient", "css", "brush"],
+  tags: ["border", "beam", "glow", "loading", "busy", "agent", "conic-gradient", "css"],
   examples: [
     {
       name: "BorderBeamMinimal",

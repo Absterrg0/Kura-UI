@@ -47,10 +47,9 @@ export default defineComponent({
     },
     {
       name: "variant",
-      type: '"primary" | "secondary" | "ghost" | "outline" | "accent" | "danger" | "brush"',
+      type: '"primary" | "secondary" | "ghost" | "outline" | "accent" | "danger"',
       default: '"ghost"',
-      description:
-        "Same variants as button; defaults to ghost. `brush` is meant for labelled buttons, avoid it on a square icon.",
+      description: "Same variants as button; defaults to ghost.",
     },
     {
       name: "size",

@@ -8,63 +8,55 @@ import { useResolvedColors } from "../../lib/shader-color";
 import { ShaderCanvas } from "../shader-canvas";
 import { MAX_COLORS, MESH_GRADIENT_FRAG } from "./mesh-gradient.glsl";
 
-export type MeshGradientPreset = "signal" | "paper" | "sumi" | "shu" | "ai" | "matcha";
+export type MeshGradientPreset = "signal" | "paper" | "graphite" | "dusk" | "ember" | "glacier";
 
 /**
- * Colour presets. `signal`, `paper` and `sumi` are built from Kura tokens and follow the theme —
- * ink wash on washi in light, night ink in dark. `shu`, `ai` and `matcha` are fixed OKLCH palettes
- * (vermilion, indigo, tea green) that look the same in light and dark.
+ * Colour presets. `signal` and `paper` are built from Kura tokens and follow the theme; the rest
+ * are fixed OKLCH palettes that look the same in light and dark: `graphite` and `dusk` are dark
+ * (light text on top), `ember` and `glacier` are light (dark text on top).
  */
 export const meshGradientPresets: Record<MeshGradientPreset, readonly string[]> = {
-  // Washi with a soft ink wash and one ember of the accent (vermilion) — night ink in dark.
   signal: [
     "var(--kura-canvas)",
-    "var(--kura-gray-6)",
+    "var(--kura-accent-subtle)",
     "color-mix(in oklab, var(--kura-accent) 78%, var(--kura-canvas))",
-    "var(--kura-surface)",
-    "var(--kura-gray-8)",
-    "var(--kura-gray-2)",
-  ],
-  // Paper stocks only: the page, a brighter print and a pressed well. No signal colour.
-  paper: [
-    "var(--kura-gray-2)",
-    "var(--kura-gray-5)",
-    "var(--kura-surface-raised)",
     "var(--kura-gray-3)",
-    "var(--kura-gray-7)",
+    "var(--kura-accent-subtle)",
   ],
-  // Sumi-e: diluted ink clouds bleeding into the page (paper-coloured ink on dark).
-  sumi: [
-    "var(--kura-canvas)",
-    "var(--kura-gray-7)",
-    "var(--kura-surface)",
-    "color-mix(in oklab, var(--kura-gray-12) 48%, var(--kura-canvas))",
-    "var(--kura-gray-5)",
+  paper: [
+    "var(--kura-gray-1)",
+    "var(--kura-gray-4)",
+    "var(--kura-accent-subtle)",
     "var(--kura-gray-2)",
+    "var(--kura-gray-6)",
   ],
-  // Shu: vermilion seal ink pooling into warm paper.
-  shu: [
-    "oklch(0.36 0.11 32)",
-    "oklch(0.58 0.17 37)",
-    "oklch(0.74 0.14 48)",
-    "oklch(0.93 0.035 80)",
-    "oklch(0.47 0.15 33)",
+  graphite: [
+    "oklch(0.17 0.002 255)",
+    "oklch(0.25 0.006 255)",
+    "oklch(0.4 0.014 255)",
+    "oklch(0.2 0.003 255)",
+    "oklch(0.52 0.04 258)",
   ],
-  // Ai (藍): indigo dye on undyed cloth.
-  ai: [
-    "oklch(0.22 0.05 266)",
-    "oklch(0.4 0.09 262)",
-    "oklch(0.64 0.075 248)",
-    "oklch(0.92 0.02 85)",
-    "oklch(0.3 0.07 268)",
+  dusk: [
+    "oklch(0.2 0.035 262)",
+    "oklch(0.34 0.06 260)",
+    "oklch(0.56 0.07 255)",
+    "oklch(0.8 0.045 55)",
+    "oklch(0.26 0.045 266)",
   ],
-  // Matcha: whisked tea green with a pale foam.
-  matcha: [
-    "oklch(0.32 0.05 130)",
-    "oklch(0.52 0.09 126)",
-    "oklch(0.76 0.1 116)",
-    "oklch(0.94 0.03 96)",
-    "oklch(0.42 0.07 130)",
+  ember: [
+    "oklch(0.975 0.008 80)",
+    "oklch(0.92 0.03 72)",
+    "oklch(0.82 0.07 55)",
+    "oklch(0.95 0.018 85)",
+    "oklch(0.78 0.075 50)",
+  ],
+  glacier: [
+    "oklch(0.98 0.005 240)",
+    "oklch(0.91 0.025 245)",
+    "oklch(0.8 0.055 250)",
+    "oklch(0.64 0.07 256)",
+    "oklch(0.95 0.012 235)",
   ],
 };
 
@@ -77,7 +69,7 @@ export interface MeshGradientProps extends React.ComponentProps<"div"> {
   swirl?: number;
   /** Animation speed multiplier. 0 freezes the flow. Default 1. */
   speed?: number;
-  /** Washi-fibre grain, 0–1. Default 0.12. Hides banding on large, low-contrast gradients. */
+  /** Film-grain amount, 0–1. Default 0.12. Hides banding on large, low-contrast gradients. */
   grain?: number;
   /** Lens the gradient gently toward the pointer. Default true. */
   interactive?: boolean;
@@ -100,9 +92,9 @@ function fallbackBackground(colors: readonly string[]): string {
 }
 
 /**
- * Animated WebGL mesh gradient for hero sections, empty states and ambient surfaces — by default an
- * ink wash on washi with one vermilion ember. Blends up to six colours in OKLab, with distortion,
- * swirl, a still paper-fibre grain and a subtle pointer lens. Children render on top. Falls back to layered CSS radial gradients without WebGL, and to a still frame under
+ * Animated WebGL mesh gradient for hero sections, empty states and ambient surfaces. Blends up to
+ * six colours in OKLab, with distortion, swirl, grain and a subtle pointer lens. Children render on
+ * top. Falls back to layered CSS radial gradients without WebGL, and to a still frame under
  * reduced motion.
  */
 export function MeshGradient({

@@ -2,12 +2,11 @@
 
 import * as React from "react";
 import { Attachment, AttachmentDropzone, AttachmentList } from "./attachment";
-import { type AttachmentItem, createAttachment, formatBytes } from "./attachment-utils";
+import { type AttachmentItem, createAttachment } from "./attachment-utils";
 
-/** Small ink-wash "photos" for the demo: paper, a vermilion sun and layered ink hills. */
-const photo = (sun: number, ridge: number) =>
+const photo = (a: number, b: number) =>
   `data:image/svg+xml;utf8,${encodeURIComponent(
-    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" fill="hsl(42 38% 90%)"/><circle cx="${sun}" cy="20" r="8" fill="hsl(16 78% 56%)"/><path d="M0 ${ridge} L14 ${ridge - 12} L26 ${ridge - 4} L40 ${ridge - 16} L64 ${ridge - 2} V64 H0Z" fill="hsl(40 8% 62%)"/><path d="M0 ${ridge + 10} L20 ${ridge + 2} L36 ${ridge + 9} L64 ${ridge + 1} V64 H0Z" fill="hsl(40 10% 18%)"/></svg>`,
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="hsl(${a} 55% 78%)"/><stop offset="1" stop-color="hsl(${a + 20} 45% 90%)"/></linearGradient></defs><rect width="64" height="64" fill="url(#g)"/><circle cx="44" cy="20" r="7" fill="hsl(${b} 80% 92%)"/><path d="M0 46 L18 30 L32 42 L44 34 L64 50 V64 H0Z" fill="hsl(${b} 25% 38%)"/><path d="M0 54 L22 44 L40 52 L64 46 V64 H0Z" fill="hsl(${b} 20% 26%)"/></svg>`,
   )}`;
 
 export function AttachmentMinimal() {
@@ -15,11 +14,11 @@ export function AttachmentMinimal() {
 }
 
 const initial: AttachmentItem[] = [
-  { id: "1", name: "launch-brief.md", type: "text/markdown", size: 4_210 },
-  { id: "2", name: "kamakura-shrine.jpg", type: "image/jpeg", size: 812_000, url: photo(44, 44) },
+  { id: "1", name: "brief.md", type: "text/markdown", size: 4_210 },
+  { id: "2", name: "harbour.png", type: "image/png", size: 812_000, url: photo(205, 160) },
   {
     id: "3",
-    name: "orders-2025-q3.csv",
+    name: "transactions.csv",
     type: "text/csv",
     size: 18_400_000,
     status: "uploading",
@@ -27,15 +26,15 @@ const initial: AttachmentItem[] = [
   },
   {
     id: "4",
-    name: "billing-schema.ts",
+    name: "schema.ts",
     type: "text/typescript",
     size: 9_800,
     status: "error",
     error: "Network connection lost",
   },
-  { id: "5", name: "harbour-dusk.jpg", type: "image/jpeg", size: 1_200_000, url: photo(18, 50) },
-  { id: "6", name: "customer-call-0912.m4a", type: "audio/mp4", size: 6_300_000 },
-  { id: "7", name: "design-review.zip", type: "application/zip", size: 340_000 },
+  { id: "5", name: "dunes.jpg", type: "image/jpeg", size: 1_200_000, url: photo(30, 25) },
+  { id: "6", name: "interview.m4a", type: "audio/mp4", size: 6_300_000 },
+  { id: "7", name: "notes.zip", type: "application/zip", size: 340_000 },
 ];
 
 export function AttachmentFull() {
@@ -57,16 +56,8 @@ export function AttachmentFull() {
     return () => clearInterval(id);
   }, []);
 
-  const total = items.reduce((sum, i) => sum + (i.size ?? 0), 0);
-
   return (
     <div className="flex w-full max-w-xl flex-col gap-3">
-      <div className="flex items-baseline justify-between gap-3 px-0.5 font-kura-mono text-[10px] text-kura-fg-subtle uppercase tracking-[0.14em]">
-        <span>Attached to this thread</span>
-        <span className="tabular-nums">
-          {items.length} files · {formatBytes(total)}
-        </span>
-      </div>
       <AttachmentList
         items={items}
         max={4}
@@ -79,8 +70,8 @@ export function AttachmentFull() {
           )
         }
       />
-      <p className="border-kura-border-subtle border-t px-0.5 pt-3 text-kura-fg-subtle text-xs">
-        Hover a file to remove it, retry the failed schema, or open the stack to see the rest.
+      <p className="text-kura-fg-subtle text-xs">
+        Hover a file to remove it · Retry the failed upload · Open the +N stack
       </p>
     </div>
   );
@@ -111,7 +102,6 @@ export function AttachmentWithDropzone() {
       <AttachmentDropzone
         accept="image/*,.pdf,.csv,.md,.txt"
         maxSize={10 * 1024 * 1024}
-        title="Drop the source files for this report"
         description="Images, PDF, CSV or Markdown · up to 10 MB"
         onFiles={(files, bad) => {
           setRejected(bad.length ? `${bad.map((f) => f.name).join(", ")} not supported` : null);

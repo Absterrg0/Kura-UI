@@ -9,7 +9,7 @@ export function MeshGradientMinimal() {
   return <MeshGradient className="h-64 w-full rounded-kura-xl shadow-kura-sm" />;
 }
 
-const presets: MeshGradientPreset[] = ["signal", "paper", "sumi", "shu", "ai", "matcha"];
+const presets: MeshGradientPreset[] = ["signal", "paper", "graphite", "dusk", "ember", "glacier"];
 
 function Slider({
   label,
@@ -44,7 +44,7 @@ function Slider({
 }
 
 export function MeshGradientFull() {
-  const [preset, setPreset] = React.useState<MeshGradientPreset>("sumi");
+  const [preset, setPreset] = React.useState<MeshGradientPreset>("dusk");
   const [distortion, setDistortion] = React.useState(0.6);
   const [swirl, setSwirl] = React.useState(0.35);
   const [speed, setSpeed] = React.useState(1);
@@ -95,13 +95,12 @@ export function MeshGradientHero() {
       colors="signal"
       distortion={0.7}
       swirl={0.3}
-      className="flex min-h-80 w-full flex-col items-start justify-end gap-4 rounded-kura-lg p-8 shadow-kura-md"
+      className="flex min-h-80 w-full flex-col items-start justify-end gap-4 rounded-kura-2xl p-8 shadow-kura-md"
     >
-      <span className="flex items-center gap-2 font-kura-mono text-[11px] text-kura-fg-muted uppercase tracking-[0.14em]">
-        <span aria-hidden className="size-1.5 rounded-full bg-kura-accent" />
+      <span className="rounded-full bg-kura-overlay px-2.5 py-1 font-medium text-kura-accent-text text-xs shadow-kura-xs backdrop-blur-xl">
         Agents · Beta
       </span>
-      <h2 className="max-w-md text-balance font-kura-display text-4xl text-kura-fg leading-[1.05]">
+      <h2 className="max-w-md text-balance font-medium text-3xl text-kura-fg tracking-tight">
         Hand off the busywork. Keep the judgement.
       </h2>
       <p className="max-w-sm text-kura-fg-muted text-sm leading-relaxed">

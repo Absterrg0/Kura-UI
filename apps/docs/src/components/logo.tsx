@@ -1,17 +1,28 @@
 import { cn } from "@/lib/cn";
-import { Seal } from "./seal";
 
-/** Kura: the 蔵 (storehouse) seal and the Redaction wordmark. */
-export function Logo({ className, seal = true }: { className?: string; seal?: boolean }) {
+/** The Kura mark: a K drawn from a stem and an angle bracket, the shape of a prompt. */
+export function LogoMark({ className }: { className?: string }) {
   return (
-    <span className={cn("inline-flex items-center gap-2.5", className)}>
-      {seal && <Seal glyph="蔵" className="size-7" tilt={-5} />}
-      <span className="flex items-baseline gap-1.5 leading-none">
-        <span className="font-kura-display text-[23px] text-kura-fg tracking-[-0.01em]">Kura</span>
-        <span className="font-kura-mono text-[10px] text-kura-fg-subtle uppercase tracking-[0.14em]">
-          ui
-        </span>
-      </span>
+    <svg viewBox="0 0 32 32" aria-hidden className={cn("size-6", className)}>
+      <rect width="32" height="32" rx="8" className="fill-kura-ink" />
+      <rect x="9" y="8" width="3.4" height="16" rx="1.2" className="fill-kura-canvas" />
+      <path
+        d="M23 8.6 15.4 16 23 23.4"
+        fill="none"
+        strokeWidth="3.4"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        className="stroke-kura-canvas"
+      />
+    </svg>
+  );
+}
+
+export function Logo({ className }: { className?: string }) {
+  return (
+    <span className={cn("inline-flex items-center gap-2", className)}>
+      <LogoMark />
+      <span className="font-semibold text-[15px] tracking-[-0.02em]">Kura</span>
     </span>
   );
 }

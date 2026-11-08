@@ -83,7 +83,7 @@ export default defineComponent({
       name: "Char",
       dataSlot: "decode-text-char",
       description:
-        "One glyph slot while decoding. `data-state` = pending (faint, 40%) | active (vermilion accent) | done (settles from vermilion into the text colour); `data-char` holds the final character.",
+        "One glyph slot while decoding. `data-state` = pending | active | done; `data-char` holds the final character.",
     },
   ],
   a11y: {

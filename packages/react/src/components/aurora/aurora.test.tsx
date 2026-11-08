@@ -46,8 +46,8 @@ describe("Aurora", () => {
     const { container } = render(<AuroraFull />);
     await userEvent.click(screen.getByRole("button", { name: "Pause" }));
     expect(container.querySelector("[data-slot=aurora]")).toHaveAttribute("data-state", "still");
-    await userEvent.click(screen.getByRole("button", { name: "matcha" }));
-    expect(screen.getByRole("button", { name: "matcha" })).toHaveAttribute("aria-pressed", "true");
+    await userEvent.click(screen.getByRole("button", { name: "ember" }));
+    expect(screen.getByRole("button", { name: "ember" })).toHaveAttribute("aria-pressed", "true");
   });
 
   it("examples render without a11y violations", async () => {

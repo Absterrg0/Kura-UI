@@ -1,6 +1,6 @@
 import { Copy } from "lucide-react";
 import { describe, expect, it, vi } from "vitest";
-import { axe, render, screen, setReducedMotion, userEvent } from "../../../test/utils";
+import { axe, render, screen, userEvent } from "../../../test/utils";
 import { IconButton } from "./icon-button";
 import {
   IconButtonFull,
@@ -36,10 +36,9 @@ describe("IconButton", () => {
   });
 
   it("keeps the reduced motion press override from Button", () => {
-    setReducedMotion(true);
     render(<IconButton label="Go" icon={<Copy />} tooltip={false} />);
     expect(screen.getByRole("button").className).toContain(
-      "motion-reduce:active:not-disabled:translate-y-0",
+      "motion-reduce:active:not-disabled:scale-100",
     );
   });
 

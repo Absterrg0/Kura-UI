@@ -6,7 +6,7 @@ export default defineComponent({
   category: "voice",
   status: "beta",
   description:
-    "Sumi-ink sphere with a shu ember for voice agents: breathes when idle, swells a halftone halo with the voice, turns an ensō while thinking.",
+    "Calm, softly glassy voice-agent sphere drawn in a shader: slow colour clouds that breathe when idle, swell with audio and turn while thinking.",
   whenToUse: [
     "The central visual of a voice agent or call screen: idle, listening, thinking, speaking, error.",
     "Showing that an assistant is hearing the user (mic level) or talking back (TTS level).",
@@ -25,14 +25,14 @@ export default defineComponent({
       type: '"idle" | "listening" | "thinking" | "speaking" | "error"',
       default: '"idle"',
       description:
-        "What the agent is doing. idle breathes slowly with a dim ember, listening ripples with the input level, thinking swirls the ink while an ensō brush stroke turns around the orb, speaking brightens the ember and swells the halftone halo with the output level, error turns the ink beni red and calms down.",
+        "What the agent is doing. idle breathes slowly, listening swells with the input level, thinking turns and twists the clouds, speaking lifts with the output level, error shifts to the danger colour and calms down.",
     },
     {
       name: "colors",
-      type: '"sumi" | "washi" | "shu" | "ai" | "matcha" | readonly [string, string, string, string]',
-      default: '"sumi"',
+      type: '"signal" | "pearl" | "graphite" | "ocean" | "amber" | readonly [string, string, string, string]',
+      default: '"signal"',
       description:
-        "A palette preset, or four CSS colours `[ink, wash, ember, rim]` (OKLCH, hex, `var(--token)`…). The ember also colours the halftone halo. sumi (ink sphere, accent ember) and washi (pale paper sphere, accent ember — best on dark) follow the theme's accent; shu (vermilion), ai (indigo) and matcha (tea green) are fixed palettes.",
+        "A palette preset, or four CSS colours `[deep, mid, bright, glint]` = densest clouds, body, light between clouds, rim/sheen (OKLCH, hex, `var(--token)`, `color-mix()`…). `signal` follows the theme: pearl with blue clouds on light pages, graphite with blue clouds on dark. `pearl` and `graphite` are neutral, `ocean` is a deeper blue, `amber` a soft warm option.",
     },
     {
       name: "analyser",
@@ -76,13 +76,13 @@ export default defineComponent({
       name: "ShaderCanvas",
       dataSlot: "agent-orb-canvas",
       description:
-        "The WebGL sphere, its halftone halo and the thinking ensō (aria-hidden). The sphere fills ~66% of the box; halo and ensō use the rest.",
+        "The WebGL sphere (aria-hidden). The sphere fills ~84% of the box; the rest holds a soft contact shadow on light pages and a faint halo on dark ones.",
     },
     {
       name: "Fallback",
       dataSlot: "agent-orb-fallback",
       description:
-        "CSS ink sphere with an ember core used when WebGL2 is unavailable; its wash still turns while thinking.",
+        "CSS gradient sphere in the same palette, used when WebGL2 is unavailable; its clouds turn slowly while thinking.",
     },
   ],
   a11y: {
@@ -94,7 +94,7 @@ export default defineComponent({
     ],
     keyboard: [],
     reducedMotion:
-      "No breathing, swirl, flow, ensō rotation or audio reaction: a still frame per state (thinking shows a still ensō). State changes cross-fade colour and brightness over ~0.4s, then rendering stops.",
+      "No breathing, swirl, flow or audio reaction: a still frame per state. State changes cross-fade colour and brightness over ~0.4s, then rendering stops.",
   },
   dependencies: { npm: [], kura: ["shader-canvas"] },
   related: [
@@ -116,8 +116,7 @@ export default defineComponent({
       name: "AgentOrbFull",
       kind: "full",
       title: "States, palettes and audio",
-      description:
-        "Every state and palette (sumi, washi, shu, ai, matcha), driven by a simulated speech analyser.",
+      description: "Every state and preset, driven by a simulated speech analyser.",
     },
     {
       name: "AgentOrbStates",
@@ -134,8 +133,8 @@ export default defineComponent({
     },
   ],
   agentNotes: [
-    'Give it a width (`className="size-48"` or `w-full max-w-64`); it is square. The sphere fills ~66% so the halftone halo and the ensō have room — do not clip it with overflow-hidden.',
-    "The default `sumi` palette is an ink sphere with an accent-coloured ember: it sits on washi in light mode and reads as night ink with a glowing ember in dark mode. On a dark-only surface, `washi` (a pale paper sphere) gives more contrast.",
+    'Give it a width (`className="size-48"` or `w-full max-w-64`); it is square. The sphere fills ~84% so the shadow/halo has room — do not clip it with overflow-hidden.',
+    "Keep the default `signal` palette when the orb stands for your AI: it is the only blue on a neutral page. Use `pearl` or `graphite` for a quieter, brand-neutral orb.",
     'For real audio: `const mic = useAudioAnalyser({ source: micStream })` for listening and a second analyser on the TTS <audio> element for speaking; switch `analyser` with the state. For demos use `useAudioAnalyser({ simulate: "speech" })`.',
     "`inputLevel`/`outputLevel` are fine for levels you already have (e.g. from a WebRTC SDK) at ≤ 30 updates/s; the shader smooths them.",
     "Changing `state` never restarts the animation: uniforms ease toward the new state, so you can flip states as fast as your agent emits events.",

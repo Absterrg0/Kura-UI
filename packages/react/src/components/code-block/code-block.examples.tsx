@@ -51,27 +51,21 @@ export function CodeBlockMinimal() {
 
 export function CodeBlockFull() {
   const [wrap, setWrap] = React.useState(false);
-  const [copies, setCopies] = React.useState(0);
   return (
-    <div className="flex w-full max-w-xl flex-col gap-2">
-      <CodeBlock
-        code={ROUTE}
-        language="ts"
-        filename="app/api/chat/route.ts"
-        lineNumbers
-        highlightLines={[9, 10, 11, 12, 13, 14]}
-        wrap={wrap}
-        onWrapChange={setWrap}
-        maxHeight={300}
-        defaultExpanded={false}
-        copyable
-        onCopy={() => setCopies((c) => c + 1)}
-        header
-      />
-      <p className="font-kura-mono text-kura-fg-subtle text-xs tabular-nums">
-        wrap: {String(wrap)} · copied {copies}×
-      </p>
-    </div>
+    <CodeBlock
+      code={ROUTE}
+      language="ts"
+      filename="app/api/chat/route.ts"
+      lineNumbers
+      highlightLines={[9, 10, 11, 12, 13, 14]}
+      wrap={wrap}
+      onWrapChange={setWrap}
+      maxHeight={300}
+      defaultExpanded={false}
+      copyable
+      header
+      className="w-full max-w-xl"
+    />
   );
 }
 

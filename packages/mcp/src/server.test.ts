@@ -76,6 +76,6 @@ describe("kura MCP server", () => {
     const tokens = json(await client.callTool({ name: "get_design_tokens", arguments: {} }));
     expect(tokens.light["--kura-accent"]).toMatch(/oklch/);
     const g = await client.callTool({ name: "get_design_guidelines", arguments: {} });
-    expect((g.content as Array<{ text: string }>)[0]!.text).toContain("Washi & Sumi");
+    expect((g.content as Array<{ text: string }>)[0]!.text).toContain("Kura Signal");
   });
 });

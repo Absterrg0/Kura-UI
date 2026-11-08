@@ -7,19 +7,15 @@ import { ShimmerText } from "../shimmer-text";
 export type ThinkingIndicatorVariant = "dots" | "pulse" | "orbit" | "wave" | "text";
 export type ThinkingIndicatorSize = "sm" | "md" | "lg";
 
-/*
- * Ink, not bounce: dots soak into the paper (scale + soften), the pulse is a drop with a hairline
- * ripple, the orbit is a turning ensō brush stroke.
- */
 const CSS = `
-@keyframes kura-ti-ink {
-  0%, 70%, 100% { transform: scale(0.72); opacity: 0.28; filter: blur(0.4px); }
-  28% { transform: scale(1); opacity: 1; filter: blur(0); }
+@keyframes kura-ti-dot {
+  0%, 60%, 100% { transform: translateY(0); opacity: 0.3; }
+  30% { transform: translateY(-40%); opacity: 1; }
 }
-@keyframes kura-ti-ripple { from { transform: scale(0.9); opacity: 0.7; } to { transform: scale(2.6); opacity: 0; } }
-@keyframes kura-ti-breathe { 0%, 100% { transform: scale(0.84); } 50% { transform: scale(1); } }
+@keyframes kura-ti-ring { from { transform: scale(1); opacity: 0.55; } to { transform: scale(2.8); opacity: 0; } }
+@keyframes kura-ti-breathe { 0%, 100% { transform: scale(0.82); } 50% { transform: scale(1); } }
 @keyframes kura-ti-orbit { to { transform: rotate(360deg); } }
-@keyframes kura-ti-bar { 0%, 100% { transform: scaleY(0.32); opacity: 0.5; } 50% { transform: scaleY(1); opacity: 1; } }
+@keyframes kura-ti-bar { 0%, 100% { transform: scaleY(0.3); opacity: 0.45; } 50% { transform: scaleY(1); opacity: 1; } }
 `;
 
 const SIZE: Record<ThinkingIndicatorSize, string> = {
@@ -52,31 +48,20 @@ export interface ThinkingIndicatorProps extends Omit<React.ComponentProps<"span"
 
 const motion = "motion-reduce:animate-none";
 
-/** A brush-written ellipsis: three ink dots, each a little smaller and less round than the last. */
-const INK_DOTS = [
-  { scale: 1, radius: "50% 46% 52% 48%", still: "" },
-  { scale: 0.86, radius: "48% 52% 45% 55%", still: "motion-reduce:opacity-70" },
-  { scale: 0.74, radius: "54% 46% 50% 50%", still: "motion-reduce:opacity-45" },
-];
-
 function Dots() {
   return (
     <span data-slot="thinking-indicator-shape" className="inline-flex items-center gap-(--ti-gap)">
-      {INK_DOTS.map((d, i) => (
-        <span key={i} className="inline-flex size-(--ti-dot) items-center justify-center">
-          <span
-            className={cn(
-              "size-full bg-current [animation:kura-ti-ink_1.4s_cubic-bezier(0.23,1,0.32,1)_infinite]",
-              motion,
-              d.still,
-            )}
-            style={{
-              animationDelay: `${i * 0.18}s`,
-              borderRadius: d.radius,
-              scale: String(d.scale),
-            }}
-          />
-        </span>
+      {[0, 1, 2].map((i) => (
+        <span
+          key={i}
+          className={cn(
+            "size-(--ti-dot) rounded-full bg-current [animation:kura-ti-dot_1.3s_cubic-bezier(0.45,0,0.55,1)_infinite]",
+            motion,
+            i === 0 && "motion-reduce:opacity-40",
+            i === 1 && "motion-reduce:opacity-70",
+          )}
+          style={{ animationDelay: `${i * 0.15}s` }}
+        />
       ))}
     </span>
   );
@@ -90,14 +75,14 @@ function Pulse() {
     >
       <span
         className={cn(
-          "absolute size-[calc(var(--ti-dot)*1.25)] rounded-full border border-current [animation:kura-ti-ripple_1.8s_cubic-bezier(0.23,1,0.32,1)_infinite]",
+          "absolute size-(--ti-dot) rounded-full bg-current [animation:kura-ti-ring_1.6s_cubic-bezier(0.23,1,0.32,1)_infinite]",
           motion,
           "motion-reduce:opacity-0",
         )}
       />
       <span
         className={cn(
-          "size-[calc(var(--ti-dot)*1.2)] rounded-full bg-current [animation:kura-ti-breathe_1.8s_cubic-bezier(0.77,0,0.175,1)_infinite]",
+          "size-[calc(var(--ti-dot)*1.25)] rounded-full bg-current [animation:kura-ti-breathe_1.6s_cubic-bezier(0.77,0,0.175,1)_infinite]",
           motion,
         )}
       />
@@ -105,32 +90,31 @@ function Pulse() {
   );
 }
 
-/** An ensō: one open brush circle that lands heavy and thins to a dry tail, turning. */
 function Orbit() {
   return (
     <span
       data-slot="thinking-indicator-shape"
       className="relative inline-flex size-[calc(var(--ti-dot)*3.2)] items-center justify-center"
     >
-      <span className="absolute inset-[calc(var(--ti-dot)*0.2)] rounded-full border border-current opacity-15" />
-      <span
-        className={cn(
-          "absolute inset-0 rounded-full [animation:kura-ti-orbit_1.6s_cubic-bezier(0.45,0.05,0.55,0.95)_infinite]",
-          motion,
-        )}
-        style={{
-          background:
-            "conic-gradient(from 20deg, transparent 0deg, transparent 70deg, color-mix(in oklab, currentColor 25%, transparent) 130deg, currentColor 330deg, transparent 331deg)",
-          mask: "radial-gradient(farthest-side, transparent calc(100% - var(--ti-dot) * 0.62), black calc(100% - var(--ti-dot) * 0.62 + 0.5px))",
-          WebkitMask:
-            "radial-gradient(farthest-side, transparent calc(100% - var(--ti-dot) * 0.62), black calc(100% - var(--ti-dot) * 0.62 + 0.5px))",
-        }}
-      >
+      <span className="absolute inset-[calc(var(--ti-dot)*0.5)] rounded-full border border-current opacity-20" />
+      {[0, 1].map((i) => (
         <span
-          className="absolute top-0 left-1/2 size-[calc(var(--ti-dot)*0.62)] -translate-x-1/2 rounded-full bg-current"
-          style={{ rotate: "-10deg", transformOrigin: "50% calc(var(--ti-dot) * 1.6)" }}
-        />
-      </span>
+          key={i}
+          className={cn(
+            "absolute inset-0 [animation:kura-ti-orbit_1.4s_cubic-bezier(0.45,0.05,0.55,0.95)_infinite]",
+            motion,
+          )}
+          style={{
+            animationDelay: `${-i * 0.18}s`,
+            transform: `rotate(${i * 140}deg)`,
+          }}
+        >
+          <span
+            className="absolute top-0 left-1/2 size-(--ti-dot) -translate-x-1/2 rounded-full bg-current"
+            style={{ opacity: i === 0 ? 1 : 0.45, scale: i === 0 ? "1" : "0.75" }}
+          />
+        </span>
+      ))}
     </span>
   );
 }
@@ -140,13 +124,13 @@ function Wave() {
   return (
     <span
       data-slot="thinking-indicator-shape"
-      className="inline-flex h-[calc(var(--ti-dot)*2.6)] items-center gap-[calc(var(--ti-gap)*0.6)]"
+      className="inline-flex h-[calc(var(--ti-dot)*2.4)] items-center gap-[calc(var(--ti-gap)*0.6)]"
     >
       {still.map((s, i) => (
         <span
           key={i}
           className={cn(
-            "h-full w-[calc(var(--ti-dot)*0.55)] rounded-full bg-current [animation:kura-ti-bar_1s_cubic-bezier(0.77,0,0.175,1)_infinite]",
+            "h-full w-[calc(var(--ti-dot)*0.42)] rounded-full bg-current [animation:kura-ti-bar_1.1s_cubic-bezier(0.45,0,0.55,1)_infinite]",
             motion,
             "motion-reduce:scale-y-(--ti-still)",
           )}
@@ -158,10 +142,9 @@ function Wave() {
 }
 
 /**
- * Compact AI "thinking" indicators — ink dots, a drop with a ripple, a turning ensō, a wave, or
- * cycling status text — wrapped in a polite live region. Shapes use `currentColor` (the vermilion
- * accent by default); restyle with a text-colour class. CSS-only animation; everything settles to
- * a still glyph under reduced motion.
+ * Compact AI "thinking" indicators — dots, pulse, orbit, wave, or cycling status text — wrapped in
+ * a polite live region. Shapes use `currentColor` (the blue accent by default); restyle with a text-colour
+ * class. CSS-only animation; everything settles to a still glyph under reduced motion.
  */
 export function ThinkingIndicator({
   variant = "dots",

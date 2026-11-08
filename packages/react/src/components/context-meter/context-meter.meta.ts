@@ -128,21 +128,21 @@ export default defineComponent({
     {
       name: "ContextMeterFull",
       kind: "full",
-      title: "Ring and bar with a breakdown",
+      title: "Thread header with a breakdown",
       description:
-        "Segments, thresholds, value display and a footer. Add tokens to watch the numbers roll into warning and danger.",
+        "A ring in the thread header and a bar with a footer note, both with the segment breakdown on hover. Attach logs to watch the numbers roll into warning and danger.",
     },
     {
       name: "ContextMeterThresholds",
       kind: "state",
       title: "Thresholds",
-      description: "ok, warning and danger bars.",
+      description: "ok, warning and danger bars in a list of threads, each labelled by its thread.",
     },
     {
       name: "ContextMeterInComposer",
       kind: "composition",
       title: "In a composer footer",
-      description: "Next to an IconButton send action.",
+      description: "Next to the attach and send IconButtons of a composer.",
     },
   ],
   agentNotes: [

@@ -8,7 +8,7 @@ import { StreamingText } from "../streaming-text";
 import { Reasoning } from "./reasoning";
 
 const TRACE =
-  "They want the like button to feel instant. Right now it waits for the server round-trip before the count changes, so every tap lags by ~300ms.\n\nTwo options: optimistic local state with a manual rollback in catch, or useOptimistic inside a transition. The hook drops the optimistic value by itself when the action throws, and it stays correct when two taps overlap.\n\nRecommend useOptimistic, show the smallest working pattern, then say what happens on error.";
+  "The user wants the like button to feel instant. The lag comes from waiting on the server round-trip before re-rendering.\n\nOptions: optimistic local state with manual rollback, or useOptimistic inside a transition. useOptimistic handles the rollback automatically if the action throws, and keeps the UI consistent with concurrent updates.\n\nI should recommend useOptimistic and show the minimal pattern, then mention the error case.";
 
 export function ReasoningMinimal() {
   return (
@@ -32,7 +32,7 @@ export function ReasoningFull() {
   };
 
   return (
-    <div className="flex w-full max-w-lg flex-col items-start gap-4">
+    <div className="flex w-full max-w-lg flex-col items-start gap-3 text-[15px] text-kura-fg leading-relaxed">
       <Reasoning
         key={run}
         active={active}
@@ -43,9 +43,21 @@ export function ReasoningFull() {
       >
         <StreamingText stream={stream} caret={false} onComplete={() => setActive(false)} />
       </Reasoning>
-      <Button variant="secondary" size="sm" onClick={replay}>
-        <RotateCcw /> Think again
-      </Button>
+      {!active && (
+        <div className="flex animate-kura-fade-in flex-col items-start gap-3">
+          <p>
+            Wrap the click in a transition and render from{" "}
+            <code className="rounded-kura-xs bg-kura-active px-[0.3em] py-[0.1em] font-kura-mono text-[0.86em]">
+              useOptimistic
+            </code>
+            . The count updates on the same frame, and if the server action throws, React drops the
+            optimistic value and the real count comes back on its own.
+          </p>
+          <Button variant="ghost" size="xs" className="-ml-2 text-kura-fg-muted" onClick={replay}>
+            <RotateCcw /> Think again
+          </Button>
+        </div>
+      )}
     </div>
   );
 }
@@ -64,17 +76,11 @@ export function ReasoningInMessage() {
     <Message
       from="assistant"
       name="Kura"
-      avatar={
-        <MessageAvatar
-          name="Kura"
-          className="rounded-kura-sm bg-kura-ink pt-px font-kura-display font-normal text-[15px] text-kura-fg-inverted shadow-none"
-        />
-      }
+      avatar={<MessageAvatar name="Kura" />}
       className="max-w-xl"
     >
       <Reasoning
         duration={83}
-        defaultOpen
         formatLabel={({ active, seconds }) =>
           active ? "Planning…" : `Planned for ${Math.round(seconds / 60)} min`
         }

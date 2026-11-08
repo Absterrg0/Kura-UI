@@ -107,34 +107,24 @@ export function ModelPickerFull() {
   const [open, setOpen] = React.useState(false);
   const current = models.find((m) => m.id === model);
   return (
-    <div className="flex w-full max-w-md flex-col gap-2.5">
-      <div className="flex items-center justify-between gap-4 rounded-kura-md bg-kura-surface py-3 pr-2.5 pl-4 shadow-kura-xs">
-        <div className="flex min-w-0 flex-col gap-0.5">
-          <p className="font-medium text-kura-fg text-sm">Default model</p>
-          <p className="truncate text-kura-fg-subtle text-xs">New threads in Support · Billing</p>
-        </div>
-        <ModelPicker
-          models={models}
-          value={model}
-          onValueChange={(id) => setModel(id)}
-          open={open}
-          onOpenChange={setOpen}
-          searchable
-          size="md"
-          side="bottom"
-          align="end"
-          placeholder="Choose a model"
-          searchPlaceholder="Search by name, provider or capability…"
-          emptyMessage="No model has that capability"
-          showDetails
-        />
-      </div>
-      <p
-        className="flex justify-between gap-3 px-1 font-kura-mono text-[10px] text-kura-fg-subtle uppercase tracking-[0.12em]"
-        aria-live="polite"
-      >
-        <span>API id</span>
-        <span className="normal-case tracking-normal text-kura-fg-muted">{current?.id}</span>
+    <div className="flex flex-col items-center gap-3">
+      <ModelPicker
+        models={models}
+        value={model}
+        onValueChange={(id) => setModel(id)}
+        open={open}
+        onOpenChange={setOpen}
+        searchable
+        size="md"
+        side="bottom"
+        align="center"
+        placeholder="Choose a model"
+        searchPlaceholder="Search by name, provider or capability…"
+        emptyMessage="No model has that capability"
+        showDetails
+      />
+      <p className="text-kura-fg-subtle text-xs" aria-live="polite">
+        Using <span className="font-kura-mono text-kura-fg-muted">{current?.id}</span>
       </p>
     </div>
   );

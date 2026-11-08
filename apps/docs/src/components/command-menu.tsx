@@ -40,13 +40,13 @@ export function CommandMenu({
         type="button"
         onClick={() => setOpen(true)}
         data-testid="search-trigger"
-        className="group flex h-9 w-9 cursor-pointer items-center justify-center gap-2 rounded-[6px] bg-kura-hover text-[13.5px] text-kura-fg-subtle outline-none transition-colors hover:bg-kura-active hover:text-kura-fg-muted focus-visible:shadow-kura-focus sm:w-full sm:justify-start sm:px-3 md:w-52"
+        className="group flex h-8 w-8 cursor-pointer items-center justify-center gap-2 rounded-kura-md bg-kura-surface-sunken text-[13px] text-kura-fg-subtle shadow-[inset_0_0_0_1px_var(--kura-border-subtle)] outline-none transition-colors hover:text-kura-fg-muted focus-visible:shadow-kura-focus sm:w-60 sm:justify-start sm:pr-1.5 sm:pl-2.5"
       >
         <Search className="size-3.5" />
         <span className="hidden flex-1 truncate whitespace-nowrap text-left sm:block">
-          Search the store…
+          Search components…
         </span>
-        <span className="sr-only sm:hidden">Search the store</span>
+        <span className="sr-only sm:hidden">Search components</span>
         <Kbd keys={["mod", "k"]} size="sm" variant="ghost" className="hidden sm:inline-flex" />
       </button>
       <Dialog.Root open={open} onOpenChange={setOpen}>

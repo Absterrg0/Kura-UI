@@ -6,7 +6,7 @@ export default defineComponent({
   category: "feedback",
   status: "beta",
   description:
-    "Compact “thinking” indicators in vermilion ink — brush dots, a drop with a ripple, a turning ensō, a wave or cycling text — in a polite live region.",
+    "Compact AI “thinking” indicators — dots, pulse, orbit, wave, or cycling status text — inside a polite live region.",
   whenToUse: [
     "The assistant has received a prompt but not produced its first token yet.",
     "A pending assistant message bubble or a placeholder row in a chat list.",
@@ -26,7 +26,7 @@ export default defineComponent({
       type: '"dots" | "pulse" | "orbit" | "wave" | "text"',
       default: '"dots"',
       description:
-        "dots: a brush-written ellipsis — three slightly irregular ink dots that soak in one after another. pulse: an ink drop breathing with a hairline ripple. orbit: an ensō — an open brush circle with a heavy head and a fading tail — turning on a faint track. wave: four equaliser bars. text: a pulse plus shimmering status text that cycles through `messages`.",
+        "dots: three bouncing dots (staggered spring). pulse: a breathing dot with an expanding ring. orbit: two dots chasing round a track. wave: four equaliser bars. text: a pulse plus shimmering status text that cycles through `messages`.",
     },
     {
       name: "size",
@@ -83,7 +83,7 @@ export default defineComponent({
     ],
     keyboard: [],
     reducedMotion:
-      "Loops stop. Dots show a still brush ellipsis (three dots fading 100 / 70 / 45%), the pulse is a still drop without ripple, orbit is a still ensō arc, wave shows static bars of varied heights. Text still cycles but with an opacity cross-fade only (no blur, no rise, no shimmer).",
+      "Loops stop. Dots show three static dots of rising opacity, the pulse is a still dot, orbit freezes with both dots visible, wave shows static bars of varied heights. Text still cycles but with an opacity cross-fade only (no blur, no rise, no shimmer).",
   },
   dependencies: { npm: [], kura: ["shimmer-text"] },
   related: ["shimmer-text", "spinner", "border-beam", "agent-orb", "streaming-text", "message"],
@@ -104,7 +104,7 @@ export default defineComponent({
     },
   ],
   agentNotes: [
-    'Recolour with a text class (`className="text-kura-fg-subtle"` for quiet ink); shapes use currentColor. Keep the vermilion (accent) default when it means “the model is working” — that is what the colour is reserved for.',
+    'Recolour with a text class (`className="text-kura-fg-subtle"`); shapes use currentColor. Keep the blue default when it means “the model is working”; use a neutral grey for secondary, low-priority activity.',
     "Replace the indicator with the streamed message once the first token arrives; do not show both.",
     "For real progress, pass one message and update it (`messages={[step]}`) — each change is announced. For ambient variety, pass several and let them cycle.",
     "Keep messages short (≤ 5 words) and end with an ellipsis.",

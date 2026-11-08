@@ -217,23 +217,33 @@ export function AudioWaveform({
       // Live.
       const f = frame;
       if (variant === "line") {
+        const lw = 1.5;
         ctx.globalAlpha = 1;
-        ctx.lineWidth = 1.5;
+        ctx.lineWidth = lw;
         ctx.lineJoin = "round";
+        ctx.lineCap = "round";
         ctx.beginPath();
         const data = f?.waveform;
-        const points = Math.min(256, Math.max(32, Math.floor(w / 3)));
+        const points = Math.min(160, Math.max(24, Math.floor(w / 4)));
+        // Keep the stroke (including its width) inside the box.
+        const top = lw / 2 + 0.5;
+        const bottom = h - lw / 2 - 0.5;
+        const half = Math.max(0, (bottom - top) / 2);
+        let px = 0;
+        let py = h / 2;
         for (let i = 0; i <= points; i++) {
           const x = (i / points) * w;
           const idx = data ? Math.floor((i / points) * (data.length - 1)) : 0;
           const v = data ? (data[idx] ?? 0) : 0;
           // taper the ends so the line breathes out of a flat baseline
           const taper = Math.sin((i / points) * Math.PI);
-          // Clamp so loud peaks touch the edge instead of being cut off by it.
-          const y = Math.min(h - 1, Math.max(1, h / 2 + v * (usable / 2) * taper * 1.6));
+          const y = Math.min(bottom, Math.max(top, h / 2 + v * half * taper * 1.6));
           if (i === 0) ctx.moveTo(x, y);
-          else ctx.lineTo(x, y);
+          else ctx.quadraticCurveTo(px, py, (px + x) / 2, (py + y) / 2);
+          px = x;
+          py = y;
         }
+        ctx.lineTo(px, py);
         ctx.stroke();
         return;
       }
@@ -251,14 +261,15 @@ export function AudioWaveform({
       const hist = historyRef.current;
       const elapsed = reduced ? 1 : Math.min(1, (now - lastPush.current) / HISTORY_INTERVAL);
       const shift = elapsed * step;
-      const fade = Math.min(w * 0.18, 64);
+      // Older samples fade out toward the left edge.
+      const fade = Math.min(w * 0.22, 72);
       for (let i = 0; i < count + 1; i++) {
         const v = hist[hist.length - 1 - i] ?? 0;
         const x = Math.round(w - barWidth - i * step - shift + step);
         if (x + barWidth < 0) break;
         if (x > w - barWidth) continue;
         const edge = x < fade ? Math.max(0, x / fade) : 1;
-        bar(x, v, 0.25 + 0.75 * edge);
+        bar(x, v, 0.08 + 0.92 * edge * edge);
       }
       ctx.globalAlpha = 1;
     },

@@ -31,15 +31,15 @@ const CSS = `
 export interface BorderBeamProps extends Omit<React.ComponentProps<"div">, "children"> {
   /** Show the beam. Toggling fades it in/out (and pauses the animation when hidden). Default true. */
   active?: boolean;
-  /** Seconds per lap. Default 6. */
+  /** Seconds per lap. Default 8. */
   duration?: number;
   /** Beam length as a share of the lap, 0.05–0.9. Default 0.25. */
   size?: number;
   /** Ring thickness in px. Default 1. */
   width?: number;
-  /** CSS colours from tail to head, e.g. `["transparent", "var(--kura-accent)"]`. Default: a dry vermilion tail gathering into a seal-red (`--kura-shu`) head. */
+  /** CSS colours from tail to head, e.g. `["transparent", "var(--kura-accent)"]`. Default: a blue accent tail fading in to a solid accent head. */
   colors?: readonly string[];
-  /** Let the stroke bleed softly into the surface, like ink on washi. Default false. */
+  /** Add a soft blurred glow around the beam. Default false. */
   glow?: boolean;
   /** Travel counter-clockwise. Default false. */
   reverse?: boolean;
@@ -47,13 +47,10 @@ export interface BorderBeamProps extends Omit<React.ComponentProps<"div">, "chil
   offset?: number;
 }
 
-/* A brush-red stroke: a dry, thinning tail that gathers into a heavy seal-red head. */
 const DEFAULT_COLORS = [
   "transparent",
-  "color-mix(in oklab, var(--kura-accent) 18%, transparent)",
-  "color-mix(in oklab, var(--kura-accent) 55%, transparent)",
+  "color-mix(in oklab, var(--kura-accent) 30%, transparent)",
   "var(--kura-accent)",
-  "var(--kura-shu)",
 ];
 
 function stops(colors: readonly string[], size: number): string {
@@ -67,13 +64,13 @@ function stops(colors: readonly string[], size: number): string {
 }
 
 /**
- * A brush-red stroke that travels around its parent's border — the "an agent is working in here"
- * signal for composers, cards and panels. Place it inside a `relative` element with a
+ * An animated light beam that travels around its parent's border — the "an agent is working in
+ * here" signal for composers, cards and panels. Place it inside a `relative` element with a
  * border radius; it inherits the radius and never affects layout. Pure CSS (server-safe).
  */
 export function BorderBeam({
   active = true,
-  duration = 6,
+  duration = 8,
   size = 0.25,
   width = 1,
   colors = DEFAULT_COLORS,
@@ -91,7 +88,7 @@ export function BorderBeam({
     "--kura-beam-delay": `${-Math.min(1, Math.max(0, offset)) * duration}s`,
     "--kura-beam-direction": reverse ? "reverse" : "normal",
     "--kura-beam-play": active ? "running" : "paused",
-    "--kura-beam-static": `color-mix(in oklab, ${colors[colors.length - 1] ?? "var(--kura-accent)"} 45%, transparent)`,
+    "--kura-beam-static": `color-mix(in oklab, ${colors[colors.length - 1] ?? "var(--kura-accent)"} 40%, transparent)`,
   } as React.CSSProperties;
   return (
     <div
@@ -112,7 +109,7 @@ export function BorderBeam({
       {glow && (
         <div
           data-slot="border-beam-glow"
-          className="absolute inset-0 rounded-[inherit] opacity-40 blur-[3px] motion-reduce:opacity-25"
+          className="absolute inset-0 rounded-[inherit] opacity-40 blur-[4px] motion-reduce:opacity-20"
         >
           <div
             data-slot="border-beam-ring"

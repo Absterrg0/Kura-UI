@@ -23,8 +23,7 @@ export default defineComponent({
       name: "title",
       type: "React.ReactNode",
       required: true,
-      description:
-        'What the agent wants, ideally phrased as the question the person is answering, e.g. "Delete the build directory?". Set in the display serif (20px); labels the region together with `command`.',
+      description: 'What the agent wants, e.g. "Kura wants to run a command". Labels the region.',
     },
     {
       name: "command",
@@ -42,7 +41,7 @@ export default defineComponent({
       type: '"low" | "medium" | "high"',
       default: '"medium"',
       description:
-        "Mono uppercase micro-label above the title with a matcha/ochre/beni dot. high also turns Approve into a red “Run anyway” button.",
+        "Badge (green/amber/red dot). high also turns Approve into a red “Run anyway” button.",
     },
     {
       name: "details",
@@ -138,8 +137,7 @@ export default defineComponent({
     {
       name: "Waiting",
       dataSlot: "approval-prompt-waiting",
-      description:
-        "Vermilion mono “Needs approval” label with a pulsing seal dot — the view's one accent while pending.",
+      description: "Blue “Needs approval” pill — the view's one accent while pending.",
     },
     {
       name: "Actions",
@@ -150,12 +148,6 @@ export default defineComponent({
       name: "Resolution",
       dataSlot: "approval-prompt-resolution",
       description: 'role="status" line that cross-fades in: Approved / Denied / Always allowed.',
-    },
-    {
-      name: "Verdict",
-      dataSlot: "approval-prompt-verdict",
-      description:
-        "The resolved word, set in italic display serif (17px) beside a hairline-ringed glyph (matcha check, muted cross, shield).",
     },
   ],
   a11y: {
@@ -201,7 +193,7 @@ export default defineComponent({
       kind: "full",
       title: "High-risk, every option",
       description:
-        "Description, details, controlled decision, callbacks, Always allow, custom labels and ⌘↵ / Esc.",
+        "Description, details, controlled decision, Always allow, custom labels and ⌘↵ / Esc; “Ask again” resets it.",
     },
     {
       name: "ApprovalPromptResolved",

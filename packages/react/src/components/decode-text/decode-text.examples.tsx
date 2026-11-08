@@ -25,7 +25,7 @@ export function DecodeTextFull() {
         trigger={runs}
         duration={1400}
         spread={8}
-        className="font-kura-mono font-medium text-kura-fg text-xl tracking-tight"
+        className="font-medium text-kura-fg text-xl tracking-[-0.015em]"
       >
         {lines[i % lines.length]!}
       </DecodeText>
@@ -37,9 +37,6 @@ export function DecodeTextFull() {
         className="font-kura-mono text-kura-fg-muted text-xs"
       >
         sha 9f3c2e1 · 412 ms · 1,284 tokens
-      </DecodeText>
-      <DecodeText as="p" duration={1200} className="font-kura-display text-kura-fg text-xl">
-        Proportional type keeps its width while decoding.
       </DecodeText>
       <div className="flex gap-1.5">
         <Button size="sm" variant="secondary" onClick={() => setI((v) => v + 1)}>
@@ -56,17 +53,11 @@ export function DecodeTextFull() {
 export function DecodeTextAgentHandshake() {
   const [connected, setConnected] = React.useState(false);
   return (
-    <div className="relative flex w-full max-w-sm flex-col gap-3 rounded-kura-lg bg-kura-surface-raised p-4 shadow-kura-sm">
-      <span
-        aria-hidden
-        className="pointer-events-none absolute inset-1 rounded-kura-sm border border-kura-border-subtle"
-      />
+    <div className="flex w-full max-w-sm flex-col gap-3 rounded-kura-xl bg-kura-surface p-4 shadow-kura-sm">
       <div className="flex items-center justify-between">
-        <span className="font-kura-mono text-[10px] text-kura-fg-subtle uppercase tracking-[0.14em]">
-          Remote agent
-        </span>
+        <span className="font-medium text-kura-fg-muted text-xs">Remote agent</span>
         <span
-          className="size-1.5 rounded-full bg-kura-accent transition-colors duration-(--kura-duration-base) data-[on=false]:bg-kura-gray-8"
+          className="size-2 rounded-full bg-kura-success data-[on=false]:bg-kura-gray-8"
           data-on={connected}
           aria-hidden
         />

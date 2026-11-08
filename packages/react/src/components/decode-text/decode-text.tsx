@@ -34,8 +34,7 @@ const easeOut = (t: number) => 1 - (1 - t) ** 2;
 
 /**
  * A text reveal that scrambles glyphs and resolves them left to right, like an AI decoding a
- * message: faint pending glyphs, a vermilion (accent) scrambling front, and each resolved letter
- * settling from vermilion into ink. Every glyph slot reserves the width of its final character, so proportional fonts do
+ * message. Every glyph slot reserves the width of its final character, so proportional fonts do
  * not jitter (monospace fonts look best). Screen readers get the final text immediately; the
  * animation is aria-hidden. Runs on mount, on first view, or when `trigger` changes.
  */
@@ -186,7 +185,7 @@ export function DecodeText({
                         data-slot="decode-text-char"
                         data-char={ch}
                         data-state="pending"
-                        className="col-start-1 row-start-1 overflow-visible text-center transition-[color,opacity] duration-(--kura-duration-slow) ease-kura-out data-[state=active]:text-kura-accent-text data-[state=active]:duration-0 data-[state=pending]:text-kura-fg-subtle data-[state=pending]:opacity-40"
+                        className="col-start-1 row-start-1 overflow-visible text-center transition-colors duration-(--kura-duration-fast) data-[state=active]:text-kura-accent-text data-[state=pending]:text-kura-fg-subtle data-[state=pending]:opacity-50"
                       >
                         {ch}
                       </span>

@@ -3,12 +3,12 @@
 import * as React from "react";
 import { Button } from "../button";
 import { MeshGradient } from "../mesh-gradient";
-import { Grain, type GrainBlend, type GrainTexture } from "./grain";
+import { Grain, type GrainBlend } from "./grain";
 
 export function GrainMinimal() {
   return (
-    <div className="relative h-48 w-full max-w-md overflow-hidden rounded-kura-lg bg-[radial-gradient(120%_90%_at_20%_10%,var(--kura-surface-raised),var(--kura-gray-4))] shadow-kura-sm">
-      <Grain opacity={0.22} blend="multiply" />
+    <div className="relative h-48 w-full max-w-md overflow-hidden rounded-kura-xl bg-[radial-gradient(120%_90%_at_20%_10%,var(--kura-accent-subtle),var(--kura-gray-3))] shadow-kura-sm">
+      <Grain />
     </div>
   );
 }
@@ -17,40 +17,19 @@ const blends: GrainBlend[] = ["overlay", "soft-light", "multiply", "screen", "no
 
 export function GrainFull() {
   const [blend, setBlend] = React.useState<GrainBlend>("overlay");
-  const [opacity, setOpacity] = React.useState(0.35);
+  const [opacity, setOpacity] = React.useState(0.3);
   const [scale, setScale] = React.useState(1);
   const [animated, setAnimated] = React.useState(false);
-  const [texture, setTexture] = React.useState<GrainTexture>("washi");
   return (
     <div className="flex w-full max-w-xl flex-col gap-4">
-      <div className="grid h-56 grid-cols-3 overflow-hidden rounded-kura-lg shadow-kura-sm">
-        {["bg-kura-gray-3", "bg-kura-shu", "bg-kura-gray-12"].map((bg) => (
+      <div className="grid h-56 grid-cols-2 overflow-hidden rounded-kura-xl shadow-kura-sm">
+        {["bg-kura-accent", "bg-kura-gray-12"].map((bg) => (
           <div key={bg} className={`relative ${bg}`}>
-            <Grain
-              texture={texture}
-              opacity={opacity}
-              blend={blend}
-              scale={scale}
-              animated={animated}
-              fps={12}
-            />
+            <Grain opacity={opacity} blend={blend} scale={scale} animated={animated} fps={12} />
           </div>
         ))}
       </div>
       <div className="flex flex-wrap items-center gap-1.5">
-        {(["washi", "film"] as const).map((t) => (
-          <Button
-            key={t}
-            size="xs"
-            variant={t === texture ? "secondary" : "ghost"}
-            aria-pressed={t === texture}
-            onClick={() => setTexture(t)}
-            className="capitalize"
-          >
-            {t}
-          </Button>
-        ))}
-        <span aria-hidden className="mx-1 h-4 w-px bg-kura-border" />
         {blends.map((b) => (
           <Button
             key={b}
@@ -105,13 +84,13 @@ export function GrainFull() {
 export function GrainOnGradient() {
   return (
     <MeshGradient
-      colors="sumi"
-      className="flex h-64 w-full items-end rounded-kura-lg p-6 shadow-kura-md"
+      colors="signal"
+      className="flex h-64 w-full items-end rounded-kura-2xl p-6 shadow-kura-md"
     >
-      <p className="relative z-10 max-w-xs font-kura-display text-2xl text-kura-fg leading-tight">
+      <p className="relative z-10 max-w-xs font-medium text-kura-fg text-lg tracking-[-0.01em]">
         A little grain turns a gradient into a print.
       </p>
-      <Grain opacity={0.24} blend="multiply" />
+      <Grain opacity={0.22} blend="overlay" />
     </MeshGradient>
   );
 }

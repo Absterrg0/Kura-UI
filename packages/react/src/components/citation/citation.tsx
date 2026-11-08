@@ -45,7 +45,7 @@ function Favicon({ source, className }: { source: CitationSource; className?: st
       aria-hidden
       data-slot="citation-favicon"
       className={cn(
-        "grid size-4 shrink-0 place-items-center overflow-hidden rounded-kura-xs bg-kura-surface-raised font-kura-mono font-medium text-[9px] text-kura-fg-muted uppercase shadow-[0_0_0_1px_var(--kura-border)]",
+        "grid size-4 shrink-0 place-items-center overflow-hidden rounded-kura-xs bg-kura-surface-raised font-semibold text-[9px] text-kura-fg-muted uppercase shadow-[0_0_0_1px_var(--kura-border-subtle)]",
         className,
       )}
     >
@@ -80,26 +80,22 @@ export function CitationCard({ source, index, className, ...props }: CitationCar
   return (
     <div
       data-slot="citation-card"
-      className={cn("flex flex-col gap-2 font-kura-sans", className)}
+      className={cn("flex flex-col gap-1.5 font-kura-sans", className)}
       {...props}
     >
-      <div className="flex items-center gap-2 font-kura-mono text-[11px] text-kura-fg-subtle tracking-[0.02em]">
+      <div className="flex items-center gap-2 text-kura-fg-subtle text-xs">
         <Favicon source={source} />
         <span className="min-w-0 flex-1 truncate">
           {source.siteName ?? domain}
-          {source.date && <span> · {source.date}</span>}
+          {source.date && <span className="text-kura-fg-subtle"> · {source.date}</span>}
         </span>
-        {index != null && (
-          <span className="grid h-4 min-w-4 place-items-center rounded-full px-1 text-[10px] tabular-nums shadow-[inset_0_0_0_1px_var(--kura-border-strong)]">
-            {index}
-          </span>
-        )}
+        {index != null && <span className="font-kura-mono tabular-nums">{index}</span>}
       </div>
       <a
         href={source.url}
         target="_blank"
         rel="noreferrer"
-        className="group/title -mx-1 line-clamp-2 rounded-kura-xs px-1 font-kura-display text-[17px] text-kura-fg leading-[1.3] outline-none hover:underline hover:decoration-kura-border-strong hover:decoration-1 hover:underline-offset-[3px] focus-visible:shadow-kura-focus"
+        className="group/title -mx-1 line-clamp-2 rounded-kura-xs px-1 font-medium text-kura-fg text-sm leading-snug outline-none hover:underline hover:decoration-kura-border-strong hover:underline-offset-2 focus-visible:shadow-kura-focus"
       >
         {source.title}
         <ArrowUpRight
@@ -108,7 +104,7 @@ export function CitationCard({ source, index, className, ...props }: CitationCar
         />
       </a>
       {source.snippet && (
-        <p className="line-clamp-3 border-kura-border-strong border-l pl-3 text-[13px] text-kura-fg-muted leading-relaxed">
+        <p className="line-clamp-3 text-[13px] text-kura-fg-muted leading-relaxed">
           {source.snippet}
         </p>
       )}
@@ -193,9 +189,8 @@ export function Citation({
             schedule(false, 100);
           }}
           className={cn(
-            "relative -top-[0.1em] mr-px ml-1 inline-flex h-[1.35em] min-w-[1.35em] items-center justify-center gap-1 rounded-full px-[0.42em] align-middle font-kura-mono font-medium text-[0.7em] text-kura-fg-muted tabular-nums leading-none no-underline shadow-[inset_0_0_0_1px_var(--kura-border-strong)] outline-none",
-            // Hover lifts it onto the page; open inks it in, like a footnote mark that has been pressed.
-            "transition-[background-color,color,box-shadow] duration-(--kura-duration-fast) ease-kura-out hover:bg-kura-hover hover:text-kura-fg focus-visible:shadow-kura-focus data-[state=open]:bg-kura-ink data-[state=open]:text-kura-fg-inverted data-[state=open]:shadow-none",
+            "relative -top-[0.1em] mr-px ml-1 inline-flex h-[1.3em] min-w-[1.3em] items-center justify-center gap-1 rounded-full bg-kura-hover px-[0.4em] align-middle font-kura-sans font-medium text-[0.72em] text-kura-fg-muted tabular-nums leading-none no-underline outline-none",
+            "transition-[background-color,color,box-shadow] duration-(--kura-duration-fast) ease-kura-out hover:bg-kura-active hover:text-kura-fg focus-visible:shadow-kura-focus data-[state=open]:bg-kura-active data-[state=open]:text-kura-fg",
             className,
           )}
           {...props}
@@ -211,7 +206,7 @@ export function Citation({
         align="start"
         sideOffset={6}
         data-slot="citation-preview"
-        className="w-80 p-4"
+        className="w-80 p-3"
         onOpenAutoFocus={(e) => e.preventDefault()}
         onCloseAutoFocus={(e) => e.preventDefault()}
         onPointerEnter={() => clearTimeout(timer.current)}
@@ -253,12 +248,9 @@ export function Sources({
       {...props}
     >
       {label != null && (
-        <div
-          id={id}
-          className="flex items-center gap-2 font-kura-mono text-[10px] text-kura-fg-subtle uppercase tracking-[0.14em]"
-        >
+        <div id={id} className="flex items-center gap-2 font-medium text-kura-fg-muted text-xs">
           {label}
-          <span className="tabular-nums">· {sources.length}</span>
+          <span className="font-kura-mono text-kura-fg-subtle tabular-nums">{sources.length}</span>
         </div>
       )}
       <ol
@@ -267,7 +259,7 @@ export function Sources({
         className={cn(
           variant === "strip"
             ? "-mx-1 -my-1 flex snap-x gap-2 overflow-x-auto px-1 py-1 [mask-image:linear-gradient(to_right,black_calc(100%-2rem),transparent)] [scrollbar-width:none]"
-            : "flex flex-col divide-y divide-kura-border-subtle shadow-[inset_0_1px_0_var(--kura-border-subtle),inset_0_-1px_0_var(--kura-border-subtle)]",
+            : "flex flex-col gap-1",
         )}
       >
         {sources.map((source, i) => {
@@ -279,15 +271,15 @@ export function Sources({
                   href={source.url}
                   target="_blank"
                   rel="noreferrer"
-                  className="flex w-52 flex-col gap-2 rounded-kura-md bg-kura-surface p-3 shadow-kura-xs outline-none transition-[background-color,box-shadow] duration-(--kura-duration-fast) ease-kura-out hover:bg-kura-surface-raised hover:shadow-kura-sm focus-visible:shadow-kura-focus"
+                  className="flex w-44 flex-col gap-1.5 rounded-kura-lg bg-kura-surface px-3 py-2.5 shadow-kura-xs outline-none transition-[background-color,box-shadow] duration-(--kura-duration-fast) ease-kura-out hover:bg-kura-surface-sunken focus-visible:shadow-kura-focus"
                 >
-                  <span className="line-clamp-2 min-h-[2lh] text-[13px] text-kura-fg leading-snug">
-                    {source.title}
-                  </span>
-                  <span className="flex items-center gap-1.5 font-kura-mono text-[11px] text-kura-fg-subtle">
+                  <span className="flex items-center gap-1.5 text-kura-fg-subtle text-xs">
                     <Favicon source={source} className="size-3.5" />
                     <span className="min-w-0 flex-1 truncate">{source.siteName ?? domain}</span>
-                    <span className="tabular-nums">{String(i + 1).padStart(2, "0")}</span>
+                    <span className="tabular-nums">{i + 1}</span>
+                  </span>
+                  <span className="line-clamp-2 min-h-[2lh] font-medium text-[13px] text-kura-fg leading-snug">
+                    {source.title}
                   </span>
                 </a>
               ) : (
@@ -295,16 +287,16 @@ export function Sources({
                   href={source.url}
                   target="_blank"
                   rel="noreferrer"
-                  className="group/source flex gap-4 px-1 py-3 outline-none transition-colors duration-(--kura-duration-fast) ease-kura-out hover:bg-kura-hover focus-visible:shadow-kura-focus"
+                  className="-mx-2 flex gap-3 rounded-kura-md px-2 py-2 outline-none transition-colors duration-(--kura-duration-fast) ease-kura-out hover:bg-kura-hover focus-visible:shadow-kura-focus"
                 >
-                  <span className="w-5 shrink-0 pt-[3px] font-kura-mono text-[11px] text-kura-fg-subtle tabular-nums">
-                    {String(i + 1).padStart(2, "0")}
+                  <span className="w-4 shrink-0 pt-px text-right font-kura-mono text-kura-fg-subtle text-xs tabular-nums">
+                    {i + 1}
                   </span>
-                  <span className="flex min-w-0 flex-1 flex-col gap-1">
-                    <span className="truncate font-medium text-kura-fg text-sm group-hover/source:underline group-hover/source:decoration-kura-border-strong group-hover/source:underline-offset-[3px]">
+                  <span className="flex min-w-0 flex-1 flex-col gap-0.5">
+                    <span className="truncate font-medium text-kura-fg text-sm">
                       {source.title}
                     </span>
-                    <span className="flex items-center gap-1.5 font-kura-mono text-[11px] text-kura-fg-subtle">
+                    <span className="flex items-center gap-1.5 text-kura-fg-subtle text-xs">
                       <Favicon source={source} className="size-3.5" />
                       <span className="truncate">{source.siteName ?? domain}</span>
                       {source.date && <span>· {source.date}</span>}

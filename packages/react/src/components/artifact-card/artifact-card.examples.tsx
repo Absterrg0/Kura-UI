@@ -1,6 +1,6 @@
 "use client";
 
-import { Copy, Download, RotateCcw, X } from "lucide-react";
+import { Copy, Download, Pencil, X } from "lucide-react";
 import * as React from "react";
 import { Button } from "../button";
 import { CodeBlock } from "../code-block";
@@ -75,10 +75,10 @@ export function ArtifactCardFull() {
           </>
         }
         preview={
-          <div className="flex flex-col gap-2 p-4 text-[10.5px] text-kura-fg-muted leading-relaxed">
+          <div className="flex flex-col gap-2 p-5 text-[11px] text-kura-fg-muted leading-relaxed">
             {PLAN.slice(0, visible).map((line, i) =>
               i === 0 ? (
-                <p key={line} className="font-kura-display text-[14px] text-kura-fg leading-snug">
+                <p key={line} className="font-semibold text-[13px] text-kura-fg tracking-tight">
                   {line}
                 </p>
               ) : (
@@ -90,21 +90,19 @@ export function ArtifactCardFull() {
           </div>
         }
       />
-      <div className="flex items-center justify-between text-kura-fg-subtle text-xs">
-        <span>{open ? "Open in the side panel" : "Click the card to open it"}</span>
-        <Button
-          size="xs"
-          variant="ghost"
-          disabled={busy}
-          onClick={() => {
-            setRun((r) => r + 1);
-            setVersion(run + 2);
-          }}
-        >
-          <RotateCcw />
-          Ask for an edit
-        </Button>
-      </div>
+      <Button
+        size="xs"
+        variant="ghost"
+        className="self-end"
+        disabled={busy}
+        onClick={() => {
+          setRun((r) => r + 1);
+          setVersion(run + 2);
+        }}
+      >
+        <Pencil />
+        Ask for an edit
+      </Button>
     </div>
   );
 }
@@ -224,15 +222,10 @@ export function ArtifactCardComposition() {
       {open && (
         <section
           aria-label="rate-limiter.ts"
-          className="hidden w-[22rem] shrink-0 animate-kura-fade-in flex-col overflow-hidden rounded-kura-md bg-kura-surface shadow-kura-md md:flex"
+          className="hidden w-[22rem] shrink-0 animate-kura-fade-in flex-col overflow-hidden rounded-kura-xl bg-kura-surface shadow-kura-md md:flex"
         >
           <header className="flex h-11 items-center gap-2 pr-1.5 pl-3.5 shadow-[inset_0_-1px_0_var(--kura-border-subtle)]">
-            <span className="min-w-0 flex-1 truncate font-kura-mono text-[12px] text-kura-fg">
-              rate-limiter.ts
-            </span>
-            <span className="font-kura-mono text-[10px] text-kura-fg-subtle uppercase tracking-[0.14em]">
-              v1
-            </span>
+            <span className="min-w-0 flex-1 truncate font-medium text-sm">rate-limiter.ts</span>
             <IconButton size="sm" label="Close panel" icon={<X />} onClick={() => setOpen(false)} />
           </header>
           <CodeBlock

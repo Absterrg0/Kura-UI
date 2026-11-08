@@ -55,7 +55,7 @@ export default defineComponent({
       name: "diff",
       type: "boolean",
       description:
-        'Render `+`/`-` prefixed lines as additions/removals (matcha/beni tinted row with a 2px rule, sign gutter, screen-reader “added:/removed:”). Defaults to true when `language` is "diff"; otherwise the content after the sign is highlighted with `language`.',
+        'Render `+`/`-` prefixed lines as additions/removals (green/red row, sign gutter, screen-reader “added:/removed:”). Defaults to true when `language` is "diff"; otherwise the content after the sign is highlighted with `language`.',
     },
     {
       name: "streaming",
@@ -176,7 +176,7 @@ export default defineComponent({
       "Copy, wrap and expand are labelled icon buttons with tooltips; wrap exposes `aria-pressed`, expand exposes `aria-expanded`.",
       "A polite status region announces “Copied to clipboard”.",
       "Line numbers, diff signs and the caret are aria-hidden; removed/added lines get visually hidden “removed:”/“added:” prefixes.",
-      "Syntax colours take their lightness from --kura-fg-muted, keeping its ≥ 4.5:1 contrast in both themes; only hue and chroma change.",
+      "Syntax colours derive from --kura-fg-muted, keeping its ≥ 4.5:1 contrast in both themes.",
     ],
     keyboard: [
       { keys: "Tab", action: "Moves through header actions, then the scrollable code region" },
@@ -201,7 +201,7 @@ export default defineComponent({
       kind: "full",
       title: "File with every option",
       description:
-        "Filename, line numbers, highlighted lines, controlled wrap, collapsed to 300px, onCopy.",
+        "Filename, line numbers, highlighted lines, controlled wrap, collapsed to 300px.",
     },
     {
       name: "CodeBlockDiff",
@@ -226,8 +226,7 @@ export default defineComponent({
     "Highlighting is built in, synchronous and dependency-free (no shiki/prism needed); unknown languages render as plain text.",
     "While a model is still writing code, pass `streaming` and the growing string as `code`; set it to false when the fence closes.",
     'For diffs keep the leading `+`/`-`/space on every line and set `diff` (or language="diff" for no inner highlighting).',
-    "The default palette is ink and seal on paper: shu (vermilion) keywords and tags, matcha strings, kincha (ochre) constants and attributes, ai (indigo) functions, asagi types, ink properties, subtle italic comments. Chroma shrinks as lightness rises, so it is saturated on washi and calm on sumi.",
-    "Theme the palette with CSS variables on any ancestor: --kura-syntax-keyword, -string, -constant, -function, -type, -tag, -attr, -property.",
+    "The default palette is deliberately quiet: grey value carries structure (keywords/attributes fg-muted, punctuation/comments fg-subtle) and only strings, numbers and types get a low-chroma tint. Theme it with CSS variables on any ancestor: --kura-syntax-keyword, -string, -constant, -function, -type, -tag, -attr, -property, -comment, -punctuation.",
     "`highlightCode(code, language)` is exported for custom renderers; it returns tokens grouped by line.",
   ],
 });

@@ -17,6 +17,8 @@ import {
   Workflow,
 } from "lucide-react";
 import * as React from "react";
+import { Button } from "../button";
+import { KbdShortcut } from "../kbd-shortcut";
 import { CommandPalette, type CommandPaletteItem, CommandPaletteTrigger } from "./command-palette";
 
 export function CommandPaletteMinimal() {
@@ -26,9 +28,9 @@ export function CommandPaletteMinimal() {
         hotkey={null}
         trigger={<CommandPaletteTrigger />}
         items={[
-          { id: "new", label: "New thread", icon: <MessageSquarePlus /> },
+          { id: "new", label: "New chat", icon: <MessageSquarePlus /> },
           { id: "search", label: "Search files", icon: <FileSearch /> },
-          { id: "deploy", label: "Deploy a preview", icon: <Rocket /> },
+          { id: "deploy", label: "Deploy preview", icon: <Rocket /> },
         ]}
       />
     </div>
@@ -146,20 +148,10 @@ export function CommandPaletteFull() {
   const [recent, setRecent] = React.useState<string[]>(["context-repo", "run-agent"]);
   const items = React.useMemo(() => buildItems(setLast), []);
   return (
-    <div className="flex w-full max-w-lg flex-col gap-2.5">
-      <div className="flex items-center gap-4 rounded-kura-md bg-kura-surface py-2 pr-2 pl-4 shadow-kura-xs">
-        <div className="flex shrink-0 flex-col gap-0.5">
-          <span className="font-kura-mono text-[10px] text-kura-fg-subtle uppercase tracking-[0.14em]">
-            Workspace
-          </span>
-          <span className="font-medium text-kura-fg text-sm">Support triage</span>
-        </div>
-        <CommandPaletteTrigger
-          placeholder="Run an agent, add context…"
-          onClick={() => setOpen(true)}
-          className="flex-1"
-        />
-      </div>
+    <div className="flex flex-col items-center gap-3">
+      <Button variant="secondary" onClick={() => setOpen(true)}>
+        Open palette
+      </Button>
       <CommandPalette
         items={items}
         open={open}
@@ -172,12 +164,9 @@ export function CommandPaletteFull() {
         emptyMessage="No commands match"
         label="Agent commands"
       />
-      <p
-        className="flex justify-between gap-3 px-1 font-kura-mono text-[10px] text-kura-fg-subtle uppercase tracking-[0.12em]"
-        aria-live="polite"
-      >
-        <span>Last command</span>
-        <span className="text-kura-fg-muted normal-case tracking-normal">{last}</span>
+      <KbdShortcut keys={["mod", "k"]} label="or press" />
+      <p className="text-kura-fg-subtle text-xs" aria-live="polite">
+        {last}
       </p>
     </div>
   );

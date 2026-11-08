@@ -27,9 +27,8 @@ export default function AgentsPage() {
     <DocsShell>
       <div className="mx-auto max-w-3xl">
         <PageHeader
-          glyph="働"
           eyebrow="Agent integration"
-          title="Built to be used by agents."
+          title="Built to be used by agents"
           description="Humans browse; agents query. Every surface below is generated from the same component manifests, so they never drift."
         />
 
@@ -106,7 +105,7 @@ npx @kura-ui/cli doctor --json                   # checks Tailwind v4 + Kura tok
               <li key={path} className="flex flex-col gap-1 py-3.5 md:flex-row md:gap-6">
                 <a
                   href={path?.includes("<") ? undefined : path}
-                  className="w-56 shrink-0 font-kura-mono text-[13px] hover:text-kura-accent-text hover:underline"
+                  className="w-56 shrink-0 font-kura-mono text-[13px] hover:underline"
                 >
                   {path}
                 </a>

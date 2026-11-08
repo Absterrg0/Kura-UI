@@ -19,25 +19,21 @@ export interface KbdProps extends React.ComponentProps<"kbd"> {
 }
 
 const keyBase =
-  "inline-flex min-w-[1.6em] items-center justify-center font-kura-sans font-medium tabular-nums leading-none " +
-  "transition-[translate,background-color,box-shadow,color,opacity] duration-(--kura-duration-instant) ease-kura-out";
+  "inline-flex min-w-[1.6em] items-center justify-center font-kura-sans font-medium tabular-nums leading-none tracking-normal " +
+  "transition-[transform,background-color,box-shadow,color] duration-(--kura-duration-instant) ease-kura-out";
 
 const keyVariants = {
-  // A small keycap printed on bright stock: hairline edge, a lit top and a deeper lower lip.
+  // A soft grey cap with a hairline and a 1px bottom edge: reads as a key without skeuomorphism.
   raised:
-    "rounded-kura-xs bg-kura-surface-raised text-kura-fg-muted " +
-    "shadow-[0_0_0_1px_var(--kura-border),inset_0_1px_0_0_color-mix(in_oklab,white_7%,transparent),inset_0_-1px_0_0_var(--kura-border-subtle),0_1px_0_0_var(--kura-border-strong)] " +
-    "data-[pressed=true]:translate-y-px data-[pressed=true]:bg-kura-surface-sunken data-[pressed=true]:text-kura-fg " +
-    "data-[pressed=true]:shadow-[0_0_0_1px_var(--kura-border),inset_0_1px_1px_0_var(--kura-border-subtle)] motion-reduce:data-[pressed=true]:translate-y-0",
-  // Inline inside buttons, tooltips and menus: a faint tint of the surrounding ink.
+    "rounded-kura-xs bg-kura-gray-2 text-kura-fg-muted shadow-[inset_0_0_0_1px_var(--kura-border),inset_0_-1px_0_0_var(--kura-border)] " +
+    "data-[pressed=true]:translate-y-px data-[pressed=true]:bg-kura-gray-4 data-[pressed=true]:text-kura-fg data-[pressed=true]:shadow-[inset_0_0_0_1px_var(--kura-border-strong)] motion-reduce:data-[pressed=true]:translate-y-0",
   ghost:
-    "rounded-kura-xs bg-[color-mix(in_oklab,currentColor_10%,transparent)] text-current opacity-80 " +
-    "data-[pressed=true]:bg-[color-mix(in_oklab,currentColor_18%,transparent)] data-[pressed=true]:opacity-100",
+    "rounded-kura-xs bg-kura-hover text-current opacity-80 data-[pressed=true]:bg-kura-active data-[pressed=true]:opacity-100",
 } as const;
 
 const keySizes = {
-  sm: "h-[18px] px-1 text-[10.5px]",
-  md: "h-[22px] px-1.5 text-[11.5px]",
+  sm: "h-[18px] px-1 text-[11px]",
+  md: "h-[22px] px-1.5 text-xs",
 } as const;
 
 /**

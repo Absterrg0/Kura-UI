@@ -20,10 +20,11 @@ const SOURCES: CitationSource[] = [
       "Server Actions are asynchronous functions that are executed on the server. They can be called in Server and Client Components to handle form submissions and data mutations.",
   },
   {
-    title: "Optimistic UI patterns, revisited",
-    url: "https://www.example.com/blog/optimistic-ui",
+    title: "AbortController – Web APIs",
+    url: "https://developer.mozilla.org/en-US/docs/Web/API/AbortController",
+    siteName: "MDN",
     snippet:
-      "The trick is not the optimism itself but the rollback: show the failure where the user is looking, and restore the previous value without a jump.",
+      "The AbortController interface represents a controller object that allows you to abort one or more Web requests as and when desired.",
   },
 ];
 
@@ -38,14 +39,16 @@ export function CitationMinimal() {
 
 export function CitationFull() {
   return (
-    <div className="flex w-full max-w-lg flex-col gap-5">
+    <div className="flex w-full max-w-xl flex-col gap-4">
       <p className="text-[15px] text-kura-fg leading-relaxed">
         Render the new count immediately with{" "}
-        <code className="font-kura-mono text-sm">useOptimistic</code>
+        <code className="rounded-kura-xs bg-kura-active px-[0.3em] py-[0.1em] font-kura-mono text-[0.86em]">
+          useOptimistic
+        </code>
         <Citation index={1} source={SOURCES[0]!} openDelay={150} />, run the mutation in a Server
         Action
-        <Citation index={2} source={SOURCES[1]!} display="domain" />, and restore the previous value
-        quietly if it fails
+        <Citation index={2} source={SOURCES[1]!} display="domain" />, and abort the stale request if
+        the reader taps again
         <Citation index={3} source={SOURCES[2]!} />.
       </p>
       <Sources sources={SOURCES} variant="strip" />
@@ -64,12 +67,7 @@ export function CitationInMessage() {
     <Message
       from="assistant"
       name="Kura"
-      avatar={
-        <MessageAvatar
-          name="Kura"
-          className="rounded-kura-sm bg-kura-ink pt-px font-kura-display font-normal text-[15px] text-kura-fg-inverted shadow-none"
-        />
-      }
+      avatar={<MessageAvatar name="Kura" />}
       className="max-w-xl"
     >
       <p>

@@ -6,37 +6,6 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
-/* Redaction (SIL OFL 1.1) carries headlines and every line that speaks to the reader; Geist does
-   the work of interface and detail. Same pairing as Kurambit. */
-@font-face {
-  font-family: "Redaction";
-  font-style: normal;
-  font-weight: 400;
-  font-display: swap;
-  src: url("/fonts/redaction.woff2") format("woff2");
-}
-@font-face {
-  font-family: "Redaction";
-  font-style: italic;
-  font-weight: 400;
-  font-display: swap;
-  src: url("/fonts/redaction-italic.woff2") format("woff2");
-}
-
-:root {
-  --font-kura-display-family: "Redaction";
-  /* The seal's glyph is always paper, in either theme. */
-  --seal-glyph: oklch(0.975 0.011 87);
-  --desk: oklch(0.87 0.029 85);
-  --washi: url("/brand/washi.svg");
-  --print-shade: oklch(0.2 0.01 80 / 0.55);
-}
-.dark {
-  --desk: oklch(0.14 0.006 80);
-  --washi: url("/brand/washi-night.svg");
-  --print-shade: oklch(0 0 0 / 0.75);
-}
-
 @layer base {
   html {
     -webkit-font-smoothing: antialiased;
@@ -45,20 +14,15 @@
     scrollbar-gutter: stable;
   }
   body {
-    @apply font-kura-sans text-kura-fg;
-    background:
-      var(--washi) 0 0 / 420px 420px,
-      var(--kura-canvas);
+    @apply bg-kura-canvas font-kura-sans text-kura-fg;
     font-feature-settings: "ss01", "cv11";
   }
   ::selection {
-    background: var(--kura-shu);
-    color: var(--seal-glyph);
+    background: color-mix(in oklch, var(--kura-accent) 22%, transparent);
   }
   :focus-visible {
-    outline: 2px solid var(--kura-accent);
-    outline-offset: 3px;
-    border-radius: 4px;
+    outline: 2px solid var(--kura-ring);
+    outline-offset: 2px;
   }
   * {
     border-color: var(--kura-border);
@@ -75,79 +39,25 @@
 .dark .shiki span {
   color: var(--shiki-dark);
 }
-.shiki {
-  counter-reset: line;
-}
 .shiki code {
   display: grid;
 }
 
-/* Preview stage: a bright print laid on the page, with a faint grid like proofing paper. */
+/* Preview stage: a quiet dot grid. */
 .bg-dots {
+  background-image: radial-gradient(
+    circle at 1px 1px,
+    color-mix(in oklch, var(--kura-fg) 10%, transparent) 1px,
+    transparent 0
+  );
+  background-size: 18px 18px;
+}
+
+/* The hero's backdrop: a faint grid that fades out, like Vercel/Geist's canvas. */
+.hero-grid {
   background-image:
-    linear-gradient(
-      to right,
-      color-mix(in oklch, var(--kura-fg) 5%, transparent) 1px,
-      transparent 1px
-    ),
-    linear-gradient(
-      to bottom,
-      color-mix(in oklch, var(--kura-fg) 5%, transparent) 1px,
-      transparent 1px
-    );
-  background-size: 24px 24px;
-  background-position: -1px -1px;
-}
-
-/* ---- Ink and washi: brush marks, seals, prints ------------------------------------------ */
-
-/* A stroke of the brush under a heading. */
-.brush-rule {
-  display: block;
-  height: 9px;
-  background: currentColor;
-  -webkit-mask: url("/brand/brush-rule.svg") 0 0 / 100% 100% no-repeat;
-  mask: url("/brand/brush-rule.svg") 0 0 / 100% 100% no-repeat;
-}
-
-/* A single swash of the brush, used as a button or a highlight. */
-.swash {
-  -webkit-mask: url("/brand/kura-swash.svg") 0 0 / 100% 100% no-repeat;
-  mask: url("/brand/kura-swash.svg") 0 0 / 100% 100% no-repeat;
-}
-
-/* Seals stamp with slightly broken edges. */
-.seal-mask {
-  -webkit-mask: url("/brand/seal-mask.svg") 0 0 / 100% 100% no-repeat;
-  mask: url("/brand/seal-mask.svg") 0 0 / 100% 100% no-repeat;
-}
-
-/* A sheet mounted like a print: hairline outer edge, keyline just inside. */
-.print {
-  position: relative;
-  background: var(--kura-surface-raised);
-  box-shadow:
-    0 0 0 1px var(--kura-border),
-    0 1px 0 color-mix(in oklch, var(--kura-fg) 6%, transparent),
-    0 18px 34px -26px var(--print-shade);
-}
-.print-keyline::before {
-  content: "";
-  position: absolute;
-  inset: 4px;
-  border: 1px solid var(--kura-border-subtle);
-  border-radius: inherit;
-  pointer-events: none;
-}
-
-/* Halftone dot field, like the margins of a printed sheet. */
-.halftone {
-  background-image: radial-gradient(circle, var(--kura-shu) 1.1px, transparent 1.4px);
-  background-size: 9px 9px;
-  -webkit-mask: radial-gradient(120% 90% at 0% 0%, black, transparent 70%);
-  mask: radial-gradient(120% 90% at 0% 0%, black, transparent 70%);
-}
-
-.mask-fade-b {
-  mask-image: linear-gradient(to bottom, black 70%, transparent);
+    linear-gradient(to right, var(--kura-border-subtle) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--kura-border-subtle) 1px, transparent 1px);
+  background-size: 64px 64px;
+  mask-image: radial-gradient(70% 60% at 50% 0%, black, transparent 80%);
 }

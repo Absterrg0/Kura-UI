@@ -119,7 +119,7 @@ describe("VoiceDictation", () => {
     render(<VoiceDictation simulate="calm" />);
     fireEvent.click(screen.getByRole("button", { name: "Dictate" }));
     await act(async () => vi.advanceTimersByTime(1400));
-    const caret = document.querySelector("[data-slot=voice-dictation-caret]");
+    const caret = document.querySelector("[data-slot=voice-dictation-transcript] [aria-hidden]");
     expect(caret?.className).toContain("motion-reduce:animate-none");
   });
 

@@ -41,7 +41,7 @@ export function SlashCommandMenuMinimal() {
         aria-label="Prompt"
         placeholder="Type / for commands"
         rows={3}
-        className="w-full resize-none rounded-kura-md bg-kura-surface-sunken px-3.5 py-3 text-sm leading-6 shadow-[inset_0_0_0_1px_var(--kura-border-subtle)] outline-none placeholder:text-kura-fg-subtle focus-visible:shadow-kura-focus"
+        className="w-full resize-none rounded-kura-xl bg-kura-surface-raised px-3.5 py-3 text-sm leading-6 shadow-kura-sm outline-none placeholder:text-kura-fg-subtle focus-visible:shadow-kura-focus"
       />
       <SlashCommandMenu textareaRef={ref} commands={basic} />
     </div>
@@ -129,23 +129,16 @@ export function SlashCommandMenuFull() {
   const ref = React.useRef<HTMLTextAreaElement>(null);
   const [value, setValue] = React.useState("");
   const [log, setLog] = React.useState("Type / at the start of a line");
-  const id = React.useId();
   return (
     <div className="flex w-full max-w-md flex-col gap-2">
-      <label
-        htmlFor={id}
-        className="px-1 font-kura-mono text-[10px] text-kura-fg-subtle uppercase tracking-[0.14em]"
-      >
-        Instructions for the triage agent
-      </label>
       <textarea
-        id={id}
         ref={ref}
+        aria-label="Prompt"
         value={value}
         onChange={(e) => setValue(e.currentTarget.value)}
-        placeholder="Write instructions… try /sum or /debug"
+        placeholder="Write a message… try /sum or /debug"
         rows={4}
-        className="w-full resize-none rounded-kura-md bg-kura-surface-sunken px-3.5 py-3 text-sm leading-6 shadow-[inset_0_0_0_1px_var(--kura-border-subtle)] outline-none placeholder:text-kura-fg-subtle focus-visible:shadow-kura-focus"
+        className="w-full resize-none rounded-kura-xl bg-kura-surface-raised px-3.5 py-3 text-sm leading-6 shadow-kura-sm outline-none placeholder:text-kura-fg-subtle focus-visible:shadow-kura-focus"
       />
       <SlashCommandMenu
         textareaRef={ref}
@@ -159,7 +152,7 @@ export function SlashCommandMenuFull() {
           setLog(`Ran /${command.label}${query ? ` (typed “/${query}”)` : ""}`);
         }}
       />
-      <p className="px-1 font-kura-mono text-[11px] text-kura-fg-subtle" aria-live="polite">
+      <p className="px-1 text-kura-fg-subtle text-xs" aria-live="polite">
         {log}
       </p>
     </div>
@@ -172,7 +165,7 @@ export function SlashCommandMenuInComposer() {
   return (
     <div className="flex w-full max-w-xl flex-col gap-2">
       <Composer value={value} onValueChange={setValue} onSubmit={() => {}}>
-        <ComposerInput ref={ref} placeholder="Ask about the release, or type / for commands" />
+        <ComposerInput ref={ref} placeholder="Ask anything, or type / for commands" />
         <ComposerToolbar>
           <ComposerTools>
             <ComposerAttachButton />
@@ -191,7 +184,7 @@ export function SlashCommandMenuInComposer() {
           if (command.id === "clear") setValue("");
         }}
       />
-      <div className="flex gap-4 px-1 text-kura-fg-subtle">
+      <div className="flex gap-3 px-1">
         <KbdShortcut keys={["/"]} label="Commands" variant="ghost" />
         <KbdShortcut keys={["enter"]} label="Send" variant="ghost" />
       </div>

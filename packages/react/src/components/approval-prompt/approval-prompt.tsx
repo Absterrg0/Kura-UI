@@ -112,61 +112,58 @@ export function ApprovalPrompt({
       data-decision={decision}
       data-risk={risk}
       className={cn(
-        "relative isolate flex flex-col overflow-hidden rounded-kura-md bg-kura-surface font-kura-sans shadow-kura-md transition-shadow duration-(--kura-duration-slow) ease-kura-out",
-        // The keyline: a mounted print's inner rule, ~3px inside the edge.
-        "before:pointer-events-none before:absolute before:inset-[3px] before:z-10 before:rounded-[5px] before:border before:border-kura-border-subtle",
+        "flex flex-col overflow-hidden rounded-kura-xl bg-kura-surface font-kura-sans shadow-kura-md transition-shadow duration-(--kura-duration-slow) ease-kura-out",
         !pending && "shadow-kura-sm",
         className,
       )}
       {...props}
     >
-      <div className="flex flex-col gap-3.5 px-5 pt-5 pb-4">
-        <div className="flex items-start gap-3.5">
+      <div className="flex flex-col gap-3 p-4">
+        <div className="flex items-start gap-3">
           <span
             aria-hidden
             className={cn(
-              "grid size-9 shrink-0 place-items-center rounded-kura-sm bg-kura-surface-sunken text-kura-fg-muted shadow-[inset_0_0_0_1px_var(--kura-border-subtle)] [&_svg]:size-4 [&_svg]:stroke-[1.75]",
+              "grid size-8 shrink-0 place-items-center rounded-kura-md bg-kura-surface-sunken text-kura-fg-muted shadow-[inset_0_0_0_1px_var(--kura-border-subtle)] [&_svg]:size-4",
             )}
           >
             {icon ?? <Terminal />}
           </span>
-          <div className="flex min-w-0 flex-1 flex-col gap-1">
-            <span
-              data-slot="approval-prompt-risk"
-              data-risk={risk}
-              className={cn(
-                "inline-flex h-4 items-center gap-1.5 font-kura-mono text-[10px] uppercase tracking-[0.14em]",
-                risk === "low" && "text-kura-fg-subtle",
-                risk === "medium" && "text-kura-warning-text",
-                risk === "high" && "text-kura-danger-text",
-              )}
-            >
-              <span
-                aria-hidden
+          <div className="flex min-w-0 flex-1 flex-col gap-1 pt-px">
+            <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
+              <h3
+                id={`${id}-title`}
+                data-slot="approval-prompt-title"
                 className={cn(
-                  "size-1.5 rounded-full",
-                  risk === "low" && "bg-kura-success",
-                  risk === "medium" && "bg-kura-warning",
-                  risk === "high" && "bg-kura-danger",
+                  "font-medium text-[15px] text-kura-fg leading-snug transition-colors duration-(--kura-duration-base)",
+                  !pending && "text-kura-fg-muted",
                 )}
-              />
-              {riskLabel[risk]}
-            </span>
-            <h3
-              id={`${id}-title`}
-              data-slot="approval-prompt-title"
-              className={cn(
-                "text-balance font-kura-display text-[20px] text-kura-fg leading-[1.25] transition-colors duration-(--kura-duration-base)",
-                !pending && "text-kura-fg-muted",
-              )}
-            >
-              {title}
-            </h3>
-            {description != null && (
-              <p
-                id={`${id}-desc`}
-                className="pt-0.5 text-[13px] text-kura-fg-muted leading-relaxed"
               >
+                {title}
+              </h3>
+              <span
+                data-slot="approval-prompt-risk"
+                data-risk={risk}
+                className={cn(
+                  "inline-flex h-5 items-center gap-1.5 rounded-full px-2 font-medium text-[11px]",
+                  risk === "low" && "bg-kura-hover text-kura-fg-muted",
+                  risk === "medium" && "bg-kura-hover text-kura-warning-text",
+                  risk === "high" && "bg-kura-danger-subtle text-kura-danger-text",
+                )}
+              >
+                <span
+                  aria-hidden
+                  className={cn(
+                    "size-1.5 rounded-full",
+                    risk === "low" && "bg-kura-success",
+                    risk === "medium" && "bg-kura-warning",
+                    risk === "high" && "bg-kura-danger",
+                  )}
+                />
+                {riskLabel[risk]}
+              </span>
+            </div>
+            {description != null && (
+              <p id={`${id}-desc`} className="text-[13px] text-kura-fg-muted leading-relaxed">
                 {description}
               </p>
             )}
@@ -176,7 +173,7 @@ export function ApprovalPrompt({
         {command != null && (
           <div
             data-slot="approval-prompt-command"
-            className="flex min-w-0 gap-2.5 rounded-kura-sm bg-kura-surface-sunken px-3.5 py-3 font-kura-mono text-[13px] leading-relaxed shadow-[inset_0_0_0_1px_var(--kura-border-subtle)]"
+            className="flex min-w-0 gap-2 rounded-kura-md bg-kura-surface-sunken px-3 py-2.5 font-kura-mono text-[13px] shadow-[inset_0_0_0_1px_var(--kura-border-subtle)]"
           >
             <span aria-hidden className="select-none text-kura-fg-subtle">
               $
@@ -228,7 +225,7 @@ export function ApprovalPrompt({
 
       <div
         data-slot="approval-prompt-footer"
-        className="relative flex h-14 items-center px-5 shadow-[inset_0_1px_0_var(--kura-border-subtle)]"
+        className="relative flex h-14 items-center bg-kura-surface-sunken/60 px-4 shadow-[inset_0_1px_0_var(--kura-border-subtle)]"
       >
         <div
           data-slot="approval-prompt-actions"
@@ -240,12 +237,12 @@ export function ApprovalPrompt({
           )}
         >
           <span
-            className="mr-auto inline-flex items-center gap-2 font-kura-mono text-[10px] text-kura-accent-text uppercase tracking-[0.14em]"
+            className="mr-auto inline-flex items-center gap-1.5 rounded-full bg-kura-accent-subtle px-2 py-0.5 font-medium text-kura-accent-text text-xs"
             data-slot="approval-prompt-waiting"
           >
             <span
               aria-hidden
-              className="size-1.5 animate-kura-pulse rounded-full bg-kura-accent shadow-[0_0_0_3px_var(--kura-accent-subtle)] motion-reduce:animate-none"
+              className="size-1.5 animate-kura-pulse rounded-full bg-current motion-reduce:animate-none"
             />
             Needs approval
           </span>
@@ -275,7 +272,7 @@ export function ApprovalPrompt({
                 keys={["mod", "enter"]}
                 variant="ghost"
                 size="sm"
-                className="-mr-1 [&_[data-slot=kbd-key]]:bg-kura-fg-inverted/15 [&_[data-slot=kbd-key]]:text-current"
+                className="-mr-1 [&_[data-slot=kbd-key]]:bg-current/15 [&_[data-slot=kbd-key]]:text-current"
               />
             )}
           </Button>
@@ -285,7 +282,7 @@ export function ApprovalPrompt({
           data-slot="approval-prompt-resolution"
           role="status"
           className={cn(
-            "absolute inset-0 flex items-center gap-2.5 px-5 text-[13px] transition-[opacity,filter] duration-(--kura-duration-base) ease-kura-out",
+            "absolute inset-0 flex items-center gap-2 px-4 text-[13px] transition-[opacity,filter] duration-(--kura-duration-base) ease-kura-out",
             pending
               ? "pointer-events-none opacity-0 blur-[2px] motion-reduce:blur-none"
               : "opacity-100",
@@ -297,8 +294,10 @@ export function ApprovalPrompt({
               <span
                 aria-hidden
                 className={cn(
-                  "grid size-5 animate-kura-pop-in place-items-center rounded-full shadow-[inset_0_0_0_1px_var(--kura-border)] [&_svg]:size-3",
-                  decision === "denied" ? "text-kura-fg-muted" : "text-kura-success-text",
+                  "grid size-5 animate-kura-pop-in place-items-center rounded-full [&_svg]:size-3",
+                  decision === "denied"
+                    ? "bg-kura-hover text-kura-fg-muted"
+                    : "bg-kura-hover text-kura-success-text",
                 )}
               >
                 {decision === "denied" ? (
@@ -309,16 +308,9 @@ export function ApprovalPrompt({
                   <Check strokeWidth={2.5} />
                 )}
               </span>
-              <span
-                data-slot="approval-prompt-verdict"
-                className="font-kura-display text-[17px] italic leading-none"
-              >
-                {resolvedCopy[decision]}
-              </span>
+              <span className="font-medium">{resolvedCopy[decision]}</span>
               {decision === "always" && (
-                <span className="font-kura-mono text-[10px] text-kura-fg-subtle uppercase tracking-[0.12em]">
-                  · won't ask again this session
-                </span>
+                <span className="text-kura-fg-subtle">· won't ask again this session</span>
               )}
             </>
           )}

@@ -6,7 +6,7 @@ export default defineComponent({
   category: "primitives",
   status: "stable",
   description:
-    "Ensō spinner: one tapered brush stroke turning on a faint wash of the full circle. Indeterminate loading that inherits the current text color.",
+    "Quiet ring spinner (faint track, turning quarter arc) for indeterminate loading; inherits the current text color.",
   whenToUse: [
     "Indeterminate waits on a control: a loading button, a pending row, a fetching list.",
     "Small inline busy indicators next to text.",
@@ -36,12 +36,11 @@ export default defineComponent({
     notes: [
       'With a label it renders role="status" containing visually hidden label text; with label={null} it is aria-hidden.',
     ],
-    reducedMotion:
-      "The stroke stops turning and breathes instead (slow opacity pulse), so a wait still reads as live.",
+    reducedMotion: "The arc stops rotating and the whole ring gently pulses in opacity instead.",
   },
   dependencies: { npm: [], kura: [] },
   related: ["button", "shimmer-text", "thinking-indicator"],
-  tags: ["loading", "spinner", "busy", "progress", "indeterminate", "enso"],
+  tags: ["loading", "spinner", "busy", "progress", "indeterminate"],
   examples: [
     { name: "SpinnerMinimal", kind: "minimal", title: "Default" },
     { name: "SpinnerFull", kind: "full", title: "Sizes and colors" },
@@ -53,8 +52,5 @@ export default defineComponent({
         "Per-row spinners for indexing, a loading Sync now Button and a Reconnect action for a failed source.",
     },
   ],
-  agentNotes: [
-    "Color it with a text-* class on the spinner or a parent; it uses currentColor. Ink (inherit) by default; text-kura-accent only when the model itself is working.",
-    "Pure SVG and CSS: server-component safe, no hooks.",
-  ],
+  agentNotes: ["Color it with a text-* class on the spinner or a parent; it uses currentColor."],
 });

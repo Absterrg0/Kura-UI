@@ -6,10 +6,8 @@ import { CodeBlock } from "@/components/code-block";
 import { CopyButton } from "@/components/copy-button";
 import { DocsShell, Section } from "@/components/docs-shell";
 import { ExamplePreview } from "@/components/example-preview";
-import { Seal } from "@/components/seal";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/tabs";
 import { components, getComponent } from "@/lib/catalog";
-import { CATEGORY_SEAL } from "@/lib/category-seal";
 
 export const dynamicParams = false;
 
@@ -40,13 +38,13 @@ function Pill({
   tone?: "neutral" | "accent" | "warning";
 }) {
   const tones = {
-    neutral: "text-kura-fg-muted",
-    accent: "text-kura-accent-text",
-    warning: "text-kura-warning-text",
+    neutral: "bg-kura-surface-sunken text-kura-fg-muted",
+    accent: "bg-kura-accent-subtle text-kura-accent-text",
+    warning: "bg-kura-surface-sunken text-kura-warning-text",
   };
   return (
     <span
-      className={`rounded-[4px] px-1.5 py-0.5 font-kura-mono text-[10.5px] uppercase tracking-[0.12em] shadow-[inset_0_0_0_1px_currentColor] ${tones[tone]}`}
+      className={`rounded-full px-2 py-0.5 font-medium text-[12px] capitalize shadow-kura-xs ${tones[tone]}`}
     >
       {children}
     </span>
@@ -70,19 +68,16 @@ export default async function ComponentPage({ params }: { params: Promise<{ slug
   return (
     <DocsShell>
       <article data-testid="component-page" className="mx-auto max-w-4xl">
-        <header className="relative flex flex-col gap-5 pb-12">
-          <nav
-            aria-label="Breadcrumb"
-            className="font-kura-mono text-[11px] text-kura-fg-subtle uppercase tracking-[0.16em]"
-          >
+        <header className="flex flex-col gap-3 pb-8">
+          <nav aria-label="Breadcrumb" className="text-[13px] text-kura-fg-subtle">
             <Link href="/components" className="hover:text-kura-fg">
-              The store
+              Components
             </Link>
-            <span className="px-2">/</span>
-            <span>{c.category}</span>
+            <span className="px-1.5">/</span>
+            <span className="capitalize">{c.category}</span>
           </nav>
-          <div className="flex flex-wrap items-center gap-4 pr-20">
-            <h1 className="font-kura-display text-[clamp(2.6rem,5vw,3.9rem)] leading-none tracking-[-0.02em]">
+          <div className="flex flex-wrap items-center gap-3">
+            <h1 className="font-semibold text-[32px] leading-tight tracking-[-0.035em] md:text-[36px]">
               {c.title}
             </h1>
             <Pill
@@ -97,40 +92,34 @@ export default async function ComponentPage({ params }: { params: Promise<{ slug
               {c.status}
             </Pill>
           </div>
-          <span aria-hidden className="brush-rule w-40 text-kura-shu" />
-          <p className="max-w-2xl font-kura-display text-[20px] text-kura-fg-muted italic leading-[1.5]">
+          <p className="max-w-2xl text-[16px] text-kura-fg-muted leading-relaxed">
             {c.description}
           </p>
-          <div className="flex flex-wrap items-center gap-x-5 gap-y-2 pt-1 text-[13px] text-kura-fg-muted">
-            <span className="inline-flex items-center gap-1 font-kura-mono text-[12px]">
+          <div className="flex flex-wrap items-center gap-2 pt-2">
+            <span className="inline-flex h-8 items-center gap-1 rounded-kura-md bg-kura-surface pr-1 pl-3 font-kura-mono text-[12px] text-kura-fg-muted shadow-kura-xs">
               {c.importPath}
               <CopyButton value={usage} label="Copy import" />
             </span>
-            <span className="inline-flex items-center gap-1">
-              Copy page for agents
+            <span className="inline-flex h-8 items-center gap-1 rounded-kura-md bg-kura-surface pr-1 pl-3 text-[13px] text-kura-fg-muted shadow-kura-xs">
+              Copy for agents
               <CopyButton fetchUrl={`/components/${c.slug}.md`} label="Copy markdown" />
             </span>
             <a
               href={`/components/${c.slug}.md`}
-              className="font-kura-mono text-[12px] underline decoration-kura-border-strong underline-offset-4 hover:text-kura-fg hover:decoration-kura-accent"
+              className="inline-flex h-8 items-center rounded-kura-md px-3 text-[13px] text-kura-fg-muted shadow-kura-xs hover:text-kura-fg"
             >
-              .md
+              Markdown
             </a>
             <a
               href={`/r/${c.slug}.json`}
-              className="font-kura-mono text-[12px] underline decoration-kura-border-strong underline-offset-4 hover:text-kura-fg hover:decoration-kura-accent"
+              className="inline-flex h-8 items-center rounded-kura-md px-3 text-[13px] text-kura-fg-muted shadow-kura-xs hover:text-kura-fg"
             >
-              registry.json
+              Registry JSON
             </a>
           </div>
-          <Seal
-            glyph={CATEGORY_SEAL[c.category] ?? "部"}
-            tilt={5}
-            className="absolute top-6 right-0 size-14"
-          />
         </header>
 
-        <div className="flex flex-col gap-12">
+        <div className="flex flex-col gap-10">
           {c.examples.map((ex, i) => (
             <section
               key={ex.name}
@@ -139,7 +128,7 @@ export default async function ComponentPage({ params }: { params: Promise<{ slug
             >
               {i > 0 && (
                 <div className="flex flex-col gap-1">
-                  <h2 id={`ex-${ex.name}`} className="font-kura-display text-[24px] leading-tight">
+                  <h2 id={`ex-${ex.name}`} className="font-semibold text-[17px] tracking-[-0.02em]">
                     {ex.title}
                   </h2>
                   {ex.description && (
@@ -152,21 +141,22 @@ export default async function ComponentPage({ params }: { params: Promise<{ slug
                   {ex.title}
                 </h2>
               )}
-              <Tabs defaultValue="preview" className="print overflow-hidden rounded-[9px]">
-                <div className="flex items-center justify-between border-kura-border-subtle border-b bg-kura-surface px-2.5 py-1">
+              <Tabs
+                defaultValue="preview"
+                className="overflow-hidden rounded-kura-xl bg-kura-surface shadow-kura-sm"
+              >
+                <div className="flex items-center justify-between border-kura-border-subtle border-b px-2 py-2">
                   <TabsList>
                     <TabsTrigger value="preview">Preview</TabsTrigger>
                     <TabsTrigger value="code">Code</TabsTrigger>
                   </TabsList>
-                  <span className="pr-1.5 font-kura-mono text-[10.5px] text-kura-fg-subtle uppercase tracking-[0.14em]">
-                    {ex.kind}
-                  </span>
+                  <span className="pr-2 text-[12px] text-kura-fg-subtle capitalize">{ex.kind}</span>
                 </div>
                 <TabsContent value="preview" forceMount className="data-[state=inactive]:hidden">
                   <ExamplePreview slug={c.slug} name={ex.name} />
                 </TabsContent>
-                <TabsContent value="code" className="bg-kura-surface-sunken">
-                  <CodeBlock code={ex.code} className="rounded-none shadow-none" />
+                <TabsContent value="code" className="p-2">
+                  <CodeBlock code={ex.code} className="shadow-none" />
                 </TabsContent>
               </Tabs>
             </section>
@@ -222,9 +212,7 @@ export default async function ComponentPage({ params }: { params: Promise<{ slug
         <Section id="usage-guidance" title="When to use it">
           <div className="grid gap-10 md:grid-cols-2">
             <div>
-              <h3 className="pb-3 font-kura-mono text-[11px] text-kura-accent-text uppercase tracking-[0.14em]">
-                Use it for
-              </h3>
+              <h3 className="pb-2 font-medium text-[14px]">Use it for</h3>
               <ul className="flex flex-col border-kura-border border-t">
                 {c.whenToUse.map((w) => (
                   <li
@@ -237,7 +225,7 @@ export default async function ComponentPage({ params }: { params: Promise<{ slug
               </ul>
             </div>
             <div>
-              <h3 className="pb-3 font-kura-mono text-[11px] text-kura-fg-subtle uppercase tracking-[0.14em]">
+              <h3 className="pb-2 font-medium text-[14px] text-kura-fg-muted">
                 Reach for something else when
               </h3>
               <ul className="flex flex-col border-kura-border border-t">
@@ -258,7 +246,7 @@ export default async function ComponentPage({ params }: { params: Promise<{ slug
           {c.props.length ? (
             <div className="overflow-x-auto border-kura-border border-t">
               <table className="w-full text-left text-sm">
-                <thead className="border-kura-border-subtle border-b font-kura-mono text-[10.5px] text-kura-fg-subtle uppercase tracking-[0.12em]">
+                <thead className="border-kura-border-subtle border-b text-[12.5px] text-kura-fg-subtle">
                   <tr>
                     <th className="py-3 pr-4 font-normal">Prop</th>
                     <th className="px-4 py-3 font-normal">Type</th>
@@ -363,7 +351,7 @@ export default async function ComponentPage({ params }: { params: Promise<{ slug
 
         {!!c.agentNotes?.length && (
           <Section id="agents" title="Notes for agents">
-            <ul className="print print-keyline flex flex-col gap-3 rounded-[9px] p-6 text-[14.5px] leading-relaxed [&>li]:relative [&>li]:pl-5 [&>li]:before:absolute [&>li]:before:top-[0.6em] [&>li]:before:left-0 [&>li]:before:size-1.5 [&>li]:before:rounded-full [&>li]:before:bg-kura-shu">
+            <ul className="flex list-disc flex-col gap-2 rounded-kura-xl bg-kura-surface p-5 pl-9 text-[14.5px] leading-relaxed shadow-kura-xs marker:text-kura-fg-subtle">
               {c.agentNotes.map((n) => (
                 <li key={n}>{n}</li>
               ))}
@@ -379,14 +367,14 @@ export default async function ComponentPage({ params }: { params: Promise<{ slug
                   <Link
                     key={r.slug}
                     href={`/components/${r.slug}`}
-                    className="rounded-[6px] bg-kura-surface px-3 py-1.5 font-kura-mono text-[12.5px] shadow-kura-xs hover:text-kura-accent-text"
+                    className="rounded-full bg-kura-surface px-3 py-1 text-[13px] shadow-kura-xs hover:bg-kura-hover"
                   >
                     {r.slug}
                   </Link>
                 ) : (
                   <span
                     key={r.slug}
-                    className="rounded-[6px] px-3 py-1.5 font-kura-mono text-[12.5px] text-kura-fg-subtle shadow-kura-xs"
+                    className="rounded-full px-3 py-1 text-[13px] text-kura-fg-subtle shadow-kura-xs"
                     title="Coming soon"
                   >
                     {r.slug}

@@ -30,10 +30,10 @@ export function PromptSuggestionsMinimal() {
     <PromptSuggestions
       variant="chips"
       suggestions={[
-        { title: "Summarize the board deck" },
-        { title: "Write the churn query" },
-        { title: "Plan next sprint" },
-        { title: "Explain this regex" },
+        { title: "Summarize a PDF" },
+        { title: "Write a SQL query" },
+        { title: "Plan a sprint" },
+        { title: "Explain a regex" },
       ]}
       onSelect={(prompt) => console.log(prompt)}
     />
@@ -108,11 +108,8 @@ export function PromptSuggestionsFull() {
         onSelect={(prompt) => setPicked(prompt)}
       />
       <div className="flex items-center justify-between gap-3 px-1">
-        <p
-          className="min-w-0 truncate font-kura-mono text-[11px] text-kura-fg-subtle"
-          aria-live="polite"
-        >
-          {picked ? `→ ${picked}` : "Pick a card to fill the prompt"}
+        <p className="min-w-0 truncate text-kura-fg-subtle text-xs" aria-live="polite">
+          {picked ? `Prompt: ${picked}` : "Pick a card"}
         </p>
         <Button variant="ghost" size="xs" onClick={() => setSet((s) => (s + 1) % sets.length)}>
           <RefreshCw />
@@ -134,11 +131,11 @@ export function PromptSuggestionsEmptyChat() {
   const input = React.useRef<HTMLTextAreaElement>(null);
   return (
     <div className="flex w-full max-w-xl flex-col gap-5">
-      <p className="text-balance text-center font-kura-display text-[30px] text-kura-fg leading-tight">
+      <p className="text-balance text-center font-medium text-2xl text-kura-fg tracking-tight">
         What should we work on?
       </p>
       <Composer value={value} onValueChange={setValue} onSubmit={() => {}}>
-        <ComposerInput ref={input} placeholder="Ask Kura about your product…" />
+        <ComposerInput ref={input} placeholder="Ask anything…" />
         <ComposerToolbar>
           <ComposerTools>
             <ComposerAttachButton />

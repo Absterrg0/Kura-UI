@@ -1,23 +1,17 @@
-import { ShimmerText } from "@kura-ui/react/shimmer-text";
-import { Seal } from "@/components/seal";
-import { SwashLink } from "@/components/swash-link";
+import { Button } from "@kura-ui/react/button";
+import Link from "next/link";
 
 export default function NotFound() {
   return (
-    <div className="mx-auto flex min-h-[64vh] max-w-lg flex-col items-center justify-center gap-6 px-5 text-center">
-      <Seal glyph="蔵" tilt={-6} className="size-16" />
-      <ShimmerText className="font-kura-mono text-[11px] uppercase tracking-[0.16em]">
-        Searching the storehouse…
-      </ShimmerText>
-      <h1 className="font-kura-display text-[44px] leading-none tracking-[-0.02em]">
-        Not on any shelf.
-      </h1>
-      <p className="font-kura-display text-[19px] text-kura-fg-muted italic">
-        This page doesn&apos;t exist, or hasn&apos;t been made yet.
+    <div className="mx-auto flex min-h-[60vh] max-w-md flex-col items-center justify-center gap-3 px-4 text-center">
+      <p className="font-kura-mono text-[13px] text-kura-fg-subtle">404</p>
+      <h1 className="font-semibold text-[28px] tracking-[-0.035em]">Page not found</h1>
+      <p className="text-[15px] text-kura-fg-muted">
+        This page doesn&apos;t exist, or hasn&apos;t been built yet.
       </p>
-      <SwashLink href="/components" size="sm">
-        Back to the store
-      </SwashLink>
+      <Button asChild variant="secondary" className="mt-3">
+        <Link href="/components">Browse components</Link>
+      </Button>
     </div>
   );
 }

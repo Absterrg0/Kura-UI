@@ -40,7 +40,7 @@ export default defineComponent({
       type: '"generating" | "updating" | "ready" | "error"',
       default: '"ready"',
       description:
-        "Lifecycle. generating = first write and updating = an edit (both: vermilion icon tile, shimmering statusText, vermilion progress hairline, aria-busy); error = danger tile and message.",
+        "Lifecycle. generating = first write and updating = an edit (both: jade icon tile, shimmering statusText, progress bar, aria-busy); error = danger tile and message.",
     },
     {
       name: "meta",
@@ -71,7 +71,7 @@ export default defineComponent({
       type: '"compact" | "preview"',
       default: '"compact"',
       description:
-        "compact = one-row chip sized to its content, for message text and lists; preview = full-width card with a 144px thumbnail well above the title (display serif; mono for code and file kinds).",
+        "compact = one-row chip sized to its content, for message text and lists; preview = full-width card with a 144px thumbnail area above the title.",
     },
     {
       name: "preview",
@@ -136,14 +136,7 @@ export default defineComponent({
     {
       name: "Preview",
       dataSlot: "artifact-card-preview",
-      description:
-        'Thumbnail area (variant="preview" only), aria-hidden and inert: a pressed well (surface-sunken) with the preview laid in it as a sheet of bright print stock.',
-    },
-    {
-      name: "Sheet",
-      dataSlot: "artifact-card-sheet",
-      description:
-        "The bright sheet inside the preview well that holds `preview` (or the kind sketch); it lifts 4px when an openable card is hovered (no travel under reduced motion).",
+      description: 'Thumbnail area (variant="preview" only), aria-hidden and inert.',
     },
     {
       name: "Header",
@@ -153,8 +146,7 @@ export default defineComponent({
     {
       name: "Icon",
       dataSlot: "artifact-card-icon",
-      description:
-        "36px kind tile in a pressed well; vermilion while busy, beni (danger) on error.",
+      description: "36px kind tile; jade while busy, danger on error.",
     },
     {
       name: "Open",
@@ -197,7 +189,7 @@ export default defineComponent({
       { keys: "Enter / Space", action: "Open the artifact (Enter follows the link for href)" },
     ],
     reducedMotion:
-      "The shimmer and the indeterminate sweep stop (a still tinted track remains); the hover lift of the preview sheet, the press scale and the chevron nudge are removed. Colour and opacity changes stay.",
+      "The shimmer and the indeterminate sweep stop (a still tinted track remains); the hover zoom of the preview, the press scale and the chevron nudge are removed. Colour and opacity changes stay.",
   },
   dependencies: { npm: ["lucide-react"], kura: ["icon-button", "shimmer-text"] },
   related: ["message", "code-block", "attachment", "tool-call", "streaming-text"],

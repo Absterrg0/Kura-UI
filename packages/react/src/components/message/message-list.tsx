@@ -118,7 +118,7 @@ export function MessageList({
           aria-hidden={!showJump || undefined}
           onClick={jump}
           className={cn(
-            "inline-flex h-8 cursor-pointer items-center gap-1.5 rounded-full bg-kura-surface-raised pr-3.5 pl-3 font-kura-sans font-medium text-kura-fg text-xs shadow-kura-md outline-none hover:bg-kura-surface",
+            "inline-flex h-8 cursor-pointer items-center gap-1.5 rounded-full bg-kura-overlay pr-3.5 pl-3 font-kura-sans font-medium text-kura-fg text-xs shadow-kura-md outline-none backdrop-blur-xl",
             "transition-[opacity,transform,scale] duration-(--kura-duration-base) ease-kura-out focus-visible:shadow-kura-focus active:scale-[0.97]",
             showJump
               ? "pointer-events-auto translate-y-0 opacity-100"

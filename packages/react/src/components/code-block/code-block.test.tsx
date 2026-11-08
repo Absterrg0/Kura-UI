@@ -24,7 +24,7 @@ describe("CodeBlock", () => {
     expect(container.querySelectorAll("[data-slot=code-block-line]")).toHaveLength(5);
     expect(screen.getByText("const").className).toContain("--kura-code-keyword");
     expect(screen.getByText('"hi"').className).toContain("--kura-code-string");
-    expect(screen.getByText("// done").className).toContain("italic");
+    expect(screen.getByText("// done").className).toContain("--kura-code-comment");
     expect(screen.getByRole("region", { name: "greet.ts code" })).toHaveAttribute("tabindex", "0");
   });
 

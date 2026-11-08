@@ -30,7 +30,10 @@ describe("ShaderCanvas", () => {
 
   it("uses the default token fallback when none is given", () => {
     const { container } = render(<ShaderCanvas fragmentShader={frag} />);
-    expect(container.querySelector("[data-slot=shader-canvas] > div")).toBeInTheDocument();
+    const fb = container.querySelector("[data-slot=shader-canvas-fallback]");
+    expect(fb).toBeInTheDocument();
+    expect(fb?.className).toContain("var(--kura-accent-subtle)");
+    expect(fb?.className).toContain("bg-kura-surface-sunken");
   });
 
   it("forwards refs", () => {

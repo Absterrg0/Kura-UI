@@ -22,14 +22,6 @@ export interface ReasoningProps extends React.ComponentProps<"div"> {
   formatLabel?: (state: { active: boolean; seconds: number }) => React.ReactNode;
 }
 
-function Seconds({ value }: { value: number }) {
-  return (
-    <span className="font-kura-mono text-[0.86em] tabular-nums tracking-[0.02em]">
-      {formatSeconds(value)}
-    </span>
-  );
-}
-
 export function formatSeconds(seconds: number): string {
   const s = Math.max(0, Math.round(seconds));
   if (s < 60) return `${s}s`;
@@ -94,11 +86,11 @@ export function Reasoning({
     formatLabel({ active, seconds })
   ) : active ? (
     <>
-      Thinking… <Seconds value={seconds} />
+      Thinking… <span className="tabular-nums">{formatSeconds(seconds)}</span>
     </>
   ) : seconds >= 1 ? (
     <>
-      Thought for <Seconds value={seconds} />
+      Thought for <span className="tabular-nums">{formatSeconds(seconds)}</span>
     </>
   ) : (
     "Thought for a moment"
@@ -126,16 +118,6 @@ export function Reasoning({
           "transition-[color,background-color,box-shadow] duration-(--kura-duration-fast) ease-kura-out hover:text-kura-fg focus-visible:shadow-kura-focus",
         )}
       >
-        <span
-          aria-hidden
-          data-slot="reasoning-dot"
-          className={cn(
-            "mr-1 size-1.5 shrink-0 rounded-full transition-[background-color,box-shadow] duration-(--kura-duration-base) ease-kura-out",
-            active
-              ? "animate-kura-pulse bg-kura-accent shadow-[0_0_0_3px_var(--kura-accent-subtle)] motion-reduce:animate-none"
-              : "bg-kura-border-strong",
-          )}
-        />
         <ShimmerText active={active} data-slot="reasoning-label">
           {label}
         </ShimmerText>
@@ -162,15 +144,7 @@ export function Reasoning({
         )}
       >
         <div className="min-h-0 overflow-hidden">
-          <div
-            data-slot="reasoning-trace"
-            className={cn(
-              // The thought itself is set like a margin note: italic display serif behind a hairline.
-              "mt-1 ml-[2px] whitespace-pre-wrap border-kura-border-strong border-l py-1 pl-4 font-kura-display text-[16px] text-kura-fg-muted italic leading-[1.6]",
-              "[&_[data-slot=streaming-text]]:font-kura-display [&_[data-slot=streaming-text]]:text-[16px] [&_[data-slot=streaming-text]]:text-kura-fg-muted [&_[data-slot=streaming-text]]:leading-[1.6]",
-              "[&_code]:font-kura-mono [&_code]:text-[0.82em] [&_code]:not-italic",
-            )}
-          >
+          <div className="mt-1 ml-[3px] whitespace-pre-wrap border-kura-border border-l py-0.5 pl-3.5 text-kura-fg-muted text-sm leading-relaxed [&_[data-slot=streaming-text]]:text-kura-fg-muted [&_[data-slot=streaming-text]]:text-sm">
             {children}
           </div>
         </div>

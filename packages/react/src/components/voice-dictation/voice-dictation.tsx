@@ -417,9 +417,7 @@ export function VoiceDictation({
         style={{ borderRadius: 999 }}
         className={cn(
           "relative flex h-8 items-center",
-          // Live: a vermilion pill, the only colour on the page while the mic is open.
-          live &&
-            "gap-1 bg-kura-accent-subtle p-0.5 pr-3 text-kura-accent-text shadow-[inset_0_0_0_1px_color-mix(in_oklch,var(--kura-accent)_28%,transparent)]",
+          live && "gap-1 bg-kura-accent-subtle p-0.5 pr-3 text-kura-accent-text",
         )}
       >
         <Tooltip content={tooltipText} shortcut={hotkey ?? undefined}>
@@ -434,12 +432,11 @@ export function VoiceDictation({
             disabled={disabled || effective === "unsupported" || status === "processing"}
             {...holdHandlers}
             className={cn(
-              "relative flex shrink-0 cursor-pointer items-center justify-center outline-none",
-              "transition-[background-color,color,box-shadow,border-radius] duration-(--kura-duration-fast) ease-kura-out",
+              "relative flex size-7 shrink-0 cursor-pointer items-center justify-center rounded-full outline-none",
+              "transition-[background-color,color,box-shadow] duration-(--kura-duration-fast) ease-kura-out",
               "focus-visible:shadow-kura-focus disabled:cursor-not-allowed disabled:opacity-50",
-              live ? "size-7 rounded-full" : "size-8 rounded-kura-md",
               live
-                ? "bg-kura-accent-hover text-kura-accent-fg hover:bg-[color-mix(in_oklab,var(--kura-accent-hover),var(--kura-fg)_12%)]"
+                ? "bg-kura-accent text-kura-accent-fg hover:bg-kura-accent-hover"
                 : blocked
                   ? "text-kura-danger-text hover:bg-kura-hover"
                   : "text-kura-fg-muted hover:bg-kura-hover hover:text-kura-fg",
@@ -459,9 +456,9 @@ export function VoiceDictation({
                 ) : live && mode === "toggle" ? (
                   <span aria-hidden className="size-2.5 rounded-[2.5px] bg-current" />
                 ) : blocked ? (
-                  <MicOff aria-hidden className="size-4" strokeWidth={1.75} />
+                  <MicOff aria-hidden className="size-4" />
                 ) : (
-                  <Mic aria-hidden className="size-4" strokeWidth={1.75} />
+                  <Mic aria-hidden className="size-4" />
                 )}
               </motion.span>
             </AnimatePresence>
@@ -490,7 +487,7 @@ export function VoiceDictation({
                     className="h-5 w-16"
                     aria-hidden
                   />
-                  <span className="w-8 text-right font-kura-mono text-[11px] tabular-nums">
+                  <span className="w-8 text-right font-medium text-xs tabular-nums">
                     {formatElapsed(elapsed)}
                   </span>
                   <button
@@ -498,9 +495,9 @@ export function VoiceDictation({
                     data-slot="voice-dictation-cancel"
                     aria-label="Cancel dictation"
                     onClick={cancel}
-                    className="-mr-1.5 flex size-6 cursor-pointer items-center justify-center rounded-full opacity-70 outline-none transition-[opacity,background-color] duration-(--kura-duration-fast) hover:bg-[color-mix(in_oklch,var(--kura-accent)_14%,transparent)] hover:opacity-100 focus-visible:shadow-kura-focus"
+                    className="-mr-1.5 flex size-6 cursor-pointer items-center justify-center rounded-full opacity-70 outline-none transition-[opacity,background-color] duration-(--kura-duration-fast) hover:bg-kura-hover hover:opacity-100 focus-visible:shadow-kura-focus"
                   >
-                    <X aria-hidden className="size-3.5" strokeWidth={1.75} />
+                    <X aria-hidden className="size-3.5" />
                   </button>
                 </>
               )}
@@ -529,26 +526,10 @@ export function VoiceDictation({
       {showTranscript && live && (
         <div
           data-slot="voice-dictation-transcript"
-          className="flex w-full min-w-0 animate-kura-fade-in flex-col gap-2 rounded-kura-md bg-kura-surface-raised px-4 pt-3 pb-3.5 text-[15px] leading-6 shadow-kura-sm"
+          className={cn(
+            "w-full min-w-0 animate-kura-fade-in rounded-kura-lg bg-kura-surface px-3.5 py-3 text-[15px] leading-6 shadow-kura-sm",
+          )}
         >
-          <span
-            aria-hidden
-            className="flex items-center gap-2 font-kura-mono text-[10px] text-kura-fg-subtle uppercase leading-4 tracking-[0.14em]"
-          >
-            <span
-              className={cn(
-                "size-1.5 rounded-full",
-                status === "listening"
-                  ? "animate-kura-pulse bg-kura-accent motion-reduce:animate-none"
-                  : "bg-kura-border-strong",
-              )}
-            />
-            {status === "requesting"
-              ? "Waiting for the microphone"
-              : status === "processing"
-                ? "Transcribing"
-                : "Listening"}
-          </span>
           {transcript ? (
             <p className="text-pretty">
               <span className="text-kura-fg">{finalText}</span>
@@ -556,7 +537,6 @@ export function VoiceDictation({
               {status === "listening" && (
                 <span
                   aria-hidden
-                  data-slot="voice-dictation-caret"
                   className="ml-0.5 inline-block h-[1.1em] w-[2px] translate-y-[3px] animate-kura-pulse rounded-full bg-kura-accent motion-reduce:animate-none"
                 />
               )}

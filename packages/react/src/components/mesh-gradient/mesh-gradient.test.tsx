@@ -19,7 +19,7 @@ describe("MeshGradient", () => {
   });
 
   it("falls back to a CSS gradient built from the colours when WebGL is unavailable", () => {
-    const { container } = render(<MeshGradient colors={["#ff0000", "oklch(0.7 0.1 200)"]} />);
+    const { container } = render(<MeshGradient colors={["#ff0000", "oklch(0.7 0.1 255)"]} />);
     const fallback = container.querySelector<HTMLElement>("[data-slot=mesh-gradient-fallback]");
     expect(fallback).toBeInTheDocument();
     expect(fallback!.style.background).toContain("radial-gradient");
@@ -51,9 +51,9 @@ describe("MeshGradient", () => {
 
   it("switches presets from the full example", async () => {
     render(<MeshGradientFull />);
-    const ai = screen.getByRole("button", { name: "ai" });
-    fireEvent.click(ai);
-    expect(ai).toHaveAttribute("aria-pressed", "true");
+    const dusk = screen.getByRole("button", { name: "dusk" });
+    fireEvent.click(dusk);
+    expect(dusk).toHaveAttribute("aria-pressed", "true");
   });
 
   it("examples render without a11y violations", async () => {
@@ -69,8 +69,8 @@ describe("shader colour parsing", () => {
   it("parses hex, rgb and oklch into linear RGB", () => {
     expect(parseColor("#ffffff")?.linear).toEqual([1, 1, 1]);
     expect(parseColor("rgb(0 0 0 / 0.5)")).toEqual({ linear: [0, 0, 0], alpha: 0.5 });
-    const shu = parseColor("oklch(0.585 0.178 37.5)")!;
-    expect(shu.linear[0]).toBeGreaterThan(shu.linear[1]);
+    const blue = parseColor("oklch(0.56 0.2 260)")!;
+    expect(blue.linear[2]).toBeGreaterThan(blue.linear[0]);
     expect(parseColor("var(--x)")).toBeNull();
   });
 

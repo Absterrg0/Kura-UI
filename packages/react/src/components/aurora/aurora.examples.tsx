@@ -2,19 +2,18 @@
 
 import * as React from "react";
 import { Button } from "../button";
-import { Grain } from "../grain";
 import { Aurora, type AuroraPreset } from "./aurora";
 
 export function AuroraMinimal() {
   return <Aurora className="h-72 w-full rounded-kura-xl bg-kura-canvas shadow-kura-sm" />;
 }
 
-const presets: AuroraPreset[] = ["signal", "sumi", "ai", "matcha"];
+const presets: AuroraPreset[] = ["signal", "polar", "ember", "mist"];
 
 export function AuroraFull() {
-  const [preset, setPreset] = React.useState<AuroraPreset>("ai");
+  const [preset, setPreset] = React.useState<AuroraPreset>("signal");
   const [intensity, setIntensity] = React.useState(0.85);
-  const [stars, setStars] = React.useState(true);
+  const [stars, setStars] = React.useState(false);
   const [paused, setPaused] = React.useState(false);
   return (
     <div className="flex w-full max-w-2xl flex-col gap-4">
@@ -71,13 +70,10 @@ export function AuroraFull() {
 export function AuroraSignIn() {
   return (
     <Aurora
-      intensity={0.7}
-      className="flex min-h-96 w-full flex-col items-center justify-start gap-3 rounded-kura-lg bg-kura-canvas px-6 pt-12 text-center shadow-kura-md"
+      intensity={0.65}
+      className="flex min-h-96 w-full flex-col items-center justify-end gap-3 rounded-kura-2xl bg-kura-canvas px-6 pb-10 text-center shadow-kura-md"
     >
-      <span className="relative z-10 font-kura-mono text-[11px] text-kura-fg-subtle uppercase tracking-[0.14em]">
-        Overnight · 23:00 – 07:00
-      </span>
-      <h2 className="relative z-10 text-balance font-kura-display text-4xl text-kura-fg leading-[1.05]">
+      <h2 className="relative z-10 text-balance font-medium text-3xl text-kura-fg tracking-[-0.02em]">
         Your agents worked through the night.
       </h2>
       <p className="relative z-10 max-w-sm text-kura-fg-muted text-sm leading-relaxed">
@@ -87,7 +83,6 @@ export function AuroraSignIn() {
         <Button>Sign in</Button>
         <Button variant="secondary">Create account</Button>
       </div>
-      <Grain opacity={0.18} />
     </Aurora>
   );
 }

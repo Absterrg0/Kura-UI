@@ -6,7 +6,7 @@ export default defineComponent({
   category: "effects",
   status: "beta",
   description:
-    "Soft northern-lights background in a shader with premultiplied alpha: an ember glow over night ink on dark, a sumi-e wash on washi in light.",
+    "Soft aurora background: slow, folding veils of light drawn in a shader with premultiplied alpha, so it glows quietly on dark and washes on light.",
   whenToUse: [
     "A sign-in, landing or 'welcome back' screen that should feel calm and a little magical.",
     "A night-themed hero or a header band above an agent dashboard.",
@@ -21,10 +21,10 @@ export default defineComponent({
   props: [
     {
       name: "colors",
-      type: '"signal" | "sumi" | "ai" | "matcha" | readonly [string, string, string]',
+      type: '"signal" | "polar" | "ember" | "mist" | readonly [string, string, string]',
       default: '"signal"',
       description:
-        "A preset, or three CSS colours `[lower edge, middle, upper fringe]`. signal: the theme accent (vermilion) fading through ochre into smoke; sumi: ink on washi, paper-coloured light on dark (both follow the theme). ai (indigo) and matcha (tea green) are fixed palettes.",
+        "A preset, or three CSS colours `[lower edge, middle, upper fringe]`. `signal` uses the theme's blue accent; `polar` is icy blue-white, `mist` neutral grey, `ember` a soft warm dawn.",
     },
     {
       name: "intensity",
@@ -41,8 +41,9 @@ export default defineComponent({
     {
       name: "stars",
       type: "boolean",
-      default: "true",
-      description: "Twinkling stars behind the curtains. Only drawn when the background is dark.",
+      default: "false",
+      description:
+        "Faint twinkling stars behind the veils. Only drawn when the background is dark. Off by default — use it for a genuinely night-themed screen.",
     },
     {
       name: "paused",
@@ -104,14 +105,14 @@ export default defineComponent({
       kind: "composition",
       title: "Sign-in hero",
       description:
-        "Mono label, display-serif headline and Buttons over the aurora, finished with Grain.",
+        "A short headline and Buttons sitting under the veils, which stay in the upper half.",
     },
   ],
   agentNotes: [
     "The canvas is transparent: set a background on the root (`bg-kura-canvas`, `bg-kura-surface-sunken`) — the aurora is light added on top of it.",
     "Give the root a height (`h-72`, `min-h-96`, `aspect-video`).",
     "Lift children above the canvas automatically (they are in flow); lift them above a `<Grain />` overlay with `relative z-10`.",
-    "On light themes the curtains render as a deeper sumi-e wash; check both themes.",
-    "For a decorative band with no signal meaning, prefer `sumi` — `signal` uses the accent, which in Kura means the model is doing something.",
+    "On light themes the veils render as a pale, slightly deeper wash; check both themes.",
+    "The veils occupy the upper half: put short content at the bottom (`justify-end`) or keep it brief and centred.",
   ],
 });

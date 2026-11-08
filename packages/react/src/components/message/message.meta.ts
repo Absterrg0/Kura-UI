@@ -25,7 +25,7 @@ export default defineComponent({
       type: '"user" | "assistant"',
       required: true,
       description:
-        "Who wrote it. user = right-aligned bubble in a pressed paper well (surface-sunken + hairline ring, distinct from canvas, surface and surface-raised in both themes) with a tucked bottom-right corner; assistant = full-width open text.",
+        "Who wrote it. user = right-aligned bubble (a translucent fg tint that separates from any surface, in both themes); assistant = full-width open text.",
     },
     {
       name: "name",
@@ -116,8 +116,7 @@ export default defineComponent({
     {
       name: "MessageAvatar",
       dataSlot: "message-avatar",
-      description:
-        '28px round avatar: image → custom fallback → initials. Restyle with className, e.g. an ink seal for the assistant: `className="rounded-kura-sm bg-kura-ink text-kura-fg-inverted"` (a serif initial reads well).',
+      description: "28px round avatar: image → custom fallback → initials.",
       props: [
         {
           name: "name",

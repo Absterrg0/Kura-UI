@@ -43,7 +43,7 @@ export default defineComponent({
       type: '"pending" | "running" | "success" | "error" | "awaiting-approval"',
       default: '"running"',
       description:
-        "Lifecycle. pending = hollow ring; running = vermilion pulse + shimmering title + vermilion ticking timer; success = matcha check in a hairline ring; error = beni cross (details open by default); awaiting-approval = solid vermilion hand + a mono “Needs approval” label.",
+        "Lifecycle. pending = hollow ring; running = blue pulse + shimmering title + ticking timer; success = check; error = cross (details open by default); awaiting-approval = blue hand.",
     },
     {
       name: "args",
@@ -120,8 +120,7 @@ export default defineComponent({
     {
       name: "Status",
       dataSlot: "tool-call-status",
-      description:
-        "20px status glyph (aria-hidden). Vermilion only while running or awaiting approval.",
+      description: "20px status glyph (aria-hidden).",
     },
     { name: "Icon", dataSlot: "tool-call-icon", description: "Tool icon (aria-hidden)." },
     {
@@ -129,17 +128,7 @@ export default defineComponent({
       dataSlot: "tool-call-title",
       description: "Title or mono name; shimmers while running.",
     },
-    {
-      name: "Summary",
-      dataSlot: "tool-call-summary",
-      description: "Truncated one-line summary in subtle mono (paths, queries, commands).",
-    },
-    {
-      name: "Waiting",
-      dataSlot: "tool-call-waiting",
-      description:
-        'Mono uppercase “Needs approval” micro-label in vermilion, shown only for status="awaiting-approval" (aria-hidden; the status is announced separately).',
-    },
+    { name: "Summary", dataSlot: "tool-call-summary", description: "Truncated one-line summary." },
     {
       name: "Elapsed",
       dataSlot: "tool-call-elapsed",

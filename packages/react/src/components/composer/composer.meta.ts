@@ -122,7 +122,7 @@ export default defineComponent({
       name: "Composer",
       dataSlot: "composer",
       description:
-        "Root and drop target: a bright print stock with a hairline edge and an inner keyline. Focus inks the edge and lifts the sheet; while submitted/streaming the keyline turns faint vermilion. data-status, data-focused, data-dragging, data-disabled; aria-busy while busy. With no children it renders the complete default layout.",
+        "Root and drop target. data-status, data-focused, data-dragging, data-disabled; aria-busy while submitted/streaming. With no children it renders the complete default layout.",
     },
     {
       name: "ComposerAttachments",
@@ -205,7 +205,7 @@ export default defineComponent({
       name: "ComposerSubmit",
       dataSlot: "composer-submit",
       description:
-        "Send button (ink when ready, an empty hairline press when there is nothing to send) that becomes a vermilion stop button while busy — pale with a travelling arc while submitted, solid while streaming; data-mode = send | stop.",
+        "Send button (ink when ready, quiet when empty) that becomes a stop button while busy; data-mode = send | stop.",
       props: [
         {
           name: "sendLabel",
@@ -233,7 +233,7 @@ export default defineComponent({
       "The textarea is labelled “Message” by default (override with aria-label or aria-labelledby) and has enterkeyhint=send.",
       "Over the character limit the textarea gets aria-invalid and the hint tells screen readers the limit was exceeded (announced once, not per keystroke).",
       "The submit button swaps its accessible name between “Send message” and “Stop generating”; the root sets aria-busy while a response is pending.",
-      "The focus state (inked edge, lifted sheet) is on the whole composer (focus-within), so the textarea's own outline is replaced, never just removed.",
+      "The focus glow is on the whole composer (focus-within), so the textarea's own outline is replaced, never just removed.",
       "Attachments are a labelled list with “Remove <file>” buttons; removing returns focus to the textarea.",
     ],
     keyboard: [

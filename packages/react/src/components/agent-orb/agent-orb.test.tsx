@@ -29,15 +29,6 @@ describe("AgentOrb", () => {
     expect(screen.getByRole("status")).toHaveTextContent("Reading your summary");
   });
 
-  it("defaults to the sumi palette with an accent ember, and renders every preset", () => {
-    expect(agentOrbPresets.sumi[2]).toBe("var(--kura-accent)");
-    for (const preset of ["sumi", "washi", "shu", "ai", "matcha"] as const) {
-      const { container, unmount } = render(<AgentOrb colors={preset} />);
-      expect(container.querySelector("[data-slot=agent-orb-fallback]")).toBeInTheDocument();
-      unmount();
-    }
-  });
-
   it("can opt out of the live region", () => {
     render(<AgentOrb state="speaking" announce={false} />);
     expect(screen.queryByRole("status")).toBeNull();
@@ -51,6 +42,20 @@ describe("AgentOrb", () => {
     expect(fallback.firstElementChild).toHaveClass("animate-kura-spin");
     rerender(<AgentOrb state="error" />);
     expect(container.querySelector("[data-slot=agent-orb]")).toHaveAttribute("data-state", "error");
+  });
+
+  it("ships neutral and blue presets with signal as the theme-aware default", () => {
+    expect(Object.keys(agentOrbPresets)).toEqual(["signal", "pearl", "graphite", "ocean", "amber"]);
+    expect(agentOrbPresets.signal[0]).toBe("var(--kura-accent)");
+    // The palette is neutral + blue: no green/teal hues (≈150–200) in the fixed presets.
+    for (const palette of Object.values(agentOrbPresets)) {
+      for (const color of palette) {
+        const hue = /oklch\([\d.]+ ([\d.]+) ([\d.]+)\)/.exec(color);
+        if (hue && Number(hue[1]) > 0.03) {
+          expect(Number(hue[2]) < 150 || Number(hue[2]) > 200).toBe(true);
+        }
+      }
+    }
   });
 
   it("switches states from the full example", () => {

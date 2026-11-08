@@ -93,7 +93,7 @@ export default defineComponent({
       name: "CommandPalette",
       dataSlot: "command-palette",
       description:
-        "Modal dialog surface: a bright print with a keyline over a paper veil (no blur), origin-top pop, mono group labels and an ink tick on the highlighted row. data-page = current nested page id.",
+        "Modal dialog surface (opaque raised surface over a dimming scrim, origin-top pop). data-page = current nested page id.",
     },
     {
       name: "CommandPaletteSearch",

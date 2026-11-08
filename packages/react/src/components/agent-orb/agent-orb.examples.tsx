@@ -13,11 +13,11 @@ export function AgentOrbMinimal() {
 }
 
 const states: AgentOrbState[] = ["idle", "listening", "thinking", "speaking", "error"];
-const presets: AgentOrbPreset[] = ["sumi", "washi", "shu", "ai", "matcha"];
+const presets: AgentOrbPreset[] = ["signal", "pearl", "graphite", "ocean", "amber"];
 
 export function AgentOrbFull() {
   const [state, setState] = React.useState<AgentOrbState>("speaking");
-  const [preset, setPreset] = React.useState<AgentOrbPreset>("sumi");
+  const [preset, setPreset] = React.useState<AgentOrbPreset>("signal");
   // Simulated audio for the demo; pass `source: micStream` in a real app.
   const analyser = useAudioAnalyser({ simulate: "speech" });
   return (
@@ -92,28 +92,14 @@ export function AgentOrbVoiceSession() {
   }, [current]);
   const state: AgentOrbState = muted && current.state === "listening" ? "idle" : current.state;
   return (
-    <div className="relative flex w-full max-w-sm flex-col items-center gap-3 rounded-kura-lg bg-kura-surface-raised px-6 pt-5 pb-6 shadow-kura-md">
-      <span
-        aria-hidden
-        className="pointer-events-none absolute inset-1 rounded-kura-sm border border-kura-border-subtle"
-      />
-      <div className="flex w-full items-center justify-between font-kura-mono text-[10px] text-kura-fg-subtle uppercase tracking-[0.14em]">
-        <span>Call · Kura assistant</span>
-        <span className="flex items-center gap-1.5">
-          <span className="size-1.5 rounded-full bg-kura-accent" />
-          Live
-        </span>
-      </div>
+    <div className="flex w-full max-w-sm flex-col items-center gap-4 rounded-kura-2xl bg-kura-surface p-6 shadow-kura-md">
       <AgentOrb
         state={state}
         analyser={analyser}
         label={muted ? "Muted" : undefined}
-        className="size-48"
+        className="size-44"
       />
-      <p
-        className="flex h-12 items-center text-balance text-center font-kura-display text-kura-fg text-lg leading-snug"
-        aria-hidden
-      >
+      <p className="flex h-10 items-center text-center text-kura-fg-muted text-sm" aria-hidden>
         {state === "thinking" ? <ShimmerText>{current.caption}</ShimmerText> : current.caption}
       </p>
       <div className="flex items-center gap-2">

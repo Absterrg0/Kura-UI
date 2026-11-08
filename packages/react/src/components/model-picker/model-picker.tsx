@@ -106,8 +106,7 @@ function ProviderMark({ model, className }: { model: ModelPickerModel; className
     <span
       aria-hidden
       className={cn(
-        // A small stamped square: hairline ink edge, the provider's initial set in mono.
-        "flex size-4 shrink-0 items-center justify-center rounded-[3px] bg-kura-surface font-kura-mono font-medium text-[9px] text-kura-fg-muted leading-none shadow-[inset_0_0_0_1px_var(--kura-border-strong)]",
+        "flex size-4 shrink-0 items-center justify-center rounded-kura-xs bg-kura-active font-semibold text-[9px] text-kura-fg-muted leading-none",
         className,
       )}
     >
@@ -325,9 +324,9 @@ export function ModelPicker({
           disabled={disabled}
           aria-label={selected ? `Model: ${selected.name}` : placeholder}
           className={cn(
-            "group/model-picker inline-flex min-w-0 shrink cursor-pointer select-none items-center gap-1.5 rounded-kura-md font-kura-sans font-medium text-kura-fg-muted outline-none",
+            "group/model-picker inline-flex min-w-0 shrink cursor-pointer select-none items-center gap-1.5 rounded-kura-lg font-kura-sans font-medium text-kura-fg-muted outline-none",
             "transition-[background-color,color,transform] duration-(--kura-duration-fast) ease-kura-out",
-            "hover:not-disabled:bg-kura-hover hover:not-disabled:text-kura-fg data-[state=open]:bg-kura-active data-[state=open]:text-kura-fg",
+            "hover:not-disabled:bg-kura-hover hover:not-disabled:text-kura-fg data-[state=open]:bg-kura-hover data-[state=open]:text-kura-fg",
             "focus-visible:shadow-kura-focus active:not-disabled:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-50 motion-reduce:active:not-disabled:scale-100",
             size === "sm" ? "h-8 px-2 text-[13px]" : "h-9 px-2.5 text-sm",
             className,
@@ -338,7 +337,6 @@ export function ModelPicker({
           <span className="truncate">{selected?.name ?? placeholder}</span>
           <ChevronDown
             aria-hidden
-            strokeWidth={1.75}
             className="size-3.5 shrink-0 text-kura-fg-subtle transition-transform duration-(--kura-duration-base) ease-kura-out group-data-[state=open]/model-picker:rotate-180 motion-reduce:transition-none"
           />
         </button>
@@ -349,7 +347,7 @@ export function ModelPicker({
         sideOffset={6}
         data-slot="model-picker-content"
         aria-label="Choose a model"
-        className="flex w-[344px] flex-col overflow-hidden rounded-kura-md bg-kura-surface-raised p-0 backdrop-blur-none backdrop-saturate-100"
+        className="flex w-[340px] flex-col overflow-hidden p-0"
         onOpenAutoFocus={(e) => {
           e.preventDefault();
           (showSearch ? inputRef.current : listRef.current)?.focus();
@@ -359,13 +357,9 @@ export function ModelPicker({
         {showSearch && (
           <div
             data-slot="model-picker-search"
-            className="flex h-11 shrink-0 items-center gap-2.5 px-3.5 shadow-[inset_0_-1px_0_var(--kura-border)]"
+            className="flex h-10 shrink-0 items-center gap-2 px-3 shadow-[inset_0_-1px_0_var(--kura-border-subtle)]"
           >
-            <Search
-              aria-hidden
-              strokeWidth={1.75}
-              className="size-3.5 shrink-0 text-kura-fg-subtle"
-            />
+            <Search aria-hidden className="size-3.5 shrink-0 text-kura-fg-subtle" />
             <input
               ref={inputRef}
               role="combobox"
@@ -389,10 +383,10 @@ export function ModelPicker({
           aria-label="Models"
           tabIndex={showSearch ? -1 : 0}
           aria-activedescendant={!showSearch && active ? optionId(active) : undefined}
-          className="max-h-[min(20rem,var(--radix-popover-content-available-height,20rem))] scroll-py-1 overflow-y-auto overscroll-contain px-1.5 pb-1.5 outline-none [scrollbar-width:thin]"
+          className="max-h-[min(20rem,var(--radix-popover-content-available-height,20rem))] scroll-py-1 overflow-y-auto overscroll-contain p-1 outline-none [scrollbar-width:thin]"
         >
           {flat.length === 0 && (
-            <div className="px-3 py-7 text-center text-[13px] text-kura-fg-subtle">
+            <div className="px-3 py-6 text-center text-[13px] text-kura-fg-subtle">
               {emptyMessage}
             </div>
           )}
@@ -409,7 +403,7 @@ export function ModelPicker({
                 {provider && (
                   <div
                     id={headingId}
-                    className="select-none px-2 pt-3 pb-1.5 font-kura-mono text-[10px] text-kura-fg-subtle uppercase tracking-[0.14em]"
+                    className="select-none px-2 pt-2 pb-1 font-medium text-[11px] text-kura-fg-subtle"
                   >
                     {provider}
                   </div>
@@ -432,20 +426,18 @@ export function ModelPicker({
                       }
                       onClick={() => choose(model)}
                       className={cn(
-                        // Ruled rows: a hairline under each model, hidden around the highlight.
-                        "relative flex cursor-pointer select-none items-center gap-2.5 rounded-kura-sm px-2 py-2",
-                        "after:pointer-events-none after:absolute after:inset-x-2 after:bottom-0 after:h-px after:bg-kura-border-subtle last:after:hidden data-active:after:hidden",
-                        "transition-colors duration-(--kura-duration-instant) data-active:bg-kura-hover data-disabled:cursor-not-allowed data-disabled:opacity-45",
+                        "flex cursor-pointer select-none items-center gap-2.5 rounded-kura-md px-2 py-1.5",
+                        "data-active:bg-kura-hover data-disabled:cursor-not-allowed data-disabled:opacity-45",
                       )}
                     >
-                      <ProviderMark model={model} className="mt-px self-start" />
+                      <ProviderMark model={model} className="self-start mt-0.5" />
                       <div className="flex min-w-0 flex-1 flex-col gap-1">
                         <div className="flex min-w-0 items-center gap-1.5">
                           <span className="truncate font-medium text-[13px] text-kura-fg leading-4">
                             {model.name}
                           </span>
                           {model.badge && (
-                            <span className="shrink-0 rounded-[3px] px-1 py-px font-kura-mono text-[9px] text-kura-fg-muted uppercase leading-3 tracking-[0.1em] shadow-[inset_0_0_0_1px_var(--kura-border-strong)]">
+                            <span className="shrink-0 rounded-full bg-kura-active px-1.5 py-px font-medium text-[10px] text-kura-fg-muted leading-3.5">
                               {model.badge}
                             </span>
                           )}
@@ -470,7 +462,7 @@ export function ModelPicker({
           <div
             data-slot="model-picker-details"
             aria-live="polite"
-            className="flex h-12 shrink-0 items-center bg-kura-surface px-3.5 text-kura-fg-muted text-xs leading-4 shadow-[inset_0_1px_0_var(--kura-border)]"
+            className="flex h-12 shrink-0 items-center px-3 text-kura-fg-muted text-xs leading-4 shadow-[inset_0_1px_0_var(--kura-border-subtle)]"
           >
             <p className="line-clamp-2">
               {activeModel?.description ?? (activeModel ? activeModel.name : "")}
@@ -519,7 +511,7 @@ function ModelMeta({ model }: { model: ModelPickerModel }) {
             const { Icon, label } = CAPABILITIES[c];
             return (
               <span key={c} title={label} data-capability={c} className="inline-flex">
-                <Icon className="size-3 stroke-[1.75]" aria-hidden />
+                <Icon className="size-3" aria-hidden />
                 <span className="sr-only">{label}</span>
               </span>
             );

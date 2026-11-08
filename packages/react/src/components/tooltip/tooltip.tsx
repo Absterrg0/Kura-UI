@@ -52,9 +52,7 @@ export function TooltipContent({
         data-slot="tooltip-content"
         sideOffset={sideOffset}
         className={cn(
-          // A slip of ink with paper-coloured text: lit top edge, short warm shadow, no ring.
-          "z-50 inline-flex max-w-xs select-none items-center gap-2 rounded-kura-xs bg-kura-ink px-2 py-[5px] font-kura-sans font-medium text-[12px] text-kura-fg-inverted leading-[1.35] tracking-[0.005em]",
-          "shadow-[inset_0_1px_0_0_color-mix(in_oklab,white_10%,transparent),0_1px_2px_-1px_color-mix(in_oklab,black_35%,transparent),0_8px_18px_-8px_color-mix(in_oklab,black_40%,transparent)]",
+          "z-50 inline-flex min-h-6 max-w-xs select-none items-center gap-2 rounded-kura-md bg-kura-ink px-2 py-1 font-kura-sans font-medium text-kura-fg-inverted text-xs leading-4 shadow-kura-md",
           "origin-(--radix-tooltip-content-transform-origin)",
           "data-[state=delayed-open]:animate-kura-pop-in data-[state=closed]:animate-kura-pop-out data-[state=instant-open]:animate-none",
           className,
@@ -67,7 +65,7 @@ export function TooltipContent({
             keys={shortcut}
             variant="ghost"
             size="sm"
-            className="-mr-1 font-normal [&_[data-slot=kbd-key]]:opacity-70"
+            className="-mr-1 [&_[data-slot=kbd-key]]:bg-kura-fg-inverted/15 [&_[data-slot=kbd-key]]:text-kura-fg-inverted/75 [&_[data-slot=kbd-key]]:opacity-100"
           />
         )}
       </TooltipPrimitive.Content>

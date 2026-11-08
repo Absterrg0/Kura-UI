@@ -1,23 +1,23 @@
-# Washi & Sumi — the Kura UI design language
+# Kura Signal — the Kura UI design language
 
 > **Everything is still until the model speaks.**
-> Surfaces are washi paper and sumi ink. One vermilion seal colour, _shu_, is the signal: it appears only where an
+> Surfaces are quiet paper and ink. Motion and colour are a _signal_: they appear only where an
 > agent is thinking, listening, streaming or asking for something.
 
 Kura (蔵) is a storehouse — a calm, well-made place where valuable things are kept. The
 components are instruments for working with models: precise, warm, legible, a little tactile,
-never loud. Kura is a sibling of Kurambit and shares its craft: handmade paper stocks, sumi ink,
-a vermilion seal, Redaction for the lines that speak and Geist for the work. This document is the
-contract every component follows. It draws on people we admire (Emil Kowalski, Rauno Freiberg,
-Paco Coursey, Jhey Tompkins, Vercel Geist, Linear, Raycast) and on the AI-interface wave (AI
-Elements, ElevenLabs UI, prompt-kit, assistant-ui). We take principles, not looks.
+never loud. This document is the contract every component follows. It is distilled from the
+craft of people we admire (Emil Kowalski's work on Sonner/Vaul and animation, Rauno Freiberg's
+"Invisible Details of Interaction Design", Paco Coursey's cmdk, Jhey Tompkins' playful CSS,
+Vercel Geist, Linear, Raycast, Family) and from the AI-interface wave (AI Elements, ElevenLabs UI,
+prompt-kit, assistant-ui). We take principles, not looks.
 
 ---
 
 ## 1. Principles
 
-1. **Quiet by default, alive on signal.** Paper surfaces, ink type, one accent. The accent (shu,
-   vermilion seal ink) means _the machine is doing something_: streaming, listening, running a tool,
+1. **Quiet by default, alive on signal.** Neutral surfaces, one accent. The accent (blue
+   "signal") means _the machine is doing something_: streaming, listening, running a tool,
    awaiting approval. If nothing is happening, nothing glows.
 2. **Responsive before decorative.** Every interaction acknowledges input within one frame
    (press scale, hover tint, focus ring). Decoration is optional; feedback is not.
@@ -39,20 +39,24 @@ All colors are OKLCH CSS variables defined in `packages/react/src/styles/kura.cs
 Tailwind as `*-kura-*` utilities. **Components never hard-code colors and never use `dark:`** —
 tokens flip under `.dark` or `[data-theme="dark"]`.
 
-### Materials — paper stocks and ink (hue ~85)
+### Neutral scale — true greys (no tint), Geist-like steps
 
-| Token                | Material                              | Light                   | Dark ("sumi")           |
-| -------------------- | ------------------------------------- | ----------------------- | ----------------------- |
-| `canvas`             | the washi page                        | `oklch(0.926 0.021 86)` | `oklch(0.175 0.008 80)` |
-| `surface`            | a sheet laid on the page              | `oklch(0.971 0.013 87)` | `oklch(0.205 0.009 80)` |
-| `surface-raised`     | bright print stock (popovers, prints) | `oklch(0.994 0.007 89)` | `oklch(0.235 0.01 80)`  |
-| `surface-sunken`     | a pressed well (inputs, code)         | `oklch(0.9 0.024 85)`   | `oklch(0.152 0.007 80)` |
-| `fg` / `ink`         | sumi ink                              | `oklch(0.197 0.008 85)` | `oklch(0.935 0.018 86)` |
-| `fg-muted`           | pencil (≥ 4.5:1 on every stock)       | `oklch(0.47 0.018 83)`  | `oklch(0.76 0.018 85)`  |
-| `gray-1` … `gray-12` | the full paper → ink scale            | see `kura.css`          | see `kura.css`          |
+| Step      | Use                       | Light              | Dark               |
+| --------- | ------------------------- | ------------------ | ------------------ |
+| `gray-1`  | app canvas                | `oklch(0.99 0 0)`  | `oklch(0.145 0 0)` |
+| `gray-2`  | subtle / sunken bg        | `oklch(0.975 0 0)` | `oklch(0.17 0 0)`  |
+| `gray-3`  | UI element bg             | `oklch(0.96 0 0)`  | `oklch(0.2 0 0)`   |
+| `gray-4`  | hovered element bg        | `oklch(0.94 0 0)`  | `oklch(0.225 0 0)` |
+| `gray-5`  | active element bg         | `oklch(0.92 0 0)`  | `oklch(0.25 0 0)`  |
+| `gray-6`  | subtle borders            | `oklch(0.895 0 0)` | `oklch(0.28 0 0)`  |
+| `gray-7`  | borders                   | `oklch(0.86 0 0)`  | `oklch(0.33 0 0)`  |
+| `gray-8`  | strong borders            | `oklch(0.79 0 0)`  | `oklch(0.41 0 0)`  |
+| `gray-9`  | solid                     | `oklch(0.64 0 0)`  | `oklch(0.55 0 0)`  |
+| `gray-10` | placeholder / subtle text | `oklch(0.58 0 0)`  | `oklch(0.62 0 0)`  |
+| `gray-11` | muted text (≥ 4.5:1)      | `oklch(0.46 0 0)`  | `oklch(0.74 0 0)`  |
+| `gray-12` | primary text, ink         | `oklch(0.16 0 0)`  | `oklch(0.97 0 0)`  |
 
-Borders are ink at 8 / 13 / 24% alpha, so they sit on any stock. Shadows are ink-tinted, never
-pure black, and stay low.
+Cards are white on a near-white canvas in light, and one step lighter than a near-black canvas in dark.
 
 ### Semantic tokens (use these, not the scale)
 
@@ -69,18 +73,16 @@ pure black, and stay low.
 | `kura-danger*`, `kura-success*`, `kura-warning*`                                               | status only — never decoration                            |
 | `kura-ring`                                                                                    | focus ring color                                          |
 
-### The one accent — shu (vermilion seal ink, hue ~38)
+### The one accent — "signal" (blue, hue ~260)
 
-`accent` light `oklch(0.585 0.178 37.5)` (deep enough for white text), dark `oklch(0.69 0.17 40)`;
-`shu` is the brighter seal red for marks and shapes. Status colours keep their distance: danger is a
-deep beni red (hue 20), success matcha, warning ochre. Rules:
+Light `oklch(0.56 0.2 260)`, dark `oklch(0.68 0.17 258)`. Rules:
 
 - At most **one** accent-filled element per view (e.g. the "Run agent" button or the live orb).
 - Use `accent-subtle` + `accent-text` for small live states (a running step, a listening pill).
 - The primary call-to-action is **ink**, not accent. Accent is for AI-specific actions and states.
 - No purple-to-pink "AI gradients", no sparkles as decoration (see Anti-patterns).
-- Display serif (`font-kura-display`, Redaction in the docs) only for lines that speak: empty-state
-  headlines, verdicts, big titles. Never for UI labels. Micro-labels are mono, uppercase, tracked.
+- No ornaments: no textures, glows, glassmorphism on chrome, serif/italic display type or brush marks.
+  Taste comes from typography, spacing, contrast and motion, not decoration.
 
 ---
 
@@ -198,7 +200,7 @@ scale, blur, parallax, and continuous loops.
 
 ## 7. Focus & states
 
-- Focus ring: `focus-visible:shadow-kura-focus` = 1px canvas gap + 2px vermilion ring at 60%.
+- Focus ring: `focus-visible:shadow-kura-focus` = 1px canvas gap + 2px signal ring at 55%.
   Only on `:focus-visible`, never on mouse click. Never `outline-none` without a replacement.
 - States are exposed as data attributes for styling and for agents: `data-state="open|closed"`,
   `data-active`, `data-pressed`, `data-status="idle|running|done|error"`.

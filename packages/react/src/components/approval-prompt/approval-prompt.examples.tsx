@@ -10,8 +10,8 @@ import { type ApprovalDecision, ApprovalPrompt } from "./approval-prompt";
 export function ApprovalPromptMinimal() {
   return (
     <ApprovalPrompt
-      title="Install three new packages?"
-      command="pnpm add zod date-fns @tanstack/react-query"
+      title="Kura wants to run a command"
+      command="pnpm install"
       risk="low"
       shortcuts={false}
       className="w-full max-w-lg"
@@ -21,14 +21,12 @@ export function ApprovalPromptMinimal() {
 
 export function ApprovalPromptFull() {
   const [decision, setDecision] = React.useState<ApprovalDecision>("pending");
-  const [log, setLog] = React.useState<string[]>([]);
-  const note = (s: string) => setLog((l) => [...l.slice(-2), s]);
   return (
     <div className="flex w-full max-w-lg flex-col gap-3">
       <ApprovalPrompt
-        title="Delete the build directory?"
+        title="Kura wants to delete a directory"
         command="rm -rf build"
-        description="Kura wants to clear stale output before rebuilding the docs. This removes 1,204 files under ./build and nothing else."
+        description="Clears stale output before rebuilding. Affects 1,204 files under ./build only."
         risk="high"
         details={
           <ul className="flex list-disc flex-col gap-1 pl-4">
@@ -39,27 +37,22 @@ export function ApprovalPromptFull() {
         }
         decision={decision}
         onDecisionChange={setDecision}
-        onApprove={() => note("approved")}
-        onDeny={() => note("denied")}
-        onAlwaysAllow={() => note("always allowed")}
+        onAlwaysAllow={() => {}}
         shortcuts
         approveLabel="Run anyway"
         denyLabel="Deny"
         alwaysAllowLabel="Always allow"
       />
-      <div className="flex items-center justify-between">
-        <span className="font-kura-mono text-kura-fg-subtle text-xs">
-          {log.length ? log.join(" → ") : "Try ⌘↵ or Esc"}
-        </span>
+      {decision !== "pending" && (
         <Button
           variant="ghost"
-          size="sm"
-          disabled={decision === "pending"}
+          size="xs"
+          className="animate-kura-fade-in self-end"
           onClick={() => setDecision("pending")}
         >
-          <RotateCcw /> Reset
+          <RotateCcw /> Ask again
         </Button>
-      </div>
+      )}
     </div>
   );
 }
@@ -68,21 +61,21 @@ export function ApprovalPromptResolved() {
   return (
     <div className="flex w-full max-w-lg flex-col gap-3">
       <ApprovalPrompt
-        title="Push the release commit to main?"
+        title="Kura wants to run a command"
         command="git push origin main"
         risk="medium"
         defaultDecision="approved"
         shortcuts={false}
       />
       <ApprovalPrompt
-        title="Delete project 42 through the API?"
+        title="Kura wants to run a command"
         command="curl -X DELETE https://api.example.com/v1/projects/42"
         risk="high"
         defaultDecision="denied"
         shortcuts={false}
       />
       <ApprovalPrompt
-        title="Read the example environment file?"
+        title="Kura wants to read a file"
         command="cat .env.example"
         risk="low"
         defaultDecision="always"
@@ -117,7 +110,7 @@ export function ApprovalPromptWithDiff() {
         summary="+2 −1"
       />
       <ApprovalPrompt
-        title="Apply this edit to src/config.ts?"
+        title="Apply this edit?"
         icon={<FilePen />}
         risk="low"
         decision={decision}

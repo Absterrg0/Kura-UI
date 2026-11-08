@@ -88,7 +88,7 @@ export default defineComponent({
       name: "VoiceDictationControl",
       dataSlot: "voice-dictation-control",
       description:
-        "The mic button; while live it grows (layout spring) into a vermilion pill with waveform, mono timer and cancel.",
+        "The mic button; while live it grows (layout spring) into a signal-tinted pill with waveform, timer and cancel.",
     },
     {
       name: "VoiceDictationButton",
@@ -105,7 +105,7 @@ export default defineComponent({
       name: "VoiceDictationTranscript",
       dataSlot: "voice-dictation-transcript",
       description:
-        "Live transcript on a bright paper card: a mono status label with a live dot, final words in ink, interim words subtle, and a vermilion caret (data-slot=voice-dictation-caret) while listening.",
+        "Live transcript: final words in ink, interim words subtle, a signal caret while listening.",
     },
     {
       name: "VoiceDictationMessage",
@@ -163,6 +163,6 @@ export default defineComponent({
     "Feed a Composer by controlling its value: onTranscript={(t) => setValue((v) => (v ? v + ' ' + t : t))}; pass showTranscript={false}.",
     "Provide `transcribe` for Firefox/other browsers without SpeechRecognition; without it those browsers record but emit nothing.",
     "Only one mounted instance should own a given hotkey; pass hotkey={null} on the others.",
-    "The listening pill uses the vermilion signal — avoid another accent-filled element in the same view while dictating.",
+    "The listening pill uses the blue accent signal — avoid another accent-filled element in the same view while dictating.",
   ],
 });

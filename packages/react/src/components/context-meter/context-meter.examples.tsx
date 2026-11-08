@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowUp, Plus } from "lucide-react";
+import { ArrowUp, Paperclip } from "lucide-react";
 import * as React from "react";
 import { Button } from "../button";
 import { IconButton } from "../icon-button";
@@ -18,11 +18,19 @@ const BASE: ContextSegment[] = [
 ];
 
 export function ContextMeterFull() {
-  const [history, setHistory] = React.useState(30_410);
-  const segments = BASE.map((s) => (s.id === "history" ? { ...s, tokens: history } : s));
+  const [logs, setLogs] = React.useState(0);
+  const segments = BASE.map((s) =>
+    s.id === "files" ? { ...s, tokens: s.tokens + logs * 24_000 } : s,
+  );
   return (
-    <div className="flex flex-col items-center gap-6">
-      <div className="flex items-center gap-6">
+    <div className="flex w-full max-w-md flex-col rounded-kura-xl bg-kura-surface shadow-kura-sm">
+      <div className="flex items-center justify-between gap-3 px-4 py-3">
+        <div className="flex min-w-0 flex-col gap-0.5">
+          <span className="truncate font-medium text-kura-fg text-sm tracking-[-0.01em]">
+            Auth middleware refactor
+          </span>
+          <span className="text-kura-fg-subtle text-xs">32 turns · 200k context window</span>
+        </div>
         <ContextMeter
           max={200_000}
           segments={segments}
@@ -32,39 +40,47 @@ export function ContextMeterFull() {
           dangerAt={0.9}
           label="Context"
         />
+      </div>
+      <div className="flex items-center justify-between gap-3 px-4 py-3 shadow-[inset_0_1px_0_var(--kura-border-subtle)]">
         <ContextMeter
           max={200_000}
           segments={segments}
           variant="bar"
           valueDisplay="tokens"
+          className="-ml-1.5"
           footer="Files count once per turn; tool definitions are cached."
         />
-      </div>
-      <div className="flex gap-2">
-        <Button variant="secondary" size="sm" onClick={() => setHistory((h) => h + 24_000)}>
-          <Plus /> Add 24k tokens
-        </Button>
-        <Button variant="ghost" size="sm" onClick={() => setHistory(30_410)}>
-          Reset
-        </Button>
+        <div className="flex items-center gap-1">
+          {logs > 0 && (
+            <Button variant="ghost" size="xs" onClick={() => setLogs(0)}>
+              Clear
+            </Button>
+          )}
+          <Button variant="secondary" size="xs" onClick={() => setLogs((n) => n + 1)}>
+            <Paperclip /> Attach server.log
+          </Button>
+        </div>
       </div>
     </div>
   );
 }
 
 const THREADS = [
-  { name: "Onboarding copy review", used: 52_000 },
-  { name: "Billing service refactor", used: 98_500 },
-  { name: "Incident 2291 — postmortem", used: 121_900 },
+  { title: "Onboarding emails", used: 52_000 },
+  { title: "Q3 data migration", used: 98_500 },
+  { title: "Incident review: checkout", used: 121_900 },
 ];
 
 export function ContextMeterThresholds() {
   return (
-    <ul className="flex w-full max-w-md flex-col divide-y divide-kura-border-subtle shadow-[inset_0_1px_0_var(--kura-border-subtle),inset_0_-1px_0_var(--kura-border-subtle)]">
+    <ul className="flex w-full max-w-md flex-col">
       {THREADS.map((t) => (
-        <li key={t.name} className="flex h-11 items-center justify-between gap-4 px-1">
-          <span className="min-w-0 truncate text-kura-fg text-sm">{t.name}</span>
-          <ContextMeter max={128_000} used={t.used} variant="bar" label={t.name} />
+        <li
+          key={t.title}
+          className="flex h-10 items-center justify-between gap-4 text-[13px] text-kura-fg shadow-[inset_0_-1px_0_var(--kura-border-subtle)] last:shadow-none"
+        >
+          <span className="min-w-0 truncate">{t.title}</span>
+          <ContextMeter max={128_000} used={t.used} variant="bar" label={t.title} />
         </li>
       ))}
     </ul>
@@ -73,16 +89,13 @@ export function ContextMeterThresholds() {
 
 export function ContextMeterInComposer() {
   return (
-    <div className="flex w-full max-w-lg flex-col gap-2 rounded-kura-md bg-kura-surface-raised p-3 shadow-kura-sm">
-      <p className="min-h-12 px-1 text-[15px] text-kura-fg leading-relaxed">
-        Now draft the migration guide for teams still on v2
-        <span
-          aria-hidden
-          className="ml-px inline-block h-[1.1em] w-px translate-y-[0.2em] bg-kura-fg"
-        />
-      </p>
+    <div className="flex w-full max-w-lg flex-col gap-2 rounded-kura-xl bg-kura-surface p-3 shadow-kura-sm">
+      <p className="min-h-12 px-1 text-[15px] text-kura-fg-subtle">Ask a follow-up…</p>
       <div className="flex items-center justify-between">
-        <ContextMeter max={200_000} segments={BASE} />
+        <div className="flex items-center gap-1">
+          <IconButton label="Attach files" size="sm" icon={<Paperclip />} />
+          <ContextMeter max={200_000} segments={BASE} />
+        </div>
         <IconButton
           label="Send"
           variant="primary"

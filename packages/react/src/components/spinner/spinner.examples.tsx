@@ -11,24 +11,11 @@ export function SpinnerMinimal() {
 
 export function SpinnerFull() {
   return (
-    <div className="flex flex-col items-center gap-5">
-      <div className="flex items-end gap-8 text-kura-fg">
-        {(["sm", "md", "lg"] as const).map((size) => (
-          <span key={size} className="flex flex-col items-center gap-2.5">
-            <Spinner size={size} label={`Loading, ${size}`} />
-            <span className="font-kura-mono text-[10px] text-kura-fg-subtle uppercase tracking-[0.14em]">
-              {size}
-            </span>
-          </span>
-        ))}
-        <span className="flex flex-col items-center gap-2.5">
-          <Spinner size="lg" label="Model is working" className="text-kura-accent" />
-          <span className="font-kura-mono text-[10px] text-kura-fg-subtle uppercase tracking-[0.14em]">
-            shu
-          </span>
-        </span>
-      </div>
-      <span className="inline-flex items-center gap-2 text-kura-fg-muted text-sm">
+    <div className="flex items-center gap-6 text-kura-fg-muted">
+      <Spinner size="sm" label="Loading small" />
+      <Spinner size="md" label="Loading medium" />
+      <Spinner size="lg" label="Loading large" className="text-kura-accent" />
+      <span className="inline-flex items-center gap-2 text-sm">
         <Spinner size="sm" label={null} /> Fetching models…
       </span>
     </div>
@@ -113,14 +100,11 @@ export function SpinnerSourcesList() {
   return (
     <section
       aria-labelledby="sources-title"
-      className="flex w-full max-w-md flex-col rounded-kura-md bg-kura-surface shadow-kura-sm"
+      className="flex w-full max-w-md flex-col rounded-kura-xl bg-kura-surface shadow-kura-sm"
     >
-      <div className="flex items-center justify-between gap-3 px-5 pt-5 pb-3">
-        <div className="flex flex-col gap-1">
-          <h3
-            id="sources-title"
-            className="font-kura-display text-[19px] text-kura-fg leading-tight"
-          >
+      <div className="flex items-center justify-between gap-3 px-4 pt-4 pb-2">
+        <div className="flex flex-col gap-0.5">
+          <h3 id="sources-title" className="font-medium text-kura-fg text-sm">
             Knowledge sources
           </h3>
           <p className="text-kura-fg-muted text-xs" aria-live="polite">
@@ -131,21 +115,19 @@ export function SpinnerSourcesList() {
           Sync now
         </Button>
       </div>
-      <ul className="mx-5 mb-2 flex flex-col divide-y divide-kura-border-subtle border-kura-border border-t">
+      <ul className="flex flex-col p-1.5">
         {sources.map((source) => (
           <li
             key={source.id}
             data-status={source.status}
-            className="flex items-center gap-3 py-2.5"
+            className="flex items-center gap-3 rounded-kura-md px-2.5 py-2"
           >
-            <span className="flex size-8 shrink-0 items-center justify-center rounded-kura-sm bg-kura-surface-sunken text-kura-fg-muted [&_svg]:size-4 [&_svg]:stroke-[1.75]">
+            <span className="flex size-8 shrink-0 items-center justify-center rounded-kura-md bg-kura-surface-sunken text-kura-fg-muted shadow-kura-xs [&_svg]:size-4">
               {source.icon}
             </span>
             <span className="flex min-w-0 flex-1 flex-col">
               <span className="truncate font-medium text-[13px] text-kura-fg">{source.name}</span>
-              <span className="truncate font-kura-mono text-[11px] text-kura-fg-subtle">
-                {source.detail}
-              </span>
+              <span className="truncate text-kura-fg-subtle text-xs">{source.detail}</span>
             </span>
             {source.status === "error" ? (
               <Button

@@ -55,7 +55,8 @@ describe("Popover", () => {
   it("is accessible open and closed", async () => {
     const { container } = render(<PopoverMinimal />);
     await axe(container);
-    await userEvent.click(screen.getByRole("button", { name: "Open" }));
+    await userEvent.click(screen.getByRole("button", { name: "Usage" }));
+    expect(await screen.findByRole("dialog", { name: "Weekly usage" })).toBeInTheDocument();
     await axe(document.body);
   });
 

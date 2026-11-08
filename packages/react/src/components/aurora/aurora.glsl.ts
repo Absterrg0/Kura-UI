@@ -1,11 +1,11 @@
 import { GLSL_COLOR } from "../../lib/shader-color";
 
 /**
- * Aurora: three layers of light curtains. Each curtain has a bright, sharp lower edge that wanders
+ * Aurora: three layers of soft light veils. Each has a luminous (but soft) lower edge that wanders
  * along an fbm curve, folds sideways (x is warped by noise) and fades upward through the palette.
- * Vertical "rays" come from noise stretched along y. Light is accumulated in linear RGB and written
+ * Low-contrast vertical texture comes from noise stretched along y. Light is accumulated in linear RGB and written
  * as premultiplied alpha, so the aurora composites over any background — luminous on dark,
- * watercolour-like on light. Optional stars twinkle behind it on dark backgrounds.
+ * a pale wash on light. Optional faint stars sit behind it on dark backgrounds.
  */
 export const AURORA_FRAG = /* glsl */ `
 uniform vec3 u_low;   // lower edge colour (linear RGB)
@@ -40,21 +40,21 @@ vec3 curtain(vec2 uv, float aspect, float t, float i) {
   float fold = fbm(vec2(x * 0.7 + i * 3.1, t * 0.1 + i * 2.0)) - 0.5;
   float xw = x + fold * 1.1;
   // The lower edge snakes across the sky.
-  float edge = 0.42 + 0.09 * i
+  float edge = 0.5 + 0.08 * i
     + 0.26 * (fbm(vec2(xw * 0.9 - t * 0.05 + i * 7.3, i * 1.7)) - 0.5)
     + 0.04 * sin(xw * 2.3 + t * 0.15 + i * 2.0);
   float d = uv.y - edge;
   // Ribbons break up along their length, leaving dark sky between them.
   float seg = smoothstep(0.3, 0.56, fbm(vec2(xw * 0.45 + i * 5.3 + t * 0.03, i * 3.3)));
   // Rays: noise stretched vertically, drifting along the ribbon; they also set each ray's height.
-  float rays = fbm(vec2(xw * 16.0 + t * 0.3 * (1.0 + i * 0.3), uv.y * 0.5 - t * 0.04));
-  rays = smoothstep(0.2, 0.8, rays);
-  float height = 0.06 + 0.16 * rays * (1.0 - i * 0.25);
-  float body = smoothstep(-0.008, 0.012, d) * exp(-max(d, 0.0) / height);
-  float rim = exp(-abs(d) * 70.0) * 0.35; // the bright, crisp lower edge
-  // On light backgrounds strong ray contrast reads as grey streaks, so soften it into a wash.
-  float rr = mix(rays, 0.55 + 0.45 * rays, u_light);
-  float a = (body * (0.45 + 0.75 * rr) + rim) * seg * (1.0 - i * 0.25);
+  float rays = fbm(vec2(xw * 7.0 + t * 0.25 * (1.0 + i * 0.3), uv.y * 0.4 - t * 0.03));
+  rays = smoothstep(0.25, 0.75, rays);
+  float height = 0.09 + 0.14 * rays * (1.0 - i * 0.25);
+  float body = smoothstep(-0.035, 0.03, d) * exp(-max(d, 0.0) / height);
+  float rim = exp(-abs(d) * 38.0) * 0.16; // a soft glow along the lower edge
+  // Keep the vertical texture faint — strong rays read as streaks, especially on light pages.
+  float rr = mix(0.4 + 0.6 * rays, 0.7 + 0.3 * rays, u_light);
+  float a = (body * (0.4 + 0.6 * rr) + rim) * seg * (1.0 - i * 0.25);
   vec3 c = mix(u_low, u_mid, smoothstep(0.0, 0.08, d));
   c = mix(c, u_high, smoothstep(0.06, 0.24, d));
   return c * a;
@@ -83,14 +83,16 @@ void main() {
     }
     stars *= u_stars * (1.0 - u_light) * (1.0 - clamp(dot(light, vec3(1.0)), 0.0, 1.0));
   }
-  light += vec3(1.0, 0.95, 0.86) * stars * 0.7; // paper-coloured, never blue-white
+  light += vec3(stars) * 0.8;
 
-  // Light → premultiplied colour. On light backgrounds the curtains become a saturated ink wash
-  // (deeper, never desaturated toward grey) with a gentler alpha curve.
+  // Light → premultiplied colour. On light backgrounds the veils become a slightly deeper wash
+  // (never desaturated toward grey) with a gentler alpha curve.
   float peak = max(light.r, max(light.g, light.b));
-  float a = clamp(1.0 - exp(-peak * mix(1.8, 1.5, u_light)), 0.0, 1.0) * mix(1.0, 0.8, u_light);
+  float a = clamp(1.0 - exp(-peak * mix(1.6, 1.4, u_light)), 0.0, 1.0) * mix(0.9, 0.78, u_light);
   vec3 c = peak > 0.0 ? light / peak : vec3(0.0);
-  vec3 ink = c * 0.42; // a deep, saturated ink — never a pastel tint of the light
+  // Pale palettes (polar, mist) would vanish on a white page: deepen them more than saturated ones.
+  float pale = smoothstep(0.35, 0.9, dot(c, vec3(0.2126, 0.7152, 0.0722)));
+  vec3 ink = c * mix(0.8, 0.42, pale);
   c = mix(c, ink, u_light);
   vec3 premul = linearToSrgb(c) * a;
   premul += (ign(gl_FragCoord.xy) - 0.5) / 255.0 * a;

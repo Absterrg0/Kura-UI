@@ -57,56 +57,45 @@ export function ToolCallFull() {
         onOpenChange={setOpen}
         className="w-full"
       />
-      <Button variant="secondary" size="sm" onClick={() => setRun((r) => r + 1)}>
-        <RotateCcw /> Replay
-      </Button>
+      {status === "success" && (
+        <Button
+          variant="ghost"
+          size="xs"
+          className="animate-kura-fade-in self-end"
+          onClick={() => setRun((r) => r + 1)}
+        >
+          <RotateCcw /> Replay
+        </Button>
+      )}
     </div>
   );
 }
 
 export function ToolCallStates() {
-  // One sheet, hairline rules between calls: how a run's tool log reads in a sidebar.
-  const row = "rounded-none bg-transparent shadow-none";
   return (
-    <div className="flex w-full max-w-lg flex-col divide-y divide-kura-border-subtle overflow-hidden rounded-kura-md bg-kura-surface shadow-kura-sm">
+    <div className="flex w-full max-w-lg flex-col gap-2">
+      <ToolCall name="list_files" status="pending" args={{ dir: "src/components" }} />
+      <ToolCall
+        name="run_tests"
+        icon={<Terminal />}
+        status="running"
+        args={{ filter: "message" }}
+      />
       <ToolCall
         name="read_file"
         icon={<FileText />}
         status="success"
         duration={96}
-        args={{ path: "src/checkout/format-date.ts" }}
-        result={"export function formatDue(date: Date) {\n  return date.toLocaleDateString();\n}"}
-        className={row}
-      />
-      <ToolCall
-        name="run_tests"
-        icon={<Terminal />}
-        status="running"
-        args={{ filter: "checkout --tz=UTC" }}
-        className={row}
-      />
-      <ToolCall
-        name="run_command"
-        icon={<Terminal />}
-        status="awaiting-approval"
-        args={{ command: "pnpm db:migrate --env staging" }}
-        defaultOpen={false}
-        className={row}
-      />
-      <ToolCall
-        name="open_pull_request"
-        status="pending"
-        args={{ title: "Fix timezone drift in checkout test" }}
-        className={row}
+        args={{ path: "README.md" }}
+        result="# Kura UI"
       />
       <ToolCall
         name="deploy_preview"
         status="error"
         duration={4210}
-        args={{ branch: "fix/checkout-tz" }}
-        error="Error: build failed — Type error in src/checkout/format-date.ts:42"
+        args={{ branch: "feat/message" }}
+        error="Error: build failed — Type error in message.tsx:295"
         defaultOpen={false}
-        className={row}
       />
     </div>
   );

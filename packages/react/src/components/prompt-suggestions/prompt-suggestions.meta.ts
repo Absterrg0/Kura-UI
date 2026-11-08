@@ -35,7 +35,7 @@ export default defineComponent({
       type: '"chips" | "cards" | "list"',
       default: '"cards"',
       description:
-        "chips = wrapping paper slips (titles only), cards = two-column bright prints with icon and description, list = hairline-ruled rows.",
+        "chips = wrapping pills (titles only), cards = two-column tiles with icon and description, list = hairline-separated rows.",
     },
     {
       name: "stagger",

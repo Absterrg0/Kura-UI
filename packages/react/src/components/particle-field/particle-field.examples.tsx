@@ -3,33 +3,27 @@
 import * as React from "react";
 import { Button } from "../button";
 import { ShimmerText } from "../shimmer-text";
-import {
-  ParticleField,
-  type ParticleFieldShape,
-  type ParticleFieldVariant,
-} from "./particle-field";
+import { ParticleField, type ParticleFieldShape } from "./particle-field";
 
 export function ParticleFieldMinimal() {
   return (
-    <ParticleField className="h-64 w-full rounded-kura-lg bg-kura-surface text-kura-fg-muted shadow-kura-sm" />
+    <ParticleField className="h-64 w-full rounded-kura-xl bg-kura-surface-sunken shadow-kura-sm" />
   );
 }
 
 export function ParticleFieldFull() {
   const [converge, setConverge] = React.useState(false);
-  const [shape, setShape] = React.useState<ParticleFieldShape>("point");
-  const [variant, setVariant] = React.useState<ParticleFieldVariant>("halftone");
+  const [shape, setShape] = React.useState<ParticleFieldShape>("ring");
   const [paused, setPaused] = React.useState(false);
   return (
     <div className="flex w-full max-w-2xl flex-col gap-4">
       <ParticleField
-        variant={variant}
         converge={converge}
         shape={shape}
         paused={paused}
         linkDistance={120}
         speed={1.2}
-        className="aspect-[16/9] w-full rounded-kura-lg bg-kura-surface-raised text-kura-fg shadow-kura-md"
+        className="aspect-[16/9] w-full rounded-kura-xl bg-kura-surface-sunken text-kura-fg-muted shadow-kura-md"
       />
       <div className="flex flex-wrap items-center gap-1.5">
         <Button
@@ -52,19 +46,6 @@ export function ParticleFieldFull() {
             {s}
           </Button>
         ))}
-        <span aria-hidden className="mx-1 h-4 w-px bg-kura-border" />
-        {(["halftone", "constellation"] as const).map((v) => (
-          <Button
-            key={v}
-            size="sm"
-            variant={v === variant ? "secondary" : "ghost"}
-            aria-pressed={v === variant}
-            onClick={() => setVariant(v)}
-            className="capitalize"
-          >
-            {v}
-          </Button>
-        ))}
         <Button size="sm" variant="ghost" className="ml-auto" onClick={() => setPaused((p) => !p)}>
           {paused ? "Play" : "Pause"}
         </Button>
@@ -83,28 +64,18 @@ export function ParticleFieldGenerating() {
   return (
     <ParticleField
       converge={generating}
-      shape="point"
-      count={40}
-      className="flex h-80 w-full items-end justify-center rounded-kura-lg bg-kura-surface p-6 text-kura-fg-muted shadow-kura-md"
+      className="flex h-80 w-full flex-col items-center justify-center gap-3 rounded-kura-2xl bg-kura-surface text-center shadow-kura-md"
     >
-      <div className="relative flex w-full max-w-sm flex-col items-center gap-3 rounded-kura-md bg-kura-surface-raised px-5 py-4 text-center shadow-kura-sm">
-        <span
-          aria-hidden
-          className="pointer-events-none absolute inset-1 rounded-kura-sm border border-kura-border-subtle"
-        />
-        <div role="status" aria-live="polite" className="flex h-7 items-center text-sm">
-          {generating ? (
-            <ShimmerText>Generating your workspace…</ShimmerText>
-          ) : (
-            <span className="font-kura-display text-kura-fg text-lg">
-              Describe a workspace and Kura sets it up.
-            </span>
-          )}
-        </div>
-        <Button size="sm" onClick={() => setGenerating(true)} disabled={generating}>
-          Generate
-        </Button>
+      <div role="status" aria-live="polite" className="h-6 text-sm">
+        {generating ? (
+          <ShimmerText>Generating your workspace…</ShimmerText>
+        ) : (
+          <span className="text-kura-fg-muted">Describe a workspace and Kura sets it up.</span>
+        )}
       </div>
+      <Button onClick={() => setGenerating(true)} disabled={generating}>
+        Generate
+      </Button>
     </ParticleField>
   );
 }
