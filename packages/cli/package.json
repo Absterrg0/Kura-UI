@@ -1,0 +1,39 @@
+{
+  "name": "@kura-ui/cli",
+  "version": "0.0.0",
+  "description": "Kura UI CLI: list, search, inspect and add AI-native components to your project. Every command supports --json for agents.",
+  "license": "MIT",
+  "type": "module",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Absterrg0/Kura-UI.git",
+    "directory": "packages/cli"
+  },
+  "keywords": [
+    "cli",
+    "kura-ui",
+    "react",
+    "components",
+    "shadcn",
+    "agents"
+  ],
+  "bin": {
+    "kura": "./dist/index.js"
+  },
+  "files": [
+    "dist",
+    "data",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsdown",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "tsdown": "^0.23.7",
+    "typescript": "~6.0.3",
+    "vitest": "^5.1.0"
+  }
+}
