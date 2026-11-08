@@ -128,8 +128,15 @@ export function ArtifactCard({
           ? `${title} failed`
           : `${title} ready`;
 
-  const titleClass =
-    "min-w-0 truncate text-left font-medium text-kura-fg text-sm leading-5 outline-none";
+  const titleClass = cn(
+    "min-w-0 truncate text-left text-kura-fg outline-none",
+    compact
+      ? "font-medium text-sm leading-5"
+      : // A file name is set as what it is (mono); anything with a human title speaks in the serif.
+        kind === "code" || kind === "file"
+        ? "font-kura-mono text-[13px] leading-6"
+        : "pb-0.5 font-kura-display text-[17px] leading-6 tracking-[-0.005em]",
+  );
   // The open control stretches over the whole card (after: overlay), so the card is one target
   // while the version switcher and actions stay separately clickable above it.
   const stretch =
@@ -216,13 +223,13 @@ export function ArtifactCard({
       data-selected={selected || undefined}
       aria-busy={busy || undefined}
       className={cn(
-        "group/artifact relative isolate flex min-w-0 flex-col overflow-hidden rounded-kura-xl bg-kura-surface font-kura-sans shadow-kura-sm",
+        "group/artifact relative isolate flex min-w-0 flex-col overflow-hidden rounded-kura-md bg-kura-surface font-kura-sans shadow-kura-sm",
         "transition-[box-shadow,transform] duration-(--kura-duration-fast) ease-kura-out motion-reduce:transition-none",
         compact ? "w-fit max-w-full" : "w-full",
         openable &&
           "hover:shadow-kura-md has-[[data-slot=artifact-card-open]:active]:scale-[0.99] motion-reduce:has-[[data-slot=artifact-card-open]:active]:scale-100",
         selected &&
-          "shadow-[0_0_0_1px_var(--kura-border-strong),0_0_0_4px_var(--kura-hover)] hover:shadow-[0_0_0_1px_var(--kura-border-strong),0_0_0_4px_var(--kura-hover)]",
+          "shadow-[0_0_0_1px_var(--kura-fg-subtle),0_0_0_4px_var(--kura-hover)] hover:shadow-[0_0_0_1px_var(--kura-fg-subtle),0_0_0_4px_var(--kura-hover)]",
         "has-[[data-slot=artifact-card-open]:focus-visible]:shadow-kura-focus",
         className,
       )}
@@ -230,6 +237,7 @@ export function ArtifactCard({
     >
       {!compact && (
         <div className="relative">
+          {/* A pressed well with the artifact laid in it as a sheet of brighter print stock. */}
           <div
             data-slot="artifact-card-preview"
             aria-hidden
@@ -237,15 +245,18 @@ export function ArtifactCard({
             className="relative h-36 overflow-hidden bg-kura-surface-sunken shadow-[inset_0_-1px_0_var(--kura-border-subtle)]"
           >
             <div
+              data-slot="artifact-card-sheet"
               className={cn(
-                "absolute inset-0 origin-top [mask-image:linear-gradient(to_bottom,black_62%,transparent)]",
+                "absolute inset-x-5 top-4 -bottom-2 overflow-hidden rounded-t-kura-xs bg-kura-surface-raised shadow-kura-sm",
                 "transition-[transform,opacity] duration-(--kura-duration-slow) ease-kura-out motion-reduce:transition-opacity",
                 openable &&
-                  "group-hover/artifact:scale-[1.015] motion-reduce:group-hover/artifact:scale-100",
+                  "group-hover/artifact:-translate-y-1 motion-reduce:group-hover/artifact:translate-y-0",
                 status === "updating" && "opacity-60",
               )}
             >
-              {preview ?? <PreviewPlaceholder kind={kind} busy={busy} />}
+              <div className="absolute inset-0 [mask-image:linear-gradient(to_bottom,black_55%,transparent)]">
+                {preview ?? <PreviewPlaceholder kind={kind} busy={busy} />}
+              </div>
             </div>
           </div>
           {progressBar}
@@ -254,13 +265,13 @@ export function ArtifactCard({
 
       <div
         data-slot="artifact-card-header"
-        className={cn("flex min-w-0 items-center gap-3", compact ? "p-2 pr-2.5" : "px-3 py-2.5")}
+        className={cn("flex min-w-0 items-center gap-3", compact ? "p-2 pr-2.5" : "px-3.5 py-3")}
       >
         <span
           aria-hidden
           data-slot="artifact-card-icon"
           className={cn(
-            "relative grid size-9 shrink-0 place-items-center rounded-kura-md bg-kura-gray-3 text-kura-fg-muted shadow-[inset_0_0_0_1px_var(--kura-border-subtle)] [&_svg]:size-4",
+            "relative grid size-9 shrink-0 place-items-center rounded-kura-sm bg-kura-surface-sunken text-kura-fg-muted shadow-[inset_0_0_0_1px_var(--kura-border-subtle)] [&_svg]:size-4 [&_svg]:stroke-[1.75]",
             "transition-colors duration-(--kura-duration-base) ease-kura-out",
             busy && "bg-kura-accent-subtle text-kura-accent-text",
             status === "error" && "bg-kura-danger-subtle text-kura-danger-text",
@@ -273,21 +284,21 @@ export function ArtifactCard({
           {titleNode}
           <span
             data-slot="artifact-card-meta"
-            className="flex min-w-0 items-center gap-1.5 text-kura-fg-muted text-xs leading-5"
+            className="flex min-w-0 items-center gap-1.5 font-kura-mono text-[11px] text-kura-fg-subtle leading-5 tracking-[0.01em]"
           >
             {busy ? (
               <>
-                <ShimmerText className="truncate">
+                <ShimmerText className="truncate font-kura-sans text-kura-fg-muted text-xs">
                   {statusText ?? (status === "generating" ? "Generating…" : "Updating…")}
                 </ShimmerText>
                 {pct != null && (
-                  <span className="shrink-0 font-kura-mono text-[11px] text-kura-fg-subtle tabular-nums">
-                    {pct}%
-                  </span>
+                  <span className="shrink-0 text-kura-accent-text tabular-nums">{pct}%</span>
                 )}
               </>
             ) : status === "error" ? (
-              <span className="truncate text-kura-danger-text">{error ?? "Couldn't finish"}</span>
+              <span className="truncate font-kura-sans text-kura-danger-text text-xs">
+                {error ?? "Couldn't finish"}
+              </span>
             ) : (
               <span className="truncate">{meta ?? k.label}</span>
             )}

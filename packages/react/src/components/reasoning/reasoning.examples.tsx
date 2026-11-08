@@ -8,7 +8,7 @@ import { StreamingText } from "../streaming-text";
 import { Reasoning } from "./reasoning";
 
 const TRACE =
-  "The user wants the like button to feel instant. The lag comes from waiting on the server round-trip before re-rendering.\n\nOptions: optimistic local state with manual rollback, or useOptimistic inside a transition. useOptimistic handles the rollback automatically if the action throws, and keeps the UI consistent with concurrent updates.\n\nI should recommend useOptimistic and show the minimal pattern, then mention the error case.";
+  "They want the like button to feel instant. Right now it waits for the server round-trip before the count changes, so every tap lags by ~300ms.\n\nTwo options: optimistic local state with a manual rollback in catch, or useOptimistic inside a transition. The hook drops the optimistic value by itself when the action throws, and it stays correct when two taps overlap.\n\nRecommend useOptimistic, show the smallest working pattern, then say what happens on error.";
 
 export function ReasoningMinimal() {
   return (
@@ -64,11 +64,17 @@ export function ReasoningInMessage() {
     <Message
       from="assistant"
       name="Kura"
-      avatar={<MessageAvatar name="Kura" />}
+      avatar={
+        <MessageAvatar
+          name="Kura"
+          className="rounded-kura-sm bg-kura-ink pt-px font-kura-display font-normal text-[15px] text-kura-fg-inverted shadow-none"
+        />
+      }
       className="max-w-xl"
     >
       <Reasoning
         duration={83}
+        defaultOpen
         formatLabel={({ active, seconds }) =>
           active ? "Planning…" : `Planned for ${Math.round(seconds / 60)} min`
         }

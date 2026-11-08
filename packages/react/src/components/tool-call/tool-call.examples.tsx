@@ -12,7 +12,7 @@ export function ToolCallMinimal() {
       status="success"
       duration={182}
       args={{ path: "src/app/page.tsx" }}
-      result="export default function Page() {\n  return <Chat />;\n}"
+      result={"export default function Page() {\n  return <Chat />;\n}"}
       className="w-full max-w-lg"
     />
   );
@@ -65,30 +65,48 @@ export function ToolCallFull() {
 }
 
 export function ToolCallStates() {
+  // One sheet, hairline rules between calls: how a run's tool log reads in a sidebar.
+  const row = "rounded-none bg-transparent shadow-none";
   return (
-    <div className="flex w-full max-w-lg flex-col gap-2">
-      <ToolCall name="list_files" status="pending" args={{ dir: "src/components" }} />
-      <ToolCall
-        name="run_tests"
-        icon={<Terminal />}
-        status="running"
-        args={{ filter: "message" }}
-      />
+    <div className="flex w-full max-w-lg flex-col divide-y divide-kura-border-subtle overflow-hidden rounded-kura-md bg-kura-surface shadow-kura-sm">
       <ToolCall
         name="read_file"
         icon={<FileText />}
         status="success"
         duration={96}
-        args={{ path: "README.md" }}
-        result="# Kura UI"
+        args={{ path: "src/checkout/format-date.ts" }}
+        result={"export function formatDue(date: Date) {\n  return date.toLocaleDateString();\n}"}
+        className={row}
+      />
+      <ToolCall
+        name="run_tests"
+        icon={<Terminal />}
+        status="running"
+        args={{ filter: "checkout --tz=UTC" }}
+        className={row}
+      />
+      <ToolCall
+        name="run_command"
+        icon={<Terminal />}
+        status="awaiting-approval"
+        args={{ command: "pnpm db:migrate --env staging" }}
+        defaultOpen={false}
+        className={row}
+      />
+      <ToolCall
+        name="open_pull_request"
+        status="pending"
+        args={{ title: "Fix timezone drift in checkout test" }}
+        className={row}
       />
       <ToolCall
         name="deploy_preview"
         status="error"
         duration={4210}
-        args={{ branch: "feat/message" }}
-        error="Error: build failed — Type error in message.tsx:295"
+        args={{ branch: "fix/checkout-tz" }}
+        error="Error: build failed — Type error in src/checkout/format-date.ts:42"
         defaultOpen={false}
+        className={row}
       />
     </div>
   );

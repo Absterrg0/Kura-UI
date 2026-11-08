@@ -242,18 +242,30 @@ export function ContextMeter({
           side="top"
           align={variant === "bar" ? "start" : "center"}
           data-slot="context-meter-card"
-          className="w-72 p-3.5"
+          className="w-72 p-4"
           onOpenAutoFocus={(e) => e.preventDefault()}
           onPointerEnter={() => clearTimeout(timer.current)}
           onPointerLeave={() => schedule(false, 150)}
         >
           <div className="flex flex-col gap-3">
-            <div className="flex items-baseline justify-between">
-              <span className="font-medium text-kura-fg text-sm">{label} window</span>
-              <span className={cn("font-kura-mono text-xs tabular-nums", tone)}>
-                {formatTokens(used)}{" "}
-                <span className="text-kura-fg-subtle">/ {formatTokens(max)}</span>
-              </span>
+            <div className="flex flex-col gap-1.5">
+              <div className="flex items-center justify-between font-kura-mono text-[10px] text-kura-fg-subtle uppercase tracking-[0.14em]">
+                <span>{label} window</span>
+                <span className="tabular-nums">{formatTokens(max)}</span>
+              </div>
+              <div className="flex items-baseline justify-between gap-3">
+                <span
+                  className={cn(
+                    "font-kura-display text-[28px] leading-none tabular-nums",
+                    level === "ok" ? "text-kura-fg" : tone,
+                  )}
+                >
+                  {pct}%
+                </span>
+                <span className="font-kura-mono text-[11px] text-kura-fg-muted tabular-nums">
+                  {formatTokens(used)} used · {formatTokens(Math.max(0, max - used))} free
+                </span>
+              </div>
             </div>
             <SegmentBar
               segments={segments}
@@ -263,12 +275,15 @@ export function ContextMeter({
               ratio={ratio}
               className="h-2"
             />
-            <ul className="flex flex-col gap-1.5" aria-label="Breakdown">
+            <ul
+              className="flex flex-col divide-y divide-kura-border-subtle shadow-[inset_0_1px_0_var(--kura-border-subtle)]"
+              aria-label="Breakdown"
+            >
               {segments.map((s, i) => (
                 <li
                   key={s.id}
                   data-slot="context-meter-segment"
-                  className="flex items-center gap-2 text-[13px]"
+                  className="flex h-8 items-center gap-2.5 text-[13px]"
                 >
                   <span
                     aria-hidden
@@ -276,21 +291,21 @@ export function ContextMeter({
                     style={{ background: segmentColor(s, i) }}
                   />
                   <span className="min-w-0 flex-1 truncate text-kura-fg-muted">{s.label}</span>
-                  <span className="font-kura-mono text-kura-fg text-xs tabular-nums">
+                  <span className="font-kura-mono text-[12px] text-kura-fg tabular-nums">
                     {formatTokens(s.tokens)}
                   </span>
-                  <span className="w-9 text-right font-kura-mono text-kura-fg-subtle text-xs tabular-nums">
+                  <span className="w-9 text-right font-kura-mono text-[11px] text-kura-fg-subtle tabular-nums">
                     {max > 0 ? `${Math.round((s.tokens / max) * 100)}%` : "–"}
                   </span>
                 </li>
               ))}
-              <li className="flex items-center gap-2 text-[13px]">
+              <li className="flex h-8 items-center gap-2.5 text-[13px]">
                 <span
                   aria-hidden
                   className="size-2 shrink-0 rounded-[2px] shadow-[inset_0_0_0_1px_var(--kura-border-strong)]"
                 />
                 <span className="flex-1 text-kura-fg-subtle">Free</span>
-                <span className="font-kura-mono text-kura-fg-subtle text-xs tabular-nums">
+                <span className="font-kura-mono text-[12px] text-kura-fg-subtle tabular-nums">
                   {formatTokens(Math.max(0, max - used))}
                 </span>
                 <span className="w-9" />
@@ -299,7 +314,7 @@ export function ContextMeter({
             {(footer != null || level !== "ok") && (
               <p
                 className={cn(
-                  "text-xs leading-relaxed shadow-[inset_0_1px_0_var(--kura-border-subtle)] pt-2.5",
+                  "-mt-3 pt-3 text-xs leading-relaxed shadow-[inset_0_1px_0_var(--kura-border-subtle)]",
                   level === "ok" ? "text-kura-fg-muted" : tone,
                 )}
               >

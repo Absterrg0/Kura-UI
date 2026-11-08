@@ -10,8 +10,8 @@ import { type ApprovalDecision, ApprovalPrompt } from "./approval-prompt";
 export function ApprovalPromptMinimal() {
   return (
     <ApprovalPrompt
-      title="Kura wants to run a command"
-      command="pnpm install"
+      title="Install three new packages?"
+      command="pnpm add zod date-fns @tanstack/react-query"
       risk="low"
       shortcuts={false}
       className="w-full max-w-lg"
@@ -26,9 +26,9 @@ export function ApprovalPromptFull() {
   return (
     <div className="flex w-full max-w-lg flex-col gap-3">
       <ApprovalPrompt
-        title="Kura wants to delete a directory"
+        title="Delete the build directory?"
         command="rm -rf build"
-        description="Clears stale output before rebuilding. Affects 1,204 files under ./build only."
+        description="Kura wants to clear stale output before rebuilding the docs. This removes 1,204 files under ./build and nothing else."
         risk="high"
         details={
           <ul className="flex list-disc flex-col gap-1 pl-4">
@@ -68,21 +68,21 @@ export function ApprovalPromptResolved() {
   return (
     <div className="flex w-full max-w-lg flex-col gap-3">
       <ApprovalPrompt
-        title="Kura wants to run a command"
+        title="Push the release commit to main?"
         command="git push origin main"
         risk="medium"
         defaultDecision="approved"
         shortcuts={false}
       />
       <ApprovalPrompt
-        title="Kura wants to run a command"
+        title="Delete project 42 through the API?"
         command="curl -X DELETE https://api.example.com/v1/projects/42"
         risk="high"
         defaultDecision="denied"
         shortcuts={false}
       />
       <ApprovalPrompt
-        title="Kura wants to read a file"
+        title="Read the example environment file?"
         command="cat .env.example"
         risk="low"
         defaultDecision="always"
@@ -117,7 +117,7 @@ export function ApprovalPromptWithDiff() {
         summary="+2 −1"
       />
       <ApprovalPrompt
-        title="Apply this edit?"
+        title="Apply this edit to src/config.ts?"
         icon={<FilePen />}
         risk="low"
         decision={decision}

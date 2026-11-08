@@ -84,10 +84,11 @@ function StatusGlyph({ status, small }: { status: ToolCallStatus; small?: boolea
         small ? "size-4 [&_svg]:size-2.5" : "size-5 [&_svg]:size-3",
         status === "pending" &&
           "text-kura-fg-subtle shadow-[inset_0_0_0_1px_var(--kura-border-strong)]",
-        status === "running" && "bg-kura-accent-subtle text-kura-accent-text",
-        status === "success" && "bg-kura-hover text-kura-success-text",
+        status === "running" && "bg-kura-accent-subtle text-kura-accent",
+        status === "success" &&
+          "text-kura-success-text shadow-[inset_0_0_0_1px_var(--kura-border)]",
         status === "error" && "bg-kura-danger-subtle text-kura-danger-text",
-        status === "awaiting-approval" && "bg-kura-accent-subtle text-kura-accent-text",
+        status === "awaiting-approval" && "bg-kura-accent text-kura-accent-fg",
       )}
     >
       {status === "running" && (
@@ -95,7 +96,7 @@ function StatusGlyph({ status, small }: { status: ToolCallStatus; small?: boolea
       )}
       {status === "success" && <Check strokeWidth={2.5} className="animate-kura-pop-in" />}
       {status === "error" && <X strokeWidth={2.5} className="animate-kura-pop-in" />}
-      {status === "awaiting-approval" && <Hand className="animate-kura-pop-in" />}
+      {status === "awaiting-approval" && <Hand strokeWidth={2} className="animate-kura-pop-in" />}
     </span>
   );
 }
@@ -174,16 +175,31 @@ export function ToolCall({
           {running ? <ShimmerText>{label}</ShimmerText> : label}
         </span>
         {line != null && line !== "" && (
-          <span data-slot="tool-call-summary" className="truncate text-kura-fg-subtle">
+          <span
+            data-slot="tool-call-summary"
+            className="truncate font-kura-mono text-[0.86em] text-kura-fg-subtle"
+          >
             {line}
           </span>
         )}
       </span>
       <span className="sr-only">, {statusText[status]}</span>
+      {status === "awaiting-approval" && (
+        <span
+          aria-hidden
+          data-slot="tool-call-waiting"
+          className="shrink-0 font-kura-mono text-[10px] text-kura-accent-text uppercase tracking-[0.14em]"
+        >
+          Needs approval
+        </span>
+      )}
       {elapsed != null && (
         <span
           data-slot="tool-call-elapsed"
-          className="shrink-0 font-kura-mono text-kura-fg-subtle text-xs tabular-nums"
+          className={cn(
+            "shrink-0 font-kura-mono text-[11px] tabular-nums tracking-[0.02em]",
+            running ? "text-kura-accent-text" : "text-kura-fg-subtle",
+          )}
         >
           {formatDuration(elapsed)}
         </span>
@@ -215,7 +231,7 @@ export function ToolCall({
         "flex min-w-0 flex-col font-kura-sans",
         inline
           ? "-mx-1.5 w-fit max-w-full"
-          : "overflow-hidden rounded-kura-lg bg-kura-surface shadow-kura-sm",
+          : "overflow-hidden rounded-kura-md bg-kura-surface shadow-kura-sm",
         className,
       )}
       {...props}
@@ -260,14 +276,14 @@ export function ToolCall({
                 "flex flex-col gap-3",
                 inline
                   ? "mt-1 mb-2 ml-[18px] border-kura-border border-l pl-4"
-                  : "px-3 pt-1 pb-3 shadow-[inset_0_1px_0_var(--kura-border-subtle)] [&>:first-child]:mt-2",
+                  : "px-3 pt-1 pb-3 shadow-[inset_0_1px_0_var(--kura-border-subtle)] [&>:first-child]:mt-2.5",
               )}
             >
               {args !== undefined && <Section label="Arguments" value={args} />}
               {error != null && (
                 <div
                   data-slot="tool-call-error"
-                  className="rounded-kura-md bg-kura-danger-subtle px-3 py-2 font-kura-mono text-kura-danger-text text-xs leading-relaxed"
+                  className="rounded-kura-sm bg-kura-danger-subtle px-3 py-2 font-kura-mono text-kura-danger-text text-xs leading-relaxed shadow-[inset_2px_0_0_var(--kura-danger)]"
                 >
                   {error}
                 </div>
@@ -298,7 +314,7 @@ function Section({ label, value }: { label: string; value: unknown }) {
   const json = typeof value !== "string";
   return (
     <div data-slot="tool-call-section" className="flex flex-col gap-1.5">
-      <span className="font-medium text-[11px] text-kura-fg-subtle uppercase tracking-wider">
+      <span className="font-kura-mono text-[10px] text-kura-fg-subtle uppercase tracking-[0.14em]">
         {label}
       </span>
       <CodeBlock
@@ -308,7 +324,7 @@ function Section({ label, value }: { label: string; value: unknown }) {
         header={false}
         wrap
         maxHeight={220}
-        className="rounded-kura-md text-xs shadow-[0_0_0_1px_var(--kura-border-subtle)] [&_[data-slot=code-block-line]]:px-3 [&_section]:py-2"
+        className="rounded-kura-sm text-xs shadow-[inset_0_0_0_1px_var(--kura-border-subtle)] [&_[data-slot=code-block-line]]:px-3 [&_section]:py-2"
       />
     </div>
   );

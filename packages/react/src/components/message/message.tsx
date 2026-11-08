@@ -95,11 +95,14 @@ export function Message({
             // sits inside) a nested Kura component, so e.g. a Sources strip keeps its own styling.
             "[&_a:not([data-slot],[data-slot=message-body]_[data-slot]_*)]:underline [&_a:not([data-slot],[data-slot=message-body]_[data-slot]_*)]:decoration-kura-border-strong [&_a:not([data-slot],[data-slot=message-body]_[data-slot]_*)]:underline-offset-[3px] [&_a:not([data-slot],[data-slot=message-body]_[data-slot]_*):hover]:decoration-current",
             "[&_strong]:font-semibold [&_ol:not([data-slot],[data-slot=message-body]_[data-slot]_*)]:list-decimal [&_ol:not([data-slot],[data-slot=message-body]_[data-slot]_*)]:pl-5 [&_ul:not([data-slot],[data-slot=message-body]_[data-slot]_*)]:list-disc [&_ul:not([data-slot],[data-slot=message-body]_[data-slot]_*)]:pl-5 [&_li:not([data-slot],[data-slot=message-body]_[data-slot]_*)+li]:mt-1 [&_li:not([data-slot],[data-slot=message-body]_[data-slot]_*)]:pl-0.5 [&_li::marker]:text-kura-fg-subtle",
-            "[&_:not(pre)>code:not([data-slot])]:rounded-kura-xs [&_:not(pre)>code:not([data-slot])]:bg-kura-active [&_:not(pre)>code:not([data-slot])]:px-[0.3em] [&_:not(pre)>code:not([data-slot])]:py-[0.1em] [&_:not(pre)>code:not([data-slot])]:font-kura-mono [&_:not(pre)>code:not([data-slot])]:text-[0.86em]",
+            "[&_:not(pre)>code:not([data-slot])]:rounded-kura-xs [&_:not(pre)>code:not([data-slot])]:bg-kura-hover [&_:not(pre)>code:not([data-slot])]:shadow-[inset_0_0_0_1px_var(--kura-border-subtle)] [&_:not(pre)>code:not([data-slot])]:px-[0.3em] [&_:not(pre)>code:not([data-slot])]:py-[0.1em] [&_:not(pre)>code:not([data-slot])]:font-kura-mono [&_:not(pre)>code:not([data-slot])]:text-[0.86em]",
             "[&_blockquote]:border-kura-border-strong [&_blockquote]:border-l-2 [&_blockquote]:pl-3 [&_blockquote]:text-kura-fg-muted",
-            "[&_h1]:font-semibold [&_h1]:text-xl [&_h2]:font-semibold [&_h2]:text-lg [&_h3]:font-semibold [&_h3]:text-base",
+            "[&_h1]:font-kura-display [&_h1]:text-[22px] [&_h1]:leading-tight [&_h2]:font-kura-display [&_h2]:text-[19px] [&_h2]:leading-snug [&_h3]:font-semibold [&_h3]:text-base",
+            "[&_hr]:border-kura-border-subtle",
             user
-              ? "w-fit max-w-[min(80%,36rem)] whitespace-pre-wrap break-words rounded-kura-2xl rounded-br-kura-sm bg-kura-gray-3 px-4 py-2.5"
+              ? // A pressed well, not a grey blob: darker than every paper stock in both themes, with a
+                // hairline edge so it holds on the canvas, a sheet and the bright print alike.
+                "w-fit max-w-[min(80%,36rem)] whitespace-pre-wrap break-words rounded-kura-lg rounded-br-kura-xs bg-kura-surface-sunken px-4 py-2.5 shadow-[inset_0_0_0_1px_var(--kura-border-subtle),inset_0_1px_2px_0_var(--kura-hover)]"
               : "w-full",
             status === "error" && "text-kura-fg-muted",
           )}
@@ -138,7 +141,11 @@ export function Message({
 
 function MessageTime({ value }: { value: Date | number | string }) {
   if (typeof value === "string") {
-    return <span className="text-kura-fg-subtle text-xs tabular-nums">{value}</span>;
+    return (
+      <span className="font-kura-mono text-[11px] text-kura-fg-subtle tabular-nums tracking-[0.02em]">
+        {value}
+      </span>
+    );
   }
   const date = new Date(value);
   return (
@@ -146,7 +153,7 @@ function MessageTime({ value }: { value: Date | number | string }) {
       dateTime={date.toISOString()}
       title={date.toLocaleString()}
       suppressHydrationWarning
-      className="text-kura-fg-subtle text-xs tabular-nums"
+      className="font-kura-mono text-[11px] text-kura-fg-subtle tabular-nums tracking-[0.02em]"
     >
       {date.toLocaleTimeString(undefined, { hour: "numeric", minute: "2-digit" })}
     </time>

@@ -23,7 +23,8 @@ export default defineComponent({
       name: "title",
       type: "React.ReactNode",
       required: true,
-      description: 'What the agent wants, e.g. "Kura wants to run a command". Labels the region.',
+      description:
+        'What the agent wants, ideally phrased as the question the person is answering, e.g. "Delete the build directory?". Set in the display serif (20px); labels the region together with `command`.',
     },
     {
       name: "command",
@@ -41,7 +42,7 @@ export default defineComponent({
       type: '"low" | "medium" | "high"',
       default: '"medium"',
       description:
-        "Badge (green/amber/red dot). high also turns Approve into a red “Run anyway” button.",
+        "Mono uppercase micro-label above the title with a matcha/ochre/beni dot. high also turns Approve into a red “Run anyway” button.",
     },
     {
       name: "details",
@@ -137,7 +138,8 @@ export default defineComponent({
     {
       name: "Waiting",
       dataSlot: "approval-prompt-waiting",
-      description: "Jade “Needs approval” pill — the view's one accent while pending.",
+      description:
+        "Vermilion mono “Needs approval” label with a pulsing seal dot — the view's one accent while pending.",
     },
     {
       name: "Actions",
@@ -148,6 +150,12 @@ export default defineComponent({
       name: "Resolution",
       dataSlot: "approval-prompt-resolution",
       description: 'role="status" line that cross-fades in: Approved / Denied / Always allowed.',
+    },
+    {
+      name: "Verdict",
+      dataSlot: "approval-prompt-verdict",
+      description:
+        "The resolved word, set in italic display serif (17px) beside a hairline-ringed glyph (matcha check, muted cross, shield).",
     },
   ],
   a11y: {

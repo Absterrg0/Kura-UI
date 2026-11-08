@@ -60,7 +60,7 @@ export default defineComponent({
       name: "Node",
       dataSlot: "agent-timeline-node",
       description:
-        "Status node: hollow ring (queued), jade pulse (active), check (done), cross (failed), dash (skipped).",
+        "Status node: hollow hairline ring (queued), pulsing vermilion dot with a halo (active), matcha check in a pressed well (done), beni cross (failed), dash (skipped).",
     },
     {
       name: "Connector",
@@ -76,7 +76,8 @@ export default defineComponent({
     {
       name: "Duration",
       dataSlot: "agent-timeline-duration",
-      description: "Mono tabular duration; ticks live for the active step.",
+      description:
+        "Mono tabular duration; ticks live (in vermilion) for the active step, subtle ink once done.",
     },
     {
       name: "Description",
@@ -131,7 +132,7 @@ export default defineComponent({
   ],
   agentNotes: [
     "Keep `id`s stable across updates so timers and connector transitions animate instead of remounting.",
-    "Only one step should be `active` at a time per level; it carries the jade signal.",
+    "Only one step should be `active` at a time per level; it carries the vermilion (shu) signal — its node pulses and its live timer is vermilion.",
     "Pass `duration` (ms) for finished steps; omit it for the active step to get a live timer (or pass `startedAt` from your server).",
     "Map a model-maintained todo list: pending → queued, in_progress → active, completed → done.",
   ],

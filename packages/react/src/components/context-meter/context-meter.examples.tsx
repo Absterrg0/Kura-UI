@@ -52,20 +52,35 @@ export function ContextMeterFull() {
   );
 }
 
+const THREADS = [
+  { name: "Onboarding copy review", used: 52_000 },
+  { name: "Billing service refactor", used: 98_500 },
+  { name: "Incident 2291 — postmortem", used: 121_900 },
+];
+
 export function ContextMeterThresholds() {
   return (
-    <div className="flex flex-col items-start gap-3">
-      <ContextMeter max={128_000} used={52_000} variant="bar" />
-      <ContextMeter max={128_000} used={98_500} variant="bar" />
-      <ContextMeter max={128_000} used={121_900} variant="bar" />
-    </div>
+    <ul className="flex w-full max-w-md flex-col divide-y divide-kura-border-subtle shadow-[inset_0_1px_0_var(--kura-border-subtle),inset_0_-1px_0_var(--kura-border-subtle)]">
+      {THREADS.map((t) => (
+        <li key={t.name} className="flex h-11 items-center justify-between gap-4 px-1">
+          <span className="min-w-0 truncate text-kura-fg text-sm">{t.name}</span>
+          <ContextMeter max={128_000} used={t.used} variant="bar" label={t.name} />
+        </li>
+      ))}
+    </ul>
   );
 }
 
 export function ContextMeterInComposer() {
   return (
-    <div className="flex w-full max-w-lg flex-col gap-2 rounded-kura-xl bg-kura-surface p-3 shadow-kura-sm">
-      <p className="min-h-12 px-1 text-[15px] text-kura-fg-subtle">Ask a follow-up…</p>
+    <div className="flex w-full max-w-lg flex-col gap-2 rounded-kura-md bg-kura-surface-raised p-3 shadow-kura-sm">
+      <p className="min-h-12 px-1 text-[15px] text-kura-fg leading-relaxed">
+        Now draft the migration guide for teams still on v2
+        <span
+          aria-hidden
+          className="ml-px inline-block h-[1.1em] w-px translate-y-[0.2em] bg-kura-fg"
+        />
+      </p>
       <div className="flex items-center justify-between">
         <ContextMeter max={200_000} segments={BASE} />
         <IconButton

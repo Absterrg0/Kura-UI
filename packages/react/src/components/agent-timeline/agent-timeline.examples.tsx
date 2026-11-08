@@ -22,19 +22,19 @@ export function AgentTimelineMinimal() {
 type Plan = { id: string; title: string; ms: number; sub?: { id: string; title: string }[] };
 
 const PLAN: Plan[] = [
-  { id: "explore", title: "Explore the repository", ms: 1400 },
+  { id: "explore", title: "Read how sessions are fetched", ms: 1400 },
   {
     id: "plan",
-    title: "Plan the migration",
+    title: "Plan the move to getSession()",
     ms: 2200,
     sub: [
-      { id: "plan-a", title: "List call sites of fetchUser()" },
-      { id: "plan-b", title: "Check the auth middleware" },
+      { id: "plan-a", title: "Find the 11 call sites of fetchUser()" },
+      { id: "plan-b", title: "Check what the auth middleware caches" },
     ],
   },
   { id: "edit", title: "Edit 4 files", ms: 2600 },
   { id: "test", title: "Run the test suite", ms: 2000 },
-  { id: "pr", title: "Open a pull request", ms: 1200 },
+  { id: "pr", title: "Open a draft pull request", ms: 1200 },
 ];
 
 /** Derives step states from a cursor that walks through the plan. */
@@ -83,9 +83,9 @@ export function AgentTimelineFull() {
   return (
     <div className="flex w-full max-w-md flex-col gap-4">
       <AgentTimeline steps={stepsAt(cursor, startedAt)} label="Migration plan" size="md" />
-      <div className="flex items-center justify-between">
-        <span className="font-kura-mono text-kura-fg-subtle text-xs tabular-nums">
-          {Math.min(cursor, PLAN.length)}/{PLAN.length} steps
+      <div className="flex items-center justify-between pt-3 shadow-[inset_0_1px_0_var(--kura-border-subtle)]">
+        <span className="font-kura-mono text-[11px] text-kura-fg-subtle uppercase tabular-nums tracking-[0.12em]">
+          {done ? "Done" : "Running"} · {Math.min(cursor, PLAN.length)}/{PLAN.length} steps
         </span>
         <Button variant="secondary" size="sm" disabled={!done} onClick={() => setRun((r) => r + 1)}>
           <RotateCcw /> Replay
@@ -118,10 +118,15 @@ export function AgentTimelineStates() {
 
 export function AgentTimelineWithTools() {
   return (
-    <div className="flex w-full max-w-lg flex-col gap-4 rounded-kura-xl bg-kura-surface p-4 shadow-kura-sm">
-      <div className="flex items-baseline justify-between">
-        <h3 className="font-medium text-kura-fg text-sm">Fix flaky date test</h3>
-        <span className="font-kura-mono text-kura-fg-subtle text-xs tabular-nums">2/3</span>
+    <div className="relative flex w-full max-w-lg flex-col gap-4 rounded-kura-md bg-kura-surface p-5 shadow-kura-sm before:pointer-events-none before:absolute before:inset-[3px] before:rounded-[5px] before:border before:border-kura-border-subtle">
+      <div className="flex flex-col gap-1.5">
+        <div className="flex items-center justify-between font-kura-mono text-[10px] text-kura-fg-subtle uppercase tabular-nums tracking-[0.14em]">
+          <span>Run 14 · kura/web</span>
+          <span>Step 2 of 3</span>
+        </div>
+        <h3 className="font-kura-display text-[19px] text-kura-fg leading-snug">
+          Fix the flaky date test
+        </h3>
       </div>
       <AgentTimeline
         label="Fix flaky date test"

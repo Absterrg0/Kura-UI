@@ -71,15 +71,28 @@ export default defineComponent({
         "Button with the label and a chevron that rotates 90° when open (aria-expanded, aria-controls).",
     },
     {
+      name: "Dot",
+      dataSlot: "reasoning-dot",
+      description:
+        "6px status dot before the label: a pulsing vermilion (accent) dot with a soft halo while active, a quiet ink dot when done.",
+    },
+    {
       name: "Label",
       dataSlot: "reasoning-label",
-      description: "ShimmerText; shimmers while active, muted when done. Seconds are tabular.",
+      description:
+        "ShimmerText; shimmers while active, muted when done. Seconds are set in tabular mono.",
     },
     {
       name: "Content",
       dataSlot: "reasoning-content",
       description:
-        "Muted, pre-wrapped trace behind a left hairline. Animates grid-template-rows 0fr↔1fr (interruptible) and is inert when closed.",
+        "Collapsible region. Animates grid-template-rows 0fr↔1fr (interruptible) and is inert when closed.",
+    },
+    {
+      name: "Trace",
+      dataSlot: "reasoning-trace",
+      description:
+        "The thought text, set like a margin note: muted italic display serif (16px) behind a left hairline, pre-wrapped. Inline code stays upright mono. A nested StreamingText inherits the serif.",
     },
   ],
   a11y: {
@@ -90,7 +103,7 @@ export default defineComponent({
     ],
     keyboard: [{ keys: "Enter / Space", action: "Expand or collapse the trace" }],
     reducedMotion:
-      "The shimmer becomes static muted text, the chevron snaps, and the trace only fades (no height travel or blur).",
+      "The shimmer becomes static muted text, the live dot stops pulsing, the chevron snaps, and the trace only fades (no height travel or blur).",
   },
   dependencies: { npm: ["lucide-react"], kura: ["shimmer-text"] },
   related: ["shimmer-text", "thinking-indicator", "message", "streaming-text", "agent-timeline"],

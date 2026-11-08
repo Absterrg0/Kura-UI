@@ -8,7 +8,7 @@ import { StreamingText } from "./streaming-text";
 import { useStreamingText } from "./use-streaming-text";
 
 const ANSWER =
-  "Streaming feels calm when the reveal keeps an even rhythm. Tokens arrive in bursts — three at once, then a pause — so Kura buffers them and releases whole words at a steady cadence, fading each group in while the caret holds the live edge.";
+  "The checkout test only fails in CI because the runner's clock is in UTC, while the fixture hard-codes a Pacific date. At 5 p.m. in San Francisco it is already tomorrow on the runner, so the order looks a day late. Build the date with Date.UTC in the fixture and the test stops depending on where it runs.";
 
 /** Fake model: yields 1–4 word tokens with irregular, bursty delays. */
 async function* fakeTokens(text: string, signal?: AbortSignal): AsyncGenerator<string> {
@@ -60,9 +60,17 @@ export function StreamingTextFull() {
         onComplete={() => setDone((d) => d + 1)}
         className="min-h-32"
       />
-      <div className="flex items-center justify-between">
-        <span className="font-kura-mono text-kura-fg-subtle text-xs tabular-nums">
-          {text.length} chars · completed {done}×
+      <div className="flex items-center justify-between pt-3 shadow-[inset_0_1px_0_var(--kura-border-subtle)]">
+        <span className="flex items-center gap-2 font-kura-mono text-[11px] text-kura-fg-subtle uppercase tabular-nums tracking-[0.12em]">
+          <span
+            aria-hidden
+            className={
+              streaming
+                ? "size-1.5 animate-kura-pulse rounded-full bg-kura-accent motion-reduce:animate-none"
+                : "size-1.5 rounded-full bg-kura-border-strong"
+            }
+          />
+          {streaming ? "Streaming" : "Done"} · {text.length} chars · {done}×
         </span>
         <Button variant="secondary" size="sm" onClick={() => setRun((r) => r + 1)}>
           <RotateCcw /> Replay
@@ -92,9 +100,19 @@ export function StreamingTextComposition() {
   const waiting = !stream;
 
   return (
-    <div className="flex w-full max-w-md flex-col gap-3 rounded-kura-xl bg-kura-surface p-4 shadow-kura-sm">
+    <div className="flex w-full max-w-md flex-col gap-3 rounded-kura-md bg-kura-surface p-4 shadow-kura-sm">
       <div className="flex h-6 items-center justify-between">
-        <span className="font-medium text-kura-fg text-sm">Assistant</span>
+        <span className="flex items-center gap-2 font-kura-mono text-[11px] text-kura-fg-subtle uppercase tracking-[0.14em]">
+          <span
+            aria-hidden
+            className={
+              (waiting || isStreaming) && !stopped
+                ? "size-1.5 animate-kura-pulse rounded-full bg-kura-accent motion-reduce:animate-none"
+                : "size-1.5 rounded-full bg-kura-border-strong"
+            }
+          />
+          Kura · ci-triage
+        </span>
         {(waiting || isStreaming) && !stopped && (
           <Button
             variant="ghost"
@@ -107,10 +125,15 @@ export function StreamingTextComposition() {
             <Square className="fill-current" /> Stop
           </Button>
         )}
+        {stopped && (
+          <span className="font-kura-mono text-[11px] text-kura-fg-subtle uppercase tracking-[0.12em]">
+            Stopped
+          </span>
+        )}
       </div>
       {waiting ? (
         <p role="status" className="text-[15px] leading-relaxed">
-          <ShimmerText>Thinking…</ShimmerText>
+          <ShimmerText>Reading the CI log…</ShimmerText>
         </p>
       ) : (
         <p

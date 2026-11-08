@@ -17,6 +17,16 @@ import {
 } from "./message";
 import { MessageList } from "./message-list";
 
+/** The assistant's avatar: a small ink seal with a serif initial. */
+function KuraSeal() {
+  return (
+    <MessageAvatar
+      name="Kura"
+      className="rounded-kura-sm bg-kura-ink pt-px font-kura-display font-normal text-[15px] text-kura-fg-inverted shadow-none"
+    />
+  );
+}
+
 const VERSIONS = [
   "Use `useOptimistic` for the like button: render the optimistic count immediately, then reconcile when the server action resolves.",
   "Wrap the mutation in a transition and render from `useOptimistic`. If the action throws, React drops the optimistic value and the real count comes back on its own.",
@@ -59,7 +69,7 @@ export function MessageFull() {
         from="assistant"
         name="Kura"
         timestamp="10:42"
-        avatar={<MessageAvatar name="Kura" />}
+        avatar={<KuraSeal />}
         status={failed ? "error" : "idle"}
         error="The model stopped responding. Partial answer shown."
         onRetry={() => setFailed(false)}
@@ -95,7 +105,7 @@ export function MessageStates() {
       <Message
         from="assistant"
         name="Kura"
-        avatar={<MessageAvatar name="Kura" />}
+        avatar={<KuraSeal />}
         status="streaming"
         actions={
           <MessageActions>
@@ -108,7 +118,7 @@ export function MessageStates() {
       <Message
         from="assistant"
         name="Kura"
-        avatar={<MessageAvatar name="Kura" />}
+        avatar={<KuraSeal />}
         status="error"
         error="Rate limited — try again in a few seconds."
         onRetry={() => {}}
@@ -176,7 +186,7 @@ export function MessageThread() {
             key={turn.id}
             from={turn.from}
             status={streaming === turn.id ? "streaming" : "idle"}
-            avatar={turn.from === "assistant" ? <MessageAvatar name="Kura" /> : undefined}
+            avatar={turn.from === "assistant" ? <KuraSeal /> : undefined}
             actions={
               turn.from === "assistant" ? (
                 <MessageActions>
@@ -202,7 +212,7 @@ export function MessageThread() {
           </Message>
         ))}
         {waiting && (
-          <Message from="assistant" avatar={<MessageAvatar name="Kura" />} status="streaming">
+          <Message from="assistant" avatar={<KuraSeal />} status="streaming">
             <ShimmerText>Thinking…</ShimmerText>
           </Message>
         )}

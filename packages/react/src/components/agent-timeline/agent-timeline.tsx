@@ -78,7 +78,7 @@ function Node({ status, small }: { status: AgentStepStatus; small: boolean }) {
         small ? "size-4 [&_svg]:size-2.5" : "size-5 [&_svg]:size-3",
         status === "queued" &&
           "text-kura-fg-subtle shadow-[inset_0_0_0_1.5px_var(--kura-border-strong)]",
-        status === "active" && "bg-kura-accent-subtle text-kura-accent-text",
+        status === "active" && "bg-kura-accent-subtle text-kura-accent",
         status === "done" &&
           "bg-kura-surface-sunken text-kura-success-text shadow-[inset_0_0_0_1px_var(--kura-border)]",
         status === "failed" && "bg-kura-danger-subtle text-kura-danger-text",
@@ -124,7 +124,7 @@ function Step({ step, last, small }: { step: AgentTimelineStep; last: boolean; s
           <span
             className={cn(
               "absolute inset-0 origin-top transition-[scale,opacity] duration-(--kura-duration-slower) ease-kura-in-out motion-reduce:transition-opacity",
-              "bg-kura-fg-subtle",
+              "bg-kura-fg-muted",
               filled ? "scale-y-100 opacity-100" : "scale-y-0 opacity-0 motion-reduce:scale-y-100",
             )}
           />
@@ -158,7 +158,10 @@ function Step({ step, last, small }: { step: AgentTimelineStep; last: boolean; s
           {ms != null && (
             <span
               data-slot="agent-timeline-duration"
-              className="shrink-0 font-kura-mono text-kura-fg-subtle text-xs tabular-nums"
+              className={cn(
+                "shrink-0 font-kura-mono text-[11px] tabular-nums tracking-[0.02em]",
+                active ? "text-kura-accent-text" : "text-kura-fg-subtle",
+              )}
             >
               {formatStepDuration(ms)}
             </span>
@@ -210,7 +213,7 @@ function StepList({
 }
 
 /**
- * Vertical plan/step tracker for multi-step agents. Steps are queued, active (jade pulse,
+ * Vertical plan/step tracker for multi-step agents. Steps are queued, active (vermilion pulse,
  * shimmering title, live timer), done, failed or skipped; sub-steps nest; the connector between
  * nodes fills as the agent moves past each step.
  */

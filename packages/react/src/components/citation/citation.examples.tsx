@@ -64,7 +64,12 @@ export function CitationInMessage() {
     <Message
       from="assistant"
       name="Kura"
-      avatar={<MessageAvatar name="Kura" />}
+      avatar={
+        <MessageAvatar
+          name="Kura"
+          className="rounded-kura-sm bg-kura-ink pt-px font-kura-display font-normal text-[15px] text-kura-fg-inverted shadow-none"
+        />
+      }
       className="max-w-xl"
     >
       <p>

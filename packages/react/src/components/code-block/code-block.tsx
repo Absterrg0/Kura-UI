@@ -71,19 +71,29 @@ const tokenClass: Record<CodeTokenType, string | undefined> = {
 };
 
 /*
- * Syntax colours are derived from --kura-fg-muted (so they keep its ≥ 4.5:1 contrast and flip
- * with the theme) by swapping in a hue. Override any of them with --kura-syntax-* on a parent.
+ * Syntax colours: ink and seal on paper. Each pigment takes its lightness from --kura-fg-muted
+ * (so it keeps that token's ≥ 4.5:1 contrast and flips with the theme) and swaps in a hue from
+ * the traditional palette: shu (vermilion) keywords and tags, matcha strings, kincha (ochre)
+ * constants, ai (indigo) functions, asagi types. Chroma is a function of that lightness, so the
+ * same pigment is saturated as ink on light paper and settles to a calm wash on sumi (dark).
+ * Override any of them with --kura-syntax-* on a parent.
  */
-const syntax = (name: string, chroma: number, hue: number) =>
-  `var(--kura-syntax-${name}, oklch(from var(--kura-fg-muted) l ${chroma} ${hue}))`;
+const FG_MUTED_L = { light: 0.47, dark: 0.76 };
+const syntax = (name: string, chroma: { light: number; dark: number }, hue: number) => {
+  // chroma = a − b·l, solved so it hits `chroma.light` on paper and `chroma.dark` on sumi.
+  const b = (chroma.light - chroma.dark) / (FG_MUTED_L.dark - FG_MUTED_L.light);
+  const a = chroma.light + FG_MUTED_L.light * b;
+  const c = `calc(${a.toFixed(4)} - l * ${b.toFixed(4)})`;
+  return `var(--kura-syntax-${name}, oklch(from var(--kura-fg-muted) l ${c} ${hue}))`;
+};
 const syntaxVars = {
-  "--kura-code-keyword": syntax("keyword", 0.13, 350),
-  "--kura-code-string": syntax("string", 0.1, 150),
-  "--kura-code-constant": syntax("constant", 0.11, 55),
-  "--kura-code-function": syntax("function", 0.11, 255),
-  "--kura-code-type": syntax("type", 0.09, 210),
-  "--kura-code-tag": syntax("tag", 0.12, 25),
-  "--kura-code-attr": syntax("attr", 0.1, 290),
+  "--kura-code-keyword": syntax("keyword", { light: 0.14, dark: 0.085 }, 36),
+  "--kura-code-string": syntax("string", { light: 0.08, dark: 0.06 }, 128),
+  "--kura-code-constant": syntax("constant", { light: 0.1, dark: 0.07 }, 68),
+  "--kura-code-function": syntax("function", { light: 0.085, dark: 0.055 }, 262),
+  "--kura-code-type": syntax("type", { light: 0.06, dark: 0.045 }, 212),
+  "--kura-code-tag": syntax("tag", { light: 0.14, dark: 0.085 }, 30),
+  "--kura-code-attr": syntax("attr", { light: 0.075, dark: 0.055 }, 58),
   "--kura-code-property": "var(--kura-syntax-property, var(--kura-fg))",
 } as React.CSSProperties;
 
@@ -231,7 +241,7 @@ export function CodeBlock({
       data-wrap={wrap}
       data-state={collapsible ? (expanded ? "expanded" : "collapsed") : undefined}
       className={cn(
-        "group/code relative flex flex-col overflow-hidden rounded-kura-xl bg-kura-surface-sunken font-kura-mono text-[13px] text-kura-fg shadow-kura-sm",
+        "group/code relative flex flex-col overflow-hidden rounded-kura-md bg-kura-surface-sunken font-kura-mono text-[13px] text-kura-fg shadow-kura-xs",
         className,
       )}
       style={{ ...syntaxVars, ...style }}
@@ -242,7 +252,7 @@ export function CodeBlock({
           data-slot="code-block-header"
           className="flex h-10 shrink-0 items-center gap-2 bg-kura-surface pr-1.5 pl-3.5 shadow-[inset_0_-1px_0_var(--kura-border-subtle)]"
         >
-          <span className="flex min-w-0 flex-1 items-center gap-2 font-kura-sans text-[13px] text-kura-fg-muted">
+          <span className="flex min-w-0 flex-1 items-center gap-2 font-kura-mono text-[12px] text-kura-fg-muted">
             {filename && (
               <FileCode2 aria-hidden className="size-3.5 shrink-0 text-kura-fg-subtle" />
             )}
@@ -253,7 +263,7 @@ export function CodeBlock({
           {filename && language !== "text" && (
             <span
               data-slot="code-block-language"
-              className="select-none px-1 text-[11px] text-kura-fg-subtle uppercase tracking-wide"
+              className="select-none px-1.5 text-[10px] text-kura-fg-subtle uppercase tracking-[0.14em]"
             >
               {language}
             </span>
@@ -350,19 +360,18 @@ export function CodeBlock({
                   data-diff={diff ? line.kind : undefined}
                   className={cn(
                     "flex px-4",
-                    isHighlighted &&
-                      "bg-kura-hover shadow-[inset_2px_0_0_var(--kura-border-strong)]",
+                    isHighlighted && "bg-kura-hover shadow-[inset_2px_0_0_var(--kura-fg-subtle)]",
                     line.kind === "add" &&
-                      "bg-kura-success/10 shadow-[inset_2px_0_0_var(--kura-success)]",
+                      "bg-kura-success/12 shadow-[inset_2px_0_0_var(--kura-success)]",
                     line.kind === "remove" &&
-                      "bg-kura-danger/10 shadow-[inset_2px_0_0_var(--kura-danger)]",
+                      "bg-kura-danger/8 shadow-[inset_2px_0_0_var(--kura-danger)]",
                   )}
                 >
                   {lineNumbers && (
                     <span
                       aria-hidden
                       data-slot="code-block-line-number"
-                      className="mr-4 shrink-0 select-none text-right text-kura-fg-subtle tabular-nums opacity-70"
+                      className="mr-4 shrink-0 select-none text-right text-kura-fg-subtle tabular-nums opacity-60"
                       style={{ width: `${digits}ch` }}
                     >
                       {n}
