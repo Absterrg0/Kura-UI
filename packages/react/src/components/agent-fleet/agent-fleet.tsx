@@ -1,0 +1,414 @@
+"use client";
+
+import * as React from "react";
+import { useControllableState } from "../../hooks/use-controllable-state";
+import { useElapsed } from "../../hooks/use-elapsed";
+import { cn } from "../../lib/cn";
+import { formatClock, formatCost, formatTokens } from "../../lib/format";
+import { ShimmerText } from "../shimmer-text";
+import { type AgentStatus, StatusGlyph } from "../status-glyph";
+
+export interface FleetAgent {
+  /** Stable id, used for selection and React keys. */
+  id: string;
+  /** Short name, e.g. "explorer". */
+  name: string;
+  /** What this agent is for, e.g. "Maps call sites". */
+  role?: string;
+  status: AgentStatus;
+  /** What it is doing right now (running) or its last result (done / failed). One line. */
+  activity?: string;
+  /** 0–1. Shown as a thin bar while the agent is live. */
+  progress?: number;
+  startedAt?: Date | number;
+  /** Freezes the elapsed time at endedAt − startedAt. */
+  endedAt?: Date | number;
+  /** Total tokens used. */
+  tokens?: number;
+  /** Spend in USD. */
+  cost?: number;
+}
+
+export interface AgentFleetProps
+  extends Omit<React.ComponentProps<"div">, "onSelect" | "title" | "children"> {
+  /** The subagents, in display order. */
+  agents: FleetAgent[];
+  /** Panel title. Default "Subagents". */
+  title?: React.ReactNode;
+  /** Selected agent id (controlled). */
+  selectedId?: string | null;
+  /** Initially selected agent id when uncontrolled. */
+  defaultSelectedId?: string | null;
+  /** Called with the agent id when a row is chosen (click, Enter or Space). Makes rows selectable. */
+  onSelect?: (id: string) => void;
+  /** `compact` = one 36px row per agent; `comfortable` = two lines with role and activity. Default "comfortable". */
+  density?: "compact" | "comfortable";
+  /** Shown when `agents` is empty. */
+  empty?: React.ReactNode;
+}
+
+const LIVE: AgentStatus[] = ["running", "waiting", "paused"];
+
+const SUMMARY_ORDER: { status: AgentStatus; word: string; tone?: string }[] = [
+  { status: "running", word: "running" },
+  { status: "waiting", word: "waiting", tone: "text-kura-warning-text" },
+  { status: "paused", word: "paused" },
+  { status: "failed", word: "failed", tone: "text-kura-danger-text" },
+  { status: "done", word: "done" },
+  { status: "queued", word: "queued" },
+  { status: "skipped", word: "skipped" },
+];
+
+const SPOKEN: Record<AgentStatus, string> = {
+  queued: "queued",
+  running: "running",
+  waiting: "waiting for you",
+  paused: "paused",
+  done: "done",
+  failed: "failed",
+  skipped: "skipped",
+};
+
+function useAnnouncements(agents: FleetAgent[]) {
+  const prev = React.useRef<Map<string, AgentStatus> | null>(null);
+  const [message, setMessage] = React.useState("");
+  React.useEffect(() => {
+    const next = new Map(agents.map((a) => [a.id, a.status]));
+    const before = prev.current;
+    prev.current = next;
+    if (!before) return;
+    const changes = agents
+      .filter((a) => before.has(a.id) && before.get(a.id) !== a.status && a.status !== "running")
+      .map((a) => `${a.name} ${SPOKEN[a.status]}`);
+    if (changes.length) setMessage(changes.join(", "));
+  }, [agents]);
+  return message;
+}
+
+/**
+ * Parallel subagents at a glance: one row per agent with its status glyph, name and role, what it
+ * is doing now (shimmering while it runs), a thin progress bar, elapsed time, tokens and cost.
+ * The header sums the fleet ("3 running · 1 waiting · 2 done"). Rows are a selectable listbox
+ * when `onSelect` is given.
+ */
+export function AgentFleet({
+  agents,
+  title = "Subagents",
+  selectedId: selectedProp,
+  defaultSelectedId = null,
+  onSelect,
+  density = "comfortable",
+  empty,
+  className,
+  ...props
+}: AgentFleetProps) {
+  const id = React.useId();
+  const [selected, setSelected] = useControllableState<string | null>({
+    value: selectedProp,
+    defaultValue: defaultSelectedId,
+    onChange: (v) => v != null && onSelect?.(v),
+  });
+  const selectable = onSelect != null || selectedProp !== undefined;
+  const [focusId, setFocusId] = React.useState<string | null>(null);
+  const rowRefs = React.useRef(new Map<string, HTMLLIElement>());
+  const message = useAnnouncements(agents);
+
+  const counts = new Map<AgentStatus, number>();
+  for (const a of agents) counts.set(a.status, (counts.get(a.status) ?? 0) + 1);
+  const summary = SUMMARY_ORDER.filter((s) => counts.get(s.status));
+
+  const tabStop =
+    agents.find((a) => a.id === focusId)?.id ??
+    agents.find((a) => a.id === selected)?.id ??
+    agents[0]?.id;
+
+  const moveFocus = (to: number) => {
+    const a = agents[Math.max(0, Math.min(agents.length - 1, to))];
+    if (!a) return;
+    setFocusId(a.id);
+    rowRefs.current.get(a.id)?.focus();
+  };
+
+  const onKeyDown = (e: React.KeyboardEvent<HTMLUListElement>) => {
+    const index = agents.findIndex((a) => a.id === (e.target as HTMLElement).dataset.agentId);
+    if (index < 0) return;
+    if (e.key === "ArrowDown" || e.key === "j") moveFocus(index + 1);
+    else if (e.key === "ArrowUp" || e.key === "k") moveFocus(index - 1);
+    else if (e.key === "Home") moveFocus(0);
+    else if (e.key === "End") moveFocus(agents.length - 1);
+    else if (e.key === "Enter" || e.key === " ") setSelected(agents[index]?.id ?? null);
+    else return;
+    e.preventDefault();
+  };
+
+  return (
+    <div
+      data-slot="agent-fleet"
+      data-density={density}
+      className={cn(
+        "@container flex min-w-0 flex-col overflow-hidden rounded-kura-xl bg-kura-surface font-kura-sans text-kura-fg shadow-kura-sm",
+        className,
+      )}
+      {...props}
+    >
+      <div
+        data-slot="agent-fleet-header"
+        className="flex h-10 shrink-0 items-center gap-3 border-kura-border-subtle border-b px-3.5"
+      >
+        <h3 id={`${id}-title`} className="flex items-baseline gap-2 font-medium text-[13px]">
+          {title}
+          <span className="font-kura-mono font-normal text-[12px] text-kura-fg-subtle tabular-nums">
+            {agents.length}
+          </span>
+        </h3>
+        {summary.length > 0 && (
+          <p
+            data-slot="agent-fleet-summary"
+            className="ml-auto hidden min-w-0 truncate text-[12px] text-kura-fg-subtle @xs:block"
+          >
+            {summary.map((s, i) => (
+              <React.Fragment key={s.status}>
+                {i > 0 && <span aria-hidden> · </span>}
+                <span className={cn("whitespace-nowrap", s.tone)}>
+                  <span className="font-kura-mono tabular-nums">{counts.get(s.status)}</span>{" "}
+                  {s.word}
+                </span>
+              </React.Fragment>
+            ))}
+          </p>
+        )}
+      </div>
+
+      {agents.length === 0 ? (
+        <div
+          data-slot="agent-fleet-empty"
+          className="flex min-h-24 flex-col items-center justify-center gap-1 px-6 py-6 text-center"
+        >
+          {empty ?? (
+            <>
+              <p className="font-medium text-[13px] text-kura-fg-muted">No subagents yet</p>
+              <p className="text-[12px] text-kura-fg-subtle">
+                Delegated work shows up here as it starts.
+              </p>
+            </>
+          )}
+        </div>
+      ) : (
+        <ul
+          role={selectable ? "listbox" : "list"}
+          aria-labelledby={`${id}-title`}
+          onKeyDown={selectable ? onKeyDown : undefined}
+          className="flex flex-col divide-y divide-kura-border-subtle"
+        >
+          {agents.map((agent) => (
+            <AgentRow
+              key={agent.id}
+              agent={agent}
+              density={density}
+              selectable={selectable}
+              selected={selected === agent.id}
+              tabbable={tabStop === agent.id}
+              rowRef={(el) => {
+                if (el) rowRefs.current.set(agent.id, el);
+                else rowRefs.current.delete(agent.id);
+              }}
+              onFocus={() => setFocusId(agent.id)}
+              onChoose={() => setSelected(agent.id)}
+            />
+          ))}
+        </ul>
+      )}
+      <span role="status" className="sr-only">
+        {message}
+      </span>
+    </div>
+  );
+}
+
+function AgentRow({
+  agent,
+  density,
+  selectable,
+  selected,
+  tabbable,
+  rowRef,
+  onFocus,
+  onChoose,
+}: {
+  agent: FleetAgent;
+  density: "compact" | "comfortable";
+  selectable: boolean;
+  selected: boolean;
+  tabbable: boolean;
+  rowRef: (el: HTMLLIElement | null) => void;
+  onFocus: () => void;
+  onChoose: () => void;
+}) {
+  const live = LIVE.includes(agent.status);
+  const ticking = useElapsed(agent.startedAt, live && agent.endedAt == null);
+  const elapsed =
+    agent.startedAt != null && agent.endedAt != null
+      ? Math.max(0, +new Date(agent.endedAt) - +new Date(agent.startedAt))
+      : agent.startedAt != null
+        ? ticking
+        : null;
+  const running = agent.status === "running";
+  const compact = density === "compact";
+  const showProgress = agent.progress != null && live;
+
+  const activity = agent.activity ? (
+    <span
+      data-slot="agent-fleet-activity"
+      className={cn(
+        "block min-w-0 truncate",
+        agent.status === "waiting" && "text-kura-warning-text",
+        agent.status === "failed" && "text-kura-danger-text",
+        (agent.status === "done" ||
+          agent.status === "queued" ||
+          agent.status === "skipped" ||
+          agent.status === "paused") &&
+          "text-kura-fg-subtle",
+      )}
+    >
+      {running ? (
+        <ShimmerText className="block max-w-full truncate">{agent.activity}</ShimmerText>
+      ) : (
+        agent.activity
+      )}
+    </span>
+  ) : null;
+
+  const progress = showProgress ? (
+    <span
+      data-slot="agent-fleet-progress"
+      aria-hidden
+      className={cn(
+        "flex h-[3px] shrink-0 overflow-hidden rounded-full bg-kura-hover",
+        compact ? "w-12" : "w-20",
+      )}
+    >
+      <span
+        className={cn(
+          "h-full rounded-full transition-[width] duration-(--kura-duration-slow) ease-kura-out motion-reduce:transition-none",
+          agent.status === "running" && "bg-kura-accent",
+          agent.status === "waiting" && "bg-kura-warning",
+          agent.status === "paused" && "bg-kura-fg-subtle",
+        )}
+        style={{ width: `${Math.min(1, Math.max(0, agent.progress ?? 0)) * 100}%` }}
+      />
+    </span>
+  ) : null;
+
+  const numbers = (
+    <span className="flex items-center gap-3 font-kura-mono text-[12px] text-kura-fg-subtle tabular-nums">
+      {agent.tokens != null && (
+        <span
+          data-slot="agent-fleet-tokens"
+          className={cn(
+            "min-w-[5ch] text-right",
+            compact ? "hidden @md:inline-block" : "inline-block",
+          )}
+        >
+          {formatTokens(agent.tokens)}
+        </span>
+      )}
+      {agent.cost != null && !compact && (
+        <span
+          data-slot="agent-fleet-cost"
+          className="hidden min-w-[5ch] text-right @lg:inline-block"
+        >
+          {formatCost(agent.cost)}
+        </span>
+      )}
+      <span
+        data-slot="agent-fleet-elapsed"
+        className={cn("inline-block min-w-[4ch] text-right", live && "text-kura-fg-muted")}
+      >
+        {elapsed != null ? formatClock(elapsed) : "–"}
+      </span>
+    </span>
+  );
+
+  const name = (
+    <span
+      data-slot="agent-fleet-name"
+      className={cn(
+        "shrink-0 font-medium text-[13px]",
+        (agent.status === "done" || agent.status === "skipped") && "text-kura-fg-muted",
+      )}
+    >
+      {agent.name}
+    </span>
+  );
+
+  const progressText =
+    showProgress && agent.progress != null
+      ? `, ${Math.round(Math.min(1, Math.max(0, agent.progress)) * 100)}%`
+      : "";
+
+  return (
+    // biome-ignore lint/a11y/useAriaPropsSupportedByRole: role is "option" whenever aria-selected is set
+    // biome-ignore lint/a11y/useKeyWithClickEvents: Enter/Space are handled by the listbox's onKeyDown
+    <li
+      ref={rowRef}
+      role={selectable ? "option" : undefined}
+      aria-selected={selectable ? selected : undefined}
+      tabIndex={selectable ? (tabbable ? 0 : -1) : undefined}
+      data-slot="agent-fleet-agent"
+      data-agent-id={agent.id}
+      data-status={agent.status}
+      data-selected={selected || undefined}
+      onClick={selectable ? onChoose : undefined}
+      onFocus={selectable ? onFocus : undefined}
+      className={cn(
+        "relative min-w-0 px-3.5 outline-none",
+        "animate-[kura-rise-in_var(--kura-duration-base)_var(--ease-kura-out)_both] [--kura-rise-blur:0px] [--kura-rise-y:2px] motion-reduce:[--kura-rise-y:0px]",
+        selectable &&
+          "cursor-pointer transition-colors duration-(--kura-duration-instant) ease-kura-out hover:bg-kura-hover focus-visible:shadow-[inset_0_0_0_2px_var(--kura-ring)]",
+        selected &&
+          "bg-kura-active before:absolute before:inset-y-0 before:left-0 before:w-0.5 before:bg-kura-accent hover:bg-kura-active",
+        compact
+          ? "grid h-9 grid-cols-[16px_auto_minmax(0,1fr)_auto] items-center gap-x-2.5"
+          : "grid grid-cols-[16px_minmax(0,1fr)_auto] gap-x-3 py-2.5",
+      )}
+    >
+      <StatusGlyph status={agent.status} className={cn(!compact && "mt-0.5")} />
+      <span className="sr-only">{progressText}</span>
+      {compact ? (
+        <>
+          {name}
+          <span className="min-w-0 text-[12.5px] text-kura-fg-muted">{activity}</span>
+          <span className="flex items-center gap-3">
+            {progress && <span className="hidden @sm:flex">{progress}</span>}
+            {numbers}
+          </span>
+        </>
+      ) : (
+        <>
+          <span className="flex min-w-0 flex-col gap-0.5">
+            <span className="flex min-w-0 items-baseline gap-2 leading-5">
+              {name}
+              {agent.role && (
+                <span
+                  data-slot="agent-fleet-role"
+                  className="hidden min-w-0 truncate text-[12px] text-kura-fg-subtle @md:block"
+                >
+                  {agent.role}
+                </span>
+              )}
+            </span>
+            {activity && (
+              <span className="min-w-0 text-[12.5px] text-kura-fg-muted leading-[18px]">
+                {activity}
+              </span>
+            )}
+          </span>
+          <span className="flex flex-col items-end justify-between gap-1.5 self-stretch py-0.5">
+            {numbers}
+            {progress}
+          </span>
+        </>
+      )}
+    </li>
+  );
+}
