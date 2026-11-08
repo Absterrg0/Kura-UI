@@ -8,7 +8,7 @@ import { mergeRefs } from "../../lib/merge-refs";
 export type ParticleFieldShape = "ring" | "point";
 
 export interface ParticleFieldProps extends React.ComponentProps<"div"> {
-  /** Number of particles. Default: scales with the area (about one per 9,000 px², 24–140). */
+  /** Number of particles. Default: scales with the area (about one per 5,500 px², 30–160). */
   count?: number;
   /** Max distance in px at which two particles are linked by a line. Default 110. */
   linkDistance?: number;
@@ -109,8 +109,9 @@ export function ParticleField({
     };
     readColors();
 
+    // Density is area-based so small cards stay airy and heroes stay full.
     const seedParticles = () => {
-      const target = live.current.count ?? Math.round(Math.min(140, Math.max(24, (w * h) / 9000)));
+      const target = live.current.count ?? Math.round(Math.min(160, Math.max(30, (w * h) / 5500)));
       while (particles.length < target) {
         const i = particles.length;
         const a = rand(i + 0.1) * Math.PI * 2;
@@ -216,7 +217,7 @@ export function ParticleField({
             const d2 = dx * dx + dy * dy;
             if (d2 > link * link) continue;
             const t = 1 - Math.sqrt(d2) / link;
-            ctx.globalAlpha = t * t * 0.45 * weight;
+            ctx.globalAlpha = t * t * 0.6 * weight;
             ctx.beginPath();
             ctx.moveTo(a.x, a.y);
             ctx.lineTo(b.x, b.y);

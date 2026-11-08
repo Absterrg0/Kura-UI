@@ -23,7 +23,7 @@ export default defineComponent({
       name: "count",
       type: "number",
       description:
-        "Number of particles. Default scales with the area (≈ one per 9,000 px², clamped 24–140). Links are O(n²); stay under ~180.",
+        "Number of particles. Default scales with the area (≈ one per 5,500 px², clamped 30–160). Links are O(n²); stay under ~180.",
     },
     {
       name: "linkDistance",
