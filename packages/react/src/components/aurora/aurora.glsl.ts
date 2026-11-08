@@ -52,7 +52,9 @@ vec3 curtain(vec2 uv, float aspect, float t, float i) {
   float height = 0.06 + 0.16 * rays * (1.0 - i * 0.25);
   float body = smoothstep(-0.008, 0.012, d) * exp(-max(d, 0.0) / height);
   float rim = exp(-abs(d) * 70.0) * 0.35; // the bright, crisp lower edge
-  float a = (body * (0.45 + 0.75 * rays) + rim) * seg * (1.0 - i * 0.25);
+  // On light backgrounds strong ray contrast reads as grey streaks, so soften it into a wash.
+  float rr = mix(rays, 0.55 + 0.45 * rays, u_light);
+  float a = (body * (0.45 + 0.75 * rr) + rim) * seg * (1.0 - i * 0.25);
   vec3 c = mix(u_low, u_mid, smoothstep(0.0, 0.08, d));
   c = mix(c, u_high, smoothstep(0.06, 0.24, d));
   return c * a;
@@ -83,12 +85,13 @@ void main() {
   }
   light += vec3(stars) * 0.8;
 
-  // Light → premultiplied colour. On light backgrounds deepen the colour so it reads as a wash.
+  // Light → premultiplied colour. On light backgrounds the curtains become a saturated ink wash
+  // (deeper, never desaturated toward grey) with a gentler alpha curve.
   float peak = max(light.r, max(light.g, light.b));
-  float a = clamp(1.0 - exp(-peak * mix(1.8, 2.4, u_light)), 0.0, 1.0);
+  float a = clamp(1.0 - exp(-peak * mix(1.8, 1.5, u_light)), 0.0, 1.0) * mix(1.0, 0.92, u_light);
   vec3 c = peak > 0.0 ? light / peak : vec3(0.0);
-  vec3 wash = mix(vec3(dot(c, vec3(0.2126, 0.7152, 0.0722))), c, 0.62) * 0.62;
-  c = mix(c, wash, u_light);
+  vec3 ink = c * 0.8;
+  c = mix(c, ink, u_light);
   vec3 premul = linearToSrgb(c) * a;
   premul += (ign(gl_FragCoord.xy) - 0.5) / 255.0 * a;
   fragColor = vec4(premul, a);
