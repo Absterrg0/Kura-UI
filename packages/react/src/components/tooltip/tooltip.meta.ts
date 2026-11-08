@@ -50,7 +50,8 @@ export default defineComponent({
       name: "delayDuration",
       type: "number",
       default: "500",
-      description: "Hover delay in ms before opening.",
+      description:
+        "Hover delay in ms before opening. Inside a TooltipProvider, defaults to the provider's.",
     },
     {
       name: "disabled",
@@ -98,8 +99,16 @@ export default defineComponent({
   examples: [
     { name: "TooltipMinimal", kind: "minimal", title: "Basic" },
     { name: "TooltipFull", kind: "full", title: "Shortcut, sides and shared provider" },
+    {
+      name: "TooltipEditorToolbar",
+      kind: "composition",
+      title: "Editor toolbar with shared delay",
+      description:
+        "Tooltip parts under one TooltipProvider, so moving across the formatting toolbar skips the open delay.",
+    },
   ],
   agentNotes: [
     "The child must forward refs and accept event props (Kura Button/IconButton do). Wrap plain text in a <button>.",
+    "<Tooltip> (and IconButton) creates its own provider only when standalone; inside a <TooltipProvider> it joins it, so wrapping a toolbar in TooltipProvider makes moving between sibling tooltips instant.",
   ],
 });

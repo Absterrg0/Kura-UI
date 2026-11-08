@@ -1,7 +1,7 @@
 "use client";
 
 import { Tooltip as TooltipPrimitive } from "radix-ui";
-import type * as React from "react";
+import * as React from "react";
 import { cn } from "../../lib/cn";
 import type { KeyName } from "../../lib/keys";
 import { Kbd } from "../kbd";
@@ -9,13 +9,17 @@ import { Kbd } from "../kbd";
 export interface TooltipProviderProps
   extends React.ComponentProps<typeof TooltipPrimitive.Provider> {}
 
+/** True inside a `TooltipProvider`, so `<Tooltip>` joins it instead of creating its own. */
+const InsideProvider = React.createContext(false);
+
 /**
- * Optional. Wrap an area (or the app) so moving between tooltips skips the open delay.
- * `<Tooltip>` works without it.
+ * Optional. Wrap an area (or the app) so moving between tooltips skips the open delay — this
+ * includes every `<Tooltip>` and `IconButton` inside it. `<Tooltip>` works without it.
  */
 export function TooltipProvider({
   delayDuration = 500,
   skipDelayDuration = 300,
+  children,
   ...props
 }: TooltipProviderProps) {
   return (
@@ -23,7 +27,9 @@ export function TooltipProvider({
       delayDuration={delayDuration}
       skipDelayDuration={skipDelayDuration}
       {...props}
-    />
+    >
+      <InsideProvider.Provider value={true}>{children}</InsideProvider.Provider>
+    </TooltipPrimitive.Provider>
   );
 }
 
@@ -80,7 +86,7 @@ export interface TooltipProps
   shortcut?: readonly KeyName[];
   side?: "top" | "right" | "bottom" | "left";
   align?: "start" | "center" | "end";
-  /** Delay before opening in ms. Default 500 (0 when moving between tooltips). */
+  /** Delay before opening in ms. Default 500, or the surrounding TooltipProvider's (0 when moving between tooltips). */
   delayDuration?: number;
   /** Disable without unmounting the trigger. */
   disabled?: boolean;
@@ -90,7 +96,8 @@ export interface TooltipProps
 
 /**
  * Label-on-hover/focus for an icon or control. Opens on hover after a delay and immediately on
- * keyboard focus; closes on Escape. Includes its own provider.
+ * keyboard focus; closes on Escape. Creates its own provider unless it sits inside a
+ * `TooltipProvider`, which it then shares (instant hand-off between neighbouring tooltips).
  */
 export function Tooltip({
   content,
@@ -98,20 +105,26 @@ export function Tooltip({
   shortcut,
   side = "top",
   align = "center",
-  delayDuration = 500,
+  delayDuration,
   disabled = false,
   contentClassName,
   ...rootProps
 }: TooltipProps) {
+  const shared = React.useContext(InsideProvider);
   if (disabled) return children;
+  const root = (
+    <TooltipPrimitive.Root data-slot="tooltip" delayDuration={delayDuration} {...rootProps}>
+      <TooltipPrimitive.Trigger asChild>{children}</TooltipPrimitive.Trigger>
+      <TooltipContent side={side} align={align} shortcut={shortcut} className={contentClassName}>
+        {content}
+      </TooltipContent>
+    </TooltipPrimitive.Root>
+  );
+  // Inside a TooltipProvider, join it so the skip-delay hand-off works across tooltips.
+  if (shared) return root;
   return (
-    <TooltipPrimitive.Provider delayDuration={delayDuration} skipDelayDuration={300}>
-      <TooltipPrimitive.Root data-slot="tooltip" {...rootProps}>
-        <TooltipPrimitive.Trigger asChild>{children}</TooltipPrimitive.Trigger>
-        <TooltipContent side={side} align={align} shortcut={shortcut} className={contentClassName}>
-          {content}
-        </TooltipContent>
-      </TooltipPrimitive.Root>
+    <TooltipPrimitive.Provider delayDuration={delayDuration ?? 500} skipDelayDuration={300}>
+      {root}
     </TooltipPrimitive.Provider>
   );
 }
