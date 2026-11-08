@@ -229,7 +229,8 @@ export function AudioWaveform({
           const v = data ? (data[idx] ?? 0) : 0;
           // taper the ends so the line breathes out of a flat baseline
           const taper = Math.sin((i / points) * Math.PI);
-          const y = h / 2 + v * (usable / 2) * taper * 1.6;
+          // Clamp so loud peaks touch the edge instead of being cut off by it.
+          const y = Math.min(h - 1, Math.max(1, h / 2 + v * (usable / 2) * taper * 1.6));
           if (i === 0) ctx.moveTo(x, y);
           else ctx.lineTo(x, y);
         }

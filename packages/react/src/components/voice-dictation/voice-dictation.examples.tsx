@@ -21,26 +21,40 @@ export function VoiceDictationMinimal() {
   );
 }
 
+const STATUS_LABEL: Record<VoiceDictationStatus, string> = {
+  idle: "Ready",
+  requesting: "Asking for the mic",
+  listening: "Listening",
+  processing: "Transcribing",
+  denied: "Mic blocked",
+  unsupported: "Unsupported",
+  error: "Failed",
+};
+
+const clock = (d: Date) =>
+  `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
+
 export function VoiceDictationFull() {
-  const [notes, setNotes] = React.useState<string[]>([]);
+  const [notes, setNotes] = React.useState<{ text: string; at: string }[]>([]);
   const [status, setStatus] = React.useState<VoiceDictationStatus>("idle");
   const [mode, setMode] = React.useState<"toggle" | "hold">("toggle");
   return (
     <div className="flex w-full max-w-md flex-col gap-4">
       <div className="flex items-center justify-between gap-3">
-        <div className="flex rounded-kura-md bg-kura-surface-sunken p-0.5 text-xs shadow-kura-xs">
+        <fieldset className="flex rounded-kura-md bg-kura-surface-sunken p-0.5 text-xs shadow-[inset_0_0_0_1px_var(--kura-border-subtle)]">
+          <legend className="sr-only">Dictation mode</legend>
           {(["toggle", "hold"] as const).map((m) => (
             <button
               key={m}
               type="button"
               aria-pressed={mode === m}
               onClick={() => setMode(m)}
-              className="cursor-pointer rounded-kura-sm px-2.5 py-1 text-kura-fg-muted capitalize outline-none transition-colors duration-(--kura-duration-fast) focus-visible:shadow-kura-focus aria-pressed:bg-kura-surface aria-pressed:text-kura-fg aria-pressed:shadow-kura-xs"
+              className="cursor-pointer rounded-kura-sm px-2.5 py-1 text-kura-fg-muted outline-none transition-colors duration-(--kura-duration-fast) focus-visible:shadow-kura-focus aria-pressed:bg-kura-surface-raised aria-pressed:text-kura-fg aria-pressed:shadow-kura-xs"
             >
-              {m}
+              {m === "toggle" ? "Click to talk" : "Hold to talk"}
             </button>
           ))}
-        </div>
+        </fieldset>
         <KbdShortcut keys={["mod", "shift", "d"]} label={mode === "hold" ? "Hold" : "Toggle"} />
       </div>
       <VoiceDictation
@@ -51,26 +65,33 @@ export function VoiceDictationFull() {
         showTranscript
         transcriptPlaceholder="Speak — your words appear here"
         onStatusChange={setStatus}
-        onTranscript={(text) => setNotes((n) => [text, ...n])}
+        onTranscript={(text) => setNotes((n) => [{ text, at: clock(new Date()) }, ...n])}
       />
-      <p className="text-kura-fg-subtle text-xs capitalize" aria-live="polite">
-        Status: {status}
-      </p>
-      <ul aria-label="Dictated notes" className="flex flex-col gap-2">
-        {notes.length === 0 && (
-          <li className="rounded-kura-lg bg-kura-surface-sunken px-3.5 py-3 text-kura-fg-subtle text-sm">
-            Dictated notes appear here.
-          </li>
+      <section aria-label="Dictated notes" className="flex flex-col">
+        <div className="flex items-baseline justify-between border-kura-border border-b pb-2 font-kura-mono text-[10px] text-kura-fg-subtle uppercase tracking-[0.14em]">
+          <span>Notes to self · {notes.length}</span>
+          <span aria-live="polite">{STATUS_LABEL[status]}</span>
+        </div>
+        {notes.length === 0 ? (
+          <p className="py-5 font-kura-display text-[18px] text-kura-fg-muted">
+            Nothing dictated yet.
+          </p>
+        ) : (
+          <ul className="flex flex-col">
+            {notes.map((note, i) => (
+              <li
+                key={`${i}-${note.text}`}
+                className="flex animate-kura-rise-in gap-4 border-kura-border-subtle border-b py-3 text-kura-fg text-sm leading-6"
+              >
+                <span className="pt-0.5 font-kura-mono text-[11px] text-kura-fg-subtle tabular-nums">
+                  {note.at}
+                </span>
+                <span className="min-w-0 flex-1">{note.text}</span>
+              </li>
+            ))}
+          </ul>
         )}
-        {notes.map((note, i) => (
-          <li
-            key={`${i}-${note}`}
-            className="animate-kura-rise-in rounded-kura-lg bg-kura-surface px-3.5 py-3 text-kura-fg text-sm leading-6 shadow-kura-sm"
-          >
-            {note}
-          </li>
-        ))}
-      </ul>
+      </section>
     </div>
   );
 }
@@ -81,7 +102,7 @@ export function VoiceDictationInComposer() {
   return (
     <div className="w-full max-w-xl">
       <Composer value={value} onValueChange={setValue} onSubmit={() => setValue("")}>
-        <ComposerInput placeholder={interim || "Type or dictate…"} />
+        <ComposerInput placeholder={interim || "Ask about your calendar, or dictate…"} />
         <ComposerToolbar>
           <ComposerTools>
             <ComposerAttachButton />

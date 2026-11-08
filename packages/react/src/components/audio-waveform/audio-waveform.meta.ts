@@ -81,7 +81,7 @@ export default defineComponent({
       type: '"default" | "muted" | "accent"',
       default: '"default"',
       description:
-        "Colour from tokens: ink, subtle ink, or the jade signal (only for live AI listening — once per view).",
+        "Colour from tokens: ink, subtle ink, or the vermilion (shu) signal (only for live AI listening — once per view).",
     },
     {
       name: "active",

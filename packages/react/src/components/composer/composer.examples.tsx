@@ -2,6 +2,7 @@
 
 import { ChartLine, Code, FileText, Globe, Lightbulb, Mail } from "lucide-react";
 import * as React from "react";
+import type { AttachmentItem } from "../attachment";
 import { ModelPicker, type ModelPickerModel } from "../model-picker";
 import { type PromptSuggestion, PromptSuggestions } from "../prompt-suggestions";
 import { VoiceDictation } from "../voice-dictation";
@@ -76,7 +77,7 @@ function ToolToggle({
       type="button"
       aria-pressed={pressed}
       onClick={() => onPressedChange(!pressed)}
-      className="inline-flex h-8 cursor-pointer items-center gap-1.5 rounded-kura-lg px-2.5 font-medium text-[13px] text-kura-fg-muted outline-none transition-[background-color,color,box-shadow] duration-(--kura-duration-fast) ease-kura-out hover:bg-kura-hover hover:text-kura-fg focus-visible:shadow-kura-focus aria-pressed:bg-kura-active aria-pressed:text-kura-fg [&_svg]:size-3.5"
+      className="inline-flex h-8 cursor-pointer items-center gap-1.5 rounded-kura-md px-2.5 font-medium text-[13px] text-kura-fg-muted outline-none transition-[background-color,color,box-shadow] duration-(--kura-duration-fast) ease-kura-out hover:bg-kura-hover hover:text-kura-fg focus-visible:shadow-kura-focus aria-pressed:bg-kura-surface aria-pressed:text-kura-fg aria-pressed:shadow-[inset_0_0_0_1px_var(--kura-border)] [&_svg]:size-3.5 [&_svg]:stroke-[1.75]"
     >
       {icon}
       {children}
@@ -84,8 +85,28 @@ function ToolToggle({
   );
 }
 
+/** A hairline between toolbar groups. */
+function Rule() {
+  return <span aria-hidden className="mx-1 h-4 w-px shrink-0 bg-kura-border" />;
+}
+
+const brief: AttachmentItem[] = [
+  { id: "csv", name: "q3-churn-by-plan.csv", type: "text/csv", size: 1_840_000 },
+  {
+    id: "memo",
+    name: "pricing-memo-aug.pdf",
+    type: "application/pdf",
+    size: 412_000,
+    status: "uploading",
+    progress: 0.35,
+  },
+];
+
 export function ComposerFull() {
-  const [value, setValue] = React.useState("");
+  const [value, setValue] = React.useState(
+    "Compare churn by plan in the CSV with the August pricing change in the memo. Flag any plan that moved more than two points.",
+  );
+  const [attachments, setAttachments] = React.useState<AttachmentItem[]>(brief);
   const [status, setStatus] = React.useState<ComposerStatus>("idle");
   const [model, setModel] = React.useState("sonnet");
   const [search, setSearch] = React.useState(true);
@@ -99,11 +120,33 @@ export function ComposerFull() {
   }, []);
   React.useEffect(() => clear, [clear]);
 
+  // Simulate the memo finishing its upload.
+  const uploading = attachments.some((a) => a.status === "uploading");
+  React.useEffect(() => {
+    if (!uploading) return;
+    const id = setInterval(() => {
+      setAttachments((list) =>
+        list.map((a) => {
+          if (a.status !== "uploading") return a;
+          const progress = (a.progress ?? 0) + 0.16;
+          return progress >= 1
+            ? { ...a, status: "ready", progress: undefined }
+            : { ...a, progress };
+        }),
+      );
+    }, 420);
+    return () => clearInterval(id);
+  }, [uploading]);
+
+  const busy = status === "submitted" || status === "streaming";
+
   return (
-    <div className="flex w-full max-w-xl flex-col gap-3">
+    <div className="flex w-full max-w-xl flex-col gap-2.5">
       <Composer
         value={value}
         onValueChange={setValue}
+        attachments={attachments}
+        onAttachmentsChange={setAttachments}
         status={status}
         maxLength={2000}
         accept="image/*,.pdf,.csv,.md,.txt,.ts,.tsx"
@@ -123,11 +166,16 @@ export function ComposerFull() {
         }}
       >
         <ComposerAttachments max={4} />
-        <ComposerInput placeholder="Message Kura — paste or drop files" minRows={2} maxRows={10} />
+        <ComposerInput
+          placeholder="Ask about these files, or drop in more"
+          minRows={2}
+          maxRows={10}
+        />
         <ComposerToolbar>
           <ComposerTools>
             <ComposerAttachButton />
             <ModelPicker models={models} value={model} onValueChange={setModel} side="top" />
+            <Rule />
             <ToolToggle pressed={search} onPressedChange={setSearch} icon={<Globe />}>
               Search
             </ToolToggle>
@@ -136,58 +184,106 @@ export function ComposerFull() {
             </ToolToggle>
           </ComposerTools>
           <ComposerActions>
-            <ComposerHint />
+            <ComposerHint showAt={0.5} />
             <ComposerSubmit />
           </ComposerActions>
         </ComposerToolbar>
       </Composer>
-      <p className="min-h-4 px-1 text-kura-fg-subtle text-xs" aria-live="polite">
-        {status === "submitted"
-          ? "Sending…"
-          : status === "streaming"
-            ? "Responding — press Esc to stop"
-            : last
-              ? `Sent “${last.text.slice(0, 48)}${last.text.length > 48 ? "…" : ""}”${
-                  last.attachments.length ? ` with ${last.attachments.length} file(s)` : ""
-                }`
-              : "Enter to send · Shift+Enter for a new line"}
-      </p>
+      <div className="flex min-h-4 items-center justify-between gap-4 px-1 font-kura-mono text-[10px] text-kura-fg-subtle uppercase tracking-[0.12em]">
+        <p className="flex min-w-0 items-center gap-2" aria-live="polite">
+          {busy && (
+            <span
+              aria-hidden
+              className="size-1.5 shrink-0 animate-kura-pulse rounded-full bg-kura-accent motion-reduce:animate-none"
+            />
+          )}
+          <span className="truncate">
+            {status === "submitted"
+              ? "Sent · waiting for Sonnet"
+              : status === "streaming"
+                ? "Writing — Esc to stop"
+                : last
+                  ? `Sent${last.attachments.length ? ` with ${last.attachments.length} ${last.attachments.length === 1 ? "file" : "files"}` : ""} · answered`
+                  : uploading
+                    ? "Uploading pricing-memo-aug.pdf…"
+                    : "Ready"}
+          </span>
+        </p>
+        <p className="hidden shrink-0 sm:block">Enter send · Shift+Enter new line</p>
+      </div>
     </div>
+  );
+}
+
+function StateLabel({ children }: { children: React.ReactNode }) {
+  return (
+    <p className="px-1 pb-1.5 font-kura-mono text-[10px] text-kura-fg-subtle uppercase tracking-[0.14em]">
+      {children}
+    </p>
   );
 }
 
 export function ComposerStates() {
   return (
-    <div className="flex w-full max-w-xl flex-col gap-4">
-      <Composer defaultValue="Summarise the attached incident report" status="submitted">
-        <ComposerInput />
-        <ComposerToolbar>
-          <ComposerTools>
-            <ComposerAttachButton />
-          </ComposerTools>
-          <ComposerActions>
-            <ComposerSubmit />
-          </ComposerActions>
-        </ComposerToolbar>
-      </Composer>
-      <Composer
-        defaultValue="Draft release notes for v2.4 — keep it under 200 words and lead with the breaking change to the auth middleware."
-        status="streaming"
-        maxLength={120}
-      >
-        <ComposerInput />
-        <ComposerToolbar>
-          <ComposerTools>
-            <ComposerAttachButton />
-          </ComposerTools>
-          <ComposerActions>
-            <ComposerHint />
-            <ComposerSubmit />
-          </ComposerActions>
-        </ComposerToolbar>
-      </Composer>
-      <Composer disabled placeholder="Upgrade to continue the conversation" />
+    <div className="flex w-full max-w-xl flex-col gap-5">
+      <div>
+        <StateLabel>Submitted · waiting for the first token</StateLabel>
+        <Composer
+          defaultValue="Summarise the attached incident report for the on-call channel"
+          status="submitted"
+        >
+          <ComposerInput />
+          <ComposerToolbar>
+            <ComposerTools>
+              <ComposerAttachButton />
+            </ComposerTools>
+            <ComposerActions>
+              <ComposerSubmit />
+            </ComposerActions>
+          </ComposerToolbar>
+        </Composer>
+      </div>
+      <div>
+        <StateLabel>Streaming · over the limit</StateLabel>
+        <Composer
+          defaultValue="Draft release notes for v2.4 — keep it under 200 words and lead with the breaking change to the auth middleware."
+          status="streaming"
+          maxLength={120}
+        >
+          <ComposerInput />
+          <ComposerToolbar>
+            <ComposerTools>
+              <ComposerAttachButton />
+            </ComposerTools>
+            <ComposerActions>
+              <ComposerHint />
+              <ComposerSubmit />
+            </ComposerActions>
+          </ComposerToolbar>
+        </Composer>
+      </div>
+      <div>
+        <StateLabel>Disabled</StateLabel>
+        <Composer disabled placeholder="This thread is read-only — start a new one to continue" />
+      </div>
     </div>
+  );
+}
+
+/** A short vermilion brush stroke under a heading, as on a seal-marked page. */
+function BrushRule() {
+  return (
+    <svg
+      aria-hidden
+      viewBox="0 0 120 8"
+      className="-mt-1 h-2 w-24 text-kura-shu"
+      preserveAspectRatio="none"
+    >
+      <path
+        d="M2 5.2C14 3.6 30 2.8 52 2.9c22 .1 40 .9 58 1.6 3 .1 6.5.6 8 1.5-1.6.8-5 .9-8 .8-19-.4-37-.7-58-.6-20 .1-35 .5-47 1.1-1.8.1-3.4-.5-3-1.5Z"
+        fill="currentColor"
+      />
+    </svg>
   );
 }
 
@@ -224,14 +320,16 @@ export function ComposerNewChat() {
   React.useEffect(() => () => clearTimeout(timer.current), []);
 
   return (
-    <div className="flex w-full max-w-xl flex-col items-center gap-5">
-      <div className="flex flex-col items-center gap-1 text-center">
-        <h3 className="font-medium text-2xl text-kura-fg tracking-tight">
+    <div className="flex w-full max-w-xl flex-col items-center gap-6">
+      <div className="flex flex-col items-center gap-3 text-center">
+        <p className="font-kura-mono text-[10px] text-kura-fg-subtle uppercase tracking-[0.14em]">
+          New thread · Opus 5.5
+        </p>
+        <h3 className="text-balance font-kura-display text-[34px] text-kura-fg leading-[1.05] tracking-[-0.01em]">
           What are we working on?
         </h3>
-        <p className="text-kura-fg-muted text-sm">
-          Start typing, dictate, or pick a starting point.
-        </p>
+        <BrushRule />
+        <p className="text-kura-fg-muted text-sm">Type, dictate, or begin from one of these.</p>
       </div>
       <Composer
         value={value}

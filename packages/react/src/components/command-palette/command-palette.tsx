@@ -340,7 +340,8 @@ export function CommandPalette({
       <DialogPrimitive.Portal>
         <DialogPrimitive.Overlay
           data-slot="command-palette-overlay"
-          className="fixed inset-0 z-50 bg-kura-ink/15 backdrop-blur-[2px] data-[state=closed]:animate-kura-fade-out data-[state=open]:animate-kura-fade-in"
+          // A veil of the page's own paper: the work behind fades back instead of blurring.
+          className="fixed inset-0 z-50 bg-kura-canvas/70 data-[state=closed]:animate-kura-fade-out data-[state=open]:animate-kura-fade-in"
         />
         <DialogPrimitive.Content
           data-slot="command-palette"
@@ -352,7 +353,10 @@ export function CommandPalette({
           }}
           className={cn(
             "-translate-x-1/2 fixed top-[min(20vh,160px)] left-1/2 z-50 flex max-h-[min(520px,calc(100vh-120px))] w-[min(640px,calc(100vw-32px))] flex-col overflow-hidden",
-            "rounded-kura-xl bg-kura-overlay font-kura-sans text-kura-fg shadow-kura-lg outline-none backdrop-blur-xl backdrop-saturate-150",
+            // A mounted print: bright stock, hairline edge and a keyline just inside it. The
+            // search and footer rules run keyline to keyline, like a ruled form.
+            "rounded-kura-lg bg-kura-surface-raised font-kura-sans text-kura-fg shadow-kura-lg outline-none",
+            "before:pointer-events-none before:absolute before:inset-1 before:z-10 before:rounded-kura-md before:border before:border-kura-border-subtle",
             "origin-top data-[state=closed]:animate-kura-pop-out data-[state=open]:animate-kura-pop-in",
             className,
           )}
@@ -361,9 +365,13 @@ export function CommandPalette({
           <DialogPrimitive.Title className="sr-only">{label}</DialogPrimitive.Title>
           <div
             data-slot="command-palette-search"
-            className="flex h-13 shrink-0 items-center gap-2.5 px-4 shadow-[inset_0_-1px_0_var(--kura-border-subtle)]"
+            className="mx-1 mt-1 flex h-13 shrink-0 items-center gap-3 px-4 shadow-[inset_0_-1px_0_var(--kura-border)]"
           >
-            <Search aria-hidden className="size-4 shrink-0 text-kura-fg-subtle" />
+            <Search
+              aria-hidden
+              strokeWidth={1.75}
+              className="size-4 shrink-0 text-kura-fg-subtle"
+            />
             {pages.length > 0 && (
               <span
                 data-slot="command-palette-breadcrumbs"
@@ -372,7 +380,7 @@ export function CommandPalette({
                 {pages.map((p) => (
                   <span
                     key={p.id}
-                    className="rounded-kura-sm bg-kura-active px-1.5 py-0.5 font-medium text-kura-fg-muted text-xs"
+                    className="rounded-kura-xs px-1.5 py-1 font-kura-mono text-[10px] text-kura-fg-muted uppercase leading-none tracking-[0.1em] shadow-[inset_0_0_0_1px_var(--kura-border-strong)]"
                   >
                     {p.title}
                   </span>
@@ -411,7 +419,7 @@ export function CommandPalette({
             role="listbox"
             aria-label={page ? page.title : "Commands"}
             aria-busy={isLoading || undefined}
-            className="min-h-0 flex-1 scroll-py-2 overflow-y-auto overscroll-contain p-2 [scrollbar-width:thin]"
+            className="min-h-0 flex-1 scroll-py-2 overflow-y-auto overscroll-contain px-3 py-2 [scrollbar-width:thin]"
           >
             {rows.map((row) => {
               const heading = row.group !== lastGroup ? row.group : null;
@@ -424,7 +432,7 @@ export function CommandPalette({
                     <div
                       role="presentation"
                       data-slot="command-palette-group"
-                      className="select-none px-2.5 pt-3 pb-1.5 font-medium text-[11px] text-kura-fg-subtle first:pt-1"
+                      className="select-none px-2.5 pt-4 pb-1.5 font-kura-mono text-[10px] text-kura-fg-subtle uppercase tracking-[0.14em] first:pt-2"
                     >
                       {heading}
                     </div>
@@ -447,11 +455,16 @@ export function CommandPalette({
                       if (!item.disabled && !isActive) setActive(row.key);
                     }}
                     onClick={() => choose(item)}
-                    className="flex h-10 cursor-pointer select-none items-center gap-3 rounded-kura-md px-2.5 text-sm data-active:bg-kura-hover data-disabled:cursor-not-allowed data-disabled:opacity-45"
+                    className={cn(
+                      "group/item relative flex h-10 cursor-pointer select-none items-center gap-3 rounded-kura-sm px-2.5 text-sm",
+                      "transition-colors duration-(--kura-duration-instant) data-active:bg-kura-hover data-disabled:cursor-not-allowed data-disabled:opacity-45",
+                      // a short ink tick marks the highlighted row
+                      "before:absolute before:inset-y-2.5 before:left-0 before:w-0.5 before:rounded-full before:bg-kura-ink before:opacity-0 before:transition-opacity before:duration-(--kura-duration-fast) data-active:before:opacity-100",
+                    )}
                   >
                     <span
                       aria-hidden
-                      className="flex size-4 shrink-0 items-center justify-center text-kura-fg-muted [&_svg]:size-4"
+                      className="flex size-4 shrink-0 items-center justify-center text-kura-fg-subtle transition-colors duration-(--kura-duration-fast) group-data-active/item:text-kura-fg [&_svg]:size-4 [&_svg]:stroke-[1.75]"
                     >
                       {item.icon}
                     </span>
@@ -467,7 +480,11 @@ export function CommandPalette({
                       <Kbd keys={item.shortcut} variant="ghost" size="sm" className="shrink-0" />
                     )}
                     {nested(item) && (
-                      <ChevronRight aria-hidden className="size-4 shrink-0 text-kura-fg-subtle" />
+                      <ChevronRight
+                        aria-hidden
+                        strokeWidth={1.75}
+                        className="size-4 shrink-0 text-kura-fg-subtle"
+                      />
                     )}
                   </div>
                 </React.Fragment>
@@ -491,7 +508,7 @@ export function CommandPalette({
               </div>
             )}
             {!isLoading && rows.length === 0 && (
-              <div className="px-3 py-10 text-center text-kura-fg-subtle text-sm">
+              <div className="px-3 py-10 text-center font-kura-display text-[19px] text-kura-fg-muted">
                 {emptyMessage}
               </div>
             )}
@@ -499,22 +516,22 @@ export function CommandPalette({
 
           <div
             data-slot="command-palette-footer"
-            className="flex h-10 shrink-0 items-center justify-between gap-3 px-4 text-kura-fg-subtle text-xs shadow-[inset_0_1px_0_var(--kura-border-subtle)]"
+            className="mx-1 mb-1 flex h-10 shrink-0 items-center justify-between gap-3 px-4 font-kura-mono text-[10px] text-kura-fg-subtle uppercase tracking-[0.12em] shadow-[inset_0_1px_0_var(--kura-border)]"
           >
             <span className="truncate" aria-live="polite">
               {isLoading
                 ? "Loading…"
                 : pages.length > 0
-                  ? "⌫ to go back"
+                  ? "Backspace to go back"
                   : `${enabledRows.length} ${enabledRows.length === 1 ? "result" : "results"}`}
             </span>
             <span className="flex shrink-0 items-center gap-1.5">
               {activeRow && nested(activeRow.item) ? "Open" : "Run"}
               <span
                 aria-hidden
-                className="inline-flex size-[18px] items-center justify-center rounded-kura-xs bg-kura-hover"
+                className="inline-flex size-[18px] items-center justify-center rounded-kura-xs text-kura-fg-muted shadow-[inset_0_0_0_1px_var(--kura-border-strong)]"
               >
-                <CornerDownLeft className="size-3" />
+                <CornerDownLeft className="size-3" strokeWidth={1.75} />
               </span>
             </span>
           </div>
@@ -544,13 +561,14 @@ export function CommandPaletteTrigger({
       type="button"
       data-slot="command-palette-trigger"
       className={cn(
-        "inline-flex h-9 w-full min-w-0 cursor-pointer items-center gap-2 rounded-kura-lg bg-kura-surface pr-1.5 pl-3 font-kura-sans text-kura-fg-subtle text-sm shadow-kura-sm outline-none",
-        "transition-[box-shadow,color] duration-(--kura-duration-fast) ease-kura-out hover:text-kura-fg-muted focus-visible:shadow-kura-focus",
+        // A pressed well, like a field: the page's paper sunk a little, with a hairline edge.
+        "inline-flex h-9 w-full min-w-0 cursor-pointer items-center gap-2.5 rounded-kura-md bg-kura-surface-sunken pr-1.5 pl-3 font-kura-sans text-kura-fg-subtle text-sm shadow-[inset_0_0_0_1px_var(--kura-border-subtle)] outline-none",
+        "transition-[box-shadow,color] duration-(--kura-duration-fast) ease-kura-out hover:text-kura-fg-muted hover:shadow-[inset_0_0_0_1px_var(--kura-border)] focus-visible:shadow-kura-focus",
         className,
       )}
       {...props}
     >
-      <Search aria-hidden className="size-4 shrink-0" />
+      <Search aria-hidden strokeWidth={1.75} className="size-4 shrink-0" />
       <span className="flex-1 truncate text-left">{placeholder}</span>
       <Kbd keys={shortcut} size="sm" />
     </button>

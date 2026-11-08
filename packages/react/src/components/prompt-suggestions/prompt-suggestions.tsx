@@ -92,7 +92,7 @@ export function PromptSuggestions({
               exit={{ opacity: 0, transition: { duration: 0.09 } }}
               className={cn(
                 "flex",
-                variant === "list" && "not-last:shadow-[0_1px_0_var(--kura-border-subtle)]",
+                variant === "list" && "not-last:border-kura-border not-last:border-b",
               )}
             >
               <button
@@ -104,12 +104,16 @@ export function PromptSuggestions({
                   "group/suggestion relative flex w-full min-w-0 cursor-pointer items-center text-left outline-none",
                   "transition-[background-color,color,box-shadow,transform] duration-(--kura-duration-fast) ease-kura-out",
                   "focus-visible:shadow-kura-focus disabled:cursor-not-allowed disabled:opacity-50 motion-reduce:transform-none",
+                  // Chips: slips of the page's paper with a hairline edge; hover lifts one onto
+                  // bright stock.
                   variant === "chips" &&
-                    "h-8 gap-1.5 rounded-full bg-kura-surface px-3 text-[13px] text-kura-fg-muted shadow-kura-xs hover:not-disabled:bg-kura-surface-sunken hover:not-disabled:text-kura-fg active:not-disabled:scale-[0.97] [&_[data-slot=prompt-suggestions-icon]_svg]:size-3.5",
+                    "h-8 gap-1.5 rounded-kura-md bg-kura-surface px-3 text-[13px] text-kura-fg-muted shadow-[inset_0_0_0_1px_var(--kura-border)] hover:not-disabled:bg-kura-surface-raised hover:not-disabled:text-kura-fg hover:not-disabled:shadow-kura-sm active:not-disabled:translate-y-px [&_[data-slot=prompt-suggestions-icon]_svg]:size-3.5",
+                  // Cards: bright prints laid on the page.
                   variant === "cards" &&
-                    "flex-col items-start gap-2.5 rounded-kura-xl bg-kura-surface p-3.5 shadow-kura-sm hover:not-disabled:shadow-kura-md active:not-disabled:scale-[0.985]",
+                    "flex-col items-start gap-3 rounded-kura-md bg-kura-surface-raised p-4 shadow-kura-sm hover:not-disabled:shadow-kura-md active:not-disabled:translate-y-px",
+                  // List: ruled rows (the rules live on the <li>).
                   variant === "list" &&
-                    "gap-3 rounded-kura-md px-2 py-2.5 text-kura-fg-muted text-sm hover:not-disabled:bg-kura-hover hover:not-disabled:text-kura-fg",
+                    "gap-3 rounded-kura-sm px-2 py-2.5 text-kura-fg-muted text-sm hover:not-disabled:bg-kura-hover hover:not-disabled:text-kura-fg",
                 )}
               >
                 {s.icon && (
@@ -117,9 +121,9 @@ export function PromptSuggestions({
                     data-slot="prompt-suggestions-icon"
                     aria-hidden
                     className={cn(
-                      "flex shrink-0 items-center justify-center text-kura-fg-subtle transition-colors duration-(--kura-duration-fast) group-hover/suggestion:text-kura-fg-muted",
+                      "flex shrink-0 items-center justify-center text-kura-fg-subtle transition-colors duration-(--kura-duration-fast) group-hover/suggestion:text-kura-fg [&_svg]:stroke-[1.75]",
                       variant === "cards" &&
-                        "size-7 rounded-kura-md bg-kura-hover shadow-[inset_0_0_0_1px_var(--kura-border-subtle)] [&_svg]:size-3.5",
+                        "size-7 rounded-kura-xs bg-kura-surface shadow-[inset_0_0_0_1px_var(--kura-border-subtle)] [&_svg]:size-3.5",
                       variant === "list" && "[&_svg]:size-4",
                     )}
                   >
@@ -143,7 +147,7 @@ export function PromptSuggestions({
                         className={cn(
                           "text-kura-fg-subtle",
                           variant === "cards"
-                            ? "line-clamp-2 text-xs leading-4"
+                            ? "line-clamp-2 text-[13px] leading-[18px]"
                             : "truncate text-xs",
                         )}
                       >
@@ -155,11 +159,12 @@ export function PromptSuggestions({
                 {variant !== "chips" && (
                   <ArrowUpRight
                     aria-hidden
+                    strokeWidth={1.75}
                     className={cn(
                       "size-3.5 shrink-0 text-kura-fg-subtle opacity-0 transition-[opacity,transform] duration-(--kura-duration-base) ease-kura-out",
                       "-translate-x-0.5 translate-y-0.5 group-hover/suggestion:translate-x-0 group-hover/suggestion:translate-y-0 group-hover/suggestion:opacity-100 group-focus-visible/suggestion:opacity-100",
                       "motion-reduce:translate-x-0 motion-reduce:translate-y-0",
-                      variant === "cards" && "absolute top-3.5 right-3.5",
+                      variant === "cards" && "absolute top-4 right-4",
                     )}
                   />
                 )}

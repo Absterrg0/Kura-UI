@@ -369,7 +369,8 @@ export function SlashCommandMenu({
       onMouseDown={(e) => e.preventDefault()}
       style={{ ...positioned, width: MENU_WIDTH, ...style }}
       className={cn(
-        "fixed z-50 flex max-h-[min(18rem,50vh)] max-w-[calc(100vw-16px)] flex-col overflow-hidden rounded-kura-lg bg-kura-overlay font-kura-sans text-kura-fg shadow-kura-lg backdrop-blur-xl backdrop-saturate-150",
+        // A bright print held just off the page: hairline edge, low warm shadow, no glass.
+        "fixed z-50 flex max-h-[min(18rem,50vh)] max-w-[calc(100vw-16px)] flex-col overflow-hidden rounded-kura-md bg-kura-surface-raised font-kura-sans text-kura-fg shadow-kura-lg",
         "animate-kura-pop-in data-[side=bottom]:origin-top-left data-[side=top]:origin-bottom-left",
         className,
       )}
@@ -379,7 +380,7 @@ export function SlashCommandMenu({
         id={listId}
         role="listbox"
         aria-label="Commands"
-        className="scroll-py-1 overflow-y-auto overscroll-contain p-1 [scrollbar-width:thin]"
+        className="scroll-py-1 overflow-y-auto overscroll-contain p-1.5 [scrollbar-width:thin]"
       >
         {results.length === 0 && (
           <div className="px-3 py-5 text-center text-[13px] text-kura-fg-subtle">
@@ -399,7 +400,7 @@ export function SlashCommandMenu({
               {group && (
                 <div
                   id={headingId}
-                  className="select-none px-2 pt-1.5 pb-1 font-medium text-[11px] text-kura-fg-subtle"
+                  className="select-none px-1.5 pt-2 pb-1.5 font-kura-mono text-[10px] text-kura-fg-subtle uppercase tracking-[0.14em]"
                 >
                   {group}
                 </div>
@@ -426,11 +427,12 @@ export function SlashCommandMenu({
                       if (!cmd.disabled && !isActive) setActive(cmd.id);
                     }}
                     onClick={() => choose(cmd)}
-                    className="flex cursor-pointer select-none items-center gap-2.5 rounded-kura-md px-1.5 py-1.5 data-active:bg-kura-hover data-disabled:cursor-not-allowed data-disabled:opacity-45"
+                    className="group/item flex cursor-pointer select-none items-center gap-2.5 rounded-kura-sm px-1.5 py-1.5 transition-colors duration-(--kura-duration-instant) data-active:bg-kura-hover data-disabled:cursor-not-allowed data-disabled:opacity-45"
                   >
+                    {/* The icon sits in a small pressed well; the highlighted command's well is inked. */}
                     <span
                       aria-hidden
-                      className="flex size-7 shrink-0 items-center justify-center rounded-kura-sm bg-kura-surface text-kura-fg-muted shadow-kura-xs [&_svg]:size-3.5"
+                      className="flex size-7 shrink-0 items-center justify-center rounded-kura-xs bg-kura-surface text-kura-fg-muted shadow-[inset_0_0_0_1px_var(--kura-border-subtle)] transition-colors duration-(--kura-duration-fast) group-data-active/item:bg-kura-ink group-data-active/item:text-kura-fg-inverted group-data-active/item:shadow-none [&_svg]:size-3.5 [&_svg]:stroke-[1.75]"
                     >
                       {cmd.icon ?? (
                         <span className="font-kura-mono text-[11px] leading-none">{trigger}</span>
@@ -459,7 +461,7 @@ export function SlashCommandMenu({
       <div
         data-slot="slash-command-menu-footer"
         aria-hidden
-        className="flex h-7 shrink-0 items-center gap-3 px-3 text-[11px] text-kura-fg-subtle shadow-[inset_0_1px_0_var(--kura-border-subtle)]"
+        className="flex h-8 shrink-0 items-center gap-3.5 bg-kura-surface px-3 font-kura-mono text-[10px] text-kura-fg-subtle uppercase tracking-[0.1em] shadow-[inset_0_1px_0_var(--kura-border)]"
       >
         <span className="inline-flex items-center gap-1">
           <Kbd keys={["up"]} variant="ghost" size="sm" />

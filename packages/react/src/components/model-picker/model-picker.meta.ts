@@ -162,7 +162,7 @@ export default defineComponent({
   agentNotes: [
     'Pass `side="top"` inside a composer docked to the bottom of the viewport.',
     "speed: 3 = fast, 1 = slow/thorough. cost: 1 = cheap, 3 = expensive. Omit either to hide it.",
-    "`icon` takes a 16px provider logo; without it a monogram of the provider is shown.",
+    "`icon` takes a 16px provider logo; without it the provider's initial is shown as a small stamped mono square.",
     'formatContextWindow(200000) → "200K" is exported for use elsewhere (e.g. a context-meter).',
   ],
 });

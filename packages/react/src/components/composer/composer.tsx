@@ -296,10 +296,16 @@ export function Composer({
           addFiles(filesFromDataTransfer(e.dataTransfer));
         }}
         className={cn(
-          "group/composer relative isolate flex w-full cursor-text flex-col rounded-kura-2xl bg-kura-surface font-kura-sans text-kura-fg shadow-kura-sm",
-          "transition-[box-shadow,opacity] duration-(--kura-duration-base) ease-kura-out",
-          "data-[focused=true]:shadow-[0_0_0_1px_var(--kura-border-strong),0_0_0_4px_color-mix(in_oklch,var(--kura-ring)_14%,transparent),var(--kura-shadow-md)]",
-          disabled && "cursor-not-allowed opacity-60",
+          // A bright print laid on the page: hairline edge, and a keyline just inside it like a
+          // mounted print. Focus inks the edge and lifts the sheet; a live response tints the
+          // keyline vermilion.
+          "group/composer relative isolate flex w-full cursor-text flex-col rounded-kura-lg bg-kura-surface-raised font-kura-sans text-kura-fg shadow-kura-sm",
+          "transition-[box-shadow,background-color,opacity] duration-(--kura-duration-base) ease-kura-out",
+          "before:pointer-events-none before:absolute before:inset-[3px] before:rounded-[9px] before:border before:border-kura-border-subtle before:transition-colors before:duration-(--kura-duration-base) before:ease-kura-out",
+          "data-[focused=true]:shadow-[0_0_0_1px_color-mix(in_oklch,var(--kura-fg)_34%,transparent),var(--kura-shadow-md)] data-[focused=true]:before:border-kura-border",
+          "aria-busy:before:border-[color-mix(in_oklch,var(--kura-accent)_38%,transparent)]",
+          disabled &&
+            "cursor-not-allowed bg-kura-surface-sunken opacity-70 shadow-kura-xs before:border-transparent",
           className,
         )}
         {...props}
@@ -451,7 +457,7 @@ export function ComposerInput({
         }
       }}
       className={cn(
-        "block w-full resize-none bg-transparent px-4 pt-3.5 pb-1.5 text-[15px] text-kura-fg leading-6 outline-none",
+        "block w-full resize-none bg-transparent px-[18px] pt-4 pb-2 text-[15px] text-kura-fg leading-6 caret-kura-fg outline-none",
         "placeholder:text-kura-fg-subtle disabled:cursor-not-allowed [scrollbar-gutter:stable] [scrollbar-width:thin]",
         className,
       )}
@@ -476,7 +482,7 @@ export function ComposerAttachments({ max, className, ...props }: ComposerAttach
   return (
     <div
       data-slot="composer-attachments"
-      className={cn("cursor-default px-3 pt-3", className)}
+      className={cn("cursor-default px-3.5 pt-3.5", className)}
       {...props}
     >
       <AttachmentList
@@ -499,7 +505,10 @@ export function ComposerToolbar({ className, ...props }: ComposerToolbarProps) {
   return (
     <div
       data-slot="composer-toolbar"
-      className={cn("flex min-h-12 items-center justify-between gap-2 p-2 pt-1", className)}
+      className={cn(
+        "flex min-h-[52px] items-center justify-between gap-2 px-2.5 pt-1 pb-2.5",
+        className,
+      )}
       {...props}
     />
   );
@@ -512,7 +521,7 @@ export function ComposerTools({ className, ...props }: ComposerToolsProps) {
   return (
     <div
       data-slot="composer-tools"
-      className={cn("flex min-w-0 flex-1 items-center gap-1", className)}
+      className={cn("flex min-w-0 flex-1 items-center gap-0.5", className)}
       {...props}
     />
   );
@@ -552,13 +561,13 @@ export function ComposerAttachButton({
     <IconButton
       data-slot="composer-attach"
       label={label}
-      icon={icon ?? <Paperclip />}
+      icon={icon ?? <Paperclip strokeWidth={1.75} />}
       disabled={ctx.disabled}
       onClick={(e) => {
         onClick?.(e);
         if (!e.defaultPrevented) ctx.openFilePicker();
       }}
-      className={cn("rounded-kura-lg", className)}
+      className={cn("rounded-kura-md", className)}
       {...props}
     />
   );
@@ -612,7 +621,7 @@ export function ComposerHint({
       id={hintId}
       aria-hidden={!visible || undefined}
       className={cn(
-        "inline-flex select-none items-center gap-1.5 text-xs text-kura-fg-subtle tabular-nums",
+        "inline-flex select-none items-center gap-1.5 font-kura-mono text-[11px] text-kura-fg-subtle tabular-nums tracking-[0.02em]",
         "transition-[opacity,color] duration-(--kura-duration-base) ease-kura-out",
         !visible && "pointer-events-none opacity-0",
         level === "near" && "text-kura-warning-text",
@@ -622,7 +631,11 @@ export function ComposerHint({
       {...props}
     >
       {maxLength !== undefined && resolved === "characters" && (
-        <AttachmentProgressRing progress={Math.min(1, ratio)} thickness={3} className="size-3.5" />
+        <AttachmentProgressRing
+          progress={Math.min(1, ratio)}
+          thickness={2.5}
+          className="size-3.5 opacity-80"
+        />
       )}
       <span aria-hidden>{label}</span>
       {maxLength !== undefined && (
@@ -652,8 +665,9 @@ export interface ComposerSubmitProps
 
 /**
  * Send button that becomes a stop button while the composer is `submitted` or `streaming`.
- * The icons cross-fade with a 2px blur; a thin arc orbits the button while waiting for the
- * first token.
+ * Ink when there is something to send, an empty hairline press when there is not, and vermilion
+ * (the live signal) while the model is working. The icons cross-fade with a 2px blur; a thin
+ * vermilion arc orbits the button while waiting for the first token.
  */
 export function ComposerSubmit({
   sendLabel = "Send message",
@@ -699,13 +713,22 @@ export function ComposerSubmit({
         else ctx.submit();
       }}
       className={cn(
-        "relative flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-kura-lg outline-none",
-        "transition-[background-color,color,box-shadow,transform] duration-(--kura-duration-fast) ease-kura-out",
-        "focus-visible:shadow-kura-focus active:not-disabled:scale-[0.94] motion-reduce:active:not-disabled:scale-100",
+        "relative flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-kura-md outline-none",
+        "transition-[background-color,color,box-shadow,translate] duration-(--kura-duration-fast) ease-kura-out",
+        "active:not-disabled:translate-y-px motion-reduce:active:not-disabled:translate-y-0",
         "disabled:cursor-not-allowed",
-        ready
-          ? "bg-kura-ink text-kura-fg-inverted shadow-kura-xs hover:bg-kura-ink-hover"
-          : "bg-kura-active text-kura-fg-subtle",
+        // A block of ink: a faint lit edge on top, a denser one below, a short contact shadow.
+        ready &&
+          ctx.status !== "submitted" &&
+          "shadow-[inset_0_1px_0_0_color-mix(in_oklab,white_14%,transparent),inset_0_-1px_0_0_color-mix(in_oklab,black_18%,transparent),0_1px_2px_-1px_color-mix(in_oklab,black_40%,transparent),0_2px_6px_-3px_color-mix(in_oklab,black_22%,transparent)]",
+        ctx.status === "submitted"
+          ? "bg-kura-accent-subtle text-kura-accent-text shadow-[inset_0_0_0_1px_color-mix(in_oklch,var(--kura-accent)_30%,transparent)] hover:bg-[color-mix(in_oklch,var(--kura-accent-subtle),var(--kura-accent)_14%)]"
+          : mode === "stop"
+            ? "bg-kura-accent-hover text-kura-accent-fg hover:bg-[color-mix(in_oklab,var(--kura-accent-hover),var(--kura-fg)_12%)]"
+            : ready
+              ? "bg-kura-ink text-kura-fg-inverted hover:bg-kura-ink-hover"
+              : "bg-transparent text-kura-fg-subtle shadow-[inset_0_0_0_1px_var(--kura-border)]",
+        "focus-visible:shadow-kura-focus",
         className,
       )}
       {...props}
@@ -715,7 +738,7 @@ export function ComposerSubmit({
           {mode === "stop" ? (
             <span aria-hidden className="size-2.5 rounded-[2.5px] bg-current" />
           ) : (
-            <ArrowUp aria-hidden className="size-4" strokeWidth={2.25} />
+            <ArrowUp aria-hidden className="size-4" strokeWidth={2} />
           )}
         </motion.span>
       </AnimatePresence>
@@ -723,21 +746,21 @@ export function ComposerSubmit({
         <svg
           aria-hidden
           data-slot="composer-submit-pending"
-          viewBox="0 0 36 36"
-          className="-inset-0.5 pointer-events-none absolute size-9 text-kura-fg-subtle motion-reduce:animate-kura-pulse"
+          viewBox="0 0 38 38"
+          className="-inset-[3px] pointer-events-none absolute size-[38px] text-kura-accent motion-reduce:animate-kura-pulse"
           fill="none"
         >
           {/* a short arc travelling around the button's own rounded outline */}
           <motion.rect
             x="1"
             y="1"
-            width="34"
-            height="34"
-            rx="13"
+            width="36"
+            height="36"
+            rx="10"
             stroke="currentColor"
             strokeWidth="1.5"
             pathLength={100}
-            strokeDasharray="22 78"
+            strokeDasharray="28 72"
             strokeLinecap="round"
             initial={{ strokeDashoffset: 0 }}
             animate={reduced ? { strokeDashoffset: 0 } : { strokeDashoffset: -100 }}
@@ -776,32 +799,29 @@ function ComposerDropOverlay({ visible }: { visible: boolean }) {
       data-slot="composer-drop-overlay"
       data-state={visible ? "visible" : "hidden"}
       className={cn(
-        "pointer-events-none absolute inset-0 z-10 flex items-center justify-center rounded-[inherit] bg-kura-overlay backdrop-blur-sm",
+        "pointer-events-none absolute inset-0 z-10 flex items-center justify-center rounded-[inherit] bg-kura-surface-raised/95",
         "transition-opacity duration-(--kura-duration-fast) ease-kura-out",
         visible ? "opacity-100" : "opacity-0",
       )}
     >
-      <svg
-        aria-hidden
-        className="absolute inset-0 size-full overflow-visible text-kura-border-strong"
-      >
+      <svg aria-hidden className="absolute inset-0 size-full overflow-visible text-kura-fg-subtle">
         <rect
-          x="4.5"
-          y="4.5"
-          rx="15.5"
+          x="3.5"
+          y="3.5"
+          rx="8.5"
           fill="none"
           stroke="currentColor"
           strokeDasharray="5 4"
-          style={{ width: "calc(100% - 9px)", height: "calc(100% - 9px)" }}
+          style={{ width: "calc(100% - 7px)", height: "calc(100% - 7px)" }}
         />
       </svg>
       <span
         className={cn(
-          "flex items-center gap-2 font-medium text-kura-fg text-sm transition-transform duration-(--kura-duration-base) ease-kura-out motion-reduce:transition-none",
+          "flex items-center gap-2 font-kura-mono text-[11px] text-kura-fg uppercase tracking-[0.14em] transition-transform duration-(--kura-duration-base) ease-kura-out motion-reduce:transition-none",
           visible ? "translate-y-0" : "translate-y-1",
         )}
       >
-        <Paperclip className="size-4 text-kura-fg-muted" aria-hidden />
+        <Paperclip className="size-3.5 text-kura-fg-muted" strokeWidth={1.75} aria-hidden />
         Drop to attach
       </span>
     </div>
