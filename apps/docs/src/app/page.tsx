@@ -31,9 +31,20 @@ const agentFeatures = [
   },
 ];
 
+/** Hand-picked for the home grid: one per category, each with a minimal example that reads at card size. */
+const FEATURED = [
+  "agent-orb",
+  "composer",
+  "agent-timeline",
+  "artifact-card",
+  "audio-waveform",
+  "mesh-gradient",
+];
+
 export default function Home() {
-  const featured = components.filter((c) => c.category !== "primitives").slice(0, 6);
-  const gallery = featured.length >= 3 ? featured : components.slice(0, 6);
+  const picked = FEATURED.flatMap((slug) => components.find((c) => c.slug === slug) ?? []);
+  const gallery =
+    picked.length >= 3 ? picked : components.filter((c) => c.category !== "primitives").slice(0, 6);
   const install = `npx shadcn@latest add ${catalog.homepage}/r/shimmer-text.json`;
   return (
     <div className="overflow-x-clip">
