@@ -1,0 +1,350 @@
+/*
+ * Kura UI — design tokens ("Kura Signal" design language). See DESIGN.md.
+ *
+ * Usage (Tailwind CSS v4):
+ *   @import "tailwindcss";
+ *   @import "@kura-ui/react/styles.css";
+ *
+ * Rules for component authors:
+ *   - Never hard-code colors. Use the semantic utilities below (bg-kura-surface, text-kura-fg-muted…).
+ *   - Never use the `dark:` variant. Tokens flip automatically under `.dark` / [data-theme="dark"].
+ *   - Durations/easings come from --kura-duration-* / --kura-ease-* (CSS) or lib/motion (JS).
+ */
+
+/* Let Tailwind see the class names used inside Kura's compiled components. */
+@source "../";
+
+/* ------------------------------------------------------------------------------------------ */
+/* Static tokens (do not change between themes)                                                */
+/* ------------------------------------------------------------------------------------------ */
+@theme {
+  --font-kura-sans:
+    var(--font-geist-sans, "Geist"), "Geist Variable", "Inter", ui-sans-serif, system-ui,
+    -apple-system, "Segoe UI", sans-serif;
+  --font-kura-mono:
+    var(--font-geist-mono, "Geist Mono"), "Geist Mono Variable", ui-monospace, "SF Mono",
+    "JetBrains Mono", Menlo, monospace;
+
+  --radius-kura-xs: 4px;
+  --radius-kura-sm: 6px;
+  --radius-kura-md: 8px;
+  --radius-kura-lg: 12px;
+  --radius-kura-xl: 16px;
+  --radius-kura-2xl: 20px;
+
+  --ease-kura-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-kura-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+  --ease-kura-in: cubic-bezier(0.55, 0, 1, 0.45);
+  --ease-kura-spring: linear(
+    0,
+    0.0409,
+    0.137,
+    0.2584,
+    0.3854,
+    0.5063,
+    0.6145,
+    0.707,
+    0.7835,
+    0.8447,
+    0.8923,
+    0.9284,
+    0.955,
+    0.974,
+    0.9872,
+    0.9959,
+    1.0013,
+    1.0044,
+    1.0059,
+    1.0063,
+    1.0061,
+    1.0055,
+    1.0047,
+    1.0039,
+    1.0032,
+    1.0025,
+    1.0019,
+    1.0014,
+    1.001,
+    1.0007,
+    1.0005,
+    1.0003,
+    1.0002
+  );
+
+  --animate-kura-pop-in: kura-pop-in var(--kura-duration-fast) var(--ease-kura-out) both;
+  --animate-kura-pop-out: kura-pop-out var(--kura-duration-instant) var(--ease-kura-in) both;
+  --animate-kura-fade-in: kura-fade-in var(--kura-duration-base) var(--ease-kura-out) both;
+  --animate-kura-fade-out: kura-fade-out var(--kura-duration-fast) var(--ease-kura-in) both;
+  --animate-kura-rise-in: kura-rise-in var(--kura-duration-slow) var(--ease-kura-out) both;
+  --animate-kura-spin: kura-spin 0.8s linear infinite;
+  --animate-kura-shimmer: kura-shimmer var(--kura-shimmer-duration, 2s) linear infinite;
+  --animate-kura-pulse: kura-pulse 1.6s var(--ease-kura-in-out) infinite;
+
+  @keyframes kura-pop-in {
+    from {
+      opacity: 0;
+      transform: translateY(var(--kura-pop-y)) scale(var(--kura-pop-scale));
+    }
+  }
+  @keyframes kura-pop-out {
+    to {
+      opacity: 0;
+      transform: translateY(var(--kura-pop-y)) scale(var(--kura-pop-scale));
+    }
+  }
+  @keyframes kura-fade-in {
+    from {
+      opacity: 0;
+    }
+  }
+  @keyframes kura-fade-out {
+    to {
+      opacity: 0;
+    }
+  }
+  @keyframes kura-rise-in {
+    from {
+      opacity: 0;
+      transform: translateY(var(--kura-rise-y));
+      filter: blur(var(--kura-rise-blur));
+    }
+  }
+  @keyframes kura-spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  @keyframes kura-shimmer {
+    from {
+      background-position: 100% 0;
+    }
+    to {
+      background-position: 0% 0;
+    }
+  }
+  @keyframes kura-pulse {
+    50% {
+      opacity: 0.45;
+    }
+  }
+}
+
+/* ------------------------------------------------------------------------------------------ */
+/* Semantic color tokens → Tailwind utilities (bg-kura-*, text-kura-*, border-kura-*, …)        */
+/* ------------------------------------------------------------------------------------------ */
+@theme inline {
+  --color-kura-canvas: var(--kura-canvas);
+  --color-kura-surface: var(--kura-surface);
+  --color-kura-surface-raised: var(--kura-surface-raised);
+  --color-kura-surface-sunken: var(--kura-surface-sunken);
+  --color-kura-overlay: var(--kura-overlay);
+  --color-kura-hover: var(--kura-hover);
+  --color-kura-active: var(--kura-active);
+
+  --color-kura-fg: var(--kura-fg);
+  --color-kura-fg-muted: var(--kura-fg-muted);
+  --color-kura-fg-subtle: var(--kura-fg-subtle);
+  --color-kura-fg-inverted: var(--kura-fg-inverted);
+
+  --color-kura-border: var(--kura-border);
+  --color-kura-border-subtle: var(--kura-border-subtle);
+  --color-kura-border-strong: var(--kura-border-strong);
+
+  --color-kura-ink: var(--kura-ink);
+  --color-kura-ink-hover: var(--kura-ink-hover);
+
+  --color-kura-accent: var(--kura-accent);
+  --color-kura-accent-hover: var(--kura-accent-hover);
+  --color-kura-accent-fg: var(--kura-accent-fg);
+  --color-kura-accent-subtle: var(--kura-accent-subtle);
+  --color-kura-accent-text: var(--kura-accent-text);
+
+  --color-kura-danger: var(--kura-danger);
+  --color-kura-danger-subtle: var(--kura-danger-subtle);
+  --color-kura-danger-text: var(--kura-danger-text);
+  --color-kura-success: var(--kura-success);
+  --color-kura-success-text: var(--kura-success-text);
+  --color-kura-warning: var(--kura-warning);
+  --color-kura-warning-text: var(--kura-warning-text);
+
+  --color-kura-ring: var(--kura-ring);
+
+  --color-kura-gray-1: var(--kura-gray-1);
+  --color-kura-gray-2: var(--kura-gray-2);
+  --color-kura-gray-3: var(--kura-gray-3);
+  --color-kura-gray-4: var(--kura-gray-4);
+  --color-kura-gray-5: var(--kura-gray-5);
+  --color-kura-gray-6: var(--kura-gray-6);
+  --color-kura-gray-7: var(--kura-gray-7);
+  --color-kura-gray-8: var(--kura-gray-8);
+  --color-kura-gray-9: var(--kura-gray-9);
+  --color-kura-gray-10: var(--kura-gray-10);
+  --color-kura-gray-11: var(--kura-gray-11);
+  --color-kura-gray-12: var(--kura-gray-12);
+
+  --shadow-kura-xs: var(--kura-shadow-xs);
+  --shadow-kura-sm: var(--kura-shadow-sm);
+  --shadow-kura-md: var(--kura-shadow-md);
+  --shadow-kura-lg: var(--kura-shadow-lg);
+  --shadow-kura-focus: var(--kura-shadow-focus);
+}
+
+/* ------------------------------------------------------------------------------------------ */
+/* Light theme (default)                                                                       */
+/* ------------------------------------------------------------------------------------------ */
+:root {
+  /* Neutral scale — warm "paper" grays, hue 85, near-zero chroma */
+  --kura-gray-1: oklch(0.993 0.002 85);
+  --kura-gray-2: oklch(0.982 0.003 85);
+  --kura-gray-3: oklch(0.962 0.004 85);
+  --kura-gray-4: oklch(0.942 0.005 85);
+  --kura-gray-5: oklch(0.92 0.005 85);
+  --kura-gray-6: oklch(0.895 0.006 85);
+  --kura-gray-7: oklch(0.86 0.006 85);
+  --kura-gray-8: oklch(0.8 0.007 85);
+  --kura-gray-9: oklch(0.64 0.008 85);
+  --kura-gray-10: oklch(0.58 0.008 85);
+  --kura-gray-11: oklch(0.47 0.008 85);
+  --kura-gray-12: oklch(0.205 0.006 85);
+
+  --kura-canvas: var(--kura-gray-1);
+  --kura-surface: oklch(1 0 0);
+  --kura-surface-raised: oklch(1 0 0);
+  --kura-surface-sunken: var(--kura-gray-2);
+  --kura-overlay: oklch(1 0 0 / 0.92);
+  --kura-hover: oklch(0.205 0.006 85 / 0.05);
+  --kura-active: oklch(0.205 0.006 85 / 0.09);
+
+  --kura-fg: var(--kura-gray-12);
+  --kura-fg-muted: var(--kura-gray-11);
+  --kura-fg-subtle: var(--kura-gray-10);
+  --kura-fg-inverted: var(--kura-gray-1);
+
+  --kura-border: oklch(0.205 0.006 85 / 0.12);
+  --kura-border-subtle: oklch(0.205 0.006 85 / 0.07);
+  --kura-border-strong: oklch(0.205 0.006 85 / 0.2);
+
+  --kura-ink: var(--kura-gray-12);
+  --kura-ink-hover: oklch(0.3 0.006 85);
+
+  /* Signal — the one accent. Jade. Reserved for "the model is doing something". */
+  --kura-accent: oklch(0.55 0.115 172);
+  --kura-accent-hover: oklch(0.5 0.11 172);
+  --kura-accent-fg: oklch(0.99 0.01 172);
+  --kura-accent-subtle: oklch(0.955 0.03 172);
+  --kura-accent-text: oklch(0.47 0.1 172);
+
+  --kura-danger: oklch(0.58 0.2 25);
+  --kura-danger-subtle: oklch(0.96 0.025 25);
+  --kura-danger-text: oklch(0.5 0.18 25);
+  --kura-success: oklch(0.62 0.15 150);
+  --kura-success-text: oklch(0.47 0.12 150);
+  --kura-warning: oklch(0.78 0.15 75);
+  --kura-warning-text: oklch(0.52 0.12 65);
+
+  --kura-ring: oklch(0.55 0.115 172 / 0.55);
+
+  /* Layered hairline shadows: a 1px ring + soft, tight ambient layers. */
+  --kura-shadow-xs: 0 0 0 1px var(--kura-border-subtle), 0 1px 1px 0 oklch(0 0 0 / 0.03);
+  --kura-shadow-sm:
+    0 0 0 1px var(--kura-border), 0 1px 2px -1px oklch(0 0 0 / 0.08),
+    0 2px 4px -2px oklch(0 0 0 / 0.04);
+  --kura-shadow-md:
+    0 0 0 1px var(--kura-border), 0 2px 4px -2px oklch(0 0 0 / 0.06),
+    0 8px 16px -6px oklch(0 0 0 / 0.08);
+  --kura-shadow-lg:
+    0 0 0 1px var(--kura-border), 0 4px 8px -4px oklch(0 0 0 / 0.06), 0 16px 32px -12px
+    oklch(0 0 0 / 0.14), 0 32px 64px -24px oklch(0 0 0 / 0.1);
+  --kura-shadow-focus: 0 0 0 1px var(--kura-canvas), 0 0 0 3px var(--kura-ring);
+
+  /* Motion */
+  --kura-duration-instant: 90ms;
+  --kura-duration-fast: 150ms;
+  --kura-duration-base: 220ms;
+  --kura-duration-slow: 320ms;
+  --kura-duration-slower: 480ms;
+  --kura-pop-scale: 0.96;
+  --kura-pop-y: 2px;
+  --kura-rise-y: 6px;
+  --kura-rise-blur: 2px;
+
+  color-scheme: light;
+}
+
+/* ------------------------------------------------------------------------------------------ */
+/* Dark theme — `.dark` (next-themes / shadcn convention) or [data-theme="dark"]               */
+/* ------------------------------------------------------------------------------------------ */
+.dark,
+[data-theme="dark"] {
+  --kura-gray-1: oklch(0.155 0.004 85);
+  --kura-gray-2: oklch(0.185 0.004 85);
+  --kura-gray-3: oklch(0.215 0.005 85);
+  --kura-gray-4: oklch(0.24 0.005 85);
+  --kura-gray-5: oklch(0.265 0.006 85);
+  --kura-gray-6: oklch(0.295 0.006 85);
+  --kura-gray-7: oklch(0.345 0.007 85);
+  --kura-gray-8: oklch(0.42 0.008 85);
+  --kura-gray-9: oklch(0.56 0.008 85);
+  --kura-gray-10: oklch(0.64 0.008 85);
+  --kura-gray-11: oklch(0.76 0.007 85);
+  --kura-gray-12: oklch(0.955 0.004 85);
+
+  --kura-canvas: var(--kura-gray-1);
+  --kura-surface: var(--kura-gray-2);
+  --kura-surface-raised: var(--kura-gray-3);
+  --kura-surface-sunken: oklch(0.135 0.004 85);
+  --kura-overlay: oklch(0.21 0.005 85 / 0.92);
+  --kura-hover: oklch(0.955 0.004 85 / 0.06);
+  --kura-active: oklch(0.955 0.004 85 / 0.1);
+
+  --kura-fg: var(--kura-gray-12);
+  --kura-fg-muted: var(--kura-gray-11);
+  --kura-fg-subtle: var(--kura-gray-10);
+  --kura-fg-inverted: var(--kura-gray-1);
+
+  --kura-border: oklch(0.955 0.004 85 / 0.12);
+  --kura-border-subtle: oklch(0.955 0.004 85 / 0.07);
+  --kura-border-strong: oklch(0.955 0.004 85 / 0.2);
+
+  --kura-ink: var(--kura-gray-12);
+  --kura-ink-hover: oklch(0.88 0.004 85);
+
+  --kura-accent: oklch(0.78 0.13 170);
+  --kura-accent-hover: oklch(0.83 0.12 170);
+  --kura-accent-fg: oklch(0.2 0.04 172);
+  --kura-accent-subtle: oklch(0.27 0.045 172);
+  --kura-accent-text: oklch(0.82 0.12 170);
+
+  --kura-danger: oklch(0.66 0.19 25);
+  --kura-danger-subtle: oklch(0.27 0.06 25);
+  --kura-danger-text: oklch(0.74 0.16 25);
+  --kura-success: oklch(0.72 0.15 150);
+  --kura-success-text: oklch(0.78 0.14 150);
+  --kura-warning: oklch(0.82 0.14 80);
+  --kura-warning-text: oklch(0.84 0.13 80);
+
+  --kura-ring: oklch(0.78 0.13 170 / 0.6);
+
+  --kura-shadow-xs: 0 0 0 1px var(--kura-border-subtle), inset 0 1px 0 0 oklch(1 0 0 / 0.03);
+  --kura-shadow-sm:
+    0 0 0 1px var(--kura-border), inset 0 1px 0 0 oklch(1 0 0 / 0.04),
+    0 1px 2px 0 oklch(0 0 0 / 0.4);
+  --kura-shadow-md:
+    0 0 0 1px var(--kura-border), inset 0 1px 0 0 oklch(1 0 0 / 0.05),
+    0 8px 16px -6px oklch(0 0 0 / 0.5);
+  --kura-shadow-lg:
+    0 0 0 1px var(--kura-border), inset 0 1px 0 0 oklch(1 0 0 / 0.06), 0 16px 32px -12px
+    oklch(0 0 0 / 0.6), 0 32px 64px -24px oklch(0 0 0 / 0.5);
+
+  color-scheme: dark;
+}
+
+/* Reduced motion: keep fades (they carry meaning), drop travel, scale and blur. */
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --kura-pop-scale: 1;
+    --kura-pop-y: 0px;
+    --kura-rise-y: 0px;
+    --kura-rise-blur: 0px;
+  }
+}
