@@ -1,0 +1,16 @@
+---
+description: Building AI product UI with Kura UI (@kura-ui/react) — composers, voice, agent status, tool calls, shaders
+globs: ["**/*.tsx", "**/*.css"]
+alwaysApply: false
+---
+
+# Kura UI rules
+
+- Before using a Kura component, read its manifest: MCP `get_component`, `npx @kura-ui/cli info <slug> --json`, or `https://kura-ui.dev/components/<slug>.md`. Do not guess props.
+- Choose with `search_components` / `kura search "<need>"`; respect `whenNotToUse` (it names the better component).
+- One install style per project: npm (`@kura-ui/react/<slug>`) or copied source (`@/components/kura/<slug>` via `kura add` / shadcn registry). Match what the project already uses.
+- Setup: React 19, Tailwind v4, and Kura tokens (`@import "@kura-ui/react/styles.css";` after `@import "tailwindcss";`, or `kura init`). Check with `kura doctor --json`.
+- Style with Kura tokens only (`bg-kura-surface`, `text-kura-fg-muted`, `border-kura-border`, `shadow-kura-sm`, `rounded-kura-lg`, `ease-kura-out`). No hex colors, no `dark:` overrides.
+- Accent (`variant="accent"`, `bg-kura-accent`) only for AI activity, at most once per view.
+- `IconButton` needs `label`. Shortcuts use `mod` for ⌘/Ctrl. Motion presets: `springs` from `@kura-ui/react/utils`.
+- Follow each manifest's `agentNotes`.
