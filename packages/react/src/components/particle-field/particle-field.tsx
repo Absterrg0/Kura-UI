@@ -6,11 +6,20 @@ import { cn } from "../../lib/cn";
 import { mergeRefs } from "../../lib/merge-refs";
 
 export type ParticleFieldShape = "ring" | "point";
+export type ParticleFieldVariant = "halftone" | "constellation";
 
 export interface ParticleFieldProps extends React.ComponentProps<"div"> {
+  /**
+   * How the field is printed. `halftone`: the particles' density, screened as a grid of ink dots
+   * that swell where particles gather (a dithered print). `constellation`: dots joined by
+   * hairlines. Default "halftone".
+   */
+  variant?: ParticleFieldVariant;
+  /** Halftone screen pitch in px (distance between dot centres). Default 7. */
+  cellSize?: number;
   /** Number of particles. Default: scales with the area (about one per 5,500 px², 30–160). */
   count?: number;
-  /** Max distance in px at which two particles are linked by a line. Default 110. */
+  /** Max distance in px at which two particles are linked by a line (`constellation`). Default 110. */
   linkDistance?: number;
   /** Drift speed multiplier. Default 1. */
   speed?: number;
@@ -52,12 +61,15 @@ function cssColor(host: Element, value: string): string {
 }
 
 /**
- * A drifting constellation: particles wander, link to their neighbours with hairlines and part
- * around the pointer. Set `converge` and they gather into a slowly turning ring (or a point) in
- * the accent colour — a calm “generating” signal. Canvas 2D, DPR-capped, paused offscreen, a
- * single still frame under reduced motion. Particles use the root's text colour.
+ * A drifting particle field, printed as a halftone screen (dots that swell where particles
+ * gather, like a dithered print) or as a hairline constellation. Particles wander and part around
+ * the pointer; set `converge` and they gather into a slowly turning ring (or a point — a halftone
+ * sun) in the accent colour, a calm “generating” signal. Canvas 2D, DPR-capped, paused offscreen,
+ * a single still frame under reduced motion. Ink uses the root's text colour.
  */
 export function ParticleField({
+  variant = "halftone",
+  cellSize = 7,
   count,
   linkDistance = 110,
   speed = 1,
@@ -75,8 +87,28 @@ export function ParticleField({
   const canvasRef = React.useRef<HTMLCanvasElement>(null);
   const reducedMotion = useReducedMotion();
   const [failed, setFailed] = React.useState(false);
-  const live = React.useRef({ count, linkDistance, speed, interactive, converge, shape, paused });
-  live.current = { count, linkDistance, speed, interactive, converge, shape, paused };
+  const live = React.useRef({
+    variant,
+    cellSize,
+    count,
+    linkDistance,
+    speed,
+    interactive,
+    converge,
+    shape,
+    paused,
+  });
+  live.current = {
+    variant,
+    cellSize,
+    count,
+    linkDistance,
+    speed,
+    interactive,
+    converge,
+    shape,
+    paused,
+  };
   const kick = React.useRef<() => void>(() => {});
 
   React.useEffect(() => {
@@ -95,11 +127,12 @@ export function ParticleField({
     let dpr = 1;
     const particles: Particle[] = [];
     let fg = "gray";
-    let accent = "teal";
+    let accent = "red";
     let amount = live.current.converge ? 1 : 0; // eased converge 0–1
     let spin = 0;
     let raf = 0;
     let last = 0;
+    let lastDraw = 0;
     let visible = true;
     const pointer = { x: -1e4, y: -1e4, on: false };
 
@@ -198,7 +231,101 @@ export function ParticleField({
       });
     };
 
+    // Halftone: splat every particle into a density grid, then print one dot per cell whose
+    // radius follows the density — a dithered print that drifts. Empty cells keep a faint
+    // pin-prick so the screen reads as paper, not void.
+    let density = new Float32Array(0);
+    let cols = 0;
+    let rows = 0;
+    const drawHalftone = () => {
+      const cell = Math.max(4, live.current.cellSize);
+      const c = Math.ceil(w / cell) + 1;
+      const r = Math.ceil(h / cell) + 1;
+      if (c !== cols || r !== rows) {
+        cols = c;
+        rows = r;
+        density = new Float32Array(c * r);
+      } else density.fill(0);
+      const ox = (w - (c - 1) * cell) / 2;
+      const oy = (h - (r - 1) * cell) / 2;
+      // Kernel radius varies per particle (big soft drops and small specks) and tightens while
+      // converging so the ring or sun prints crisply.
+      const base = Math.max(cell * 5, 34) * (1 - 0.3 * amount);
+      for (const p of particles) {
+        const R = base * (0.5 + 0.85 * p.seed);
+        const R2 = R * R;
+        const span = Math.ceil(R / cell);
+        const cx = Math.round((p.x - ox) / cell);
+        const cy = Math.round((p.y - oy) / cell);
+        const weight = 0.55 + p.r * 0.35;
+        for (let j = Math.max(0, cy - span); j <= Math.min(r - 1, cy + span); j++) {
+          const dy = oy + j * cell - p.y;
+          for (let i = Math.max(0, cx - span); i <= Math.min(c - 1, cx + span); i++) {
+            const dx = ox + i * cell - p.x;
+            const d2 = dx * dx + dy * dy;
+            if (d2 >= R2) continue;
+            const k = 1 - d2 / R2;
+            density[j * c + i]! += k * k * weight;
+          }
+        }
+      }
+      const max = cell * 0.5;
+      const pin = Math.min(0.7, cell * 0.09);
+      const print = (color: string, alpha: number, min: number) => {
+        if (alpha < 0.01) return;
+        ctx.fillStyle = color;
+        ctx.globalAlpha = alpha;
+        ctx.beginPath();
+        for (let j = 0; j < r; j++) {
+          for (let i = 0; i < c; i++) {
+            const d = density[j * c + i]!;
+            if (d < min) continue;
+            const rad = max * Math.sqrt(Math.min(0.92, d * 0.42));
+            if (rad < 0.45) continue;
+            const x = ox + i * cell;
+            const y = oy + j * cell;
+            ctx.moveTo(x + rad, y);
+            ctx.arc(x, y, rad, 0, Math.PI * 2);
+          }
+        }
+        ctx.fill();
+      };
+      // Paper screen: pin-pricks are too small to need arcs; rects are far cheaper.
+      ctx.fillStyle = fg;
+      ctx.globalAlpha = 0.3;
+      for (let j = 0; j < r; j++) {
+        for (let i = 0; i < c; i++) {
+          if (density[j * c + i]! > 0.04) continue;
+          ctx.fillRect(ox + i * cell - pin, oy + j * cell - pin, pin * 2, pin * 2);
+        }
+      }
+      print(fg, 0.85 * (1 - amount), 0.04);
+      print(accent, amount, 0.04);
+      if (live.current.interactive && pointer.on) {
+        // A faint accent ring of dots marks where the pointer parts the field.
+        ctx.fillStyle = accent;
+        ctx.globalAlpha = 0.7 * (1 - amount);
+        ctx.beginPath();
+        const dot = 1.3;
+        for (let a = 0; a < 24; a++) {
+          const t = (a / 24) * Math.PI * 2;
+          const x = pointer.x + Math.cos(t) * cell * 5;
+          const y = pointer.y + Math.sin(t) * cell * 5;
+          ctx.moveTo(x + dot, y);
+          ctx.arc(x, y, dot, 0, Math.PI * 2);
+        }
+        ctx.fill();
+      }
+      ctx.globalAlpha = 1;
+    };
+
     const draw = () => {
+      if (live.current.variant === "halftone") {
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        ctx.clearRect(0, 0, w, h);
+        drawHalftone();
+        return;
+      }
       const link = live.current.linkDistance;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       ctx.clearRect(0, 0, w, h);
@@ -266,7 +393,11 @@ export function ParticleField({
       const dt = last ? Math.min(0.05, (now - last) / 1000) : 1 / 60;
       last = now;
       step(dt);
-      draw();
+      // The halftone screen changes slowly; ~30 fps is indistinguishable and halves the cost.
+      if (live.current.variant !== "halftone" || now - lastDraw > 30) {
+        lastDraw = now;
+        draw();
+      }
       raf = visible && !live.current.paused ? requestAnimationFrame(frame) : 0;
     };
 
@@ -328,7 +459,7 @@ export function ParticleField({
   // biome-ignore lint/correctness/useExhaustiveDependencies: kick reads the latest props from `live`.
   React.useEffect(() => {
     kick.current();
-  }, [paused, converge, shape, reducedMotion, count]);
+  }, [paused, converge, shape, reducedMotion, count, variant, cellSize]);
 
   const state = failed
     ? "fallback"
@@ -344,6 +475,7 @@ export function ParticleField({
       data-slot="particle-field"
       data-state={state}
       data-converge={converge}
+      data-variant={variant}
       className={cn("relative isolate overflow-hidden text-kura-fg-subtle", className)}
       {...props}
     >
@@ -357,7 +489,7 @@ export function ParticleField({
         <div
           aria-hidden
           data-slot="particle-field-fallback"
-          className="-z-10 absolute inset-0 bg-[radial-gradient(currentColor_1px,transparent_1.5px)] bg-size-[28px_28px] opacity-30"
+          className="-z-10 absolute inset-0 bg-[radial-gradient(currentColor_1px,transparent_1.5px)] bg-size-[14px_14px] opacity-40"
         />
       )}
       {children}

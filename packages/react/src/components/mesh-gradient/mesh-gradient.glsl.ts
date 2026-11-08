@@ -7,7 +7,8 @@ export const MAX_COLORS = 6;
  * Mesh gradient: up to six colour "wells" drift on slow Lissajous paths; every pixel blends them
  * in OKLab with inverse-distance weights (smooth, even, no muddy midpoints). The sample position
  * is domain-warped by simplex noise (distortion), twisted around the centre (swirl) and lensed
- * toward the pointer. Output is converted to sRGB once, with film grain and IGN dithering.
+ * toward the pointer. Output is converted to sRGB once, with still washi-fibre grain and IGN
+ * dithering.
  */
 export const MESH_GRADIENT_FRAG = /* glsl */ `
 uniform vec3 u_c0;
@@ -52,6 +53,13 @@ float hash12(vec2 p) {
   vec3 p3 = fract(vec3(p.xyx) * 0.1031);
   p3 += dot(p3, p3.yzx + 33.33);
   return fract((p3.x + p3.y) * p3.z);
+}
+
+float vnoise(vec2 p) {
+  vec2 i = floor(p), f = fract(p);
+  vec2 u = f * f * (3.0 - 2.0 * f);
+  return mix(mix(hash12(i), hash12(i + vec2(1.0, 0.0)), u.x),
+             mix(hash12(i + vec2(0.0, 1.0)), hash12(i + vec2(1.0, 1.0)), u.x), u.y);
 }
 
 vec3 colorAt(int i) {
@@ -118,8 +126,13 @@ void main() {
 
   vec3 col = linearToSrgb(oklabToLinear(lab));
 
-  // Film grain: luminance-only, refreshed ~24 fps, scaled down in the deepest shadows.
-  float g = hash12(gl_FragCoord.xy + fract(floor(u_time * 24.0) * 0.1371) * 517.0) - 0.5;
+  // Washi grain: still, like paper — a fine tooth plus long horizontal fibres, luminance-only and
+  // scaled down in the deepest shadows. It never flickers.
+  vec2 fc = gl_FragCoord.xy;
+  float tooth = hash12(fc) - 0.5;
+  float fibre = vnoise(vec2(fc.x * 0.07, fc.y * 0.8)) * 0.6 + vnoise(vec2(fc.x * 0.025, fc.y * 0.4) + 9.1) * 0.4 - 0.5;
+  fibre *= smoothstep(0.25, 0.75, vnoise(fc * 0.012 + 3.3)); // fibres gather in patches
+  float g = tooth * 0.85 + fibre * 0.55;
   col += g * u_grain * 0.14 * (0.35 + 0.65 * lab.x);
 
   fragColor = vec4(dither(col), 1.0);

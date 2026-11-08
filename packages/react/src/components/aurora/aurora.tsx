@@ -8,18 +8,22 @@ import { useResolvedColors } from "../../lib/shader-color";
 import { ShaderCanvas } from "../shader-canvas";
 import { AURORA_FRAG } from "./aurora.glsl";
 
-export type AuroraPreset = "signal" | "polar" | "ember" | "mist";
+export type AuroraPreset = "signal" | "sumi" | "ai" | "matcha";
 
-/** Palettes as [lower edge, middle, upper fringe]. `signal` follows the theme's accent. */
+/**
+ * Palettes as [lower edge, middle, upper fringe]. `signal` (the accent ember fading through ochre
+ * into smoke) and `sumi` (ink on washi, paper-coloured light on dark) follow the theme; `ai`
+ * (indigo) and `matcha` (tea green) are fixed.
+ */
 export const auroraPresets: Record<AuroraPreset, readonly [string, string, string]> = {
   signal: [
     "var(--kura-accent)",
-    "color-mix(in oklab, var(--kura-accent) 55%, oklch(0.62 0.11 215))",
-    "oklch(0.45 0.09 245)",
+    "color-mix(in oklab, var(--kura-accent) 55%, oklch(0.8 0.11 72))",
+    "color-mix(in oklab, var(--kura-accent) 35%, oklch(0.42 0.03 60))",
   ],
-  polar: ["oklch(0.86 0.19 152)", "oklch(0.74 0.13 190)", "oklch(0.48 0.12 255)"],
-  ember: ["oklch(0.88 0.14 88)", "oklch(0.72 0.16 52)", "oklch(0.45 0.1 30)"],
-  mist: ["oklch(0.92 0.01 85)", "oklch(0.75 0.015 220)", "oklch(0.5 0.02 240)"],
+  sumi: ["var(--kura-gray-12)", "var(--kura-gray-11)", "var(--kura-gray-9)"],
+  ai: ["oklch(0.56 0.12 262)", "oklch(0.46 0.12 266)", "oklch(0.36 0.09 272)"],
+  matcha: ["oklch(0.82 0.12 118)", "oklch(0.66 0.1 126)", "oklch(0.46 0.07 138)"],
 };
 
 export interface AuroraProps extends React.ComponentProps<"div"> {
@@ -29,7 +33,7 @@ export interface AuroraProps extends React.ComponentProps<"div"> {
   intensity?: number;
   /** Animation speed multiplier. Default 1. */
   speed?: number;
-  /** Twinkling stars behind the aurora (only drawn on dark backgrounds). Default true. */
+  /** Faint, paper-coloured stars behind the aurora (only drawn on dark backgrounds). Default true. */
   stars?: boolean;
   /** Freeze the animation on the current frame. Default false. */
   paused?: boolean;
@@ -40,7 +44,7 @@ export interface AuroraProps extends React.ComponentProps<"div"> {
 /**
  * A soft aurora (northern lights) background: folding light curtains with crisp lower edges and
  * vertical rays, drawn in a fragment shader with premultiplied alpha so it sits on any surface —
- * luminous on dark, a watercolour wash on light. Children render on top. CSS fallback without
+ * an ember glow over night ink on dark, a sumi-e wash on washi in light. Children render on top. CSS fallback without
  * WebGL; a still frame under reduced motion.
  */
 export function Aurora({

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { act, axe, fireEvent, render, screen, setReducedMotion } from "../../../test/utils";
-import { AgentOrb } from "./agent-orb";
+import { AgentOrb, agentOrbPresets } from "./agent-orb";
 import {
   AgentOrbFull,
   AgentOrbMinimal,
@@ -27,6 +27,15 @@ describe("AgentOrb", () => {
     expect(screen.getByRole("status")).toHaveTextContent("Thinking");
     rerender(<AgentOrb state="speaking" label="Reading your summary" />);
     expect(screen.getByRole("status")).toHaveTextContent("Reading your summary");
+  });
+
+  it("defaults to the sumi palette with an accent ember, and renders every preset", () => {
+    expect(agentOrbPresets.sumi[2]).toBe("var(--kura-accent)");
+    for (const preset of ["sumi", "washi", "shu", "ai", "matcha"] as const) {
+      const { container, unmount } = render(<AgentOrb colors={preset} />);
+      expect(container.querySelector("[data-slot=agent-orb-fallback]")).toBeInTheDocument();
+      unmount();
+    }
   });
 
   it("can opt out of the live region", () => {

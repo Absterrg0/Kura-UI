@@ -37,9 +37,9 @@ export interface BorderBeamProps extends Omit<React.ComponentProps<"div">, "chil
   size?: number;
   /** Ring thickness in px. Default 1. */
   width?: number;
-  /** CSS colours from tail to head, e.g. `["transparent", "var(--kura-accent)"]`. Default: a jade tail fading in to a bright head. */
+  /** CSS colours from tail to head, e.g. `["transparent", "var(--kura-accent)"]`. Default: a dry vermilion tail gathering into a seal-red (`--kura-shu`) head. */
   colors?: readonly string[];
-  /** Add a soft blurred glow around the beam. Default false. */
+  /** Let the stroke bleed softly into the surface, like ink on washi. Default false. */
   glow?: boolean;
   /** Travel counter-clockwise. Default false. */
   reverse?: boolean;
@@ -47,11 +47,13 @@ export interface BorderBeamProps extends Omit<React.ComponentProps<"div">, "chil
   offset?: number;
 }
 
+/* A brush-red stroke: a dry, thinning tail that gathers into a heavy seal-red head. */
 const DEFAULT_COLORS = [
   "transparent",
-  "color-mix(in oklab, var(--kura-accent) 45%, transparent)",
+  "color-mix(in oklab, var(--kura-accent) 18%, transparent)",
+  "color-mix(in oklab, var(--kura-accent) 55%, transparent)",
   "var(--kura-accent)",
-  "var(--kura-accent-text)",
+  "var(--kura-shu)",
 ];
 
 function stops(colors: readonly string[], size: number): string {
@@ -65,8 +67,8 @@ function stops(colors: readonly string[], size: number): string {
 }
 
 /**
- * An animated light beam that travels around its parent's border — the "an agent is working in
- * here" signal for composers, cards and panels. Place it inside a `relative` element with a
+ * A brush-red stroke that travels around its parent's border — the "an agent is working in here"
+ * signal for composers, cards and panels. Place it inside a `relative` element with a
  * border radius; it inherits the radius and never affects layout. Pure CSS (server-safe).
  */
 export function BorderBeam({
@@ -110,7 +112,7 @@ export function BorderBeam({
       {glow && (
         <div
           data-slot="border-beam-glow"
-          className="absolute inset-0 rounded-[inherit] opacity-55 blur-[5px] motion-reduce:opacity-30"
+          className="absolute inset-0 rounded-[inherit] opacity-40 blur-[3px] motion-reduce:opacity-25"
         >
           <div
             data-slot="border-beam-ring"

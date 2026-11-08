@@ -22,11 +22,13 @@ export function BorderBeamFull() {
   const [fast, setFast] = React.useState(false);
   return (
     <div className="flex w-full max-w-md flex-col items-center gap-5">
-      <div className="relative flex h-40 w-full flex-col justify-between rounded-kura-2xl bg-kura-surface p-4 shadow-kura-sm">
+      <div className="relative flex h-40 w-full flex-col justify-between rounded-kura-lg bg-kura-surface-raised p-4 shadow-kura-sm">
         <p className="text-kura-fg-muted text-sm">Ask the agent to change something…</p>
         <div className="flex items-center justify-between text-kura-fg-subtle text-xs">
-          <span>{active ? "Agent is editing 3 files" : "Idle"}</span>
-          <span className="font-kura-mono">⌘↵</span>
+          <span className="font-kura-mono text-[10px] uppercase tracking-[0.14em]">
+            {active ? "Editing 3 files" : "Idle"}
+          </span>
+          <span className="font-kura-mono tabular-nums">⌘↵</span>
         </div>
         <BorderBeam active={active} glow={glow} duration={fast ? 3 : 7} size={0.3} width={1.5} />
         <BorderBeam active={active} duration={fast ? 3 : 7} size={0.18} offset={0.5} />
@@ -41,7 +43,7 @@ export function BorderBeamFull() {
           {active ? "Stop" : "Start"}
         </Button>
         <Button size="sm" variant="ghost" aria-pressed={glow} onClick={() => setGlow((v) => !v)}>
-          Glow {glow ? "on" : "off"}
+          Bleed {glow ? "on" : "off"}
         </Button>
         <Button size="sm" variant="ghost" aria-pressed={fast} onClick={() => setFast((v) => !v)}>
           {fast ? "3s lap" : "7s lap"}

@@ -10,41 +10,51 @@ import { ShaderCanvas } from "../shader-canvas";
 import { AGENT_ORB_FRAG } from "./agent-orb.glsl";
 
 export type AgentOrbState = "idle" | "listening" | "thinking" | "speaking" | "error";
-export type AgentOrbPreset = "jade" | "ocean" | "amber" | "graphite";
+export type AgentOrbPreset = "sumi" | "washi" | "shu" | "ai" | "matcha";
 
-/** Palettes as [deep, mid, bright, glint] OKLCH colours. */
+/**
+ * Palettes as [ink, wash, ember, rim] colours. `sumi` and `washi` take their ember from
+ * `--kura-accent`, so they follow the theme's signal colour; the others are fixed OKLCH palettes.
+ */
 export const agentOrbPresets: Record<AgentOrbPreset, readonly [string, string, string, string]> = {
-  jade: [
-    "oklch(0.3 0.06 188)",
-    "oklch(0.56 0.115 174)",
-    "oklch(0.84 0.13 166)",
-    "oklch(0.98 0.03 150)",
+  // Sumi ink with a shu ember: an ink-dark sphere on washi, a deeper-than-night one on sumi paper.
+  sumi: [
+    "oklch(0.16 0.006 70)",
+    "oklch(0.43 0.012 78)",
+    "var(--kura-accent)",
+    "oklch(0.93 0.02 86)",
   ],
-  ocean: [
-    "oklch(0.27 0.07 255)",
-    "oklch(0.53 0.13 242)",
-    "oklch(0.82 0.1 218)",
-    "oklch(0.98 0.02 210)",
+  // A sphere of pale paper with ink drifting in it — reads best on dark surfaces.
+  washi: [
+    "oklch(0.66 0.02 80)",
+    "oklch(0.93 0.02 86)",
+    "var(--kura-accent)",
+    "oklch(0.99 0.008 89)",
   ],
-  amber: [
-    "oklch(0.33 0.08 42)",
-    "oklch(0.64 0.15 55)",
-    "oklch(0.87 0.13 82)",
-    "oklch(0.99 0.03 95)",
+  // Shu: vermilion seal ink with a warm ochre core.
+  shu: ["oklch(0.36 0.11 33)", "oklch(0.58 0.17 37)", "oklch(0.84 0.12 62)", "oklch(0.96 0.03 82)"],
+  // Ai (藍): indigo dye, with a pale indigo light.
+  ai: [
+    "oklch(0.2 0.045 268)",
+    "oklch(0.42 0.085 262)",
+    "oklch(0.78 0.08 240)",
+    "oklch(0.95 0.02 235)",
   ],
-  graphite: [
-    "oklch(0.22 0.006 85)",
-    "oklch(0.46 0.01 85)",
-    "oklch(0.82 0.01 85)",
-    "oklch(0.99 0 0)",
+  // Matcha: deep tea green, with a young-leaf light.
+  matcha: [
+    "oklch(0.26 0.04 128)",
+    "oklch(0.5 0.08 126)",
+    "oklch(0.84 0.1 112)",
+    "oklch(0.97 0.03 100)",
   ],
 };
 
+/** Error: the ink turns beni (deep crimson) and the ember cools. */
 const ERROR_PALETTE = [
-  "oklch(0.3 0.08 25)",
-  "oklch(0.55 0.17 25)",
-  "oklch(0.78 0.13 35)",
-  "oklch(0.97 0.03 45)",
+  "oklch(0.27 0.075 18)",
+  "oklch(0.47 0.15 20)",
+  "oklch(0.66 0.17 24)",
+  "oklch(0.93 0.03 40)",
 ] as const;
 
 const STATE_LABEL: Record<AgentOrbState, string> = {
@@ -66,7 +76,7 @@ interface Targets {
 }
 
 const TARGETS: Record<AgentOrbState, Targets> = {
-  idle: { energy: 0.2, swirl: 0.05, spinSpeed: 0.05, flow: 0.22, breath: 1, halo: 0.25, error: 0 },
+  idle: { energy: 0.2, swirl: 0.05, spinSpeed: 0.05, flow: 0.22, breath: 1, halo: 0.2, error: 0 },
   listening: {
     energy: 0.45,
     swirl: 0.1,
@@ -82,7 +92,7 @@ const TARGETS: Record<AgentOrbState, Targets> = {
     spinSpeed: 1.1,
     flow: 0.6,
     breath: 0.3,
-    halo: 0.4,
+    halo: 0.18,
     error: 0,
   },
   speaking: {
@@ -91,16 +101,16 @@ const TARGETS: Record<AgentOrbState, Targets> = {
     spinSpeed: 0.18,
     flow: 0.55,
     breath: 0.2,
-    halo: 0.7,
+    halo: 0.62,
     error: 0,
   },
-  error: { energy: 0.15, swirl: 0, spinSpeed: 0.02, flow: 0.12, breath: 0.6, halo: 0.3, error: 1 },
+  error: { energy: 0.15, swirl: 0, spinSpeed: 0.02, flow: 0.12, breath: 0.6, halo: 0.22, error: 1 },
 };
 
 export interface AgentOrbProps extends Omit<React.ComponentProps<"div">, "children"> {
   /** What the agent is doing. Drives motion, colour and the announced label. Default "idle". */
   state?: AgentOrbState;
-  /** A preset, or four CSS colours `[deep, mid, bright, glint]`. Default "jade". */
+  /** A preset, or four CSS colours `[ink, wash, ember, rim]`. Default "sumi" (ember = accent). */
   colors?: AgentOrbPreset | readonly [string, string, string, string];
   /**
    * Audio analyser (from `useAudioAnalyser`). Its level drives the orb while `listening` (input)
@@ -124,14 +134,15 @@ function lerp(a: number, b: number, k: number) {
 }
 
 /**
- * The voice-agent orb: a glassy, liquid sphere rendered in a fragment shader. It breathes when
- * idle, ripples with the microphone while listening, swirls while thinking, pulses with the
- * agent's voice while speaking and turns red on error — every transition is smoothed on the GPU
- * uniforms. Decorative canvas plus a polite text equivalent of the state.
+ * The voice-agent orb: a sphere of sumi ink drifting in water with a shu ember inside, rendered in
+ * a fragment shader and ringed by a halftone halo. It breathes when idle, ripples with the
+ * microphone while listening, swirls (with a turning ensō) while thinking, glows and prints a
+ * swelling dot halo with the agent's voice while speaking, and turns beni red on error — every
+ * transition is smoothed on the GPU uniforms. Decorative canvas plus a polite text equivalent.
  */
 export function AgentOrb({
   state = "idle",
-  colors = "jade",
+  colors = "sumi",
   analyser,
   inputLevel,
   outputLevel,
@@ -273,28 +284,28 @@ export function AgentOrb({
             aria-hidden
             data-slot="agent-orb-fallback"
             className={cn(
-              "absolute inset-[15%] overflow-hidden rounded-full transition-[scale] duration-(--kura-duration-slower) ease-kura-out motion-reduce:transition-none",
+              "absolute inset-[17%] overflow-hidden rounded-full transition-[scale] duration-(--kura-duration-slower) ease-kura-out motion-reduce:transition-none",
               state === "speaking" && "scale-[1.04] motion-reduce:scale-100",
             )}
             style={{
-              background: mid,
-              boxShadow: `0 0 48px -8px color-mix(in oklab, ${bright} 45%, transparent)`,
+              background: `radial-gradient(circle at 56% 60%, color-mix(in oklab, ${bright} 80%, transparent) 0%, transparent 36%), ${deep}`,
+              boxShadow: `0 0 0 1px color-mix(in oklab, ${glint} 14%, transparent), 0 0 40px -10px color-mix(in oklab, ${bright} 40%, transparent)`,
             }}
           >
             <div
               className={cn(
-                "absolute inset-0 rounded-full",
+                "absolute inset-0 rounded-full opacity-80 blur-[6px]",
                 state === "thinking" &&
-                  "animate-kura-spin [animation-duration:2.4s] motion-reduce:animate-none",
+                  "animate-kura-spin [animation-duration:3.2s] motion-reduce:animate-none",
               )}
               style={{
-                background: `conic-gradient(from 200deg, ${mid}, ${deep}, ${mid}, ${bright}, ${mid})`,
+                background: `conic-gradient(from 200deg, transparent, color-mix(in oklab, ${mid} 70%, transparent) 18%, transparent 34%, color-mix(in oklab, ${mid} 55%, transparent) 58%, transparent 74%, color-mix(in oklab, ${mid} 40%, transparent) 88%, transparent)`,
               }}
             />
             <div
               className="absolute inset-0 rounded-full"
               style={{
-                background: `radial-gradient(circle at 34% 28%, ${glint} 0%, transparent 16%), radial-gradient(circle at 60% 82%, color-mix(in oklab, ${bright} 70%, transparent) 0%, transparent 42%), radial-gradient(circle at 50% 50%, transparent 58%, color-mix(in oklab, ${bright} 55%, transparent) 100%)`,
+                background: `radial-gradient(circle at 54% 58%, color-mix(in oklab, ${bright} 55%, transparent) 0%, transparent 30%), radial-gradient(circle at 50% 50%, transparent 64%, color-mix(in oklab, ${glint} 18%, transparent) 100%)`,
               }}
             />
           </div>

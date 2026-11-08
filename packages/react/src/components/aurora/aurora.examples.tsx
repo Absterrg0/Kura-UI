@@ -9,10 +9,10 @@ export function AuroraMinimal() {
   return <Aurora className="h-72 w-full rounded-kura-xl bg-kura-canvas shadow-kura-sm" />;
 }
 
-const presets: AuroraPreset[] = ["signal", "polar", "ember", "mist"];
+const presets: AuroraPreset[] = ["signal", "sumi", "ai", "matcha"];
 
 export function AuroraFull() {
-  const [preset, setPreset] = React.useState<AuroraPreset>("polar");
+  const [preset, setPreset] = React.useState<AuroraPreset>("ai");
   const [intensity, setIntensity] = React.useState(0.85);
   const [stars, setStars] = React.useState(true);
   const [paused, setPaused] = React.useState(false);
@@ -72,9 +72,12 @@ export function AuroraSignIn() {
   return (
     <Aurora
       intensity={0.7}
-      className="flex min-h-96 w-full flex-col items-center justify-start gap-3 rounded-kura-2xl bg-kura-canvas px-6 pt-14 text-center shadow-kura-md"
+      className="flex min-h-96 w-full flex-col items-center justify-start gap-3 rounded-kura-lg bg-kura-canvas px-6 pt-12 text-center shadow-kura-md"
     >
-      <h2 className="relative z-10 text-balance font-medium text-3xl text-kura-fg tracking-tight">
+      <span className="relative z-10 font-kura-mono text-[11px] text-kura-fg-subtle uppercase tracking-[0.14em]">
+        Overnight · 23:00 – 07:00
+      </span>
+      <h2 className="relative z-10 text-balance font-kura-display text-4xl text-kura-fg leading-[1.05]">
         Your agents worked through the night.
       </h2>
       <p className="relative z-10 max-w-sm text-kura-fg-muted text-sm leading-relaxed">

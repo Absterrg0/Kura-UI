@@ -6,7 +6,7 @@ export default defineComponent({
   category: "effects",
   status: "beta",
   description:
-    "Animated light beam that travels around its parent's border — a quiet “an agent is working in here” signal for composers, cards and panels.",
+    "A brush-red stroke that travels around its parent's border — a quiet “an agent is working in here” signal for composers, cards and panels.",
   whenToUse: [
     "A composer, card or panel whose content an agent is currently editing or generating.",
     "A running tool call or background task row that should read as live without a spinner.",
@@ -38,14 +38,14 @@ export default defineComponent({
       name: "colors",
       type: "readonly string[]",
       description:
-        "CSS colours from tail to head. Default: transparent → jade at 45% → jade → accent-text. Tokens and color-mix() work.",
+        "CSS colours from tail to head. Default: a dry vermilion tail (transparent → accent 18% → accent 55% → accent) gathering into a seal-red `--kura-shu` head. Tokens and color-mix() work.",
     },
     {
       name: "glow",
       type: "boolean",
       default: "false",
       description:
-        "Add a blurred copy of the beam for a soft glow (not clipped by the parent unless it has overflow-hidden).",
+        "Add a softly blurred copy of the stroke so it bleeds into the surface like ink on washi (not clipped by the parent unless it has overflow-hidden). Keep it subtle: no neon.",
     },
     {
       name: "reverse",
@@ -71,7 +71,7 @@ export default defineComponent({
     {
       name: "Glow",
       dataSlot: "border-beam-glow",
-      description: "Blurred wrapper around a thicker ring; only rendered with `glow`.",
+      description: "Ink-bleed layer: a lightly blurred, thicker ring; only rendered with `glow`.",
     },
     {
       name: "Ring",
@@ -90,7 +90,7 @@ export default defineComponent({
   },
   dependencies: { npm: [], kura: [] },
   related: ["thinking-indicator", "shimmer-text", "composer", "tool-call", "mesh-gradient"],
-  tags: ["border", "beam", "glow", "loading", "busy", "agent", "conic-gradient", "css"],
+  tags: ["border", "beam", "glow", "loading", "busy", "agent", "conic-gradient", "css", "brush"],
   examples: [
     {
       name: "BorderBeamMinimal",

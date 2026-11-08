@@ -6,11 +6,11 @@ export default defineComponent({
   category: "effects",
   status: "beta",
   description:
-    "Film-grain overlay from a cached SVG-noise tile, with blend modes and an optional compositor-only flicker — texture for gradients and heroes.",
+    "Paper-grain overlay — washi fibres or film grain — from one SVG-noise tile, with blend modes and an optional compositor-only flicker.",
   whenToUse: [
     "Adding a print-like finish on top of a mesh-gradient, aurora or photo.",
     "Hiding colour banding on large, low-contrast gradients.",
-    "Giving a flat hero or empty-state panel a subtle tactile texture.",
+    "Giving a flat hero or empty-state panel a subtle tactile texture — washi paper by default.",
   ],
   whenNotToUse: [
     "As the background itself — combine it with mesh-gradient or aurora.",
@@ -18,6 +18,13 @@ export default defineComponent({
     "Signalling activity — grain is texture; use border-beam or thinking-indicator.",
   ],
   props: [
+    {
+      name: "texture",
+      type: '"washi" | "film"',
+      default: '"washi"',
+      description:
+        "washi: a fine paper tooth plus long, horizontal paper fibres (the Kura page). film: plain, even film grain.",
+    },
     {
       name: "opacity",
       type: "number",
@@ -56,7 +63,7 @@ export default defineComponent({
       name: "Grain",
       dataSlot: "grain",
       description:
-        "Absolutely positioned overlay (`inset-0`, pointer-events none, overflow hidden) carrying opacity and blend mode. `data-animated` mirrors `animated`.",
+        "Absolutely positioned overlay (`inset-0`, pointer-events none, overflow hidden) carrying opacity and blend mode. `data-animated` and `data-texture` mirror the props.",
     },
     {
       name: "Layer",

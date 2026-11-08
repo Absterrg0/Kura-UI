@@ -83,14 +83,14 @@ void main() {
     }
     stars *= u_stars * (1.0 - u_light) * (1.0 - clamp(dot(light, vec3(1.0)), 0.0, 1.0));
   }
-  light += vec3(stars) * 0.8;
+  light += vec3(1.0, 0.95, 0.86) * stars * 0.7; // paper-coloured, never blue-white
 
   // Light → premultiplied colour. On light backgrounds the curtains become a saturated ink wash
   // (deeper, never desaturated toward grey) with a gentler alpha curve.
   float peak = max(light.r, max(light.g, light.b));
-  float a = clamp(1.0 - exp(-peak * mix(1.8, 1.5, u_light)), 0.0, 1.0) * mix(1.0, 0.92, u_light);
+  float a = clamp(1.0 - exp(-peak * mix(1.8, 1.5, u_light)), 0.0, 1.0) * mix(1.0, 0.8, u_light);
   vec3 c = peak > 0.0 ? light / peak : vec3(0.0);
-  vec3 ink = c * 0.8;
+  vec3 ink = c * 0.42; // a deep, saturated ink — never a pastel tint of the light
   c = mix(c, ink, u_light);
   vec3 premul = linearToSrgb(c) * a;
   premul += (ign(gl_FragCoord.xy) - 0.5) / 255.0 * a;

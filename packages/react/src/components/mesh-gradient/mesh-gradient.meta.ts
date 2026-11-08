@@ -6,7 +6,7 @@ export default defineComponent({
   category: "effects",
   status: "beta",
   description:
-    "Animated WebGL mesh gradient that blends up to six colours in OKLab, with distortion, swirl, grain and a pointer lens — for heroes and empty states.",
+    "Animated WebGL mesh gradient: ink wash on washi with a vermilion ember by default, blended in OKLab with paper-fibre grain and a pointer lens.",
   whenToUse: [
     "A hero, landing or onboarding section that needs a calm, living background behind a headline.",
     "An empty state or a 'start a conversation' panel that should feel warm instead of blank.",
@@ -24,10 +24,10 @@ export default defineComponent({
   props: [
     {
       name: "colors",
-      type: '"signal" | "paper" | "jade" | "dusk" | "ember" | "glacier" | readonly string[]',
+      type: '"signal" | "paper" | "sumi" | "shu" | "ai" | "matcha" | readonly string[]',
       default: '"signal"',
       description:
-        "A preset, or 2–6 CSS colours (OKLCH, hex, rgb, `var(--kura-*)`). `signal` and `paper` are built from tokens and follow light/dark; the others are fixed palettes.",
+        "A preset, or 2–6 CSS colours (OKLCH, hex, rgb, `var(--kura-*)`). Token-built, theme-following: `signal` (ink wash on washi with one accent ember; night ink in dark), `paper` (paper stocks only, no signal colour), `sumi` (diluted ink clouds). Fixed palettes: `shu` (vermilion), `ai` (indigo), `matcha` (tea green).",
     },
     {
       name: "distortion",
@@ -51,7 +51,8 @@ export default defineComponent({
       name: "grain",
       type: "number",
       default: "0.12",
-      description: "Film-grain amount, 0–1. A little grain hides banding on large surfaces.",
+      description:
+        "Washi-fibre grain, 0–1: a still paper tooth with long horizontal fibres. A little hides banding on large surfaces.",
     },
     {
       name: "interactive",
@@ -104,7 +105,7 @@ export default defineComponent({
   a11y: {
     notes: [
       "The gradient is decorative and aria-hidden; children keep their normal semantics.",
-      "Text on top needs contrast: use `signal`/`paper` with text-kura-fg, or a dark preset with light text, and check both themes.",
+      "Text on top needs contrast: use `signal`/`paper`/`sumi` with text-kura-fg (they follow the theme), or `shu`/`ai` with light text, and check both themes.",
       "The pointer lens is purely visual; nothing is interactive about the gradient itself.",
     ],
     keyboard: [],
@@ -113,7 +114,17 @@ export default defineComponent({
   },
   dependencies: { npm: [], kura: ["shader-canvas"] },
   related: ["aurora", "grain", "shader-canvas", "agent-orb", "particle-field"],
-  tags: ["gradient", "mesh", "webgl", "shader", "background", "hero", "oklab", "ambient"],
+  tags: [
+    "gradient",
+    "mesh",
+    "webgl",
+    "shader",
+    "background",
+    "hero",
+    "oklab",
+    "ambient",
+    "ink-wash",
+  ],
   examples: [
     {
       name: "MeshGradientMinimal",
@@ -131,7 +142,8 @@ export default defineComponent({
       name: "MeshGradientHero",
       kind: "composition",
       title: "Hero section",
-      description: "Headline, badge and Button rendered as children on top of the gradient.",
+      description:
+        "Mono label, display-serif headline and Button rendered as children on top of the gradient.",
     },
   ],
   agentNotes: [
@@ -140,5 +152,6 @@ export default defineComponent({
     "Custom colours are resolved once per theme change; CSS variables work (`['var(--kura-accent)', 'oklch(0.9 0.04 90)']`).",
     "Pair with `<Grain />` as the last child for a print-like finish on large heroes.",
     "Use at most one or two animated gradients per page; give each a different `seed`.",
+    "Keep it calm: the accent (vermilion) means 'the model is doing something', so `signal` holds only one small ember of it — prefer `paper` or `sumi` for purely decorative sections.",
   ],
 });

@@ -26,6 +26,15 @@ describe("Grain", () => {
     expect(layer(container).style.backgroundImage).toContain("baseFrequency='0.850'");
   });
 
+  it("draws washi fibres by default and plain film grain on request", () => {
+    const { container, rerender } = render(<Grain />);
+    expect(grain(container)).toHaveAttribute("data-texture", "washi");
+    expect(layer(container).style.backgroundImage).toContain("feComposite");
+    rerender(<Grain texture="film" />);
+    expect(grain(container)).toHaveAttribute("data-texture", "film");
+    expect(layer(container).style.backgroundImage).not.toContain("feComposite");
+  });
+
   it("is static by default and flickers when animated", () => {
     const { container, rerender } = render(<Grain />);
     expect(layer(container).className).not.toContain("animation");

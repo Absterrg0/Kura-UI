@@ -51,9 +51,9 @@ describe("MeshGradient", () => {
 
   it("switches presets from the full example", async () => {
     render(<MeshGradientFull />);
-    const dusk = screen.getByRole("button", { name: "dusk" });
-    fireEvent.click(dusk);
-    expect(dusk).toHaveAttribute("aria-pressed", "true");
+    const ai = screen.getByRole("button", { name: "ai" });
+    fireEvent.click(ai);
+    expect(ai).toHaveAttribute("aria-pressed", "true");
   });
 
   it("examples render without a11y violations", async () => {
@@ -69,8 +69,8 @@ describe("shader colour parsing", () => {
   it("parses hex, rgb and oklch into linear RGB", () => {
     expect(parseColor("#ffffff")?.linear).toEqual([1, 1, 1]);
     expect(parseColor("rgb(0 0 0 / 0.5)")).toEqual({ linear: [0, 0, 0], alpha: 0.5 });
-    const jade = parseColor("oklch(0.55 0.115 172)")!;
-    expect(jade.linear[1]).toBeGreaterThan(jade.linear[0]);
+    const shu = parseColor("oklch(0.585 0.178 37.5)")!;
+    expect(shu.linear[0]).toBeGreaterThan(shu.linear[1]);
     expect(parseColor("var(--x)")).toBeNull();
   });
 

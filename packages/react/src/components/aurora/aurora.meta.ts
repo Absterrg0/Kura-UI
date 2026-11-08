@@ -6,7 +6,7 @@ export default defineComponent({
   category: "effects",
   status: "beta",
   description:
-    "Soft northern-lights background: folding light curtains drawn in a shader with premultiplied alpha, so it glows on dark and washes on light.",
+    "Soft northern-lights background in a shader with premultiplied alpha: an ember glow over night ink on dark, a sumi-e wash on washi in light.",
   whenToUse: [
     "A sign-in, landing or 'welcome back' screen that should feel calm and a little magical.",
     "A night-themed hero or a header band above an agent dashboard.",
@@ -21,10 +21,10 @@ export default defineComponent({
   props: [
     {
       name: "colors",
-      type: '"signal" | "polar" | "ember" | "mist" | readonly [string, string, string]',
+      type: '"signal" | "sumi" | "ai" | "matcha" | readonly [string, string, string]',
       default: '"signal"',
       description:
-        "A preset, or three CSS colours `[lower edge, middle, upper fringe]`. signal uses the theme accent; polar is classic green-teal-blue.",
+        "A preset, or three CSS colours `[lower edge, middle, upper fringe]`. signal: the theme accent (vermilion) fading through ochre into smoke; sumi: ink on washi, paper-coloured light on dark (both follow the theme). ai (indigo) and matcha (tea green) are fixed palettes.",
     },
     {
       name: "intensity",
@@ -103,13 +103,15 @@ export default defineComponent({
       name: "AuroraSignIn",
       kind: "composition",
       title: "Sign-in hero",
-      description: "Headline and Buttons over the aurora, finished with Grain.",
+      description:
+        "Mono label, display-serif headline and Buttons over the aurora, finished with Grain.",
     },
   ],
   agentNotes: [
     "The canvas is transparent: set a background on the root (`bg-kura-canvas`, `bg-kura-surface-sunken`) — the aurora is light added on top of it.",
     "Give the root a height (`h-72`, `min-h-96`, `aspect-video`).",
     "Lift children above the canvas automatically (they are in flow); lift them above a `<Grain />` overlay with `relative z-10`.",
-    "On light themes the curtains render as a deeper watercolour wash; check both themes.",
+    "On light themes the curtains render as a deeper sumi-e wash; check both themes.",
+    "For a decorative band with no signal meaning, prefer `sumi` — `signal` uses the accent, which in Kura means the model is doing something.",
   ],
 });

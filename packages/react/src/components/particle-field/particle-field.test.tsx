@@ -47,6 +47,37 @@ describe("ParticleField", () => {
     raf.mockRestore();
   });
 
+  it("prints a halftone screen by default and can switch to a constellation", () => {
+    const calls = { arc: 0, lineTo: 0 };
+    const ctx = new Proxy(
+      {},
+      {
+        get: (_t, key) => () => {
+          if (key === "arc") calls.arc++;
+          if (key === "lineTo") calls.lineTo++;
+        },
+        set: () => true,
+      },
+    );
+    const spy = vi
+      .spyOn(HTMLCanvasElement.prototype, "getContext")
+      .mockImplementation((() => ctx) as never);
+    const raf = vi.spyOn(window, "requestAnimationFrame").mockImplementation(() => 1);
+    const rect = vi
+      .spyOn(HTMLElement.prototype, "getBoundingClientRect")
+      .mockReturnValue({ width: 200, height: 120, left: 0, top: 0 } as DOMRect);
+    const { container, rerender } = render(<ParticleField count={10} paused />);
+    expect(root(container)).toHaveAttribute("data-variant", "halftone");
+    expect(calls.arc).toBeGreaterThan(0);
+    expect(calls.lineTo).toBe(0);
+    rerender(<ParticleField count={10} paused variant="constellation" linkDistance={400} />);
+    expect(root(container)).toHaveAttribute("data-variant", "constellation");
+    expect(calls.lineTo).toBeGreaterThan(0);
+    spy.mockRestore();
+    raf.mockRestore();
+    rect.mockRestore();
+  });
+
   it("renders a still frame under reduced motion", () => {
     setReducedMotion(true);
     const { container } = render(<ParticleField />);
