@@ -1,0 +1,61 @@
+@import "tailwindcss";
+@import "../../../../packages/react/src/styles/kura.css";
+
+/* Scan the library source (components render from source in the docs). */
+@source "../../../../packages/react/src";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    scrollbar-gutter: stable;
+  }
+  body {
+    @apply bg-kura-canvas font-kura-sans text-kura-fg;
+    font-feature-settings: "ss01", "cv11";
+  }
+  ::selection {
+    background: color-mix(in oklch, var(--kura-accent) 28%, transparent);
+  }
+  :focus-visible {
+    outline: 2px solid var(--kura-ring);
+    outline-offset: 2px;
+  }
+  * {
+    border-color: var(--kura-border);
+  }
+}
+
+/* Shiki dual-theme code (light/dark via CSS variables). */
+.shiki,
+.shiki span {
+  color: var(--shiki-light);
+  background-color: transparent !important;
+}
+.dark .shiki,
+.dark .shiki span {
+  color: var(--shiki-dark);
+}
+.shiki {
+  counter-reset: line;
+}
+.shiki code {
+  display: grid;
+}
+
+/* Dotted canvas for previews */
+.bg-dots {
+  background-image: radial-gradient(
+    circle at 1px 1px,
+    color-mix(in oklch, var(--kura-fg) 9%, transparent) 1px,
+    transparent 0
+  );
+  background-size: 16px 16px;
+}
+
+.mask-fade-b {
+  mask-image: linear-gradient(to bottom, black 70%, transparent);
+}

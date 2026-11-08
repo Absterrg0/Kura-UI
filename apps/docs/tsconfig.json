@@ -1,0 +1,28 @@
+{
+  "extends": "../../tsconfig.base.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "allowJs": false,
+    "incremental": true,
+    "jsx": "react-jsx",
+    "types": ["node"],
+    "plugins": [{ "name": "next" }],
+    "paths": {
+      "@/*": ["./src/*"],
+      "@kura/components/*": ["../../packages/react/src/components/*"],
+      "@kura/catalog-types": ["../../scripts/lib/catalog-types.ts"],
+      "@kura-ui/react/utils": ["../../packages/react/src/lib/index.ts"],
+      "@kura-ui/react/hooks": ["../../packages/react/src/hooks/index.ts"],
+      "@kura-ui/react/*": ["../../packages/react/src/components/*"]
+    }
+  },
+  "include": [
+    "next-env.d.ts",
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    ".next/types/**/*.ts",
+    "e2e/**/*.ts",
+    "playwright.config.ts"
+  ],
+  "exclude": ["node_modules"]
+}
