@@ -6,7 +6,7 @@ export default defineComponent({
   category: "primitives",
   status: "stable",
   description:
-    "Floating translucent panel anchored to a trigger, with focus management and origin-aware motion.",
+    "Floating panel of bright print stock (hairline edge, inner keyline) anchored to a trigger, with focus management and origin-aware motion.",
   whenToUse: [
     "Small interactive panels: settings for a composer, a model's details, a share menu, a filter form.",
     "Content anchored to a control that should not navigate away.",
@@ -91,5 +91,6 @@ export default defineComponent({
   ],
   agentNotes: [
     "Always use `<PopoverTrigger asChild><Button …/></PopoverTrigger>` to avoid nested buttons.",
+    "The content is opaque surface-raised with a keyline 3px inside its edge, painted beneath children. Full-bleed layouts (`p-0` with ruled sections) work; add `before:hidden` to drop the keyline.",
   ],
 });

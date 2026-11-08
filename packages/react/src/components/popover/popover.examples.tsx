@@ -33,13 +33,18 @@ export function PopoverFull() {
         className="w-64"
       >
         <div className="flex flex-col gap-3">
-          <h3 id="gen-settings-title" className="font-medium text-sm">
+          <h3
+            id="gen-settings-title"
+            className="font-kura-mono text-[10px] text-kura-fg-subtle uppercase tracking-[0.14em]"
+          >
             Generation
           </h3>
           <label className="flex flex-col gap-1.5 text-kura-fg-muted text-xs">
             <span className="flex justify-between">
               Temperature{" "}
-              <span className="text-kura-fg tabular-nums">{temperature.toFixed(1)}</span>
+              <span className="font-kura-mono text-kura-fg tabular-nums">
+                {temperature.toFixed(1)}
+              </span>
             </span>
             <input
               type="range"
@@ -48,7 +53,7 @@ export function PopoverFull() {
               step={0.1}
               value={temperature}
               onChange={(e) => setTemperature(Number(e.target.value))}
-              className="accent-kura-accent"
+              className="accent-kura-ink"
             />
           </label>
           <PopoverClose asChild>
@@ -85,10 +90,10 @@ export function PopoverShareChat() {
   const shared = visibility === "link";
 
   return (
-    <div className="flex w-full max-w-xl items-center justify-between gap-4 rounded-kura-xl bg-kura-surface py-2.5 pr-2.5 pl-4 shadow-kura-sm">
+    <div className="flex w-full max-w-xl items-center justify-between gap-4 rounded-kura-md bg-kura-surface py-3 pr-3 pl-4 shadow-kura-sm">
       <div className="flex min-w-0 flex-col">
         <h3 className="truncate font-medium text-kura-fg text-sm">Q3 churn analysis</h3>
-        <p className="truncate text-kura-fg-subtle text-xs">
+        <p className="truncate font-kura-mono text-[11px] text-kura-fg-subtle">
           14 messages · {shared ? "Shared with link" : "Private"}
         </p>
       </div>
@@ -101,8 +106,8 @@ export function PopoverShareChat() {
         </PopoverTrigger>
         <PopoverContent align="end" aria-labelledby="share-chat-title" className="w-80 p-0">
           <div className="flex flex-col gap-3 p-3">
-            <div className="flex flex-col gap-0.5 px-1 pt-0.5">
-              <h4 id="share-chat-title" className="font-medium text-sm">
+            <div className="flex flex-col gap-1 px-1.5 pt-1.5">
+              <h4 id="share-chat-title" className="font-kura-display text-[19px] leading-tight">
                 Share this chat
               </h4>
               <p className="text-kura-fg-muted text-xs">
@@ -124,7 +129,7 @@ export function PopoverShareChat() {
                     onChange={() => setVisibility(option.id)}
                     className="sr-only"
                   />
-                  <span className="flex size-8 shrink-0 items-center justify-center rounded-kura-sm bg-kura-surface text-kura-fg-muted shadow-kura-xs group-has-checked:text-kura-fg [&_svg]:size-4">
+                  <span className="flex size-8 shrink-0 items-center justify-center rounded-kura-sm bg-kura-surface text-kura-fg-muted shadow-kura-xs group-has-checked:text-kura-fg [&_svg]:size-4 [&_svg]:stroke-[1.75]">
                     {option.icon}
                   </span>
                   <span className="flex min-w-0 flex-1 flex-col">

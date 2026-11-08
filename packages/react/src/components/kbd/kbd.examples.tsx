@@ -67,30 +67,39 @@ export function KbdShortcutSheet() {
   return (
     <section
       aria-labelledby="shortcut-sheet-title"
-      className="w-full max-w-2xl rounded-kura-xl bg-kura-surface shadow-kura-md"
+      className="relative w-full max-w-2xl rounded-kura-md bg-kura-surface-raised shadow-kura-md"
     >
-      <header className="flex items-center justify-between gap-4 border-kura-border-subtle border-b px-5 py-4">
-        <div className="flex flex-col gap-0.5">
-          <h3 id="shortcut-sheet-title" className="font-medium text-[15px] text-kura-fg">
+      <span
+        aria-hidden
+        className="pointer-events-none absolute inset-1 rounded-[5px] border border-kura-border-subtle"
+      />
+      <header className="flex items-start justify-between gap-4 px-6 pt-6 pb-4">
+        <div className="flex flex-col gap-1.5">
+          <h3
+            id="shortcut-sheet-title"
+            className="font-kura-display text-[22px] text-kura-fg leading-tight"
+          >
             Keyboard shortcuts
           </h3>
-          <p className="text-kura-fg-muted text-[13px]">
+          <p className="text-[13px] text-kura-fg-muted">
             Press <Kbd keys={["mod", "/"]} size="sm" /> any time to open this sheet.
           </p>
         </div>
         <IconButton label="Close" icon={<X />} size="sm" shortcut={["esc"]} tooltipSide="left" />
       </header>
-      <div className="grid gap-x-8 gap-y-5 px-5 py-4 sm:grid-cols-2">
+      <div className="grid gap-x-10 gap-y-6 px-6 pt-2 pb-6 sm:grid-cols-2">
         {shortcutGroups.map((group) => (
-          <div key={group.title} className="flex flex-col gap-1">
-            <h4 className="pb-1 font-medium text-kura-fg-subtle text-xs">{group.title}</h4>
-            <dl className="flex flex-col">
+          <div key={group.title} className="flex flex-col">
+            <h4 className="border-kura-border border-b pb-2 font-kura-mono text-[10px] text-kura-fg-subtle uppercase tracking-[0.14em]">
+              {group.title}
+            </h4>
+            <dl className="flex flex-col divide-y divide-kura-border-subtle">
               {group.items.map((item) => (
                 <div
                   key={item.label}
-                  className="flex h-8 items-center justify-between gap-4 text-[13px]"
+                  className="flex h-9 items-center justify-between gap-4 text-[13px]"
                 >
-                  <dt className="truncate text-kura-fg-muted">{item.label}</dt>
+                  <dt className="truncate text-kura-fg">{item.label}</dt>
                   <dd className="flex shrink-0 items-center gap-1.5">
                     <Kbd keys={item.keys} size="sm" />
                     {item.alt && (

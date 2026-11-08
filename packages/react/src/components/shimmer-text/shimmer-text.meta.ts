@@ -6,7 +6,7 @@ export default defineComponent({
   category: "feedback",
   status: "beta",
   description:
-    "Animated gradient sweep across text — the canonical “Thinking…” / “Searching…” label for in-progress AI work.",
+    "A sweep of light over ink across text, with a faint vermilion glint at its crest — the canonical “Thinking…” / “Searching…” label for in-progress AI work.",
   whenToUse: [
     "Show that a model or agent is working: “Thinking…”, “Searching the web…”, “Reading 12 files…”.",
     "Label the current step of a running tool call or reasoning trace.",
@@ -35,7 +35,8 @@ export default defineComponent({
       name: "duration",
       type: "number",
       default: "2",
-      description: "Seconds per sweep. Keep between 1.5 (urgent) and 3 (calm).",
+      description:
+        "Seconds per sweep (eased in and out, so it rests between passes). Keep between 1.5 (urgent) and 3 (calm).",
     },
     {
       name: "spread",
@@ -61,7 +62,7 @@ export default defineComponent({
     notes: [
       "The text stays real text: screen readers read it normally; the animation is purely visual.",
       'Not a live region. Wrap the label in an element with role="status" (or aria-live="polite") if the change of state should be announced.',
-      "Colors come from fg/fg-subtle tokens so contrast holds in light and dark mode.",
+      "Colors come from fg/fg-subtle tokens (plus a touch of accent-text at the crest) so contrast holds in light and dark mode.",
     ],
     reducedMotion: "The sweep is removed; the text renders as static muted text.",
   },

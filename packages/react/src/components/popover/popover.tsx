@@ -39,7 +39,8 @@ export interface PopoverContentProps extends React.ComponentProps<typeof Popover
 }
 
 /**
- * Floating surface. Translucent overlay with a hairline ring, origin-aware scale+fade.
+ * Floating surface: bright print stock with a hairline edge and an inner keyline, origin-aware
+ * scale+fade.
  * Focus moves inside on open and returns to the trigger on close.
  */
 export function PopoverContent({
@@ -57,7 +58,10 @@ export function PopoverContent({
       sideOffset={sideOffset}
       collisionPadding={collisionPadding}
       className={cn(
-        "z-50 w-72 max-w-[calc(100vw-16px)] rounded-kura-lg bg-kura-overlay p-3 font-kura-sans text-kura-fg text-sm shadow-kura-lg outline-none backdrop-blur-xl backdrop-saturate-150",
+        // Bright print stock laid on the page: hairline edge, warm lift, and a keyline just inside
+        // the edge (painted under the content, so rows and fields cover it). `before:hidden` drops it.
+        "relative isolate z-50 w-72 max-w-[calc(100vw-16px)] rounded-kura-md bg-kura-surface-raised p-3 font-kura-sans text-kura-fg text-sm shadow-kura-lg outline-none",
+        "before:pointer-events-none before:absolute before:inset-[3px] before:-z-10 before:rounded-[5px] before:border before:border-kura-border-subtle before:content-['']",
         "origin-(--radix-popover-content-transform-origin)",
         "data-[state=open]:animate-kura-pop-in data-[state=closed]:animate-kura-pop-out",
         className,

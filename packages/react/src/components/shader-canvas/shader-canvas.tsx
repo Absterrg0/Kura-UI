@@ -40,7 +40,7 @@ export interface ShaderCanvasProps
   staticTime?: number;
   /** Honour prefers-reduced-motion by rendering one static frame. Default true. */
   respectReducedMotion?: boolean;
-  /** Rendered instead of the canvas when WebGL2 is unavailable or the shader fails to compile. Default: a soft token gradient. */
+  /** Rendered instead of the canvas when WebGL2 is unavailable or the shader fails to compile. Default: a soft ink wash built from tokens. */
   fallback?: React.ReactNode;
   /** Called with the compile/link error message. Without it, the error is logged to the console. */
   onError?: (message: string) => void;
@@ -78,12 +78,16 @@ function setUniform(gl: WebGL2RenderingContext, loc: WebGLUniformLocation, v: Un
   else gl.uniform4f(loc, v[0], v[1], v[2], v[3]);
 }
 
-/** Default fallback: a quiet gradient built from Kura tokens. */
+/**
+ * Default fallback: a quiet wash of ink on the page, darker at one corner, with a faint shu bloom.
+ * Built from Kura tokens, so it follows the theme.
+ */
 function DefaultFallback() {
   return (
     <div
       aria-hidden
-      className="absolute inset-0 bg-[radial-gradient(120%_80%_at_30%_20%,var(--kura-accent-subtle),transparent_60%),radial-gradient(100%_70%_at_80%_90%,var(--kura-gray-4),transparent_70%)]"
+      data-slot="shader-canvas-fallback"
+      className="absolute inset-0 bg-kura-surface-sunken bg-[radial-gradient(38%_42%_at_76%_30%,color-mix(in_oklab,var(--kura-shu)_16%,transparent),transparent_70%),radial-gradient(120%_90%_at_18%_100%,color-mix(in_oklab,var(--kura-fg)_14%,transparent),transparent_65%),radial-gradient(90%_70%_at_90%_0%,color-mix(in_oklab,var(--kura-fg)_6%,transparent),transparent_70%)]"
     />
   );
 }

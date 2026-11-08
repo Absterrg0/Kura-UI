@@ -60,7 +60,7 @@ export default defineComponent({
       name: "fallback",
       type: "React.ReactNode",
       description:
-        "Shown when WebGL2 is unavailable or the shader fails. Default: a soft token gradient.",
+        'Shown when WebGL2 is unavailable or the shader fails. Default: a soft ink wash with a faint shu bloom, built from tokens (`data-slot="shader-canvas-fallback"`).',
     },
     {
       name: "onError",
@@ -91,20 +91,21 @@ export default defineComponent({
     {
       name: "ShaderCanvasFull",
       kind: "full",
-      title: "Silk with custom uniforms",
-      description: "Custom color uniforms, speed control, pause and pointer response.",
+      title: "Ink wash with custom uniforms",
+      description:
+        "Sumi, diluted ink and washi as color uniforms, with speed control, pause and pointer response.",
     },
     {
       name: "ShaderCanvasFeatureCard",
       kind: "composition",
-      title: "Feature card with a live band",
+      title: "Feature card with a mounted print",
       description:
-        "A ShaderCanvas header behind a glass chip, with copy, stats and Buttons on a token surface.",
+        "A vermilion sun rising through ink, mounted like a print inside a keylined card, with a display-serif line, mono stats and Buttons.",
     },
   ],
   agentNotes: [
-    'Give the container an explicit size (e.g. `className="h-64 w-full rounded-kura-xl"`); the canvas fills it.',
+    'Give the container an explicit size (e.g. `className="h-64 w-full rounded-kura-md"`); the canvas fills it.',
     "Animate custom uniforms with function values `(t) => …` or by mutating an object you pass — not React state per frame.",
-    "Colors in shaders cannot read CSS variables; pass them as vec3 uniforms (linear 0–1 RGB).",
+    "Colors in shaders cannot read CSS variables; pass them as vec3 uniforms (0–1 RGB). Kura palette: sumi ≈ [0.09, 0.082, 0.067], washi ≈ [0.93, 0.9, 0.84], shu ≈ [0.86, 0.33, 0.15].",
   ],
 });

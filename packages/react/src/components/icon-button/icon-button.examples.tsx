@@ -21,18 +21,17 @@ export function IconButtonMinimal() {
 
 export function IconButtonFull() {
   return (
-    <div className="flex items-center gap-1 rounded-kura-xl bg-kura-surface p-1.5 shadow-kura-sm">
+    <div className="flex items-center gap-0.5 rounded-kura-md bg-kura-surface-raised p-1 shadow-kura-sm">
       <IconButton label="Attach file" icon={<Paperclip />} size="sm" />
       <IconButton label="Dictate" icon={<Mic />} size="sm" shortcut={["mod", "d"]} />
       <IconButton label="Retry" icon={<RotateCcw />} size="sm" tooltipSide="bottom" />
-      <span className="mx-1 h-4 w-px bg-kura-border" />
+      <span aria-hidden className="mx-1 h-4 w-px bg-kura-border" />
       <IconButton
         label="Send"
         icon={<ArrowUp />}
         size="sm"
         variant="primary"
         shortcut={["mod", "enter"]}
-        className="rounded-full"
       />
       <IconButton
         label="Sending disabled"
@@ -65,7 +64,7 @@ export function IconButtonMessageActions() {
   return (
     <article
       aria-label="Assistant reply"
-      className="flex w-full max-w-lg flex-col gap-3 rounded-kura-xl bg-kura-surface p-4 shadow-kura-sm"
+      className="flex w-full max-w-lg flex-col gap-3 rounded-kura-md bg-kura-surface p-5 pb-3 shadow-kura-sm"
     >
       <p className="text-[15px] text-kura-fg leading-relaxed">
         The dip lines up with the 2.4 release: onboarding completion fell from 71% to 58% the day
@@ -113,7 +112,7 @@ export function IconButtonMessageActions() {
           />
           <IconButton label="Share" icon={<Share />} size="sm" />
         </div>
-        <p className="shrink-0 font-kura-mono text-kura-fg-subtle text-xs tabular-nums">
+        <p className="shrink-0 font-kura-mono text-[11px] text-kura-fg-subtle tabular-nums">
           Sonnet 5.5 · 2.1s
         </p>
       </div>

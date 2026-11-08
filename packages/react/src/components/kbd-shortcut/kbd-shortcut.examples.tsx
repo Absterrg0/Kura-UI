@@ -20,7 +20,7 @@ export function KbdShortcutFull() {
         enabled
         onTrigger={() => setCount((c) => c + 1)}
       />
-      <p className="text-kura-fg-muted text-xs tabular-nums" aria-live="polite">
+      <p className="font-kura-mono text-[11px] text-kura-fg-subtle tabular-nums" aria-live="polite">
         Triggered {count} {count === 1 ? "time" : "times"}
       </p>
     </div>
@@ -29,7 +29,7 @@ export function KbdShortcutFull() {
 
 export function KbdShortcutComposerHints() {
   return (
-    <div className="flex w-full max-w-md items-center justify-between rounded-kura-lg bg-kura-surface px-3 py-2 shadow-kura-sm">
+    <div className="flex w-full max-w-md items-center justify-between rounded-kura-md bg-kura-surface px-3 py-2 shadow-kura-sm">
       <div className="flex items-center gap-3">
         <KbdShortcut keys={["/"]} label="Commands" variant="ghost" />
         <KbdShortcut keys={["@"]} label="Context" variant="ghost" />

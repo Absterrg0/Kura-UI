@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { axe, render, screen } from "../../../test/utils";
+import { axe, render, screen, setReducedMotion } from "../../../test/utils";
 import { Spinner } from "./spinner";
 import { SpinnerFull, SpinnerMinimal, SpinnerSourcesList } from "./spinner.examples";
 
@@ -19,7 +19,17 @@ describe("Spinner", () => {
     expect(screen.queryByRole("status")).toBeNull();
   });
 
+  it("draws the ensō as one filled path over a faint track", () => {
+    const { container } = render(<Spinner size="lg" />);
+    const svg = container.querySelector("svg")!;
+    expect(svg).toHaveAttribute("aria-hidden", "true");
+    expect(svg.querySelectorAll("path")).toHaveLength(1);
+    expect(svg.querySelector("path")!.getAttribute("d")).toMatch(/^M[\d. ]+L.*Z$/);
+    expect(container.querySelector("[data-slot=spinner]")).toHaveClass("size-5");
+  });
+
   it("pulses instead of spinning under reduced motion", () => {
+    setReducedMotion(true);
     const { container } = render(<Spinner />);
     expect(container.innerHTML).toContain("motion-reduce:animate-kura-pulse");
   });

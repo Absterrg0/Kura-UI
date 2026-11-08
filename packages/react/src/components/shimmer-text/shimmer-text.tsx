@@ -16,8 +16,8 @@ export interface ShimmerTextProps extends React.HTMLAttributes<HTMLElement> {
 }
 
 /**
- * Animated gradient sweep across text — the canonical "Thinking…" / "Searching the web…"
- * affordance. Pure CSS (no JS animation loop), server-component safe, and static under
+ * A sweep of light over ink across text — the canonical "Thinking…" / "Searching the web…"
+ * affordance. The sweep eases in and out, so it rests between passes. Pure CSS (no JS animation loop), server-component safe, and static under
  * prefers-reduced-motion.
  */
 export function ShimmerText({
@@ -39,7 +39,7 @@ export function ShimmerText({
       className={cn(
         "inline-block",
         active &&
-          "animate-kura-shimmer bg-clip-text text-transparent [background-size:250%_100%] motion-reduce:animate-none motion-reduce:bg-none motion-reduce:text-kura-fg-muted",
+          "animate-kura-shimmer bg-clip-text text-transparent [animation-timing-function:var(--ease-kura-in-out)] [background-size:250%_100%] motion-reduce:animate-none motion-reduce:bg-none motion-reduce:text-kura-fg-muted",
         !active && "text-kura-fg-muted transition-colors duration-(--kura-duration-slow)",
         className,
       )}
@@ -48,7 +48,9 @@ export function ShimmerText({
           ? {
               ...style,
               ["--kura-shimmer-duration" as string]: `${duration}s`,
-              backgroundImage: `linear-gradient(90deg, var(--kura-fg-subtle) calc(50% - ${band}%), var(--kura-fg) 50%, var(--kura-fg-subtle) calc(50% + ${band}%))`,
+              // Light passing over wet ink: dry ink at rest, a soft rise to full ink, and a faint
+              // warm (shu) glint at the crest, the one hint that the model is the one working.
+              backgroundImage: `linear-gradient(90deg, var(--kura-fg-subtle) calc(50% - ${band}%), color-mix(in oklab, var(--kura-fg-subtle), var(--kura-fg)) calc(50% - ${band / 2}%), color-mix(in oklab, var(--kura-fg) 78%, var(--kura-accent-text)) 50%, color-mix(in oklab, var(--kura-fg-subtle), var(--kura-fg)) calc(50% + ${band / 2}%), var(--kura-fg-subtle) calc(50% + ${band}%))`,
             }
           : style
       }

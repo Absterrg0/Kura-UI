@@ -10,11 +10,41 @@ export interface SpinnerProps extends Omit<React.ComponentProps<"span">, "childr
 
 const sizes = { sm: "size-3", md: "size-4", lg: "size-5" } as const;
 
-const SEGMENTS = 8;
+/**
+ * An ensō drawn as one brush stroke: a 292° arc on a 24-unit box that swells from a dry, thin
+ * tail into a full, round head. Built once at module scope as a filled path, so it scales cleanly
+ * from 12px to 20px and needs no stroke tricks.
+ */
+function ensoPath(): string {
+  const cx = 12;
+  const cy = 12;
+  const radius = 8.75;
+  const sweep = (292 * Math.PI) / 180;
+  const start = -Math.PI / 2 - sweep;
+  const steps = 40;
+  const width = (t: number) => 0.4 + 3 * t ** 1.6;
+  const at = (t: number, offset: number) => {
+    const a = start + sweep * t;
+    const r = radius + offset;
+    return `${(cx + r * Math.cos(a)).toFixed(2)} ${(cy + r * Math.sin(a)).toFixed(2)}`;
+  };
+  const outer: string[] = [];
+  const inner: string[] = [];
+  for (let i = 0; i <= steps; i++) {
+    const t = i / steps;
+    outer.push(at(t, width(t) / 2));
+    inner.unshift(at(t, -width(t) / 2));
+  }
+  const head = (width(1) / 2).toFixed(2);
+  const tail = (width(0) / 2).toFixed(2);
+  return `M${outer.join("L")}A${head} ${head} 0 0 1 ${inner.join("L")}A${tail} ${tail} 0 0 1 ${outer[0]}Z`;
+}
+
+const ENSO = ensoPath();
 
 /**
- * Eight-segment radial spinner. Inherits `currentColor`. Under reduced motion it pulses instead
- * of rotating.
+ * Ensō spinner: a single tapered brush stroke turning on a faint wash of the full circle.
+ * Inherits `currentColor`. Under reduced motion it holds still and breathes (opacity) instead.
  */
 export function Spinner({ size = "md", label = "Loading", className, ...props }: SpinnerProps) {
   return (
@@ -26,23 +56,23 @@ export function Spinner({ size = "md", label = "Loading", className, ...props }:
       {...props}
     >
       {label && <span className="sr-only">{label}</span>}
-      <span
+      <svg
         aria-hidden
-        className="absolute inset-0 animate-kura-spin [animation-timing-function:steps(8)] motion-reduce:animate-kura-pulse"
+        viewBox="0 0 24 24"
+        fill="currentColor"
+        className="absolute inset-0 size-full animate-kura-spin [animation-duration:0.9s] motion-reduce:animate-kura-pulse motion-reduce:[animation-duration:1.6s]"
       >
-        {Array.from({ length: SEGMENTS }, (_, i) => (
-          <span
-            key={i}
-            className="absolute top-0 left-[calc(50%-0.75px)] h-full w-[1.5px]"
-            style={{ transform: `rotate(${(i * 360) / SEGMENTS}deg)` }}
-          >
-            <span
-              className="block h-[30%] w-full rounded-full bg-current"
-              style={{ opacity: 0.15 + (0.85 * (i + 1)) / SEGMENTS }}
-            />
-          </span>
-        ))}
-      </span>
+        <circle
+          cx="12"
+          cy="12"
+          r="8.75"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.4"
+          opacity="0.14"
+        />
+        <path d={ENSO} />
+      </svg>
     </span>
   );
 }

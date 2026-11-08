@@ -52,7 +52,9 @@ export function TooltipContent({
         data-slot="tooltip-content"
         sideOffset={sideOffset}
         className={cn(
-          "z-50 inline-flex max-w-xs select-none items-center gap-2 rounded-kura-sm bg-kura-ink px-2 py-1 font-kura-sans text-kura-fg-inverted text-xs leading-snug shadow-kura-md",
+          // A slip of ink with paper-coloured text: lit top edge, short warm shadow, no ring.
+          "z-50 inline-flex max-w-xs select-none items-center gap-2 rounded-kura-xs bg-kura-ink px-2 py-[5px] font-kura-sans font-medium text-[12px] text-kura-fg-inverted leading-[1.35] tracking-[0.005em]",
+          "shadow-[inset_0_1px_0_0_color-mix(in_oklab,white_10%,transparent),0_1px_2px_-1px_color-mix(in_oklab,black_35%,transparent),0_8px_18px_-8px_color-mix(in_oklab,black_40%,transparent)]",
           "origin-(--radix-tooltip-content-transform-origin)",
           "data-[state=delayed-open]:animate-kura-pop-in data-[state=closed]:animate-kura-pop-out data-[state=instant-open]:animate-none",
           className,
@@ -65,7 +67,7 @@ export function TooltipContent({
             keys={shortcut}
             variant="ghost"
             size="sm"
-            className="-mr-1 [&_[data-slot=kbd-key]]:bg-white/15 [&_[data-slot=kbd-key]]:text-kura-fg-inverted"
+            className="-mr-1 font-normal [&_[data-slot=kbd-key]]:opacity-70"
           />
         )}
       </TooltipPrimitive.Content>

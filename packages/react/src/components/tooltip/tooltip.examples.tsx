@@ -81,7 +81,7 @@ export function TooltipEditorToolbar() {
 
   return (
     <TooltipProvider delayDuration={400}>
-      <div className="flex w-full max-w-xl flex-col overflow-hidden rounded-kura-xl bg-kura-surface shadow-kura-sm">
+      <div className="flex w-full max-w-xl flex-col overflow-hidden rounded-kura-md bg-kura-surface-raised shadow-kura-sm">
         <div
           role="toolbar"
           aria-label="Formatting"
@@ -123,7 +123,7 @@ export function TooltipEditorToolbar() {
             <ToolbarTip label="Saved 12:04 · version 18" side="bottom">
               <button
                 type="button"
-                className="inline-flex h-7 cursor-default items-center gap-1.5 rounded-kura-sm px-2 text-kura-fg-subtle text-xs outline-none focus-visible:shadow-kura-focus"
+                className="inline-flex h-7 cursor-default items-center gap-1.5 rounded-kura-sm px-2 font-kura-mono text-[11px] text-kura-fg-subtle outline-none focus-visible:shadow-kura-focus"
               >
                 <Cloud className="size-3.5" aria-hidden />
                 Saved
@@ -131,7 +131,7 @@ export function TooltipEditorToolbar() {
             </ToolbarTip>
           </div>
         </div>
-        <p className="px-4 py-3.5 text-[15px] text-kura-fg leading-relaxed">
+        <p className="px-5 py-4 text-[15px] text-kura-fg leading-relaxed">
           <strong className="font-semibold">Launch note:</strong> the new composer ships behind the{" "}
           <code className="rounded-kura-xs bg-kura-surface-sunken px-1 py-0.5 font-kura-mono text-[13px]">
             composer_v2
