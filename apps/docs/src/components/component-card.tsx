@@ -2,36 +2,34 @@ import type { CatalogComponent } from "@kura/catalog-types";
 import Link from "next/link";
 import { ExamplePreview } from "./example-preview";
 
+/** A component as a print on the page: the live preview on bright stock, a caption beneath. */
 export function ComponentCard({ component }: { component: CatalogComponent }) {
   const minimal = component.examples.find((e) => e.kind === "minimal") ?? component.examples[0];
   return (
-    <div
-      data-testid={`card-${component.slug}`}
-      className="group relative flex flex-col overflow-hidden rounded-kura-xl bg-kura-surface shadow-kura-sm transition-shadow duration-(--kura-duration-base) hover:shadow-kura-md"
-    >
-      {minimal && (
-        <div inert className="border-kura-border-subtle border-b">
-          <ExamplePreview slug={component.slug} name={minimal.name} compact className="h-48" />
-        </div>
-      )}
-      <div className="flex flex-1 flex-col gap-1 p-4">
-        <div className="flex items-center justify-between gap-2">
-          <h3 className="font-medium text-[15px]">
-            <Link
-              href={`/components/${component.slug}`}
-              className="outline-none after:absolute after:inset-0 after:rounded-kura-xl focus-visible:after:shadow-kura-focus"
-            >
-              {component.title}
-            </Link>
-          </h3>
-          <span className="rounded-full bg-kura-surface-sunken px-2 py-0.5 text-kura-fg-subtle text-[11px] shadow-kura-xs">
-            {component.category}
-          </span>
-        </div>
-        <p className="line-clamp-2 text-kura-fg-muted text-sm leading-relaxed">
-          {component.description}
-        </p>
+    <div data-testid={`card-${component.slug}`} className="group relative flex flex-col">
+      <div className="print overflow-hidden rounded-[8px] transition-[translate,box-shadow] duration-300 ease-kura-out group-hover:-translate-y-0.5 motion-reduce:transition-none motion-reduce:group-hover:translate-y-0">
+        {minimal && (
+          <div inert>
+            <ExamplePreview slug={component.slug} name={minimal.name} compact className="h-56" />
+          </div>
+        )}
       </div>
+      <div className="flex items-baseline justify-between gap-3 pt-4">
+        <h3 className="font-kura-display text-[23px] leading-tight">
+          <Link
+            href={`/components/${component.slug}`}
+            className="outline-none after:absolute after:inset-0 after:rounded-[8px] focus-visible:after:shadow-kura-focus"
+          >
+            {component.title}
+          </Link>
+        </h3>
+        <span className="font-kura-mono text-[10.5px] text-kura-fg-subtle uppercase tracking-[0.14em]">
+          {component.category}
+        </span>
+      </div>
+      <p className="line-clamp-2 pt-1 text-[14.5px] text-kura-fg-muted leading-relaxed">
+        {component.description}
+      </p>
     </div>
   );
 }

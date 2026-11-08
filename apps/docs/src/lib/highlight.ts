@@ -1,11 +1,12 @@
 import "server-only";
 import { createHighlighter, type Highlighter } from "shiki";
+import { sumi, washi } from "./shiki-themes";
 
 let highlighter: Promise<Highlighter> | undefined;
 
 function get() {
   highlighter ??= createHighlighter({
-    themes: ["vitesse-light", "vitesse-dark"],
+    themes: [washi, sumi],
     langs: ["tsx", "ts", "bash", "json", "css", "glsl", "markdown", "toml"],
   });
   return highlighter;
@@ -16,7 +17,7 @@ export async function highlight(code: string, lang = "tsx"): Promise<string> {
   const h = await get();
   return h.codeToHtml(code.trimEnd(), {
     lang,
-    themes: { light: "vitesse-light", dark: "vitesse-dark" },
+    themes: { light: "kura-washi", dark: "kura-sumi" },
     defaultColor: false,
   });
 }

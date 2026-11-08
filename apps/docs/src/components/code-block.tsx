@@ -20,12 +20,12 @@ export async function CodeBlock({
     <div
       data-slot="code-block"
       className={cn(
-        "group relative overflow-hidden rounded-kura-lg bg-kura-surface-sunken shadow-kura-xs",
+        "group relative overflow-hidden rounded-[8px] bg-kura-surface shadow-[inset_0_0_0_1px_var(--kura-border)]",
         className,
       )}
     >
       {title && (
-        <div className="flex h-9 items-center border-kura-border-subtle border-b px-3 font-kura-mono text-kura-fg-subtle text-xs">
+        <div className="flex h-9 items-center border-kura-border-subtle border-b px-4 font-kura-mono text-[11px] text-kura-fg-subtle uppercase tracking-[0.12em]">
           {title}
         </div>
       )}

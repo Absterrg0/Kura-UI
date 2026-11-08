@@ -4,24 +4,31 @@ import { Logo } from "./logo";
 
 export function SiteFooter() {
   return (
-    <footer className="border-kura-border-subtle border-t">
-      <div className="mx-auto flex max-w-[1400px] flex-col gap-6 px-4 py-10 text-kura-fg-muted text-sm md:flex-row md:items-center md:justify-between md:px-6">
-        <div className="flex items-center gap-3">
-          <Logo className="text-kura-fg" />
-          <span className="text-kura-fg-subtle">
-            MIT · Built for humans and the agents that work with them.
-          </span>
+    <footer className="mx-auto max-w-[1280px] px-4 pt-24 pb-12 md:px-6">
+      <span aria-hidden className="brush-rule text-kura-fg/70" />
+      <div className="flex flex-col gap-8 pt-10 md:flex-row md:items-end md:justify-between">
+        <div className="flex flex-col gap-3">
+          <Logo />
+          <p className="max-w-sm font-kura-display text-[17px] text-kura-fg-muted italic leading-snug">
+            A storehouse of interfaces for working with machines. Open source, MIT.
+          </p>
         </div>
-        <nav className="flex flex-wrap gap-x-5 gap-y-2">
-          <Link href="/llms.txt" className="hover:text-kura-fg">
+        <nav className="flex flex-wrap gap-x-6 gap-y-2 text-[13.5px] text-kura-fg-muted">
+          <Link href="/docs" className="hover:text-kura-fg">
+            Docs
+          </Link>
+          <Link href="/components" className="hover:text-kura-fg">
+            Components
+          </Link>
+          <Link href="/agents" className="hover:text-kura-fg">
+            For agents
+          </Link>
+          <a href="/llms.txt" className="hover:text-kura-fg">
             llms.txt
-          </Link>
-          <Link href="/registry/index.json" className="hover:text-kura-fg">
-            Catalog JSON
-          </Link>
-          <Link href="/r/registry.json" className="hover:text-kura-fg">
-            shadcn registry
-          </Link>
+          </a>
+          <a href="/registry/index.json" className="hover:text-kura-fg">
+            Catalog
+          </a>
           <a href={GITHUB_URL} className="hover:text-kura-fg">
             GitHub
           </a>

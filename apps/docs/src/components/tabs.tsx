@@ -10,16 +10,11 @@ export function Tabs(props: React.ComponentProps<typeof TabsPrimitive.Root>) {
 
 export function TabsList({ className, ...props }: React.ComponentProps<typeof TabsPrimitive.List>) {
   return (
-    <TabsPrimitive.List
-      className={cn(
-        "inline-flex items-center gap-0.5 rounded-kura-md bg-kura-surface-sunken p-0.5 shadow-kura-xs",
-        className,
-      )}
-      {...props}
-    />
+    <TabsPrimitive.List className={cn("inline-flex items-center gap-1", className)} {...props} />
   );
 }
 
+/** Mono labels; the active one is underscored with a short stroke of ink. */
 export function TabsTrigger({
   className,
   ...props
@@ -27,8 +22,9 @@ export function TabsTrigger({
   return (
     <TabsPrimitive.Trigger
       className={cn(
-        "h-7 cursor-pointer rounded-kura-sm px-2.5 font-medium text-kura-fg-muted text-xs outline-none transition-colors duration-(--kura-duration-fast)",
-        "hover:text-kura-fg focus-visible:shadow-kura-focus data-[state=active]:bg-kura-surface data-[state=active]:text-kura-fg data-[state=active]:shadow-kura-sm",
+        "relative h-8 cursor-pointer rounded-[5px] px-2.5 font-kura-mono text-[11px] text-kura-fg-subtle uppercase tracking-[0.12em] outline-none transition-colors duration-(--kura-duration-fast)",
+        "hover:text-kura-fg focus-visible:shadow-kura-focus data-[state=active]:text-kura-fg",
+        "after:absolute after:right-2.5 after:bottom-1 after:left-2.5 after:h-[2px] after:rounded-full after:bg-kura-fg after:opacity-0 after:transition-opacity data-[state=active]:after:opacity-100",
         className,
       )}
       {...props}

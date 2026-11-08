@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 100" preserveAspectRatio="none">
+<defs>
+<filter id="r" x="-5%" y="-25%" width="110%" height="150%">
+<feTurbulence type="fractalNoise" baseFrequency="0.035 0.55" numOctaves="3" seed="9" result="n"/>
+<feDisplacementMap in="SourceGraphic" in2="n" scale="7" xChannelSelector="R" yChannelSelector="G"/>
+</filter>
+</defs>
+<g filter="url(#r)" fill="#000">
+<!-- the body of the stroke: loaded brush, slightly rising, heavier at the start -->
+<path d="M14 58 C 20 30, 44 20, 90 19 L 330 15 C 362 14, 384 22, 390 40 C 394 56, 386 74, 360 80 L 92 86 C 50 87, 22 80, 14 58 Z"/>
+<!-- dry-brush bristles trailing off the right end -->
+<path d="M352 24 L 396 27 L 397 31 L 350 30 Z" opacity="0.9"/>
+<path d="M356 72 L 393 66 L 394 70 L 354 78 Z" opacity="0.85"/>
+<path d="M370 44 L 399 45 L 399 48 L 368 49 Z" opacity="0.8"/>
+<!-- a ragged entry on the left -->
+<path d="M6 50 L 22 44 L 24 50 L 8 54 Z" opacity="0.8"/>
+</g>
+</svg>

@@ -16,9 +16,10 @@ export default function DocsPage() {
     <DocsShell>
       <div className="mx-auto max-w-3xl">
         <PageHeader
+          glyph="道"
           eyebrow="Docs"
-          title="Getting started"
-          description="Kura UI needs React 19 and Tailwind CSS v4. Use the npm package, or copy the source with the shadcn CLI."
+          title="Getting started."
+          description="Kura UI needs React 19 and Tailwind CSS v4. Take the npm package, or copy the source into your project with the shadcn CLI."
         />
 
         <Section id="npm" title="1a. Install from npm">
@@ -32,7 +33,7 @@ export default function DocsPage() {
             <CodeBlock
               code={`import { ShimmerText } from "@kura-ui/react/shimmer-text";\n\nexport function Status() {\n  return <ShimmerText>Thinking…</ShimmerText>;\n}`}
             />
-            <p className="text-kura-fg-muted text-sm">
+            <p className="text-[15px] text-kura-fg-muted">
               Each component is its own entry point (
               <code className="font-kura-mono">@kura-ui/react/&lt;slug&gt;</code>) — tree-shakeable,
               with
@@ -52,7 +53,7 @@ export default function DocsPage() {
         </Section>
 
         <Section id="dark-mode" title="2. Dark mode">
-          <p className="text-kura-fg-muted text-sm leading-relaxed">
+          <p className="text-[15px] text-kura-fg-muted leading-relaxed">
             Tokens switch under a <code className="font-kura-mono">.dark</code> class or{" "}
             <code className="font-kura-mono">[data-theme=&quot;dark&quot;]</code> on any ancestor
             (works with next-themes). Components never use{" "}
@@ -60,13 +61,14 @@ export default function DocsPage() {
           </p>
         </Section>
 
-        <Section id="design" title="3. Design language: Kura Signal">
-          <p className="pb-4 text-kura-fg-muted text-sm leading-relaxed">
-            Everything is still until the model speaks. Warm paper-and-ink neutrals, one jade
-            “signal” accent reserved for AI activity, hairline borders, layered shadows and short,
-            interruptible motion. Full guide in{" "}
+        <Section id="design" title="3. Washi, sumi and one seal">
+          <p className="pb-4 text-[15px] text-kura-fg-muted leading-relaxed">
+            Everything is still until the model speaks. Surfaces are paper stocks and type is sumi
+            ink; one vermilion seal colour, shu, is kept for AI activity: streaming, listening,
+            running, waiting on you. Hairline edges, Redaction for the lines that speak, Geist for
+            the work, and short, interruptible motion. Full guide in{" "}
             <a
-              className="underline"
+              className="underline decoration-kura-accent underline-offset-4"
               href="https://github.com/Absterrg0/Kura-UI/blob/main/DESIGN.md"
             >
               DESIGN.md
@@ -77,7 +79,7 @@ export default function DocsPage() {
             {Array.from({ length: 12 }, (_, i) => (
               <div key={i} className="flex flex-col gap-1">
                 <div
-                  className="h-10 rounded-kura-sm shadow-kura-xs"
+                  className="h-12 rounded-[4px] shadow-kura-xs"
                   style={{ background: `var(--kura-gray-${i + 1})` }}
                 />
                 <span className="text-center font-kura-mono text-kura-fg-subtle text-[10px]">
@@ -87,13 +89,13 @@ export default function DocsPage() {
             ))}
           </div>
           <div className="flex flex-wrap gap-2 pb-4">
-            {["accent", "accent-subtle", "ink", "danger", "success", "warning"].map((n) => (
+            {["shu", "accent", "accent-subtle", "ink", "danger", "success", "warning"].map((n) => (
               <div
                 key={n}
-                className="flex items-center gap-2 rounded-full bg-kura-surface py-1 pr-3 pl-1 text-xs shadow-kura-xs"
+                className="flex items-center gap-2 rounded-[6px] bg-kura-surface py-1 pr-3 pl-1 font-kura-mono text-[11.5px] shadow-kura-xs"
               >
                 <span
-                  className="size-5 rounded-full shadow-kura-xs"
+                  className="size-5 rounded-[3px] shadow-kura-xs"
                   style={{ background: `var(--kura-${n})` }}
                 />
                 {n}
@@ -108,10 +110,10 @@ export default function DocsPage() {
         </Section>
 
         <Section id="hooks" title="Hooks">
-          <div className="flex flex-col gap-3">
+          <div className="flex flex-col gap-8">
             {catalog.hooks.map((h) => (
-              <div key={h.name} className="rounded-kura-xl bg-kura-surface p-4 shadow-kura-sm">
-                <h3 className="font-kura-mono text-sm">{h.name}</h3>
+              <div key={h.name} className="border-kura-border border-t pt-5">
+                <h3 className="font-kura-mono text-[14px]">{h.name}</h3>
                 <p className="pt-1 pb-3 text-kura-fg-muted text-sm">{h.description}</p>
                 <CodeBlock
                   lang="ts"
@@ -122,13 +124,13 @@ export default function DocsPage() {
           </div>
         </Section>
 
-        <p className="pt-6 text-kura-fg-muted text-sm">
+        <p className="pt-12 font-kura-display text-[19px] text-kura-fg-muted italic">
           Next:{" "}
-          <Link href="/components" className="underline">
+          <Link href="/components" className="underline decoration-kura-accent underline-offset-4">
             browse components
           </Link>{" "}
           or{" "}
-          <Link href="/agents" className="underline">
+          <Link href="/agents" className="underline decoration-kura-accent underline-offset-4">
             connect your agent
           </Link>
           .

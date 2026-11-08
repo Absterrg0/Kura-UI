@@ -1,11 +1,13 @@
 import type * as React from "react";
+import type { Kanji } from "@/lib/kanji";
+import { SectionHeading } from "./section-heading";
 import { Sidebar } from "./sidebar";
 
 export function DocsShell({ children }: { children: React.ReactNode }) {
   return (
-    <div className="mx-auto flex max-w-[1400px] gap-10 px-4 md:px-6">
+    <div className="mx-auto flex max-w-[1280px] gap-12 px-5 md:px-8">
       <Sidebar />
-      <div className="min-w-0 flex-1 py-10">{children}</div>
+      <div className="min-w-0 flex-1 pt-12 pb-10">{children}</div>
     </div>
   );
 }
@@ -14,22 +16,25 @@ export function PageHeader({
   eyebrow,
   title,
   description,
+  glyph,
   children,
 }: {
   eyebrow?: React.ReactNode;
-  title: string;
+  title: React.ReactNode;
   description?: React.ReactNode;
+  glyph?: Kanji;
   children?: React.ReactNode;
 }) {
   return (
-    <header className="flex flex-col gap-3 pb-8">
-      {eyebrow && <div className="text-kura-fg-subtle text-sm">{eyebrow}</div>}
-      <h1 className="font-medium text-3xl tracking-tight md:text-4xl">{title}</h1>
-      {description && (
-        <p className="max-w-2xl text-kura-fg-muted text-lg leading-relaxed">{description}</p>
+    <div className="flex flex-col gap-4 pb-12">
+      {eyebrow && (
+        <div className="font-kura-mono text-[11px] text-kura-fg-subtle uppercase tracking-[0.16em]">
+          {eyebrow}
+        </div>
       )}
+      <SectionHeading as="h1" glyph={glyph} title={title} lead={description} />
       {children}
-    </header>
+    </div>
   );
 }
 
@@ -43,9 +48,12 @@ export function Section({
   children: React.ReactNode;
 }) {
   return (
-    <section id={id} className="scroll-mt-20 py-6">
-      <h2 className="pb-4 font-medium text-xl tracking-tight">
-        <a href={`#${id}`} className="outline-none hover:underline focus-visible:shadow-kura-focus">
+    <section id={id} className="scroll-mt-28 pt-14">
+      <h2 className="flex items-baseline gap-3 pb-5 font-kura-display text-[30px] leading-none tracking-[-0.015em]">
+        <a
+          href={`#${id}`}
+          className="outline-none hover:text-kura-accent-text focus-visible:shadow-kura-focus"
+        >
           {title}
         </a>
       </h2>

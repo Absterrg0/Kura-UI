@@ -6,8 +6,10 @@ import { CodeBlock } from "@/components/code-block";
 import { CopyButton } from "@/components/copy-button";
 import { DocsShell, Section } from "@/components/docs-shell";
 import { ExamplePreview } from "@/components/example-preview";
+import { Seal } from "@/components/seal";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/tabs";
 import { components, getComponent } from "@/lib/catalog";
+import { CATEGORY_SEAL } from "@/lib/category-seal";
 
 export const dynamicParams = false;
 
@@ -38,12 +40,14 @@ function Pill({
   tone?: "neutral" | "accent" | "warning";
 }) {
   const tones = {
-    neutral: "bg-kura-surface-sunken text-kura-fg-muted",
-    accent: "bg-kura-accent-subtle text-kura-accent-text",
-    warning: "bg-kura-surface-sunken text-kura-warning-text",
+    neutral: "text-kura-fg-muted",
+    accent: "text-kura-accent-text",
+    warning: "text-kura-warning-text",
   };
   return (
-    <span className={`rounded-full px-2 py-0.5 text-xs shadow-kura-xs ${tones[tone]}`}>
+    <span
+      className={`rounded-[4px] px-1.5 py-0.5 font-kura-mono text-[10.5px] uppercase tracking-[0.12em] shadow-[inset_0_0_0_1px_currentColor] ${tones[tone]}`}
+    >
       {children}
     </span>
   );
@@ -66,16 +70,21 @@ export default async function ComponentPage({ params }: { params: Promise<{ slug
   return (
     <DocsShell>
       <article data-testid="component-page" className="mx-auto max-w-4xl">
-        <header className="flex flex-col gap-4 pb-6">
-          <nav aria-label="Breadcrumb" className="text-kura-fg-subtle text-sm">
+        <header className="relative flex flex-col gap-5 pb-12">
+          <nav
+            aria-label="Breadcrumb"
+            className="font-kura-mono text-[11px] text-kura-fg-subtle uppercase tracking-[0.16em]"
+          >
             <Link href="/components" className="hover:text-kura-fg">
-              Components
+              The store
             </Link>
-            <span className="px-1.5">/</span>
-            <span className="capitalize">{c.category}</span>
+            <span className="px-2">/</span>
+            <span>{c.category}</span>
           </nav>
-          <div className="flex flex-wrap items-center gap-3">
-            <h1 className="font-medium text-3xl tracking-tight md:text-4xl">{c.title}</h1>
+          <div className="flex flex-wrap items-center gap-4 pr-20">
+            <h1 className="font-kura-display text-[clamp(2.6rem,5vw,3.9rem)] leading-none tracking-[-0.02em]">
+              {c.title}
+            </h1>
             <Pill
               tone={
                 c.status === "stable"
@@ -88,32 +97,40 @@ export default async function ComponentPage({ params }: { params: Promise<{ slug
               {c.status}
             </Pill>
           </div>
-          <p className="max-w-2xl text-kura-fg-muted text-lg leading-relaxed">{c.description}</p>
-          <div className="flex flex-wrap items-center gap-2 pt-1">
-            <span className="inline-flex h-7 items-center gap-1 rounded-kura-md bg-kura-surface pr-1 pl-2.5 font-kura-mono text-kura-fg-muted text-xs shadow-kura-xs">
+          <span aria-hidden className="brush-rule w-40 text-kura-shu" />
+          <p className="max-w-2xl font-kura-display text-[20px] text-kura-fg-muted italic leading-[1.5]">
+            {c.description}
+          </p>
+          <div className="flex flex-wrap items-center gap-x-5 gap-y-2 pt-1 text-[13px] text-kura-fg-muted">
+            <span className="inline-flex items-center gap-1 font-kura-mono text-[12px]">
               {c.importPath}
               <CopyButton value={usage} label="Copy import" />
             </span>
-            <span className="inline-flex h-7 items-center gap-1 rounded-kura-md bg-kura-surface pr-1 pl-2.5 text-kura-fg-muted text-xs shadow-kura-xs">
+            <span className="inline-flex items-center gap-1">
               Copy page for agents
               <CopyButton fetchUrl={`/components/${c.slug}.md`} label="Copy markdown" />
             </span>
             <a
               href={`/components/${c.slug}.md`}
-              className="inline-flex h-7 items-center rounded-kura-md px-2.5 text-kura-fg-muted text-xs shadow-kura-xs hover:text-kura-fg"
+              className="font-kura-mono text-[12px] underline decoration-kura-border-strong underline-offset-4 hover:text-kura-fg hover:decoration-kura-accent"
             >
               .md
             </a>
             <a
               href={`/r/${c.slug}.json`}
-              className="inline-flex h-7 items-center rounded-kura-md px-2.5 text-kura-fg-muted text-xs shadow-kura-xs hover:text-kura-fg"
+              className="font-kura-mono text-[12px] underline decoration-kura-border-strong underline-offset-4 hover:text-kura-fg hover:decoration-kura-accent"
             >
               registry.json
             </a>
           </div>
+          <Seal
+            glyph={CATEGORY_SEAL[c.category] ?? "部"}
+            tilt={5}
+            className="absolute top-6 right-0 size-14"
+          />
         </header>
 
-        <div className="flex flex-col gap-8">
+        <div className="flex flex-col gap-12">
           {c.examples.map((ex, i) => (
             <section
               key={ex.name}
@@ -121,11 +138,13 @@ export default async function ComponentPage({ params }: { params: Promise<{ slug
               className="flex flex-col gap-3"
             >
               {i > 0 && (
-                <div>
-                  <h2 id={`ex-${ex.name}`} className="font-medium text-base">
+                <div className="flex flex-col gap-1">
+                  <h2 id={`ex-${ex.name}`} className="font-kura-display text-[24px] leading-tight">
                     {ex.title}
                   </h2>
-                  {ex.description && <p className="text-kura-fg-muted text-sm">{ex.description}</p>}
+                  {ex.description && (
+                    <p className="text-[14.5px] text-kura-fg-muted">{ex.description}</p>
+                  )}
                 </div>
               )}
               {i === 0 && (
@@ -133,24 +152,21 @@ export default async function ComponentPage({ params }: { params: Promise<{ slug
                   {ex.title}
                 </h2>
               )}
-              <Tabs
-                defaultValue="preview"
-                className="overflow-hidden rounded-kura-xl bg-kura-surface shadow-kura-sm"
-              >
-                <div className="flex items-center justify-between border-kura-border-subtle border-b px-2 py-1.5">
+              <Tabs defaultValue="preview" className="print overflow-hidden rounded-[9px]">
+                <div className="flex items-center justify-between border-kura-border-subtle border-b bg-kura-surface px-2.5 py-1">
                   <TabsList>
                     <TabsTrigger value="preview">Preview</TabsTrigger>
                     <TabsTrigger value="code">Code</TabsTrigger>
                   </TabsList>
-                  <span className="pr-1 font-kura-mono text-kura-fg-subtle text-[11px]">
+                  <span className="pr-1.5 font-kura-mono text-[10.5px] text-kura-fg-subtle uppercase tracking-[0.14em]">
                     {ex.kind}
                   </span>
                 </div>
                 <TabsContent value="preview" forceMount className="data-[state=inactive]:hidden">
                   <ExamplePreview slug={c.slug} name={ex.name} />
                 </TabsContent>
-                <TabsContent value="code" className="p-2">
-                  <CodeBlock code={ex.code} className="shadow-none" />
+                <TabsContent value="code" className="bg-kura-surface-sunken">
+                  <CodeBlock code={ex.code} className="rounded-none shadow-none" />
                 </TabsContent>
               </Tabs>
             </section>
@@ -204,28 +220,32 @@ export default async function ComponentPage({ params }: { params: Promise<{ slug
         </Section>
 
         <Section id="usage-guidance" title="When to use it">
-          <div className="grid gap-4 md:grid-cols-2">
-            <div className="rounded-kura-xl bg-kura-surface p-5 shadow-kura-sm">
-              <h3 className="pb-3 font-medium text-kura-accent-text text-sm">Use it for</h3>
-              <ul className="flex flex-col gap-2 text-sm leading-relaxed">
+          <div className="grid gap-10 md:grid-cols-2">
+            <div>
+              <h3 className="pb-3 font-kura-mono text-[11px] text-kura-accent-text uppercase tracking-[0.14em]">
+                Use it for
+              </h3>
+              <ul className="flex flex-col border-kura-border border-t">
                 {c.whenToUse.map((w) => (
-                  <li key={w} className="flex gap-2">
-                    <span aria-hidden className="text-kura-accent-text">
-                      ✓
-                    </span>
+                  <li
+                    key={w}
+                    className="border-kura-border-subtle border-b py-3 text-[14.5px] leading-relaxed"
+                  >
                     {w}
                   </li>
                 ))}
               </ul>
             </div>
-            <div className="rounded-kura-xl bg-kura-surface p-5 shadow-kura-sm">
-              <h3 className="pb-3 font-medium text-kura-fg-muted text-sm">
+            <div>
+              <h3 className="pb-3 font-kura-mono text-[11px] text-kura-fg-subtle uppercase tracking-[0.14em]">
                 Reach for something else when
               </h3>
-              <ul className="flex flex-col gap-2 text-kura-fg-muted text-sm leading-relaxed">
+              <ul className="flex flex-col border-kura-border border-t">
                 {c.whenNotToUse.map((w) => (
-                  <li key={w} className="flex gap-2">
-                    <span aria-hidden>–</span>
+                  <li
+                    key={w}
+                    className="border-kura-border-subtle border-b py-3 text-[14.5px] text-kura-fg-muted leading-relaxed"
+                  >
                     {w}
                   </li>
                 ))}
@@ -236,14 +256,14 @@ export default async function ComponentPage({ params }: { params: Promise<{ slug
 
         <Section id="props" title="Props">
           {c.props.length ? (
-            <div className="overflow-x-auto rounded-kura-xl bg-kura-surface shadow-kura-sm">
+            <div className="overflow-x-auto border-kura-border border-t">
               <table className="w-full text-left text-sm">
-                <thead className="border-kura-border-subtle border-b text-kura-fg-subtle text-xs">
+                <thead className="border-kura-border-subtle border-b font-kura-mono text-[10.5px] text-kura-fg-subtle uppercase tracking-[0.12em]">
                   <tr>
-                    <th className="px-4 py-2.5 font-medium">Prop</th>
-                    <th className="px-4 py-2.5 font-medium">Type</th>
-                    <th className="px-4 py-2.5 font-medium">Default</th>
-                    <th className="px-4 py-2.5 font-medium">Description</th>
+                    <th className="py-3 pr-4 font-normal">Prop</th>
+                    <th className="px-4 py-3 font-normal">Type</th>
+                    <th className="px-4 py-3 font-normal">Default</th>
+                    <th className="px-4 py-3 font-normal">Description</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -252,7 +272,7 @@ export default async function ComponentPage({ params }: { params: Promise<{ slug
                       key={p.name}
                       className="border-kura-border-subtle border-b align-top last:border-0"
                     >
-                      <td className="whitespace-nowrap px-4 py-3 font-kura-mono text-[13px]">
+                      <td className="whitespace-nowrap py-3.5 pr-4 font-kura-mono text-[13px]">
                         {p.name}
                         {p.required && (
                           <span className="text-kura-accent-text" title="required">
@@ -260,13 +280,13 @@ export default async function ComponentPage({ params }: { params: Promise<{ slug
                           </span>
                         )}
                       </td>
-                      <td className="px-4 py-3 font-kura-mono text-kura-fg-muted text-xs">
+                      <td className="px-4 py-3.5 font-kura-mono text-[12px] text-kura-fg-muted">
                         {p.type}
                       </td>
-                      <td className="px-4 py-3 font-kura-mono text-kura-fg-muted text-xs">
+                      <td className="px-4 py-3.5 font-kura-mono text-[12px] text-kura-fg-muted">
                         {p.default ?? "—"}
                       </td>
-                      <td className="px-4 py-3 text-kura-fg-muted leading-relaxed">
+                      <td className="px-4 py-3.5 text-[14px] text-kura-fg-muted leading-relaxed">
                         {p.description}
                       </td>
                     </tr>
@@ -288,11 +308,11 @@ export default async function ComponentPage({ params }: { params: Promise<{ slug
 
         {!!c.parts?.length && (
           <Section id="anatomy" title="Anatomy">
-            <ol className="flex flex-col divide-y divide-kura-border-subtle rounded-kura-xl bg-kura-surface shadow-kura-sm">
+            <ol className="flex flex-col divide-y divide-kura-border-subtle border-kura-border border-y">
               {c.parts.map((p) => (
                 <li
                   key={p.name}
-                  className="flex flex-col gap-1 px-4 py-3 text-sm md:flex-row md:items-baseline md:gap-4"
+                  className="flex flex-col gap-1 py-3.5 text-[14px] md:flex-row md:items-baseline md:gap-4"
                 >
                   <span className="w-48 shrink-0 font-kura-mono text-[13px]">{p.name}</span>
                   <span className="flex-1 text-kura-fg-muted">{p.description}</span>
@@ -343,7 +363,7 @@ export default async function ComponentPage({ params }: { params: Promise<{ slug
 
         {!!c.agentNotes?.length && (
           <Section id="agents" title="Notes for agents">
-            <ul className="flex flex-col gap-2 rounded-kura-xl bg-kura-accent-subtle/60 p-5 text-sm leading-relaxed shadow-kura-xs">
+            <ul className="print print-keyline flex flex-col gap-3 rounded-[9px] p-6 text-[14.5px] leading-relaxed [&>li]:relative [&>li]:pl-5 [&>li]:before:absolute [&>li]:before:top-[0.6em] [&>li]:before:left-0 [&>li]:before:size-1.5 [&>li]:before:rounded-full [&>li]:before:bg-kura-shu">
               {c.agentNotes.map((n) => (
                 <li key={n}>{n}</li>
               ))}
@@ -359,14 +379,14 @@ export default async function ComponentPage({ params }: { params: Promise<{ slug
                   <Link
                     key={r.slug}
                     href={`/components/${r.slug}`}
-                    className="rounded-full bg-kura-surface px-3 py-1 text-sm shadow-kura-xs hover:bg-kura-surface-sunken"
+                    className="rounded-[6px] bg-kura-surface px-3 py-1.5 font-kura-mono text-[12.5px] shadow-kura-xs hover:text-kura-accent-text"
                   >
                     {r.slug}
                   </Link>
                 ) : (
                   <span
                     key={r.slug}
-                    className="rounded-full px-3 py-1 text-kura-fg-subtle text-sm shadow-kura-xs"
+                    className="rounded-[6px] px-3 py-1.5 font-kura-mono text-[12.5px] text-kura-fg-subtle shadow-kura-xs"
                     title="Coming soon"
                   >
                     {r.slug}

@@ -27,13 +27,14 @@ export default function AgentsPage() {
     <DocsShell>
       <div className="mx-auto max-w-3xl">
         <PageHeader
+          glyph="働"
           eyebrow="Agent integration"
-          title="Built to be used by agents"
+          title="Built to be used by agents."
           description="Humans browse; agents query. Every surface below is generated from the same component manifests, so they never drift."
         />
 
         <Section id="mcp" title="MCP server">
-          <p className="pb-4 text-kura-fg-muted text-sm leading-relaxed">
+          <p className="pb-4 text-[15px] text-kura-fg-muted leading-relaxed">
             <code className="font-kura-mono">@kura-ui/mcp</code> is a stdio MCP server. Tools:{" "}
             <code className="font-kura-mono">list_components</code>,{" "}
             <code className="font-kura-mono">search_components</code>,{" "}
@@ -67,7 +68,7 @@ export default function AgentsPage() {
         </Section>
 
         <Section id="cli" title="CLI">
-          <p className="pb-4 text-kura-fg-muted text-sm leading-relaxed">
+          <p className="pb-4 text-[15px] text-kura-fg-muted leading-relaxed">
             Every command accepts <code className="font-kura-mono">--json</code> so agents can parse
             results.
           </p>
@@ -87,7 +88,7 @@ npx @kura-ui/cli doctor --json                   # checks Tailwind v4 + Kura tok
               lang="bash"
               code={`npx shadcn@latest add ${site}/r/kura-theme.json   # tokens, once\nnpx shadcn@latest add ${site}/r/shimmer-text.json`}
             />
-            <p className="text-kura-fg-muted text-sm">
+            <p className="text-[15px] text-kura-fg-muted">
               Or register the namespace in components.json and use short names:
             </p>
             <CodeBlock
@@ -100,12 +101,12 @@ npx @kura-ui/cli doctor --json                   # checks Tailwind v4 + Kura tok
         </Section>
 
         <Section id="files" title="Machine-readable files">
-          <ul className="divide-y divide-kura-border-subtle rounded-kura-xl bg-kura-surface text-sm shadow-kura-sm">
+          <ul className="divide-y divide-kura-border-subtle border-kura-border border-y text-[14.5px]">
             {surfaces.map(([path, desc]) => (
-              <li key={path} className="flex flex-col gap-1 px-4 py-3 md:flex-row md:gap-6">
+              <li key={path} className="flex flex-col gap-1 py-3.5 md:flex-row md:gap-6">
                 <a
                   href={path?.includes("<") ? undefined : path}
-                  className="w-56 shrink-0 font-kura-mono text-[13px] hover:underline"
+                  className="w-56 shrink-0 font-kura-mono text-[13px] hover:text-kura-accent-text hover:underline"
                 >
                   {path}
                 </a>
@@ -116,7 +117,7 @@ npx @kura-ui/cli doctor --json                   # checks Tailwind v4 + Kura tok
         </Section>
 
         <Section id="skills" title="Skills & rules">
-          <p className="pb-4 text-kura-fg-muted text-sm leading-relaxed">
+          <p className="pb-4 text-[15px] text-kura-fg-muted leading-relaxed">
             The repo ships a Claude Code skill (
             <code className="font-kura-mono">skills/kura-ui/SKILL.md</code>) and a Cursor rule (
             <code className="font-kura-mono">.cursor/rules/kura-ui.mdc</code>) that teach an agent
@@ -129,7 +130,7 @@ npx @kura-ui/cli doctor --json                   # checks Tailwind v4 + Kura tok
         </Section>
 
         <Section id="manifest" title="The manifest">
-          <p className="pb-4 text-kura-fg-muted text-sm leading-relaxed">
+          <p className="pb-4 text-[15px] text-kura-fg-muted leading-relaxed">
             Each component folder has a <code className="font-kura-mono">&lt;slug&gt;.meta.ts</code>
             . CI fails if its props drift from the TypeScript types, if its dependencies differ from
             its imports, or if it lacks examples and accessibility tests.
