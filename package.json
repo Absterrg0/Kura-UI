@@ -1,0 +1,37 @@
+{
+  "name": "kura-ui",
+  "private": true,
+  "description": "Kura UI — agent-first, AI-native React components.",
+  "license": "MIT",
+  "type": "module",
+  "packageManager": "pnpm@12.15.0",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "dev": "tsx scripts/dev.ts",
+    "build": "pnpm generate && pnpm --filter @kura-ui/react build && pnpm --filter @kura-ui/mcp --filter @kura-ui/cli build && pnpm --filter @kura-ui/docs build",
+    "generate": "tsx scripts/generate.ts",
+    "validate:meta": "tsx scripts/validate-meta.ts",
+    "test": "pnpm -r --if-present test",
+    "test:visual": "pnpm --filter @kura-ui/docs test:visual",
+    "lint": "biome check .",
+    "lint:fix": "biome check --write .",
+    "format": "biome format --write .",
+    "typecheck": "pnpm generate && pnpm -r --if-present typecheck && tsc -p scripts/tsconfig.json --noEmit",
+    "check": "pnpm generate && pnpm validate:meta && pnpm lint && pnpm -r --if-present typecheck && tsc -p scripts/tsconfig.json --noEmit && pnpm test",
+    "new": "tsx scripts/new-component.ts",
+    "changeset": "changeset",
+    "version-packages": "changeset version",
+    "release": "pnpm build && changeset publish"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.6.6",
+    "@changesets/cli": "^3.0.3",
+    "@types/node": "^24.0.0",
+    "postcss": "^8.5.6",
+    "tsx": "^4.23.15",
+    "typescript": "~6.0.3",
+    "zod": "^4.6.7"
+  }
+}
