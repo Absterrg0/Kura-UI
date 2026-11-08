@@ -91,9 +91,10 @@ export function Message({
           data-slot="message-body"
           className={cn(
             "flex min-w-0 max-w-full flex-col gap-3 text-[15px] text-kura-fg leading-relaxed",
-            // Markdown-friendly defaults for rendered HTML.
-            "[&_a]:underline [&_a]:decoration-kura-border-strong [&_a]:underline-offset-[3px] [&_a:hover]:decoration-current",
-            "[&_strong]:font-semibold [&_ol]:list-decimal [&_ol]:pl-5 [&_ul]:list-disc [&_ul]:pl-5 [&_li+li]:mt-1 [&_li]:pl-0.5 [&_li::marker]:text-kura-fg-subtle",
+            // Markdown-friendly defaults for rendered HTML. Links and lists skip anything that is (or
+            // sits inside) a nested Kura component, so e.g. a Sources strip keeps its own styling.
+            "[&_a:not([data-slot],[data-slot=message-body]_[data-slot]_*)]:underline [&_a:not([data-slot],[data-slot=message-body]_[data-slot]_*)]:decoration-kura-border-strong [&_a:not([data-slot],[data-slot=message-body]_[data-slot]_*)]:underline-offset-[3px] [&_a:not([data-slot],[data-slot=message-body]_[data-slot]_*):hover]:decoration-current",
+            "[&_strong]:font-semibold [&_ol:not([data-slot],[data-slot=message-body]_[data-slot]_*)]:list-decimal [&_ol:not([data-slot],[data-slot=message-body]_[data-slot]_*)]:pl-5 [&_ul:not([data-slot],[data-slot=message-body]_[data-slot]_*)]:list-disc [&_ul:not([data-slot],[data-slot=message-body]_[data-slot]_*)]:pl-5 [&_li:not([data-slot],[data-slot=message-body]_[data-slot]_*)+li]:mt-1 [&_li:not([data-slot],[data-slot=message-body]_[data-slot]_*)]:pl-0.5 [&_li::marker]:text-kura-fg-subtle",
             "[&_:not(pre)>code:not([data-slot])]:rounded-kura-xs [&_:not(pre)>code:not([data-slot])]:bg-kura-active [&_:not(pre)>code:not([data-slot])]:px-[0.3em] [&_:not(pre)>code:not([data-slot])]:py-[0.1em] [&_:not(pre)>code:not([data-slot])]:font-kura-mono [&_:not(pre)>code:not([data-slot])]:text-[0.86em]",
             "[&_blockquote]:border-kura-border-strong [&_blockquote]:border-l-2 [&_blockquote]:pl-3 [&_blockquote]:text-kura-fg-muted",
             "[&_h1]:font-semibold [&_h1]:text-xl [&_h2]:font-semibold [&_h2]:text-lg [&_h3]:font-semibold [&_h3]:text-base",
