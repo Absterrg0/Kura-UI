@@ -99,7 +99,7 @@ export default defineComponent({
     reducedMotion:
       "The active pulse and title shimmer stop; connectors fade in instead of growing; check/cross icons appear without scale.",
   },
-  dependencies: { npm: ["lucide-react"], kura: ["shimmer-text"] },
+  dependencies: { npm: [], kura: ["shimmer-text", "status-glyph"] },
   related: ["tool-call", "reasoning", "approval-prompt", "shimmer-text"],
   tags: ["agent", "plan", "timeline", "steps", "progress", "todo", "stepper", "tasks"],
   examples: [

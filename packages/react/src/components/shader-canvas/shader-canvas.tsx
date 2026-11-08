@@ -91,7 +91,7 @@ function DefaultFallback() {
 
 /**
  * Minimal WebGL2 fragment-shader runner — the base for every Kura shader effect (mesh gradients,
- * auroras, grain, orbs). Handles DPR, resize, pointer, offscreen pausing, reduced motion, context
+ * orbs). Handles DPR, resize, pointer, offscreen pausing, reduced motion, context
  * loss and a CSS fallback. Decorative by default (`aria-hidden`).
  */
 export function ShaderCanvas({

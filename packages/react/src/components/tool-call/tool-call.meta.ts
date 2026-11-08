@@ -165,7 +165,7 @@ export default defineComponent({
     reducedMotion:
       "The running pulse and title shimmer stop; the chevron and details change without travel (fade only).",
   },
-  dependencies: { npm: ["lucide-react"], kura: ["code-block", "shimmer-text"] },
+  dependencies: { npm: ["lucide-react"], kura: ["code-block", "shimmer-text", "status-glyph"] },
   related: ["agent-timeline", "approval-prompt", "code-block", "reasoning", "message"],
   tags: ["tool", "function-calling", "agent", "mcp", "status", "json", "timer", "collapsible"],
   examples: [

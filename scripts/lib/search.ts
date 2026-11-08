@@ -80,6 +80,8 @@ export function searchComponents(catalog: Catalog, query: string, limit = 8): Se
 
   const results: SearchResult[] = [];
   for (const c of catalog.components) {
+    // Internal primitives are installed as dependencies, never recommended on their own.
+    if (c.category === "primitives") continue;
     const fields: Array<[string, string, number]> = [
       ["slug", `${c.slug} ${c.name}`, 5],
       ["tags", c.tags.join(" "), 3],

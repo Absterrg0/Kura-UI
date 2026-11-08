@@ -1,9 +1,9 @@
 "use client";
 
-import { Check, Minus, X } from "lucide-react";
 import * as React from "react";
 import { cn } from "../../lib/cn";
 import { ShimmerText } from "../shimmer-text";
+import { type AgentStatus, StatusGlyph } from "../status-glyph";
 
 export type AgentStepStatus = "queued" | "active" | "done" | "failed" | "skipped";
 
@@ -67,33 +67,23 @@ function useLiveDuration(active: boolean, startedAt?: Date | number): number | n
   return active && start.current != null && now != null ? now - start.current : null;
 }
 
+const GLYPH: Record<AgentStepStatus, AgentStatus> = {
+  queued: "queued",
+  active: "running",
+  done: "done",
+  failed: "failed",
+  skipped: "skipped",
+};
+
 function Node({ status, small }: { status: AgentStepStatus; small: boolean }) {
   return (
     <span
       aria-hidden
       data-slot="agent-timeline-node"
       data-status={status}
-      className={cn(
-        "relative z-10 grid shrink-0 place-items-center rounded-full bg-kura-surface transition-[background-color,color,box-shadow] duration-(--kura-duration-base) ease-kura-out",
-        small ? "size-4 [&_svg]:size-2.5" : "size-5 [&_svg]:size-3",
-        status === "queued" &&
-          "text-kura-fg-subtle shadow-[inset_0_0_0_1.5px_var(--kura-border-strong)]",
-        status === "active" && "bg-kura-accent-subtle text-kura-accent-text",
-        status === "done" &&
-          "bg-kura-surface-sunken text-kura-success-text shadow-[inset_0_0_0_1px_var(--kura-border)]",
-        status === "failed" && "bg-kura-danger-subtle text-kura-danger-text",
-        status === "skipped" && "text-kura-fg-subtle shadow-[inset_0_0_0_1px_var(--kura-border)]",
-      )}
+      className="relative z-10 grid shrink-0 place-items-center rounded-full bg-kura-surface"
     >
-      {status === "active" && (
-        <>
-          <span className="absolute inset-0 animate-kura-pulse rounded-full shadow-[0_0_0_3px_var(--kura-accent-subtle)] motion-reduce:animate-none" />
-          <span className={cn("rounded-full bg-current", small ? "size-1.5" : "size-2")} />
-        </>
-      )}
-      {status === "done" && <Check strokeWidth={3} className="animate-kura-pop-in" />}
-      {status === "failed" && <X strokeWidth={3} className="animate-kura-pop-in" />}
-      {status === "skipped" && <Minus strokeWidth={3} />}
+      <StatusGlyph status={GLYPH[status]} size={small ? "sm" : "md"} label={null} />
     </span>
   );
 }

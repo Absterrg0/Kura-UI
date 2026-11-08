@@ -6,7 +6,10 @@ test.skip(
   "No Chromium available — install with `pnpm exec playwright install chromium`.",
 );
 
-const slugs = (catalog as { components: Array<{ slug: string }> }).components.map((c) => c.slug);
+// Primitives are internal building blocks and have no docs page.
+const slugs = (catalog as { components: Array<{ slug: string; category: string }> }).components
+  .filter((c) => c.category !== "primitives")
+  .map((c) => c.slug);
 const themes = ["light", "dark"] as const;
 
 async function open(page: Page, path: string, theme: (typeof themes)[number]) {

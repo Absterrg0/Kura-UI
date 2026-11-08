@@ -3,16 +3,16 @@ import { defineComponent } from "../../lib/define-component";
 export default defineComponent({
   slug: "shader-canvas",
   name: "ShaderCanvas",
-  category: "effects",
+  category: "primitives",
   status: "beta",
   description:
     "Minimal WebGL2 fragment-shader runner with time/resolution/pointer uniforms, DPR capping, offscreen pausing, reduced-motion still frame and CSS fallback.",
   whenToUse: [
-    "Building any GPU visual: mesh gradients, auroras, grain, glows, orbs, generative backgrounds.",
+    "Building a GPU visual inside a component, such as the agent orb.",
     "A custom decorative shader behind a hero, card or voice surface.",
   ],
   whenNotToUse: [
-    "A ready-made effect exists — use mesh-gradient, agent-orb, grain or border-beam.",
+    "A voice-agent sphere — use agent-orb.",
     "Static gradients — plain CSS is cheaper.",
     "Anything that conveys information — it is aria-hidden and may fall back to a static gradient.",
   ],
@@ -90,7 +90,7 @@ export default defineComponent({
     reducedMotion: "Renders one frame at `staticTime` and stops the animation loop.",
   },
   dependencies: { npm: [], kura: [] },
-  related: ["mesh-gradient", "agent-orb", "grain", "border-beam"],
+  related: ["agent-orb"],
   tags: ["webgl", "shader", "glsl", "gpu", "background", "gradient", "effect", "canvas"],
   examples: [
     { name: "ShaderCanvasMinimal", kind: "minimal", title: "Gradient in a few lines" },

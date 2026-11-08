@@ -16,7 +16,6 @@ export default defineComponent({
   whenNotToUse: [
     "Precise audio feedback such as a recording meter or waveform — use audio-waveform or voice-dictation.",
     "Text chat 'thinking' feedback inside a message list — use thinking-indicator or shimmer-text.",
-    "A full-bleed background — use mesh-gradient or aurora.",
     "More than one per view: the orb is the accent element; repeat it and it stops meaning anything.",
   ],
   props: [
@@ -97,13 +96,7 @@ export default defineComponent({
       "No breathing, swirl, flow or audio reaction: a still frame per state. State changes cross-fade colour and brightness over ~0.4s, then rendering stops.",
   },
   dependencies: { npm: [], kura: ["shader-canvas"] },
-  related: [
-    "voice-dictation",
-    "audio-waveform",
-    "thinking-indicator",
-    "mesh-gradient",
-    "shader-canvas",
-  ],
+  related: ["voice-dictation", "audio-waveform", "thinking-indicator", "shader-canvas"],
   tags: ["voice", "orb", "agent", "audio", "webgl", "shader", "assistant", "speaking", "listening"],
   examples: [
     {

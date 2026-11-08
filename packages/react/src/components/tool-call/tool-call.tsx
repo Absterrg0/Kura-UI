@@ -1,11 +1,12 @@
 "use client";
 
-import { Check, ChevronRight, Hand, Wrench, X } from "lucide-react";
+import { ChevronRight, Wrench } from "lucide-react";
 import * as React from "react";
 import { useControllableState } from "../../hooks/use-controllable-state";
 import { cn } from "../../lib/cn";
 import { CodeBlock } from "../code-block";
 import { ShimmerText } from "../shimmer-text";
+import { type AgentStatus, StatusGlyph } from "../status-glyph";
 
 export type ToolCallStatus = "pending" | "running" | "success" | "error" | "awaiting-approval";
 
@@ -74,28 +75,18 @@ function deriveSummary(args: unknown): string | null {
   return null;
 }
 
-function StatusGlyph({ status, small }: { status: ToolCallStatus; small?: boolean }) {
+const GLYPH: Record<ToolCallStatus, AgentStatus> = {
+  pending: "queued",
+  running: "running",
+  success: "done",
+  error: "failed",
+  "awaiting-approval": "waiting",
+};
+
+function StatusMark({ status, small }: { status: ToolCallStatus; small?: boolean }) {
   return (
-    <span
-      aria-hidden
-      data-slot="tool-call-status"
-      className={cn(
-        "relative grid shrink-0 place-items-center rounded-full transition-colors duration-(--kura-duration-base) ease-kura-out",
-        small ? "size-4 [&_svg]:size-2.5" : "size-5 [&_svg]:size-3",
-        status === "pending" &&
-          "text-kura-fg-subtle shadow-[inset_0_0_0_1px_var(--kura-border-strong)]",
-        status === "running" && "bg-kura-accent-subtle text-kura-accent-text",
-        status === "success" && "bg-kura-hover text-kura-success-text",
-        status === "error" && "bg-kura-danger-subtle text-kura-danger-text",
-        status === "awaiting-approval" && "bg-kura-accent-subtle text-kura-accent-text",
-      )}
-    >
-      {status === "running" && (
-        <span className="size-1.5 animate-kura-pulse rounded-full bg-current motion-reduce:animate-none" />
-      )}
-      {status === "success" && <Check strokeWidth={2.5} className="animate-kura-pop-in" />}
-      {status === "error" && <X strokeWidth={2.5} className="animate-kura-pop-in" />}
-      {status === "awaiting-approval" && <Hand className="animate-kura-pop-in" />}
+    <span aria-hidden data-slot="tool-call-status" className="grid shrink-0 place-items-center">
+      <StatusGlyph status={GLYPH[status]} size={small ? "sm" : "md"} label={null} />
     </span>
   );
 }
@@ -161,7 +152,7 @@ export function ToolCall({
 
   const headerContent = (
     <>
-      <StatusGlyph status={status} small={inline} />
+      <StatusMark status={status} small={inline} />
       <span
         aria-hidden
         className="shrink-0 text-kura-fg-subtle [&_svg]:size-3.5"

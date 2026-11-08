@@ -33,32 +33,37 @@ export const IMPLICIT_PACKAGES = ["react", "react-dom"];
 
 export const CATEGORIES: CatalogCategory[] = [
   {
-    id: "primitives",
-    title: "Primitives",
-    description: "Foundational controls every other component is built from.",
+    id: "agent",
+    title: "Agent",
+    description: "Runs, plans, fleets of subagents, traces, approvals, checkpoints and queues.",
   },
   {
-    id: "input",
-    title: "Input",
-    description: "Prompt composers, commands, pickers and shortcut surfaces.",
-  },
-  {
-    id: "voice",
-    title: "Voice",
-    description: "Dictation, recording, audio visualisation and voice agents.",
+    id: "workspace",
+    title: "Workspace",
+    description: "The terminal, diffs, files and browser an agent works in, made reviewable.",
   },
   {
     id: "conversation",
     title: "Conversation",
-    description: "Messages, streaming output, code, citations and artifacts.",
+    description: "Messages, reasoning, streaming output, code, citations and artifacts.",
   },
   {
-    id: "agent",
-    title: "Agent",
-    description: "Tool calls, reasoning, timelines, approvals and budgets.",
+    id: "input",
+    title: "Input",
+    description: "The composer and the pickers and menus around it.",
   },
-  { id: "feedback", title: "Feedback", description: "Thinking, loading and status indicators." },
-  { id: "effects", title: "Effects", description: "Shaders, gradients and ambient visuals." },
+  {
+    id: "voice",
+    title: "Voice",
+    description: "Dictation, audio visualisation and voice-agent state.",
+  },
+  { id: "feedback", title: "Feedback", description: "Thinking and working indicators." },
+  {
+    id: "primitives",
+    title: "Primitives",
+    description:
+      "Internal building blocks the other components are made from. Not listed in the docs.",
+  },
 ];
 
 /**
@@ -84,11 +89,16 @@ export const PLANNED_SLUGS = [
   "context-meter",
   "approval-prompt",
   "artifact-card",
-  "mesh-gradient",
   "agent-orb",
-  "border-beam",
   "thinking-indicator",
-  "grain",
-  "aurora",
-  "particle-field",
+  "run-header",
+  "task-list",
+  "terminal",
+  "diff-view",
+  "file-changes",
+  "trace-waterfall",
+  "agent-fleet",
+  "checkpoints",
+  "browser-session",
+  "prompt-queue",
 ];

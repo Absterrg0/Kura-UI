@@ -84,12 +84,14 @@ describe("ToolCall", () => {
     expect(formatDuration(65_000)).toBe("1m 5s");
   });
 
-  it("stops the running pulse under reduced motion", () => {
+  it("stops the running arc under reduced motion", () => {
     setReducedMotion(true);
     const { container } = render(<ToolCall name="t" status="running" />);
-    expect(container.querySelector("[data-slot=tool-call-status] span")!.className).toContain(
-      "motion-reduce:animate-none",
-    );
+    expect(
+      container
+        .querySelector("[data-slot=tool-call-status] [data-status=running] path")!
+        .getAttribute("class"),
+    ).toContain("motion-reduce:animate-none");
   });
 
   it("examples render without a11y violations", async () => {

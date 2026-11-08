@@ -101,4 +101,16 @@ export default [
       "const speech = useSpeechRecognition({ lang: 'en-US' });\n<textarea value={speech.transcript} readOnly />",
     tags: ["speech", "dictation", "voice", "transcription"],
   }),
+  defineHook({
+    name: "useElapsed",
+    file: "use-elapsed",
+    description:
+      "Live elapsed time since a start instant while something is running, frozen when it stops. SSR-safe (null until mounted).",
+    signature:
+      "useElapsed(since: Date | number | null | undefined, running: boolean, interval?: number): number | null",
+    returns: "Milliseconds since `since`, or null before mount or without a start time.",
+    example:
+      'const ms = useElapsed(run.startedAt, run.status === "running");\n<span>{ms == null ? "—" : formatClock(ms)}</span>',
+    tags: ["timer", "elapsed", "agent"],
+  }),
 ];

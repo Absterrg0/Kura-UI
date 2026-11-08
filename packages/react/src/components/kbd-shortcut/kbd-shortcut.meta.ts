@@ -3,7 +3,7 @@ import { defineComponent } from "../../lib/define-component";
 export default defineComponent({
   slug: "kbd-shortcut",
   name: "KbdShortcut",
-  category: "input",
+  category: "primitives",
   status: "beta",
   description:
     "Labelled keyboard-shortcut hint (“Send ⌘↵”) that can also bind the shortcut and light its keys while pressed.",

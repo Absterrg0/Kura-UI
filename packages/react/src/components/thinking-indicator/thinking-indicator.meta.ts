@@ -16,7 +16,6 @@ export default defineComponent({
   whenNotToUse: [
     "Shimmering an existing label in place — use shimmer-text.",
     "Network or file loading that is not model thinking — use spinner.",
-    "A whole container being worked on — use border-beam.",
     "A voice agent's state — use agent-orb.",
     "Streaming the answer itself — use streaming-text.",
   ],
@@ -86,7 +85,7 @@ export default defineComponent({
       "Loops stop. Dots show three static dots of rising opacity, the pulse is a still dot, orbit freezes with both dots visible, wave shows static bars of varied heights. Text still cycles but with an opacity cross-fade only (no blur, no rise, no shimmer).",
   },
   dependencies: { npm: [], kura: ["shimmer-text"] },
-  related: ["shimmer-text", "spinner", "border-beam", "agent-orb", "streaming-text", "message"],
+  related: ["shimmer-text", "agent-orb", "streaming-text", "message", "run-header"],
   tags: ["loading", "thinking", "typing", "dots", "status", "indicator", "pending", "ai"],
   examples: [
     { name: "ThinkingIndicatorMinimal", kind: "minimal", title: "Thinking dots" },

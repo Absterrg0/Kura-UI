@@ -8,13 +8,13 @@
  */
 
 export type ComponentCategory =
-  | "primitives"
+  | "agent"
+  | "workspace"
+  | "conversation"
   | "input"
   | "voice"
-  | "conversation"
-  | "agent"
   | "feedback"
-  | "effects";
+  | "primitives";
 
 export type ComponentStatus = "experimental" | "beta" | "stable";
 

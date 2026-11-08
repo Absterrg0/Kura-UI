@@ -1,5 +1,6 @@
 export * from "./use-audio-analyser";
 export * from "./use-controllable-state";
+export * from "./use-elapsed";
 export * from "./use-hotkey";
 export * from "./use-media-recorder";
 export * from "./use-platform";
