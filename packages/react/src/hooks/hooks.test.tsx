@@ -52,6 +52,13 @@ describe("useHotkey", () => {
     expect(handler).toHaveBeenCalledTimes(1);
   });
 
+  it("matches the space bar", () => {
+    const handler = vi.fn();
+    renderHook(() => useHotkey(["mod", "space"], handler));
+    fireEvent.keyDown(document, { key: " ", ctrlKey: true });
+    expect(handler).toHaveBeenCalledTimes(1);
+  });
+
   it("does nothing when keys is null or disabled", () => {
     const handler = vi.fn();
     renderHook(() => useHotkey(null, handler));

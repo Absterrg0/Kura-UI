@@ -19,6 +19,8 @@ export function isApplePlatform(): boolean {
 
 /** Normalize an alias to a canonical key id. */
 export function normalizeKey(key: KeyName): string {
+  // `KeyboardEvent.key` for the space bar is " ": trimming it first would turn it into "".
+  if (key.length > 0 && key.trim() === "") return " ";
   const k = key.trim().toLowerCase();
   switch (k) {
     case "cmd":
