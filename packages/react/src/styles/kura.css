@@ -21,6 +21,9 @@
   --font-kura-sans:
     var(--font-geist-sans, "Geist"), "Geist Variable", "Inter", ui-sans-serif, system-ui,
     -apple-system, "Segoe UI", sans-serif;
+  /* Display serif for headings and spoken lines (Redaction in the docs). */
+  --font-kura-display:
+    var(--font-kura-display-family, "Redaction"), "Iowan Old Style", "Charter", "Georgia", serif;
   --font-kura-mono:
     var(--font-geist-mono, "Geist Mono"), "Geist Mono Variable", ui-monospace, "SF Mono",
     "JetBrains Mono", Menlo, monospace;
@@ -168,6 +171,7 @@
   --color-kura-warning-text: var(--kura-warning-text);
 
   --color-kura-ring: var(--kura-ring);
+  --color-kura-shu: var(--kura-shu);
 
   --color-kura-gray-1: var(--kura-gray-1);
   --color-kura-gray-2: var(--kura-gray-2);
@@ -190,71 +194,74 @@
 }
 
 /* ------------------------------------------------------------------------------------------ */
-/* Light theme (default)                                                                       */
+/* Light theme (default) — "washi": warm paper, sumi ink, one vermilion (shu) signal          */
 /* ------------------------------------------------------------------------------------------ */
 :root {
-  /* Neutral scale — warm "paper" grays, hue 85, near-zero chroma */
-  --kura-gray-1: oklch(0.993 0.002 85);
-  --kura-gray-2: oklch(0.982 0.003 85);
-  --kura-gray-3: oklch(0.962 0.004 85);
-  --kura-gray-4: oklch(0.942 0.005 85);
-  --kura-gray-5: oklch(0.92 0.005 85);
-  --kura-gray-6: oklch(0.895 0.006 85);
-  --kura-gray-7: oklch(0.86 0.006 85);
-  --kura-gray-8: oklch(0.8 0.007 85);
-  --kura-gray-9: oklch(0.64 0.008 85);
-  --kura-gray-10: oklch(0.58 0.008 85);
-  --kura-gray-11: oklch(0.47 0.008 85);
-  --kura-gray-12: oklch(0.205 0.006 85);
+  /* Neutral scale — washi paper (hue ~85) down to sumi ink. */
+  --kura-gray-1: oklch(0.975 0.011 87);
+  --kura-gray-2: oklch(0.952 0.016 86);
+  --kura-gray-3: oklch(0.926 0.021 86);
+  --kura-gray-4: oklch(0.905 0.024 85);
+  --kura-gray-5: oklch(0.884 0.026 85);
+  --kura-gray-6: oklch(0.858 0.027 85);
+  --kura-gray-7: oklch(0.815 0.026 84);
+  --kura-gray-8: oklch(0.755 0.024 84);
+  --kura-gray-9: oklch(0.64 0.021 84);
+  --kura-gray-10: oklch(0.6 0.02 84);
+  --kura-gray-11: oklch(0.47 0.018 83);
+  --kura-gray-12: oklch(0.197 0.008 85);
 
-  --kura-canvas: var(--kura-gray-1);
-  --kura-surface: oklch(1 0 0);
-  --kura-surface-raised: oklch(1 0 0);
-  --kura-surface-sunken: var(--kura-gray-2);
-  --kura-overlay: oklch(1 0 0 / 0.92);
-  --kura-hover: oklch(0.205 0.006 85 / 0.05);
-  --kura-active: oklch(0.205 0.006 85 / 0.09);
+  /* Paper stocks: the page, a sheet laid on it, a bright print, a pressed well. */
+  --kura-canvas: oklch(0.926 0.021 86);
+  --kura-surface: oklch(0.971 0.013 87);
+  --kura-surface-raised: oklch(0.994 0.007 89);
+  --kura-surface-sunken: oklch(0.9 0.024 85);
+  --kura-overlay: oklch(0.985 0.009 88 / 0.94);
+  --kura-hover: oklch(0.197 0.008 85 / 0.05);
+  --kura-active: oklch(0.197 0.008 85 / 0.09);
 
   --kura-fg: var(--kura-gray-12);
   --kura-fg-muted: var(--kura-gray-11);
   --kura-fg-subtle: var(--kura-gray-10);
-  --kura-fg-inverted: var(--kura-gray-1);
+  --kura-fg-inverted: oklch(0.971 0.013 87);
 
-  --kura-border: oklch(0.205 0.006 85 / 0.12);
-  --kura-border-subtle: oklch(0.205 0.006 85 / 0.07);
-  --kura-border-strong: oklch(0.205 0.006 85 / 0.2);
+  --kura-border: oklch(0.197 0.008 85 / 0.13);
+  --kura-border-subtle: oklch(0.197 0.008 85 / 0.08);
+  --kura-border-strong: oklch(0.197 0.008 85 / 0.24);
 
   --kura-ink: var(--kura-gray-12);
-  --kura-ink-hover: oklch(0.3 0.006 85);
+  --kura-ink-hover: oklch(0.3 0.012 83);
 
-  /* Signal — the one accent. Jade. Reserved for "the model is doing something". */
-  --kura-accent: oklch(0.55 0.115 172);
-  --kura-accent-hover: oklch(0.5 0.11 172);
-  --kura-accent-fg: oklch(0.99 0.01 172);
-  --kura-accent-subtle: oklch(0.955 0.03 172);
-  --kura-accent-text: oklch(0.47 0.1 172);
+  /* Signal — shu (vermilion seal ink). Reserved for "the model is doing something". */
+  --kura-accent: oklch(0.585 0.178 37.5);
+  --kura-accent-hover: oklch(0.54 0.172 37);
+  --kura-accent-fg: oklch(0.99 0.008 80);
+  --kura-accent-subtle: oklch(0.905 0.045 45);
+  --kura-accent-text: oklch(0.52 0.16 37);
+  /* The brighter seal red for marks and large shapes (seals, swatches, rules). */
+  --kura-shu: oklch(0.635 0.182 38);
 
-  --kura-danger: oklch(0.58 0.2 25);
-  --kura-danger-subtle: oklch(0.96 0.025 25);
-  --kura-danger-text: oklch(0.5 0.18 25);
-  --kura-success: oklch(0.62 0.15 150);
-  --kura-success-text: oklch(0.47 0.12 150);
-  --kura-warning: oklch(0.78 0.15 75);
-  --kura-warning-text: oklch(0.52 0.12 65);
+  --kura-danger: oklch(0.5 0.17 20);
+  --kura-danger-subtle: oklch(0.91 0.035 20);
+  --kura-danger-text: oklch(0.47 0.16 20);
+  --kura-success: oklch(0.57 0.11 132);
+  --kura-success-text: oklch(0.45 0.09 132);
+  --kura-warning: oklch(0.74 0.13 78);
+  --kura-warning-text: oklch(0.5 0.1 70);
 
-  --kura-ring: oklch(0.55 0.115 172 / 0.55);
+  --kura-ring: oklch(0.585 0.178 37.5 / 0.6);
 
-  /* Layered hairline shadows: a 1px ring + soft, tight ambient layers. */
-  --kura-shadow-xs: 0 0 0 1px var(--kura-border-subtle), 0 1px 1px 0 oklch(0 0 0 / 0.03);
+  /* Hairline ring + warm, low ambient shadows (ink-tinted, never pure black). */
+  --kura-shadow-xs: 0 0 0 1px var(--kura-border-subtle), 0 1px 1px 0 oklch(0.197 0.008 85 / 0.04);
   --kura-shadow-sm:
-    0 0 0 1px var(--kura-border), 0 1px 2px -1px oklch(0 0 0 / 0.08),
-    0 2px 4px -2px oklch(0 0 0 / 0.04);
+    0 0 0 1px var(--kura-border), 0 1px 2px -1px oklch(0.197 0.008 85 / 0.08),
+    0 2px 6px -3px oklch(0.197 0.008 85 / 0.06);
   --kura-shadow-md:
-    0 0 0 1px var(--kura-border), 0 2px 4px -2px oklch(0 0 0 / 0.06),
-    0 8px 16px -6px oklch(0 0 0 / 0.08);
+    0 0 0 1px var(--kura-border), 0 2px 4px -2px oklch(0.197 0.008 85 / 0.06),
+    0 10px 20px -8px oklch(0.197 0.008 85 / 0.12);
   --kura-shadow-lg:
-    0 0 0 1px var(--kura-border), 0 4px 8px -4px oklch(0 0 0 / 0.06), 0 16px 32px -12px
-    oklch(0 0 0 / 0.14), 0 32px 64px -24px oklch(0 0 0 / 0.1);
+    0 0 0 1px var(--kura-border), 0 4px 8px -4px oklch(0.197 0.008 85 / 0.06), 0 18px 36px -14px
+    oklch(0.197 0.008 85 / 0.16), 0 36px 70px -28px oklch(0.197 0.008 85 / 0.14);
   --kura-shadow-focus: 0 0 0 1px var(--kura-canvas), 0 0 0 3px var(--kura-ring);
 
   /* Motion */
@@ -272,69 +279,70 @@
 }
 
 /* ------------------------------------------------------------------------------------------ */
-/* Dark theme — `.dark` (next-themes / shadcn convention) or [data-theme="dark"]               */
+/* Dark theme — "sumi": ink-black paper, paper-coloured ink. `.dark` or [data-theme="dark"]    */
 /* ------------------------------------------------------------------------------------------ */
 .dark,
 [data-theme="dark"] {
-  --kura-gray-1: oklch(0.155 0.004 85);
-  --kura-gray-2: oklch(0.185 0.004 85);
-  --kura-gray-3: oklch(0.215 0.005 85);
-  --kura-gray-4: oklch(0.24 0.005 85);
-  --kura-gray-5: oklch(0.265 0.006 85);
-  --kura-gray-6: oklch(0.295 0.006 85);
-  --kura-gray-7: oklch(0.345 0.007 85);
-  --kura-gray-8: oklch(0.42 0.008 85);
-  --kura-gray-9: oklch(0.56 0.008 85);
-  --kura-gray-10: oklch(0.64 0.008 85);
-  --kura-gray-11: oklch(0.76 0.007 85);
-  --kura-gray-12: oklch(0.955 0.004 85);
+  --kura-gray-1: oklch(0.18 0.008 80);
+  --kura-gray-2: oklch(0.205 0.009 80);
+  --kura-gray-3: oklch(0.232 0.01 80);
+  --kura-gray-4: oklch(0.258 0.011 80);
+  --kura-gray-5: oklch(0.285 0.012 80);
+  --kura-gray-6: oklch(0.315 0.013 80);
+  --kura-gray-7: oklch(0.37 0.014 80);
+  --kura-gray-8: oklch(0.45 0.016 82);
+  --kura-gray-9: oklch(0.57 0.018 83);
+  --kura-gray-10: oklch(0.62 0.018 84);
+  --kura-gray-11: oklch(0.76 0.018 85);
+  --kura-gray-12: oklch(0.935 0.018 86);
 
-  --kura-canvas: var(--kura-gray-1);
-  --kura-surface: var(--kura-gray-2);
-  --kura-surface-raised: var(--kura-gray-3);
-  --kura-surface-sunken: oklch(0.135 0.004 85);
-  --kura-overlay: oklch(0.21 0.005 85 / 0.92);
-  --kura-hover: oklch(0.955 0.004 85 / 0.06);
-  --kura-active: oklch(0.955 0.004 85 / 0.1);
+  --kura-canvas: oklch(0.175 0.008 80);
+  --kura-surface: oklch(0.205 0.009 80);
+  --kura-surface-raised: oklch(0.235 0.01 80);
+  --kura-surface-sunken: oklch(0.152 0.007 80);
+  --kura-overlay: oklch(0.225 0.01 80 / 0.94);
+  --kura-hover: oklch(0.935 0.018 86 / 0.06);
+  --kura-active: oklch(0.935 0.018 86 / 0.1);
 
   --kura-fg: var(--kura-gray-12);
   --kura-fg-muted: var(--kura-gray-11);
   --kura-fg-subtle: var(--kura-gray-10);
-  --kura-fg-inverted: var(--kura-gray-1);
+  --kura-fg-inverted: oklch(0.175 0.008 80);
 
-  --kura-border: oklch(0.955 0.004 85 / 0.12);
-  --kura-border-subtle: oklch(0.955 0.004 85 / 0.07);
-  --kura-border-strong: oklch(0.955 0.004 85 / 0.2);
+  --kura-border: oklch(0.935 0.018 86 / 0.13);
+  --kura-border-subtle: oklch(0.935 0.018 86 / 0.075);
+  --kura-border-strong: oklch(0.935 0.018 86 / 0.22);
 
   --kura-ink: var(--kura-gray-12);
-  --kura-ink-hover: oklch(0.88 0.004 85);
+  --kura-ink-hover: oklch(0.86 0.018 86);
 
-  --kura-accent: oklch(0.78 0.13 170);
-  --kura-accent-hover: oklch(0.83 0.12 170);
-  --kura-accent-fg: oklch(0.2 0.04 172);
-  --kura-accent-subtle: oklch(0.27 0.045 172);
-  --kura-accent-text: oklch(0.82 0.12 170);
+  --kura-accent: oklch(0.69 0.17 40);
+  --kura-accent-hover: oklch(0.74 0.16 42);
+  --kura-accent-fg: oklch(0.17 0.02 40);
+  --kura-accent-subtle: oklch(0.3 0.065 38);
+  --kura-accent-text: oklch(0.76 0.145 43);
+  --kura-shu: oklch(0.67 0.18 39);
 
-  --kura-danger: oklch(0.66 0.19 25);
-  --kura-danger-subtle: oklch(0.27 0.06 25);
-  --kura-danger-text: oklch(0.74 0.16 25);
-  --kura-success: oklch(0.72 0.15 150);
-  --kura-success-text: oklch(0.78 0.14 150);
-  --kura-warning: oklch(0.82 0.14 80);
-  --kura-warning-text: oklch(0.84 0.13 80);
+  --kura-danger: oklch(0.64 0.18 20);
+  --kura-danger-subtle: oklch(0.29 0.07 20);
+  --kura-danger-text: oklch(0.74 0.15 20);
+  --kura-success: oklch(0.72 0.12 132);
+  --kura-success-text: oklch(0.78 0.11 132);
+  --kura-warning: oklch(0.8 0.13 80);
+  --kura-warning-text: oklch(0.83 0.12 80);
 
-  --kura-ring: oklch(0.78 0.13 170 / 0.6);
+  --kura-ring: oklch(0.69 0.17 40 / 0.65);
 
   --kura-shadow-xs: 0 0 0 1px var(--kura-border-subtle), inset 0 1px 0 0 oklch(1 0 0 / 0.03);
   --kura-shadow-sm:
-    0 0 0 1px var(--kura-border), inset 0 1px 0 0 oklch(1 0 0 / 0.04),
+    0 0 0 1px var(--kura-border), inset 0 1px 0 0 oklch(1 0 0 / 0.035),
     0 1px 2px 0 oklch(0 0 0 / 0.4);
   --kura-shadow-md:
-    0 0 0 1px var(--kura-border), inset 0 1px 0 0 oklch(1 0 0 / 0.05),
-    0 8px 16px -6px oklch(0 0 0 / 0.5);
+    0 0 0 1px var(--kura-border), inset 0 1px 0 0 oklch(1 0 0 / 0.045),
+    0 10px 20px -8px oklch(0 0 0 / 0.55);
   --kura-shadow-lg:
-    0 0 0 1px var(--kura-border), inset 0 1px 0 0 oklch(1 0 0 / 0.06), 0 16px 32px -12px
-    oklch(0 0 0 / 0.6), 0 32px 64px -24px oklch(0 0 0 / 0.5);
+    0 0 0 1px var(--kura-border), inset 0 1px 0 0 oklch(1 0 0 / 0.05), 0 18px 36px -14px
+    oklch(0 0 0 / 0.6), 0 36px 70px -28px oklch(0 0 0 / 0.5);
 
   color-scheme: dark;
 }

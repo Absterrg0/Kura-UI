@@ -175,7 +175,7 @@ export function createServer(catalog: Catalog): McpServer {
     {
       title: "Design guidelines",
       description:
-        "The Kura Signal design language (DESIGN.md): principles, color usage, typography, motion rules, reduced motion, focus, density and anti-patterns. Read before building UI with Kura.",
+        "The Washi & Sumi design language (DESIGN.md): principles, color usage, typography, motion rules, reduced motion, focus, density and anti-patterns. Read before building UI with Kura.",
       inputSchema: {},
       annotations: { readOnlyHint: true },
     },

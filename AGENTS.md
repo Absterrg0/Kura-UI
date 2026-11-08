@@ -19,7 +19,7 @@ packages/cli/                  @kura-ui/cli — `kura list|search|info|add|init|
 apps/docs/                     Next.js 16 docs; pages generated from the catalog
 scripts/                       generate.ts, validate-meta.ts, new-component.ts, dev.ts, lib/
 skills/kura-ui/SKILL.md        skill for agents that *use* Kura in other projects
-DESIGN.md                      the Kura Signal design language (tokens, motion, anti-patterns)
+DESIGN.md                      the Washi & Sumi design language (tokens, motion, anti-patterns)
 ```
 
 Generated (gitignored, never edit, never commit): `registry.json`, `apps/docs/public/{r,registry,components,llms*.txt}`,

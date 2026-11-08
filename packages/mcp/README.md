@@ -13,7 +13,7 @@ MCP server (stdio) that lets coding agents discover, understand and install
 | `get_component_source`     | `slug`, `includeDependencies?`                                                                          | source files (shadcn-style `@/` imports), optionally with hooks/libs it needs                    |
 | `get_install_instructions` | `slug`, `method?` (`shadcn`·`cli`·`npm`·`manual`), `framework?` (`next`·`vite`·`remix`·`astro`·`other`) | exact steps; `manual` inlines every file                                                         |
 | `get_design_tokens`        | `includeCss?`                                                                                           | OKLCH tokens (light/dark), utility names, motion presets, optionally kura.css                    |
-| `get_design_guidelines`    | —                                                                                                       | DESIGN.md (Kura Signal design language)                                                          |
+| `get_design_guidelines`    | —                                                                                                       | DESIGN.md (Washi & Sumi design language)                                                         |
 
 ## Configure
 

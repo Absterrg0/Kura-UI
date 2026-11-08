@@ -2,7 +2,7 @@
 
 Thanks for helping. Humans and agents follow the same rules — they are written down in
 [AGENTS.md](./AGENTS.md) (conventions, the add-a-component checklist, the quality bar) and
-[DESIGN.md](./DESIGN.md) (the Kura Signal design language).
+[DESIGN.md](./DESIGN.md) (the Washi & Sumi design language).
 
 ## Setup
 

@@ -1,8 +1,12 @@
 <div align="center">
 
+<img src="apps/docs/public/brand/kura-seal.svg" width="64" alt="Kura seal: 蔵, storehouse" />
+
 # Kura UI
 
-**Interfaces for working with machines.**
+**Your agent builds the app. Kura hands it the parts.**
+
+[kuro.abstergo.fyi](https://kuro.abstergo.fyi)
 
 Beautiful, opinionated React components for AI products — prompt composers, voice, shaders,
 streaming output and agent harness surfaces — designed to be **discovered, understood and
@@ -23,8 +27,8 @@ React 19 · Tailwind CSS v4 · motion · Radix · TypeScript strict · MIT
   examples. CI fails if the manifest drifts from the TypeScript.
 - **One source, many surfaces.** The docs, the shadcn registry, `llms.txt`, a JSON catalog, an MCP
   server and a CLI are all generated from the manifests — they cannot disagree.
-- **A real design language.** [Kura Signal](./DESIGN.md): warm paper-and-ink neutrals in OKLCH, one
-  jade accent reserved for "the model is doing something", hairline borders, layered shadows,
+- **A real design language.** [Washi & Sumi](./DESIGN.md): paper stocks and sumi ink in OKLCH, one
+  vermilion seal accent reserved for "the model is doing something", hairline borders, layered shadows,
   short interruptible motion, reduced-motion that removes travel but keeps meaning.
 - **Serious library hygiene.** Accessible (axe in every test), SSR-safe, tree-shakeable per-component
   entry points with `"use client"` only where needed, dark mode via tokens, Vitest + Playwright, Biome, changesets, CI.
