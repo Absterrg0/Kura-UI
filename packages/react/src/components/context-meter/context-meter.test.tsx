@@ -1,5 +1,13 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { act, axe, fireEvent, render, screen, setReducedMotion } from "../../../test/utils";
+import {
+  axe,
+  fireEvent,
+  render,
+  screen,
+  setReducedMotion,
+  userEvent,
+  waitFor,
+} from "../../../test/utils";
 import { ContextMeter, formatTokens } from "./context-meter";
 import {
   ContextMeterFull,
@@ -19,7 +27,7 @@ describe("ContextMeter", () => {
   it("renders a labelled ring with a level and data-slot", () => {
     render(<ContextMeter used={42_000} max={100_000} className="custom" />);
     const meter = screen.getByRole("button", {
-      name: "Context: 42,000 of 100,000 tokens used (42%)",
+      name: "42% context used: 42,000 of 100,000 tokens",
     });
     expect(meter).toHaveAttribute("data-slot", "context-meter");
     expect(meter).toHaveAttribute("data-variant", "ring");
@@ -38,13 +46,14 @@ describe("ContextMeter", () => {
     expect(screen.getByRole("button")).toHaveAttribute("data-level", "ok");
   });
 
-  it("sums segments and shows the breakdown on hover", () => {
-    vi.useFakeTimers();
+  it("sums segments and shows the breakdown on hover", async () => {
     render(<ContextMeter max={20_000} segments={segments} variant="bar" />);
     const meter = screen.getByRole("button", { name: /10,000 of 20,000/ });
     expect(meter).toHaveTextContent("10k");
-    fireEvent.pointerEnter(meter, { pointerType: "mouse" });
-    act(() => vi.advanceTimersByTime(350));
+    await userEvent.hover(meter);
+    await waitFor(() =>
+      expect(document.querySelector("[data-slot=context-meter-card]")).not.toBeNull(),
+    );
     const card = document.querySelector("[data-slot=context-meter-card]")!;
     expect(card).toHaveTextContent("History");
     expect(card).toHaveTextContent("9k");

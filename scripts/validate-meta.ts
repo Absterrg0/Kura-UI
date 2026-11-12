@@ -5,7 +5,8 @@
  *   - meta props ⇔ TypeScript props (names, required flags, literal unions, primitive types)
  *   - examples listed in meta exist (and include a "minimal" and a "full" one)
  *   - dependencies.npm / dependencies.kura match the actual imports
- *   - "use client" present when hooks are used; data-slot present; no hooks barrel imports
+ *   - "use client" present when hooks are used; data-slot present (written, or from a ui-sdk part
+ *     or primitive of the same name); no hooks barrel imports
  *   - tests cover accessibility (axe) and reduced motion
  */
 import { existsSync, readFileSync } from "node:fs";
@@ -154,7 +155,10 @@ for (const folder of folders) {
     const rel = relative(ROOT, file);
     if (
       source.includes(`data-slot="${folder.slug}"`) ||
-      source.includes(`"data-slot": "${folder.slug}"`)
+      source.includes(`"data-slot": "${folder.slug}"`) ||
+      // A root built on a ui-sdk part (or primitive) of the same name gets the slot from ui-sdk.
+      source.includes(`from "@ui-sdk/react/${folder.slug}"`) ||
+      source.includes(`name: "${folder.slug}"`)
     )
       hasDataSlot = true;
     const isClient = /^\s*(\/\/[^\n]*\n|\/\*[\s\S]*?\*\/\s*)*["']use client["']/.test(source);

@@ -118,17 +118,18 @@ export function ContextMeter({
     defaultValue: false,
     onChange: onOpenChange,
   });
-  const timer = React.useRef<ReturnType<typeof setTimeout>>(undefined);
-  React.useEffect(() => () => clearTimeout(timer.current), []);
-  const schedule = (next: boolean, delay: number) => {
-    clearTimeout(timer.current);
-    timer.current = setTimeout(() => setOpen(next), delay);
-  };
 
   const pct = Math.round(ratio * 100);
   const levelText =
     level === "danger" ? ", nearly full" : level === "warning" ? ", filling up" : "";
-  const accessibleName = `${label}: ${used.toLocaleString("en-US")} of ${max.toLocaleString("en-US")} tokens used (${pct}%${levelText})`;
+  // Starts with the text on screen (label in name), then the exact numbers.
+  const shown =
+    display === "percent"
+      ? `${pct}%`
+      : display === "tokens"
+        ? `${formatTokens(used)} / ${formatTokens(max)}`
+        : "";
+  const accessibleName = `${shown ? `${shown} ` : ""}${label.toLowerCase()} used: ${used.toLocaleString("en-US")} of ${max.toLocaleString("en-US")} tokens${levelText}`;
 
   const tone = cn(
     level === "ok" && "text-kura-fg-muted",
@@ -167,7 +168,13 @@ export function ContextMeter({
   const C = 2 * Math.PI * R;
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
+    <Popover
+      open={open}
+      onOpenChange={(next) => setOpen(next)}
+      openOnHover={!!segments?.length}
+      delay={300}
+      closeDelay={150}
+    >
       <PopoverTrigger asChild>
         <button
           type="button"
@@ -175,22 +182,13 @@ export function ContextMeter({
           data-variant={variant}
           data-level={level}
           aria-label={accessibleName}
-          onPointerEnter={(e) => {
-            onPointerEnter?.(e);
-            if (e.pointerType !== "touch" && segments?.length) schedule(true, 300);
-          }}
-          onPointerLeave={(e) => {
-            onPointerLeave?.(e);
-            schedule(false, 150);
-          }}
+          onPointerEnter={onPointerEnter}
+          onPointerLeave={onPointerLeave}
           onFocus={onFocus}
-          onBlur={(e) => {
-            onBlur?.(e);
-            schedule(false, 100);
-          }}
+          onBlur={onBlur}
           className={cn(
             "group/meter inline-flex h-7 cursor-pointer items-center gap-2 rounded-kura-sm px-1.5 font-kura-sans outline-none",
-            "transition-[background-color,box-shadow] duration-(--kura-duration-fast) ease-kura-out hover:bg-kura-hover focus-visible:shadow-kura-focus data-[state=open]:bg-kura-hover",
+            "transition-[background-color,box-shadow] duration-(--kura-duration-fast) ease-kura-out hover:bg-kura-hover focus-visible:shadow-kura-focus data-open:bg-kura-hover",
             className,
           )}
           {...props}
@@ -243,9 +241,7 @@ export function ContextMeter({
           align={variant === "bar" ? "start" : "center"}
           data-slot="context-meter-card"
           className="w-72 p-3.5"
-          onOpenAutoFocus={(e) => e.preventDefault()}
-          onPointerEnter={() => clearTimeout(timer.current)}
-          onPointerLeave={() => schedule(false, 150)}
+          initialFocus="none"
         >
           <div className="flex flex-col gap-3">
             <div className="flex items-baseline justify-between">

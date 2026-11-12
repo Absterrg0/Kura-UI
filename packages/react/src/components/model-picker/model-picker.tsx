@@ -347,11 +347,8 @@ export function ModelPicker({
         sideOffset={6}
         data-slot="model-picker-content"
         aria-label="Choose a model"
-        className="flex w-[340px] flex-col overflow-hidden p-0"
-        onOpenAutoFocus={(e) => {
-          e.preventDefault();
-          (showSearch ? inputRef.current : listRef.current)?.focus();
-        }}
+        className="flex w-[340px] flex-col overflow-hidden p-0 [--list-height:var(--available-height)]"
+        initialFocus={() => (showSearch ? inputRef.current : listRef.current)}
         onKeyDown={showSearch ? undefined : onKeyDown}
       >
         {showSearch && (
@@ -383,7 +380,7 @@ export function ModelPicker({
           aria-label="Models"
           tabIndex={showSearch ? -1 : 0}
           aria-activedescendant={!showSearch && active ? optionId(active) : undefined}
-          className="max-h-[min(20rem,var(--radix-popover-content-available-height,20rem))] scroll-py-1 overflow-y-auto overscroll-contain p-1 outline-none [scrollbar-width:thin]"
+          className="max-h-[min(20rem,var(--list-height,20rem))] scroll-py-1 overflow-y-auto overscroll-contain p-1 outline-none [scrollbar-width:thin]"
         >
           {flat.length === 0 && (
             <div className="px-3 py-6 text-center text-[13px] text-kura-fg-subtle">

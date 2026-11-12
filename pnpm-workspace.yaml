@@ -9,3 +9,7 @@ allowBuilds:
   "@parcel/watcher": true
   "@tailwindcss/oxide": true
   unrs-resolver: true
+
+minimumReleaseAgeExclude:
+  - "@ui-sdk/core@0.1.0-beta.1"
+  - "@ui-sdk/react@0.1.0-beta.1"

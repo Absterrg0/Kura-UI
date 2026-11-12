@@ -88,7 +88,10 @@ describe("ArtifactCard", () => {
     );
     const versions = container.querySelector("[data-slot=artifact-card-versions]")!;
     expect(versions).toHaveTextContent(/Version v3\/? of 3/);
-    expect(screen.getByRole("button", { name: "Next version" })).toBeDisabled();
+    expect(screen.getByRole("button", { name: "Next version" })).toHaveAttribute(
+      "aria-disabled",
+      "true",
+    );
     await user.click(screen.getByRole("button", { name: "Previous version" }));
     expect(onVersionChange).toHaveBeenCalledWith(2);
     expect(versions).toHaveTextContent(/Version v2\/? of 3/);

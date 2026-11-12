@@ -57,10 +57,11 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@ui-sdk/core": "0.1.0-beta.1",
+    "@ui-sdk/react": "0.1.0-beta.1",
     "clsx": "^2.1.1",
     "lucide-react": "^1.70.0",
     "motion": "^14.10.1",
-    "radix-ui": "^1.8.1",
     "tailwind-merge": "^3.7.0"
   },
   "peerDependencies": {

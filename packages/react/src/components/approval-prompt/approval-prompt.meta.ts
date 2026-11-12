@@ -6,7 +6,7 @@ export default defineComponent({
   category: "agent",
   status: "beta",
   description:
-    "Human-in-the-loop permission card (“Kura wants to run `rm -rf build`”) with risk level, details, Approve/Deny/Always allow, ⌘↵ and Esc, and resolved states.",
+    "Permission card (“Kura wants to run `rm -rf build`”) with risk, details, Approve/Deny/Always allow and ⌘↵/Esc. Agents can read and deny it; approving always waits for a person.",
   whenToUse: [
     "An agent needs explicit permission before a side effect: running a shell command, editing files, sending email, spending money, calling a destructive API.",
     "Show exactly what will run (verbatim command) and how risky it is before the user decides.",
@@ -62,8 +62,9 @@ export default defineComponent({
     },
     {
       name: "onDecisionChange",
-      type: "(decision: ApprovalDecision) => void",
-      description: "Called with every decision.",
+      type: "(decision: ApprovalDecision, details: ApprovalDecisionDetails) => void",
+      description:
+        'Called with every decision. details.source is "agent" when an agent connected through createAgent decided (it can deny; approving needs a person), otherwise how the person pressed.',
     },
     {
       name: "onApprove",
@@ -99,6 +100,12 @@ export default defineComponent({
       name: "icon",
       type: "React.ReactNode",
       description: "Icon in the header tile. Default a terminal.",
+    },
+    {
+      name: "agentConfirm",
+      type: "string",
+      description:
+        'What the person is asked when an agent tries to approve, e.g. "Runs a production migration". Default "Runs <command>", or "Approves this request" without a command.',
     },
   ],
   parts: [
@@ -157,6 +164,7 @@ export default defineComponent({
       "Buttons expose their shortcuts with aria-keyshortcuts; keycaps are also rendered visually.",
       "The resolution is a status region, so the decision is announced; the action row becomes inert and hidden.",
       "Risk is conveyed in text (“High risk”), not only colour. No dark patterns: Deny is as prominent as Approve.",
+      "Agent-ready (ui-sdk): createAgent lists the prompt by its title with value = the decision and one action, deny. Approve and Always allow are buttons marked data-agent-confirm, so an agent's press waits for the person, who is told what will run.",
     ],
     keyboard: [
       { keys: "Mod+Enter", action: "Approve (while pending, when shortcuts is on)" },
@@ -169,7 +177,7 @@ export default defineComponent({
     reducedMotion:
       "The waiting pulse stops and resolved states cross-fade without blur; details open without height travel.",
   },
-  dependencies: { npm: ["lucide-react"], kura: ["button", "kbd"] },
+  dependencies: { npm: ["@ui-sdk/core", "@ui-sdk/react", "lucide-react"], kura: ["button", "kbd"] },
   related: ["tool-call", "agent-timeline", "code-block", "kbd-shortcut"],
   tags: [
     "approval",
@@ -213,5 +221,6 @@ export default defineComponent({
     "The decision is only UI state: actually gate the side effect on onApprove / onDecisionChange in your agent loop.",
     "Render past prompts with `defaultDecision` (or controlled `decision`) set to the stored outcome and `shortcuts={false}`.",
     "When several prompts are visible, enable `shortcuts` on the newest pending one only.",
+    "With an in-app assistant, create one bridge (`createAgent({ allow })` from @ui-sdk/react/agent): the assistant can read pending prompts and deny them; its approve presses reach your `allow` callback with step.confirm set, so show that sentence to the person and return their answer.",
   ],
 });

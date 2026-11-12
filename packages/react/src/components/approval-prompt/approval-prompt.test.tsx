@@ -1,3 +1,4 @@
+import { createAgent } from "@ui-sdk/react/agent";
 import { describe, expect, it, vi } from "vitest";
 import {
   axe,
@@ -55,7 +56,10 @@ describe("ApprovalPrompt", () => {
     );
     await user.click(screen.getByRole("button", { name: /Approve/ }));
     expect(onApprove).toHaveBeenCalledOnce();
-    expect(onDecisionChange).toHaveBeenCalledWith("approved");
+    expect(onDecisionChange).toHaveBeenCalledWith(
+      "approved",
+      expect.objectContaining({ source: expect.any(String) }),
+    );
     expect(screen.getByRole("status")).toHaveTextContent("Approved");
     expect(document.querySelector("[data-slot=approval-prompt-actions]")).toHaveAttribute("inert");
   });
@@ -91,6 +95,61 @@ describe("ApprovalPrompt", () => {
     expect(screen.getByRole("region")).toHaveAttribute("data-decision", "pending");
     rerender(<ApprovalPrompt title="Run?" onAlwaysAllow={onAlwaysAllow} decision="always" />);
     expect(screen.getByRole("status")).toHaveTextContent("Always allowed");
+  });
+
+  it("an agent can read and deny it, but approving always waits for a person", async () => {
+    let personSaysYes = false;
+    const asked: string[] = [];
+    const agent = createAgent({
+      allow: (step) => {
+        if (step.confirm) asked.push(step.confirm);
+        return !step.confirm || personSaysYes;
+      },
+    });
+    const onDecisionChange = vi.fn();
+    render(
+      <ApprovalPrompt
+        title="Kura wants to run a migration"
+        command="pnpm db:migrate"
+        risk="high"
+        onDecisionChange={onDecisionChange}
+        shortcuts={false}
+      />,
+    );
+    const entry = agent.snapshot().find((e) => e.component === "approval-prompt");
+    expect(entry?.label).toContain("Kura wants to run a migration");
+    expect(entry?.value).toBe("pending");
+    expect(entry?.actions).toEqual(["deny"]);
+
+    // Approving is refused until the person says yes, and they are told exactly what runs.
+    const approve = { steps: [{ ref: "Run anyway", action: "press" }] };
+    expect((await agent.act(approve)).ok).toBe(false);
+    expect(asked.at(-1)).toBe("Runs pnpm db:migrate");
+    expect(onDecisionChange).not.toHaveBeenCalled();
+    personSaysYes = true;
+    expect((await agent.act(approve)).ok).toBe(true);
+    expect(onDecisionChange).toHaveBeenLastCalledWith("approved", { source: "agent" });
+  });
+
+  it("an agent's deny is reported with source agent", async () => {
+    const agent = createAgent();
+    const onDecisionChange = vi.fn();
+    render(
+      <ApprovalPrompt
+        title="Kura wants to delete a branch"
+        onDecisionChange={onDecisionChange}
+        shortcuts={false}
+      />,
+    );
+    const result = await agent.act({
+      steps: [{ ref: "Kura wants to delete a branch", action: "deny" }],
+    });
+    expect(result.ok, result.error?.message).toBe(true);
+    expect(onDecisionChange).toHaveBeenCalledWith("denied", { source: "agent" });
+    expect(document.querySelector("[data-slot=approval-prompt]")).toHaveAttribute(
+      "data-decision",
+      "denied",
+    );
   });
 
   it("expands details", async () => {

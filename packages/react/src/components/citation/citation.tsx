@@ -1,10 +1,10 @@
 "use client";
 
+import { HoverCard, HoverCardContent, HoverCardTrigger } from "@ui-sdk/react/hover-card";
 import { ArrowUpRight } from "lucide-react";
 import * as React from "react";
 import { useControllableState } from "../../hooks/use-controllable-state";
 import { cn } from "../../lib/cn";
-import { Popover, PopoverAnchor, PopoverContent } from "../popover";
 
 export interface CitationSource {
   /** Page title. */
@@ -19,14 +19,6 @@ export interface CitationSource {
   siteName?: string;
   /** Publication date as display text, e.g. "Mar 2025". */
   date?: string;
-}
-
-function isFocusVisible(el: Element): boolean {
-  try {
-    return el.matches(":focus-visible");
-  } catch {
-    return true;
-  }
 }
 
 export function sourceDomain(url: string): string {
@@ -142,10 +134,6 @@ export function Citation({
   open: openProp,
   onOpenChange,
   className,
-  onPointerEnter,
-  onPointerLeave,
-  onFocus,
-  onBlur,
   ...props
 }: CitationProps) {
   const [open, setOpen] = useControllableState({
@@ -153,68 +141,46 @@ export function Citation({
     defaultValue: false,
     onChange: onOpenChange,
   });
-  const timer = React.useRef<ReturnType<typeof setTimeout>>(undefined);
-  React.useEffect(() => () => clearTimeout(timer.current), []);
-  const schedule = (next: boolean, delay: number) => {
-    clearTimeout(timer.current);
-    timer.current = setTimeout(() => setOpen(next), delay);
-  };
   const domain = sourceDomain(source.url);
   const label = display === "domain" ? (source.siteName ?? domain) : String(index);
 
   return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <PopoverAnchor asChild>
-        <a
-          href={source.url}
-          target="_blank"
-          rel="noreferrer"
-          data-slot="citation"
-          data-state={open ? "open" : "closed"}
-          aria-label={`Source ${index}: ${source.title} (${domain})`}
-          onPointerEnter={(e) => {
-            onPointerEnter?.(e);
-            if (e.pointerType !== "touch") schedule(true, openDelay);
-          }}
-          onPointerLeave={(e) => {
-            onPointerLeave?.(e);
-            schedule(false, 150);
-          }}
-          onFocus={(e) => {
-            onFocus?.(e);
-            if (isFocusVisible(e.currentTarget)) schedule(true, 0);
-          }}
-          onBlur={(e) => {
-            onBlur?.(e);
-            schedule(false, 100);
-          }}
-          className={cn(
-            "relative -top-[0.1em] mr-px ml-1 inline-flex h-[1.3em] min-w-[1.3em] items-center justify-center gap-1 rounded-full bg-kura-hover px-[0.4em] align-middle font-kura-sans font-medium text-[0.72em] text-kura-fg-muted tabular-nums leading-none no-underline outline-none",
-            "transition-[background-color,color,box-shadow] duration-(--kura-duration-fast) ease-kura-out hover:bg-kura-active hover:text-kura-fg focus-visible:shadow-kura-focus data-[state=open]:bg-kura-active data-[state=open]:text-kura-fg",
-            className,
-          )}
-          {...props}
-        >
-          {display === "domain" && (
-            <Favicon source={source} className="-ml-0.5 size-[1.15em] rounded-full" />
-          )}
-          {label}
-        </a>
-      </PopoverAnchor>
-      <PopoverContent
+    <HoverCard
+      open={open}
+      onOpenChange={(next) => setOpen(next)}
+      delay={openDelay}
+      closeDelay={150}
+    >
+      <HoverCardTrigger
+        render={<a data-slot="citation" href={source.url} target="_blank" rel="noreferrer" />}
+        data-state={open ? "open" : "closed"}
+        aria-label={`Source ${index}: ${source.title} (${domain})`}
+        className={cn(
+          "relative -top-[0.1em] mr-px ml-1 inline-flex h-[1.3em] min-w-[1.3em] items-center justify-center gap-1 rounded-full bg-kura-hover px-[0.4em] align-middle font-kura-sans font-medium text-[0.72em] text-kura-fg-muted tabular-nums leading-none no-underline outline-none",
+          "transition-[background-color,color,box-shadow] duration-(--kura-duration-fast) ease-kura-out hover:bg-kura-active hover:text-kura-fg focus-visible:shadow-kura-focus data-open:bg-kura-active data-open:text-kura-fg",
+          className,
+        )}
+        {...props}
+      >
+        {display === "domain" && (
+          <Favicon source={source} className="-ml-0.5 size-[1.15em] rounded-full" />
+        )}
+        {label}
+      </HoverCardTrigger>
+      <HoverCardContent
         side="top"
         align="start"
         sideOffset={6}
-        data-slot="citation-preview"
-        className="w-80 p-3"
-        onOpenAutoFocus={(e) => e.preventDefault()}
-        onCloseAutoFocus={(e) => e.preventDefault()}
-        onPointerEnter={() => clearTimeout(timer.current)}
-        onPointerLeave={() => schedule(false, 150)}
+        render={<div data-slot="citation-preview" />}
+        className={cn(
+          "z-50 m-0 w-80 max-w-[calc(100vw-16px)] overflow-visible rounded-kura-xl border-0 bg-kura-surface-raised p-3 font-kura-sans text-kura-fg text-sm shadow-kura-lg outline-none",
+          "origin-(--transform-origin) transition-[opacity,scale] duration-(--kura-duration-base) ease-kura-out",
+          "data-starting-style:scale-95 data-starting-style:opacity-0 data-ending-style:scale-95 data-ending-style:opacity-0 motion-reduce:transition-none",
+        )}
       >
         <CitationCard source={source} index={index} />
-      </PopoverContent>
-    </Popover>
+      </HoverCardContent>
+    </HoverCard>
   );
 }
 

@@ -75,7 +75,7 @@ export default defineComponent({
     ],
     reducedMotion: "Scale and travel are removed; content fades.",
   },
-  dependencies: { npm: ["radix-ui"], kura: [] },
+  dependencies: { npm: ["@ui-sdk/react"], kura: [] },
   related: ["tooltip", "model-picker", "slash-command-menu"],
   tags: ["popover", "overlay", "floating", "panel", "menu", "dropdown"],
   examples: [

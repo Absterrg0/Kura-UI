@@ -120,7 +120,7 @@ export default defineComponent({
     reducedMotion:
       "The preview only fades (no scale/translate) and the ↗ nudge on hover is removed.",
   },
-  dependencies: { npm: ["lucide-react"], kura: ["popover"] },
+  dependencies: { npm: ["@ui-sdk/react", "lucide-react"], kura: [] },
   related: ["message", "streaming-text", "tool-call"],
   tags: [
     "citation",

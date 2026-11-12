@@ -93,7 +93,7 @@ export default defineComponent({
     ],
     reducedMotion: "Scale and travel are removed; only a fast fade remains.",
   },
-  dependencies: { npm: ["radix-ui"], kura: ["kbd"] },
+  dependencies: { npm: ["@ui-sdk/react"], kura: ["kbd"] },
   related: ["icon-button", "popover", "kbd"],
   tags: ["tooltip", "hint", "label", "hover", "overlay"],
   examples: [

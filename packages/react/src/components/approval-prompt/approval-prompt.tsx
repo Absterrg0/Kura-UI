@@ -1,5 +1,6 @@
 "use client";
 
+import { createParts } from "@ui-sdk/react/primitive";
 import { Check, ChevronRight, ShieldCheck, Terminal, X } from "lucide-react";
 import * as React from "react";
 import { useControllableState } from "../../hooks/use-controllable-state";
@@ -7,8 +8,16 @@ import { useHotkey } from "../../hooks/use-hotkey";
 import { cn } from "../../lib/cn";
 import { Button } from "../button";
 import { Kbd } from "../kbd";
+import { type ApprovalDecision, approvalPrompt } from "./approval-prompt-primitive";
 
-export type ApprovalDecision = "pending" | "approved" | "denied" | "always";
+export type { ApprovalDecision };
+
+/** Who made a decision: a person (mouse, keyboard, touch…) or an agent through `createAgent`. */
+export interface ApprovalDecisionDetails {
+  source: string;
+}
+
+const { Root: ApprovalPromptRoot } = createParts(approvalPrompt, { root: "section" });
 
 export interface ApprovalPromptProps extends Omit<React.ComponentProps<"section">, "title"> {
   /** What the agent wants, e.g. "Kura wants to run a command". */
@@ -25,8 +34,11 @@ export interface ApprovalPromptProps extends Omit<React.ComponentProps<"section"
   decision?: ApprovalDecision;
   /** Initial decision when uncontrolled. Default "pending". */
   defaultDecision?: ApprovalDecision;
-  /** Called with every decision the user makes. */
-  onDecisionChange?: (decision: ApprovalDecision) => void;
+  /**
+   * Called with every decision. `details.source` is `"agent"` when an agent connected through
+   * `createAgent` denied the prompt (agents can never approve on their own).
+   */
+  onDecisionChange?: (decision: ApprovalDecision, details: ApprovalDecisionDetails) => void;
   onApprove?: () => void;
   onDeny?: () => void;
   /** Shows an “Always allow” action when provided. */
@@ -41,6 +53,11 @@ export interface ApprovalPromptProps extends Omit<React.ComponentProps<"section"
   alwaysAllowLabel?: string;
   /** Icon in the header tile. Default a terminal. */
   icon?: React.ReactNode;
+  /**
+   * What a person is asked when an agent tries to approve, e.g. "Runs a production migration".
+   * Default: "Runs `<command>`", or "Approves this request" without a command.
+   */
+  agentConfirm?: string;
 }
 
 const riskLabel = { low: "Low risk", medium: "Medium risk", high: "High risk" } as const;
@@ -73,43 +90,54 @@ export function ApprovalPrompt({
   denyLabel = "Deny",
   alwaysAllowLabel = "Always allow",
   icon,
+  agentConfirm,
   className,
   ...props
 }: ApprovalPromptProps) {
-  const [decision, setDecision] = useControllableState<ApprovalDecision>({
+  const [decision, setDecisionState] = useControllableState<ApprovalDecision>({
     value: decisionProp,
     defaultValue: defaultDecision,
-    onChange: onDecisionChange,
   });
+  const setDecision = (next: ApprovalDecision, source = "pointer") => {
+    setDecisionState(next);
+    onDecisionChange?.(next, { source });
+  };
+  const confirm = agentConfirm ?? (command != null ? `Runs ${command}` : "Approves this request");
   const pending = decision === "pending";
   const [open, setOpen] = React.useState(false);
   const id = React.useId();
 
-  const approve = () => {
+  const approve = (source?: string) => {
     if (!pending) return;
-    setDecision("approved");
+    setDecision("approved", source);
     onApprove?.();
   };
-  const deny = () => {
+  const deny = (source?: string) => {
     if (!pending) return;
-    setDecision("denied");
+    setDecision("denied", source);
     onDeny?.();
   };
-  const always = () => {
+  const always = (source?: string) => {
     if (!pending) return;
-    setDecision("always");
+    setDecision("always", source);
     onAlwaysAllow?.();
   };
 
-  useHotkey(["mod", "enter"], approve, { enabled: shortcuts && pending });
-  useHotkey(["escape"], deny, { enabled: shortcuts && pending, allowInInputs: false });
+  useHotkey(["mod", "enter"], () => approve("keyboard"), { enabled: shortcuts && pending });
+  useHotkey(["escape"], () => deny("keyboard"), {
+    enabled: shortcuts && pending,
+    allowInInputs: false,
+  });
 
   return (
-    <section
+    <ApprovalPromptRoot
+      value={decision}
+      onValueChange={(next, details) => {
+        if (next === "denied") deny(details.source);
+      }}
       aria-labelledby={command != null ? `${id}-title ${id}-code` : `${id}-title`}
       aria-describedby={description != null ? `${id}-desc` : undefined}
       data-slot="approval-prompt"
-      data-decision={decision}
       data-risk={risk}
       className={cn(
         "flex flex-col overflow-hidden rounded-kura-xl bg-kura-surface font-kura-sans shadow-kura-md transition-shadow duration-(--kura-duration-slow) ease-kura-out",
@@ -247,14 +275,19 @@ export function ApprovalPrompt({
             Needs approval
           </span>
           {onAlwaysAllow && (
-            <Button variant="ghost" size="sm" onClick={always}>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={(_, d) => always(d?.source)}
+              data-agent-confirm={`Always allows this without asking: ${confirm}`}
+            >
               {alwaysAllowLabel}
             </Button>
           )}
           <Button
             variant="secondary"
             size="sm"
-            onClick={deny}
+            onClick={(_, d) => deny(d?.source)}
             aria-keyshortcuts={shortcuts ? "Escape" : undefined}
           >
             {denyLabel}
@@ -263,7 +296,8 @@ export function ApprovalPrompt({
           <Button
             variant={risk === "high" ? "danger" : "primary"}
             size="sm"
-            onClick={approve}
+            onClick={(_, d) => approve(d?.source)}
+            data-agent-confirm={confirm}
             aria-keyshortcuts={shortcuts ? "Meta+Enter Control+Enter" : undefined}
           >
             {approveLabel ?? (risk === "high" ? "Run anyway" : "Approve")}
@@ -316,6 +350,6 @@ export function ApprovalPrompt({
           )}
         </div>
       </div>
-    </section>
+    </ApprovalPromptRoot>
   );
 }

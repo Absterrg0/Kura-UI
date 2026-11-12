@@ -1,13 +1,5 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
-import {
-  act,
-  axe,
-  fireEvent,
-  render,
-  screen,
-  setReducedMotion,
-  userEvent,
-} from "../../../test/utils";
+import { axe, render, screen, setReducedMotion, userEvent, waitFor } from "../../../test/utils";
 import { Citation, CitationCard, Sources, sourceDomain } from "./citation";
 import {
   CitationFull,
@@ -35,21 +27,20 @@ describe("Citation", () => {
     expect(pill).toHaveTextContent("2");
   });
 
-  it("opens the preview on hover after the delay and closes on leave", () => {
-    vi.useFakeTimers();
+  // Closing when the pointer leaves needs real pointer geometry; the docs' Playwright run covers it.
+  it("opens the preview on hover after the delay", async () => {
+    const user = userEvent.setup();
     const onOpenChange = vi.fn();
     render(<Citation index={1} source={source} openDelay={200} onOpenChange={onOpenChange} />);
     const pill = screen.getByRole("link");
-    fireEvent.pointerEnter(pill, { pointerType: "mouse" });
-    expect(document.querySelector("[data-slot=citation-preview]")).toBeNull();
-    act(() => vi.advanceTimersByTime(200));
+    await user.hover(pill);
+    expect(document.querySelector("[data-slot=citation-preview][data-open]")).toBeNull();
+    await waitFor(() => expect(pill).toHaveAttribute("data-state", "open"));
     const preview = document.querySelector("[data-slot=citation-preview]")!;
     expect(preview).toHaveTextContent("Optimistically update the UI.");
-    expect(pill).toHaveAttribute("data-state", "open");
     expect(onOpenChange).toHaveBeenLastCalledWith(true);
-    fireEvent.pointerLeave(pill);
-    act(() => vi.advanceTimersByTime(200));
-    expect(onOpenChange).toHaveBeenLastCalledWith(false);
+    await user.keyboard("{Escape}");
+    await waitFor(() => expect(onOpenChange).toHaveBeenLastCalledWith(false));
   });
 
   it("opens on keyboard focus without stealing focus, and Escape closes it", async () => {

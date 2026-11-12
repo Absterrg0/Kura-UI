@@ -31,3 +31,21 @@ globalThis.IntersectionObserver ??= NoopObserver as unknown as typeof Intersecti
 // Radix uses these in jsdom.
 Element.prototype.hasPointerCapture ??= () => false;
 Element.prototype.scrollIntoView ??= () => {};
+
+// ui-sdk needs these in jsdom before anything opens (popovers, tooltips, dialogs).
+HTMLElement.prototype.showPopover = () => {};
+HTMLElement.prototype.hidePopover = () => {};
+Element.prototype.getAnimations = () => [];
+Element.prototype.checkVisibility = () => true;
+document.elementFromPoint = () => null;
+document.elementsFromPoint = () => [];
+document.head.append(
+  Object.assign(document.createElement("style"), {
+    textContent: "[popover] { display: block !important }",
+  }),
+);
+// Development warnings from our own primitives fail the test.
+declare global {
+  var __UI_SDK_STRICT__: boolean | undefined;
+}
+globalThis.__UI_SDK_STRICT__ = true;

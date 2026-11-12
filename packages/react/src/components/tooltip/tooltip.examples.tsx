@@ -60,11 +60,11 @@ function ToolbarTip({
   label: string;
   shortcut?: readonly string[];
   side?: "top" | "bottom";
-  children: React.ReactElement;
+  children: React.ReactElement<Record<string, unknown>>;
 }) {
   return (
     <TooltipRoot>
-      <TooltipTrigger asChild>{children}</TooltipTrigger>
+      <TooltipTrigger render={children} />
       <TooltipContent side={side} shortcut={shortcut}>
         {label}
       </TooltipContent>

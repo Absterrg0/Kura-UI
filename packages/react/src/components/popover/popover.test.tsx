@@ -24,7 +24,7 @@ describe("Popover", () => {
     const dialog = await screen.findByRole("dialog", { name: "Panel" });
     expect(dialog).toHaveAttribute("data-slot", "popover-content");
     expect(trigger).toHaveAttribute("aria-expanded", "true");
-    expect(onOpenChange).toHaveBeenCalledWith(true);
+    expect(onOpenChange).toHaveBeenCalledWith(true, expect.anything());
   });
 
   it("closes on Escape and returns focus", async () => {
@@ -49,7 +49,7 @@ describe("Popover", () => {
     render(<Demo />);
     await userEvent.click(screen.getByRole("button", { name: "Open" }));
     const content = await screen.findByRole("dialog");
-    expect(content.className).toContain("origin-(--radix-popover-content-transform-origin)");
+    expect(content.className).toContain("origin-(--transform-origin)");
   });
 
   it("is accessible open and closed", async () => {

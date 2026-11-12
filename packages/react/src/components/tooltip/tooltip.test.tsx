@@ -61,7 +61,7 @@ describe("Tooltip", () => {
     await userEvent.tab();
     await screen.findByRole("tooltip");
     const content = document.querySelector("[data-slot=tooltip-content]")!;
-    expect(content.className).toContain("origin-(--radix-tooltip-content-transform-origin)");
+    expect(content.className).toContain("origin-(--transform-origin)");
   });
 
   it("examples are accessible", async () => {

@@ -42,7 +42,10 @@ describe("PromptQueue", () => {
     render(
       <PromptQueue defaultItems={items} onItemsChange={onItemsChange} onSendNow={onSendNow} />,
     );
-    expect(screen.getAllByRole("button", { name: "Move up" })[0]).toBeDisabled();
+    expect(screen.getAllByRole("button", { name: "Move up" })[0]).toHaveAttribute(
+      "aria-disabled",
+      "true",
+    );
     await user.click(screen.getAllByRole("button", { name: "Move down" })[0] as HTMLElement);
     expect(texts()).toEqual(["Skip src/legacy/", "Use refreshSession()", "Update the README"]);
     expect(screen.getByRole("status")).toHaveTextContent("Moved to position 2 of 3");

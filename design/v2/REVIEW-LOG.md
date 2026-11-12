@@ -3,9 +3,10 @@
 Reviewer: Fable 5.2 (high effort), single reviewer. Fixed 14-shot set (`design/v2/shots.mjs`),
 scored on the 14-category rubric (`RUBRIC.md`) against `DIRECTION.md`. Target: ≥ 9.5.
 
-| Round | Score  | Notes                                                        |
-| ----- | ------ | ------------------------------------------------------------ |
-| R1    | 7.3/10 | On-direction, clear step up; short of Raycast/Linear polish. |
+| Round | Score  | Notes                                                                                                             |
+| ----- | ------ | ----------------------------------------------------------------------------------------------------------------- |
+| R1    | 7.3/10 | On-direction, clear step up; short of Raycast/Linear polish.                                                      |
+| R2    | 7.9/10 | Direction held, nothing rejected crept back; hero composition, light at laptop widths, mobile and axe still open. |
 
 ## R1 findings (to fix in R2)
 
@@ -35,3 +36,31 @@ Polish
 
 Note: R2 was started on the sandbox and interrupted mid-way (it had begun on items 2 and the CTA
 band); verify what is done before continuing.
+
+## R2 findings (to fix in R3)
+
+Scores: hierarchy 7.5 · type 8.5 · colour 8 · layout 7.5 · consistency 7.5 · brand 7.5 · clarity 8 ·
+interaction 8.5 · light/dark 8.5 · craft 7 · a11y 7 · responsive 6.5 · motion 9 · copy 9 → **7.9**.
+
+Must-fix
+
+1. Hero terminal scrolls to a clipped sliver of the RUN badge: fit the output to maxHeight; drop
+   `(N tests)` at 390.
+2. Focal card is the smallest and its buttons are below the fold at 1440×900: Plan 6 rows, fleet 3
+   agents, no `self-center`, one top edge and height; tighter hero top padding.
+3. Ember light fails at laptop widths (stubs at 1440, gone at 1280): side spans only ≥ 1680px; make
+   the top-edge bloom the signature at every width (full stage width, hotter core, wider hot line).
+4. Mobile ember is muddy: below md, no spans, one unscaled glow under the mark / stage top.
+5. Mobile bento shrunk to ~5px text: ScaleToFit floor ≈ 0.8 with a right-edge fade; `max-h` not `h`.
+6. Index previews: centre panels that fit, top-anchor + fade only on overflow; stage h-52; fix
+   Thinking Indicator crop; no deep shadow smears inside cards.
+7. axe serious: terminal dim text contrast, ContextMeter label, danger button contrast, DiffView
+   label/scrollable-region issues; heading order on /components.
+8. Component page at 390: stacked props table; ApprovalPrompt footer must wrap.
+9. Nav wraps at 768: nowrap links, menu sheet below lg.
+
+Polish: RunHeader repeats Plan progress (drop progress/tokens) · bento row-3 voids · diff card clips
+mid-word · Built right → hairline columns, no icon tiles · Beta pill only for experimental · no
+light-mode side spans · nav chrome 0.97 · agent terminal tail · "Ask again" in hero · Spec chip
+collides with tooltip · quieter syntax theme · ⌘K placeholder · linkify related/whenNotToUse slugs ·
+one content width · hooks page code panes.

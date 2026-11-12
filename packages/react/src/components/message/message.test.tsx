@@ -109,7 +109,11 @@ describe("Message", () => {
     const { rerender, container } = render(
       <MessageBranch current={1} total={3} onCurrentChange={onChange} />,
     );
-    expect(screen.getByRole("button", { name: "Previous version" })).toBeDisabled();
+    // Disabled but still focusable, so its tooltip can say what it is.
+    const prev = screen.getByRole("button", { name: "Previous version" });
+    expect(prev).toHaveAttribute("aria-disabled", "true");
+    await user.click(prev);
+    expect(onChange).not.toHaveBeenCalled();
     await user.click(screen.getByRole("button", { name: "Next version" }));
     expect(onChange).toHaveBeenCalledWith(2);
     expect(container).toHaveTextContent("Version 1/ of 3");

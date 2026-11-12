@@ -1,3 +1,4 @@
+import { createAgent } from "@ui-sdk/react/agent";
 import { describe, expect, it, vi } from "vitest";
 import { axe, render, screen, userEvent } from "../../../test/utils";
 import { Button, buttonVariants } from "./button";
@@ -23,7 +24,7 @@ describe("Button", () => {
     expect(onClick).toHaveBeenCalledTimes(3);
   });
 
-  it("loading disables, sets aria-busy and keeps the label for width", async () => {
+  it("loading ignores presses, sets aria-busy and keeps focus and the label", async () => {
     const onClick = vi.fn();
     render(
       <Button loading onClick={onClick}>
@@ -31,8 +32,9 @@ describe("Button", () => {
       </Button>,
     );
     const btn = screen.getByRole("button", { name: /save/i });
-    expect(btn).toBeDisabled();
+    expect(btn).toHaveAttribute("aria-disabled", "true");
     expect(btn).toHaveAttribute("aria-busy", "true");
+    expect(btn).not.toHaveAttribute("disabled");
     await userEvent.click(btn);
     expect(onClick).not.toHaveBeenCalled();
   });
@@ -49,6 +51,31 @@ describe("Button", () => {
     const link = screen.getByRole("link", { name: "Read the docs" });
     expect(link).toHaveAttribute("data-slot", "button");
     expect(ref.current).toBe(link);
+  });
+
+  it("an agent can find and press it, and a person gates a marked one", async () => {
+    let approve = false;
+    const agent = createAgent({ allow: (step) => !step.confirm || approve });
+    const save = vi.fn();
+    const remove = vi.fn();
+    render(
+      <>
+        <Button onClick={save}>Save draft</Button>
+        <Button variant="danger" data-agent-confirm="Deletes the draft" onClick={remove}>
+          Delete draft
+        </Button>
+      </>,
+    );
+    const labels = agent.snapshot().map((e) => e.label);
+    expect(labels).toEqual(expect.arrayContaining(["Save draft", "Delete draft"]));
+    expect((await agent.act({ steps: [{ ref: "Save draft", action: "press" }] })).ok).toBe(true);
+    expect(save).toHaveBeenCalledTimes(1);
+    const del = { steps: [{ ref: "Delete draft", action: "press" }] };
+    expect((await agent.act(del)).ok).toBe(false);
+    expect(remove).not.toHaveBeenCalled();
+    approve = true;
+    expect((await agent.act(del)).ok).toBe(true);
+    expect(remove).toHaveBeenCalledTimes(1);
   });
 
   it("merges className and exposes buttonVariants", () => {

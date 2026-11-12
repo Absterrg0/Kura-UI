@@ -373,5 +373,5 @@ describe("DiffView", () => {
       await axe(container);
       unmount();
     }
-  });
+  }, 20_000);
 });

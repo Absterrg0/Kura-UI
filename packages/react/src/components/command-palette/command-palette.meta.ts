@@ -159,7 +159,7 @@ export default defineComponent({
     ],
     reducedMotion: "The dialog and overlay fade without scale; skeleton rows stop pulsing.",
   },
-  dependencies: { npm: ["lucide-react", "radix-ui"], kura: ["kbd"] },
+  dependencies: { npm: ["@ui-sdk/react", "lucide-react"], kura: ["kbd"] },
   related: ["slash-command-menu", "model-picker", "kbd-shortcut", "prompt-suggestions"],
   tags: ["command-palette", "cmdk", "search", "launcher", "keyboard", "actions", "menu", "agent"],
   examples: [

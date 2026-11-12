@@ -1,26 +1,40 @@
-import { Slot } from "radix-ui";
-import type * as React from "react";
+import { Button as ButtonPrimitive } from "@ui-sdk/react/button";
+import * as React from "react";
 import { cn } from "../../lib/cn";
 import { Spinner } from "../spinner";
 
 export type ButtonVariant = "primary" | "secondary" | "ghost" | "outline" | "accent" | "danger";
 export type ButtonSize = "xs" | "sm" | "md" | "lg";
 
-export interface ButtonProps extends React.ComponentProps<"button"> {
+export interface ButtonProps extends Omit<React.ComponentProps<"button">, "onClick"> {
+  /**
+   * Runs on press. `details.source` says how: `"mouse"`, `"keyboard"`, `"touch"`… or `"agent"`
+   * when an agent connected through `createAgent` pressed it. Return a Promise to keep the button
+   * busy until it settles.
+   */
+  onClick?: (event: React.MouseEvent<HTMLElement>, details?: { source: string }) => unknown;
   /** `primary` = ink (default call to action); `accent` = the AI signal colour, use at most once per view. */
   variant?: ButtonVariant;
   size?: ButtonSize;
-  /** Shows a spinner, sets `aria-busy` and disables interaction while keeping the width stable. */
+  /**
+   * Shows a spinner, sets `aria-busy` and ignores presses while keeping focus and the width stable.
+   * An `onClick` that returns a Promise does the same on its own until it settles.
+   */
   loading?: boolean;
   /** Render the child element instead of a <button> (e.g. a Next.js <Link>). */
   asChild?: boolean;
+  /**
+   * Keep a disabled button in the tab order with `aria-disabled`, so it can hold focus and show a
+   * tooltip that says why. Presses still do nothing.
+   */
+  focusableWhenDisabled?: boolean;
 }
 
 const base =
   "relative inline-flex shrink-0 cursor-pointer select-none items-center justify-center gap-1.5 whitespace-nowrap font-kura-sans font-medium tracking-[-0.006em] outline-none " +
   "transition-[background-color,color,box-shadow,transform,opacity] duration-(--kura-duration-fast) ease-kura-out " +
-  "focus-visible:shadow-kura-focus active:not-disabled:scale-[0.98] motion-reduce:active:not-disabled:scale-100 " +
-  "disabled:cursor-not-allowed disabled:not-aria-busy:opacity-50 aria-busy:cursor-progress " +
+  "focus-visible:shadow-kura-focus active:not-disabled:not-aria-disabled:scale-[0.98] motion-reduce:active:not-disabled:scale-100 " +
+  "disabled:cursor-not-allowed disabled:not-aria-busy:opacity-50 aria-disabled:not-aria-busy:cursor-not-allowed aria-disabled:not-aria-busy:opacity-50 aria-busy:cursor-progress " +
   "[&_svg]:pointer-events-none [&_svg]:shrink-0";
 
 const variants: Record<ButtonVariant, string> = {
@@ -58,48 +72,66 @@ export function buttonVariants({
 }
 
 /**
- * The Kura button. Press feedback is a 0.98 scale on :active (disabled under reduced motion),
- * focus is a 2px signal ring outside a 1px canvas gap.
+ * The Kura button, built on the ui-sdk Button: an agent connected through `createAgent` can find it
+ * by its text and press it (mark it `data-agent-confirm` when a person must decide). Press feedback
+ * is a 0.98 scale on :active (disabled under reduced motion), focus is a 2px signal ring outside a
+ * 1px canvas gap.
  */
 export function Button({
   variant = "primary",
   size = "md",
   loading = false,
   asChild = false,
+  focusableWhenDisabled,
   disabled,
   className,
   children,
   type,
+  onClick,
   ...props
 }: ButtonProps) {
-  const Comp = asChild ? Slot.Root : "button";
+  const classes = buttonVariants({ variant, size, className });
+  // ui-sdk owns `data-slot` on its parts; a wrapper like IconButton names itself through `render`.
+  const slot = (props as { "data-slot"?: string })["data-slot"];
+  if (asChild && React.isValidElement<{ children?: React.ReactNode }>(children)) {
+    return (
+      <ButtonPrimitive
+        data-variant={variant}
+        data-size={size}
+        disabled={disabled}
+        className={classes}
+        render={React.cloneElement(children, { children: undefined })}
+        onClick={onClick}
+        {...props}
+      >
+        {children.props.children}
+      </ButtonPrimitive>
+    );
+  }
   return (
-    <Comp
-      data-slot="button"
+    <ButtonPrimitive
       data-variant={variant}
       data-size={size}
-      type={asChild ? type : (type ?? "button")}
-      disabled={disabled || loading}
+      type={type ?? "button"}
+      disabled={disabled}
+      focusableWhenDisabled={loading || focusableWhenDisabled || undefined}
       aria-busy={loading || undefined}
-      className={buttonVariants({ variant, size, className })}
+      aria-disabled={loading || undefined}
+      className={classes}
+      render={slot ? <button type={type ?? "button"} data-slot={slot} /> : undefined}
       {...props}
+      onClick={loading ? undefined : onClick}
     >
-      {asChild ? (
-        children
-      ) : (
+      {loading ? (
         <>
-          {loading && (
-            <span className="absolute inset-0 flex items-center justify-center">
-              <Spinner size={size === "lg" ? "md" : "sm"} label={null} />
-            </span>
-          )}
-          {loading ? (
-            <span className="invisible inline-flex items-center gap-1.5">{children}</span>
-          ) : (
-            children
-          )}
+          <span className="absolute inset-0 flex items-center justify-center">
+            <Spinner size={size === "lg" ? "md" : "sm"} label={null} />
+          </span>
+          <span className="invisible inline-flex items-center gap-1.5">{children}</span>
         </>
+      ) : (
+        children
       )}
-    </Comp>
+    </ButtonPrimitive>
   );
 }

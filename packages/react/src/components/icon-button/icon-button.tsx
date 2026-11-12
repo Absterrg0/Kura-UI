@@ -47,6 +47,7 @@ export function IconButton({
       variant={variant}
       size={size}
       className={cn(square[size], className)}
+      focusableWhenDisabled={tooltip || undefined}
       {...props}
     >
       {icon}
