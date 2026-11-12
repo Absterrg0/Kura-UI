@@ -81,7 +81,7 @@ export function CommandMenu({
         type="button"
         onClick={() => setOpen(true)}
         data-testid="search-trigger"
-        className="group flex size-9 cursor-pointer items-center justify-center gap-2 rounded-[9px] text-[13px] text-kura-fg-subtle outline-hidden transition-colors hover:text-kura-fg max-md:hover:bg-kura-hover md:h-8 md:w-auto md:justify-start md:bg-kura-surface-sunken md:pr-1.5 md:pl-2.5 md:shadow-kura-sunk lg:w-52"
+        className="group flex size-9 cursor-pointer items-center justify-center gap-2 rounded-[9px] text-[13px] text-kura-fg-subtle outline-hidden transition-colors hover:text-kura-fg focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-kura-ring max-md:hover:bg-kura-hover md:h-8 md:w-auto md:justify-start md:bg-kura-surface-sunken md:pr-1.5 md:pl-2.5 md:shadow-kura-sunk lg:w-52"
       >
         <Search className="size-4 md:size-3.5" />
         <span className="hidden flex-1 truncate whitespace-nowrap text-left md:block">Search</span>
@@ -104,6 +104,7 @@ export function CommandMenu({
             >
               <div className="flex items-center gap-2 border-kura-border-subtle border-b px-4">
                 <Search className="size-4 text-kura-fg-subtle" />
+                {/* focus: the caret is the indicator (the one text field of a dialog) */}
                 <Command.Input
                   autoFocus
                   value={query}

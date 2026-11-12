@@ -29,7 +29,8 @@ export function Halftone({ visible = true, reach = 0.62, className, ...props }: 
       data-slot="halftone"
       data-state={visible ? "visible" : "hidden"}
       className={cn(
-        "pointer-events-none absolute inset-0 -z-10 overflow-hidden rounded-[inherit] transition-opacity duration-(--kura-duration-slower) ease-kura-snap motion-reduce:transition-none",
+        // A fade, not travel, so it stays under reduced motion.
+        "pointer-events-none absolute inset-0 -z-10 overflow-hidden rounded-[inherit] transition-opacity duration-(--kura-duration-slower) ease-kura-snap",
         !visible && "opacity-0",
         className,
       )}

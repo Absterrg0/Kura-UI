@@ -31,7 +31,7 @@ const PATCH = `diff --git a/src/auth/session.ts b/src/auth/session.ts
 
 const BRIDGE = [
   ["Sees every component", "agent.snapshot()"],
-  ["Acts through the same API", "agent.act({ steps })"],
+  ["Acts through the same API", "agent.act()"],
   ["Stops for a person", "data-agent-confirm"],
 ] as const;
 
@@ -161,13 +161,14 @@ export function AgentDemo({ className }: { className?: string }) {
       ref={root}
       data-slot="agent-demo"
       className={cn(
-        "relative grid items-start gap-3 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)]",
+        "relative grid gap-3 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)]",
         className,
       )}
     >
       <div className="flex min-h-0 flex-col">
+        {/* The terminal takes the height the right column leaves it, so the two columns end level. */}
         <Terminal
-          className="w-full"
+          className="min-h-[220px] w-full flex-1"
           title="in-app assistant"
           command={"createAgent({ allow: askThePerson })"}
           lines={lines}
@@ -179,7 +180,6 @@ export function AgentDemo({ className }: { className?: string }) {
                 : "done"
           }
           wrap={false}
-          maxHeight={360}
           actions={
             <Button
               variant="ghost"
@@ -194,12 +194,12 @@ export function AgentDemo({ className }: { className?: string }) {
           }
         />
         {/* What the bridge gives an agent, as a property list. */}
-        <dl className="flex flex-col gap-2.5 px-1 pt-6 text-[13.5px]">
+        <dl className="flex shrink-0 flex-col gap-2.5 px-1 pt-5 pb-1 text-[13.5px]">
           {BRIDGE.map(([term, code]) => (
             <div key={term} className="flex items-baseline gap-2.5">
               <dt className="shrink-0 text-kura-fg-muted">{term}</dt>
-              <span aria-hidden className="kura-leader h-[5px] min-w-6 flex-1" />
-              <dd className="min-w-0 truncate font-kura-mono text-[12.5px]">{code}</dd>
+              <span aria-hidden className="kura-leader h-[5px] min-w-4 flex-1" />
+              <dd className="shrink-0 font-kura-mono text-[12.5px]">{code}</dd>
             </div>
           ))}
         </dl>

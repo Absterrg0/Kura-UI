@@ -29,7 +29,7 @@ export function NavLinks() {
             href={l.href}
             aria-current={active ? "page" : undefined}
             className={cn(
-              "rounded-lg px-3 py-1.5 text-[14px] outline-hidden transition-colors duration-150 focus-visible:shadow-kura-focus",
+              "whitespace-nowrap rounded-lg px-3 py-1.5 text-[14px] outline-hidden transition-colors duration-150 focus-visible:shadow-kura-focus",
               active ? "text-kura-fg" : "text-kura-fg-muted hover:text-kura-fg",
             )}
           >

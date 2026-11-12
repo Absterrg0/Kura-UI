@@ -3,9 +3,19 @@
 import { AgentOrb, type AgentOrbState } from "@kura-ui/react/agent-orb";
 import { AudioWaveform } from "@kura-ui/react/audio-waveform";
 import { type Checkpoint, Checkpoints } from "@kura-ui/react/checkpoints";
+import { Citation } from "@kura-ui/react/citation";
+import { Composer } from "@kura-ui/react/composer";
 import { type FileChange, FileChanges } from "@kura-ui/react/file-changes";
 import { useAudioAnalyser } from "@kura-ui/react/hooks";
+import {
+  Message,
+  MessageActions,
+  MessageAvatar,
+  MessageCopyButton,
+  MessageFeedback,
+} from "@kura-ui/react/message";
 import { PromptQueue, type QueuedPrompt } from "@kura-ui/react/prompt-queue";
+import { Reasoning } from "@kura-ui/react/reasoning";
 import { ToolCall } from "@kura-ui/react/tool-call";
 import * as React from "react";
 import { examples } from "@/generated/examples";
@@ -89,7 +99,7 @@ export function ToolsDemo() {
       <ToolCall
         name="search_code"
         status="success"
-        args={{ query: "fetchUser(" }}
+        args={{ query: "fetchUser" }}
         result={{ matches: 23, files: 9 }}
         duration={1_700}
       />
@@ -153,6 +163,49 @@ export function VoiceDemo() {
           className="h-10"
         />
       </div>
+    </div>
+  );
+}
+
+const ANSWER =
+  "The session fixture still returns the old token shape, so refresh() rejects it. Updating the fixture fixes the test; nothing else reads that field.";
+
+/** A turn of conversation: what was asked, how the agent thought, what it answered and from where. */
+export function ConversationDemo() {
+  const [rating, setRating] = React.useState<"up" | "down" | null>(null);
+  return (
+    <div className="flex flex-col gap-4">
+      <Message from="user">Why did the login test start failing after the refactor?</Message>
+      <Message
+        from="assistant"
+        avatar={<MessageAvatar name="Kura" />}
+        actions={
+          <MessageActions visibility="always">
+            <MessageCopyButton text={ANSWER} />
+            <MessageFeedback value={rating} onValueChange={setRating} />
+          </MessageActions>
+        }
+      >
+        <Reasoning duration={9}>
+          The refactor moved refresh() onto the auth client. The test builds its session by hand, so
+          it never got the new token field.
+        </Reasoning>
+        <p>
+          The session fixture still returns the old token shape, so <code>refresh()</code> rejects
+          it
+          <Citation
+            index={1}
+            source={{
+              url: "https://github.com/acme/web/blob/main/src/auth/__tests__/login.test.ts",
+              title: "src/auth/__tests__/login.test.ts",
+              siteName: "acme/web",
+              snippet: "const session = { token: 'tok_expired', expiresAt: 0 }",
+            }}
+          />
+          . Updating the fixture fixes the test; nothing else reads that field.
+        </p>
+      </Message>
+      <Composer placeholder="Ask a follow-up…" />
     </div>
   );
 }

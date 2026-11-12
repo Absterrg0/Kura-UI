@@ -164,7 +164,7 @@ export default defineComponent({
     {
       name: "AgentFleetComposition",
       kind: "composition",
-      title: "Master / detail with tool-call",
+      title: "Select a subagent to see its tool calls",
       description: "Selecting a subagent shows its recent tool calls.",
     },
   ],

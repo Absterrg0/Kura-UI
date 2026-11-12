@@ -5,17 +5,7 @@
 // biome-ignore-all lint/a11y/useKeyWithClickEvents: keyboard selection is handled by the combobox.
 "use client";
 
-import {
-  AudioLines,
-  Brain,
-  Check,
-  ChevronDown,
-  Eye,
-  FileText,
-  Globe,
-  Search,
-  Wrench,
-} from "lucide-react";
+import { Check, ChevronDown, Search } from "lucide-react";
 import * as React from "react";
 import { useControllableState } from "../../hooks/use-controllable-state";
 import { cn } from "../../lib/cn";
@@ -47,16 +37,13 @@ export interface ModelPickerModel {
   icon?: React.ReactNode;
 }
 
-const CAPABILITIES: Record<
-  ModelCapability,
-  { label: string; Icon: React.ComponentType<{ className?: string }> }
-> = {
-  vision: { label: "Vision", Icon: Eye },
-  tools: { label: "Tool use", Icon: Wrench },
-  reasoning: { label: "Reasoning", Icon: Brain },
-  web: { label: "Web search", Icon: Globe },
-  audio: { label: "Audio", Icon: AudioLines },
-  files: { label: "Files", Icon: FileText },
+const CAPABILITIES: Record<ModelCapability, { label: string }> = {
+  vision: { label: "Vision" },
+  tools: { label: "Tool use" },
+  reasoning: { label: "Reasoning" },
+  web: { label: "Web search" },
+  audio: { label: "Audio" },
+  files: { label: "Files" },
 };
 
 const SPEED = ["", "Thorough", "Balanced", "Fast"] as const;

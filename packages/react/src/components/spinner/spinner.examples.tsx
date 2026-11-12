@@ -1,6 +1,6 @@
 "use client";
 
-import { Check, FileText, FolderGit2, HardDrive, ListTodo, TriangleAlert } from "lucide-react";
+import { Check, FileText, FolderGit2, HardDrive, ListTodo, RotateCw } from "lucide-react";
 import * as React from "react";
 import { Button } from "../button";
 import { Spinner } from "./spinner";
@@ -136,7 +136,7 @@ export function SpinnerSourcesList() {
                 aria-label={`Reconnect ${source.name}`}
                 onClick={() => syncOne(source.id)}
               >
-                <TriangleAlert className="text-kura-danger-text" />
+                <RotateCw />
                 Reconnect
               </Button>
             ) : (

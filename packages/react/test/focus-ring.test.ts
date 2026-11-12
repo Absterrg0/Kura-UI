@@ -37,4 +37,30 @@ describe("focus rings", () => {
     }
     expect(offenders).toEqual([]);
   });
+
+  it("the docs site never hides an outline without giving focus another style", () => {
+    const docs = join(__dirname, "../../../apps/docs/src");
+    const walk = (dir: string): string[] =>
+      readdirSync(dir, { withFileTypes: true }).flatMap((e) =>
+        e.isDirectory()
+          ? e.name === "generated" || e.name === "lab"
+            ? []
+            : walk(join(dir, e.name))
+          : e.name.endsWith(".tsx")
+            ? [join(dir, e.name)]
+            : [],
+      );
+    const offenders: string[] = [];
+    for (const file of walk(docs)) {
+      const lines = readFileSync(file, "utf8").split("\n");
+      lines.forEach((line, i) => {
+        if (!/\boutline-(hidden|none)\b/.test(line)) return;
+        // The focus style may sit on this line or the next two (a class list split over lines);
+        // a text field in a dialog may say so in a comment just above.
+        const near = lines.slice(Math.max(0, i - 7), i + 3).join("\n");
+        if (!/focus-visible:|focus: the caret/.test(near)) offenders.push(`${file}:${i + 1}`);
+      });
+    }
+    expect(offenders).toEqual([]);
+  });
 });

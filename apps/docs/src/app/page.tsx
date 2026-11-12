@@ -88,8 +88,9 @@ export default function Home() {
       <section aria-labelledby="parts" className="px-4 pt-36 md:px-6 md:pt-44">
         <div className="mx-auto max-w-[1180px]">
           <SectionHead id="parts" title="Every part of the run.">
-            Plans, diffs, terminals, traces and approvals as composable React components. Each one
-            is keyboard-complete, themeable and driven by plain props.
+            The parts around the stage above: the conversation, the files it touched, each tool
+            call, the browser, what is queued and where you can roll back to. All live, all driven
+            by plain props.
           </SectionHead>
           <FeatureBento />
           <div className="flex justify-center pt-10">

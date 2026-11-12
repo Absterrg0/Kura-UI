@@ -16,9 +16,9 @@ export function AgentSigilFull() {
         <AgentSigil name="Kura" size="lg" />
         <AgentSigil name="Kura" size="lg" bare />
       </div>
-      <ul className="grid grid-cols-3 gap-x-6 gap-y-3">
+      <ul className="grid grid-cols-3 gap-x-4 gap-y-3">
         {TEAM.map((name) => (
-          <li key={name} className="flex items-center gap-2.5">
+          <li key={name} className="flex items-center gap-2 whitespace-nowrap">
             <AgentSigil name={name} />
             {name}
           </li>

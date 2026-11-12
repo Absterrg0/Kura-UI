@@ -15,13 +15,15 @@ describe("Halftone", () => {
     expect((el.children[0] as HTMLElement).style.maskImage).toContain("at 100% 0%");
   });
 
-  it("fades out when not visible, without the fade under reduced motion", () => {
+  it("fades out when not visible, and keeps that fade under reduced motion", () => {
     setReducedMotion(true);
     const { container } = render(<Halftone visible={false} reach={0.4} />);
     const el = container.querySelector("[data-slot=halftone]")!;
     expect(el).toHaveAttribute("data-state", "hidden");
     expect(el).toHaveClass("opacity-0");
-    expect(el.className).toContain("motion-reduce:transition-none");
+    // An opacity fade is not travel, so reduced motion leaves it alone.
+    expect(el.className).toContain("transition-opacity");
+    expect(el.className).not.toContain("motion-reduce:transition-none");
     expect((el.children[1] as HTMLElement).style.maskImage).toContain("40% 57%");
   });
 

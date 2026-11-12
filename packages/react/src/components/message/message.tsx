@@ -1,7 +1,6 @@
 "use client";
 
 import {
-  AlertCircle,
   Check,
   ChevronLeft,
   ChevronRight,
@@ -16,6 +15,7 @@ import { cn } from "../../lib/cn";
 import { AgentSigil } from "../agent-sigil";
 import { Button } from "../button";
 import { IconButton, type IconButtonProps } from "../icon-button";
+import { StatusGlyph } from "../status-glyph";
 
 // ------------------------------------------------------------------------------------------------
 // Message
@@ -114,7 +114,7 @@ export function Message({
             role="alert"
             className="flex animate-kura-fade-in items-center gap-2 text-[13px] text-kura-danger-text"
           >
-            <AlertCircle aria-hidden className="size-3.5 shrink-0" />
+            <StatusGlyph status="failed" size="sm" label={null} />
             <span>{error ?? "Something went wrong."}</span>
             {onRetry && (
               <Button variant="ghost" size="xs" onClick={onRetry} className="text-kura-fg-muted">

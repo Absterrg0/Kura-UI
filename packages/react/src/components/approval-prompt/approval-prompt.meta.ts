@@ -6,7 +6,7 @@ export default defineComponent({
   category: "agent",
   status: "beta",
   description:
-    "The moment an agent needs a person: what it asks, the exact command, what it touches and the risk, with Approve (⌘↵) and Deny (Esc) keys.",
+    "The moment an agent needs a person: what it asks, the exact command, what it touches and the risk, with Approve and Deny keys that print their shortcuts.",
   whenToUse: [
     "An agent needs explicit permission before a side effect: running a shell command, editing files, sending email, spending money, calling a destructive API.",
     "Show exactly what will run (verbatim command) and how risky it is before the user decides.",
@@ -233,7 +233,7 @@ export default defineComponent({
       kind: "full",
       title: "High-risk, every option",
       description:
-        "The asking agent, facts with dotted leaders, a waited clock, details, controlled decision, Always allow and ⌘↵ / Esc; “Ask again” resets it.",
+        "The asking agent, facts with dotted leaders, a clock of how long it has waited, details, controlled decision, Always allow and keyboard shortcuts; “Ask again” resets it.",
     },
     {
       name: "ApprovalPromptResolved",

@@ -19,8 +19,8 @@ export const springs = {
 /** Durations in seconds (motion) — mirror of --kura-duration-* in CSS (ms). */
 export const durations = {
   instant: 0.09,
-  fast: 0.15,
-  base: 0.22,
+  fast: 0.14,
+  base: 0.2,
   slow: 0.32,
   slower: 0.48,
 } as const;

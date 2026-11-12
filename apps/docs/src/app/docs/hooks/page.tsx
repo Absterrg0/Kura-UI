@@ -17,12 +17,12 @@ export default function HooksPage() {
           title="Hooks"
           description="The hooks Kura components are built on, exported for your own parts of the interface. Import them from @kura-ui/react/hooks, or add one with the shadcn CLI."
         />
-        <nav aria-label="On this page" className="flex flex-wrap gap-2 pb-4">
+        <nav aria-label="On this page" className="flex flex-wrap gap-x-5 gap-y-1.5 pb-4">
           {catalog.hooks.map((h) => (
             <a
               key={h.name}
               href={`#${h.name}`}
-              className="rounded-[10px] px-2.5 py-1 font-kura-mono text-[12.5px] text-kura-fg-muted shadow-[inset_0_0_0_1px_var(--kura-border)] outline-hidden hover:bg-kura-hover hover:text-kura-fg focus-visible:shadow-kura-focus"
+              className="rounded-sm font-kura-mono text-[13px] text-kura-fg-muted underline decoration-kura-faint underline-offset-4 outline-hidden hover:text-kura-fg hover:decoration-current focus-visible:shadow-kura-focus"
             >
               {h.name}
             </a>

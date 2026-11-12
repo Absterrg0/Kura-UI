@@ -232,7 +232,10 @@ export default defineComponent({
     reducedMotion:
       "Jump-to-latest scrolls instantly and its key only fades (no slide); the copy check and thumbs swap without scale.",
   },
-  dependencies: { npm: ["lucide-react"], kura: ["agent-sigil", "button", "icon-button"] },
+  dependencies: {
+    npm: ["lucide-react"],
+    kura: ["agent-sigil", "button", "icon-button", "status-glyph"],
+  },
   related: ["streaming-text", "code-block", "reasoning", "tool-call", "citation", "composer"],
   tags: [
     "chat",

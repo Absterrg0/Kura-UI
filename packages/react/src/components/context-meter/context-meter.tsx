@@ -79,7 +79,8 @@ function useTweened(target: number, duration = 520): number {
 }
 
 // Segments are told apart by how bright their dots are, never by hue.
-const SHADES = [100, 62, 38, 22];
+// The dimmest step still stands clear of an unlit dot (about 14%).
+const SHADES = [100, 68, 46, 30];
 const segmentColor = (s: ContextSegment, i: number) =>
   s.color ?? `color-mix(in oklab, var(--kura-fg) ${SHADES[i % SHADES.length]}%, transparent)`;
 
@@ -277,7 +278,9 @@ function Breakdown({
           <span className="font-kura-mono text-kura-fg-subtle text-xs tabular-nums">
             {formatTokens(Math.max(0, max - used))}
           </span>
-          <span className="w-9" />
+          <span className="w-9 text-right font-kura-mono text-kura-fg-subtle text-xs tabular-nums">
+            {max > 0 ? `${Math.round((Math.max(0, max - used) / max) * 100)}%` : "–"}
+          </span>
         </li>
       </ul>
       {(footer != null || level !== "ok") && (

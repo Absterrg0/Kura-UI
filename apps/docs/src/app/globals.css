@@ -58,9 +58,20 @@
     var(--kura-elev-surface),
     0 0 0 1px var(--kura-border-strong);
 }
-/* A well: sunk, for code and commands. */
+/*
+ * A well on the page: sunk, for code, commands and fields. The library's well token is tuned to
+ * sit inside a white sheet; on the light canvas it would read as raised, so here it is one step
+ * darker than the canvas (and still 4.5:1 under ink-3).
+ */
+:root {
+  --well-on-canvas: #e2e4e8;
+}
+.dark,
+[data-theme="dark"] {
+  --well-on-canvas: var(--kura-surface-sunken);
+}
 .well {
-  background-color: var(--kura-surface-sunken);
+  background-color: var(--well-on-canvas);
   box-shadow: var(--kura-elev-sunk);
 }
 

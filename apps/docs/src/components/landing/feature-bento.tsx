@@ -4,6 +4,7 @@ import { cn } from "@/lib/cn";
 import {
   BrowserDemo,
   CheckpointsDemo,
+  ConversationDemo,
   FilesDemo,
   QueueDemo,
   ToolsDemo,
@@ -25,10 +26,10 @@ interface Feature {
 // page as it would in an app, live, with one line above it. None of them repeats the hero stage.
 const FEATURES: Feature[] = [
   {
-    slug: "diff-view",
-    example: "DiffViewMinimal",
-    title: "Diff review",
-    body: "Accept or reject the agent's edits hunk by hunk, with j, k, a and r.",
+    slug: "message",
+    demo: ConversationDemo,
+    title: "Conversation",
+    body: "Messages, the reasoning behind them, sources, and the prompt box.",
     span: "lg:col-span-7",
   },
   {
@@ -50,7 +51,7 @@ const FEATURES: Feature[] = [
     demo: BrowserDemo,
     title: "Browser session",
     body: "Computer use made legible: the page, the cursor, each step.",
-    span: "lg:col-span-7",
+    span: "max-md:hidden lg:col-span-7",
   },
   {
     slug: "prompt-queue",

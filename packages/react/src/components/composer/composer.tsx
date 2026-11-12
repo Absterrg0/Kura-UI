@@ -299,8 +299,8 @@ export function Composer({
         className={cn(
           "group/composer relative isolate flex w-full cursor-text flex-col rounded-kura-xl bg-kura-surface font-kura-sans text-kura-fg shadow-kura-surface",
           "transition-[box-shadow,opacity] duration-(--kura-duration-base) ease-kura-snap",
-          // A sheet like any other. Focus firms its ring in ink; nothing glows.
-          "data-[focused=true]:shadow-[0_0_0_1px_var(--kura-fg-subtle),var(--kura-elev-surface)]",
+          // A sheet like any other. Focus draws the same 2px ring every control gets; nothing glows.
+          "data-[focused=true]:shadow-[0_0_0_2px_var(--kura-ring),var(--kura-elev-surface)]",
           disabled && "cursor-not-allowed opacity-60",
           className,
         )}

@@ -64,9 +64,9 @@ export function TerminalMinimal() {
       command="git status --short"
       exitCode={0}
       lines={[
-        ` ${red("M")} src/auth/client.ts`,
-        ` ${red("M")} src/middleware.ts`,
-        ` ${red("M")} src/auth/__tests__/login.test.ts`,
+        ` ${yellow("M")} src/auth/client.ts`,
+        ` ${yellow("M")} src/middleware.ts`,
+        ` ${yellow("M")} src/auth/__tests__/login.test.ts`,
         ` ${red("D")} src/lib/legacy-session.ts`,
       ]}
     />

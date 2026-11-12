@@ -366,7 +366,7 @@ export function CodeBlock({
                     <span
                       aria-hidden
                       data-slot="code-block-line-number"
-                      className="mr-4 shrink-0 select-none text-right text-kura-fg-subtle tabular-nums opacity-70"
+                      className="mr-4 shrink-0 select-none text-right text-kura-fg-subtle tabular-nums"
                       style={{ width: `${digits}ch` }}
                     >
                       {n}
@@ -391,7 +391,6 @@ export function CodeBlock({
                     className={cn(
                       "min-w-0 flex-1",
                       wrap ? "whitespace-pre-wrap break-words" : "whitespace-pre",
-                      line.kind === "remove" && "opacity-75",
                       line.pending && "text-kura-fg-muted",
                     )}
                   >

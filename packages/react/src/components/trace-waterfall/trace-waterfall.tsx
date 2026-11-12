@@ -1,6 +1,6 @@
 "use client";
 
-import { Bot, BrainCircuit, ChevronRight, FileSearch, Wrench } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import * as React from "react";
 import { useControllableState } from "../../hooks/use-controllable-state";
 import { useElapsed } from "../../hooks/use-elapsed";
@@ -71,13 +71,6 @@ interface Row {
   posinset: number;
   setsize: number;
 }
-
-const KIND_ICON: Record<TraceSpanKind, typeof Bot> = {
-  agent: Bot,
-  llm: BrainCircuit,
-  tool: Wrench,
-  retrieval: FileSearch,
-};
 
 const KIND_LABEL: Record<TraceSpanKind, string> = {
   agent: "agent",
@@ -163,10 +156,11 @@ function barTone(span: TraceSpan, selected: boolean): string {
   return span.kind === "agent" ? "text-kura-fg-muted" : "text-kura-fg-subtle";
 }
 
-const TRACK = "absolute inset-y-0 left-3 right-5";
+// Narrow panels put each row's duration at the end of its rail, so the track stops short of it.
+const TRACK = "absolute inset-y-0 left-3 right-[54px] @sm:right-5";
 // The time axis never gets less than about half the panel: spans are the point of a trace.
 const GRID =
-  "grid grid-cols-[minmax(0,52%)_1fr] @sm:grid-cols-[minmax(150px,50%)_1fr] @lg:grid-cols-[minmax(176px,46%)_1fr] @3xl:grid-cols-[minmax(300px,40%)_1fr]";
+  "grid grid-cols-[minmax(0,46%)_1fr] @sm:grid-cols-[minmax(150px,50%)_1fr] @lg:grid-cols-[minmax(176px,46%)_1fr] @3xl:grid-cols-[minmax(300px,40%)_1fr]";
 
 function Text({ children, tone }: { children: React.ReactNode; tone?: "danger" }) {
   return (
@@ -534,7 +528,6 @@ export function TraceWaterfall({
                 const hasKids = !!span.children?.length;
                 const open = hasKids && !collapsed.has(span.id);
                 const selected = selectedId === span.id;
-                const Icon = KIND_ICON[span.kind];
                 const dur = end - span.start;
                 const showGlyph =
                   span.status === "running" ||
@@ -543,7 +536,6 @@ export function TraceWaterfall({
                 const details = selected
                   ? (renderDetails?.(span) ?? <Details span={span} end={end} />)
                   : null;
-                const spoken = `${span.name}${span.meta ? ` ${span.meta}` : ""} ${formatDuration(dur)}, ${KIND_LABEL[span.kind]}, ${STATUS_WORD[span.status]}`;
                 return (
                   <div
                     key={span.id}
@@ -557,9 +549,8 @@ export function TraceWaterfall({
                     aria-setsize={row.setsize}
                     aria-expanded={hasKids ? open : undefined}
                     aria-selected={selected}
-                    // Closed, the row has a full spoken name. Open, its details are on screen inside
-                    // it, so the name comes from the content (the kind and state are added below).
-                    aria-label={selected ? undefined : spoken}
+                    // The row is named by what it shows (name, hint, duration), plus its kind and
+                    // state as words. No aria-label: what is on screen changes with the width.
                     tabIndex={activeFocus === span.id ? 0 : -1}
                     data-slot="trace-waterfall-span"
                     data-kind={span.kind}
@@ -617,11 +608,11 @@ export function TraceWaterfall({
                         {span.kind === "agent" ? (
                           <AgentSigil name={span.name} size="sm" bare className="size-3.5" />
                         ) : (
-                          <Icon
-                            aria-hidden
-                            strokeWidth={2}
-                            className="size-3.5 shrink-0 text-kura-fg-subtle"
-                          />
+                          // Anything that is not an agent is marked by one dot; the kind is in the
+                          // type (tools are mono) and in the spoken name.
+                          <span aria-hidden className="grid size-3.5 shrink-0 place-items-center">
+                            <span className="size-1 rounded-full bg-kura-faint" />
+                          </span>
                         )}
                         <span
                           className={cn(
@@ -655,11 +646,9 @@ export function TraceWaterfall({
                         >
                           {span.status === "queued" ? "—" : formatDuration(dur)}
                         </span>
-                        {selected && (
-                          <span className="sr-only">
-                            , {KIND_LABEL[span.kind]}, {STATUS_WORD[span.status]}.
-                          </span>
-                        )}
+                        <span className="sr-only">
+                          , {KIND_LABEL[span.kind]}, {STATUS_WORD[span.status]}
+                        </span>
                       </div>
                       <div className="relative">
                         <div className={TRACK}>
@@ -691,6 +680,13 @@ export function TraceWaterfall({
                             />
                           )}
                         </div>
+                        {/* Narrow panels: the duration sits at the end of the rail. */}
+                        <span
+                          aria-hidden
+                          className="absolute top-1/2 right-3.5 -translate-y-1/2 font-kura-mono text-[11.5px] text-kura-fg-subtle tabular-nums @sm:hidden"
+                        >
+                          {span.status === "queued" ? "" : formatDuration(dur)}
+                        </span>
                       </div>
                     </div>
                     {details != null && (

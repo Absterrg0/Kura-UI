@@ -7,9 +7,10 @@ effort)**. Fixed 14-shot set (`design/v3/shots.mjs`), scored on the 14-category 
 History before v3: the v2 direction ("Raycast-grade dark") reached 7.3 (R1) and 7.9 (R2) with one
 reviewer (`design/v2/REVIEW-LOG.md`). The owner then rejected the look itself; v3 replaces it.
 
-| Round | Fable 5.2 | Opus 5.5 | Notes                                                                                                                                               |
-| ----- | --------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------- |
-| R1    | 8.0       | 7.8      | First full build on the dot language (commit 519f6c7). Identity lands (brand 9.0 from both); focus rings, mobile docs and loose edges hold it back. |
+| Round | Fable 5.2 | Opus 5.5 | Notes                                                                                                                                                                            |
+| ----- | --------- | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| R1    | 8.0       | 7.8      | First full build on the dot language (commit 519f6c7). Identity lands (brand 9.0 from both); focus rings, mobile docs and loose edges hold it back.                              |
+| R2    | 8.8*      | 8.5      | Commit 87f0d7b. Round-1 list largely closed. *Live checks were cut short: the docs dev server hit its 2-hour limit mid-review, so focus, 390px pages and motion are provisional. |
 
 ---
 
@@ -77,3 +78,70 @@ Hero at 1440 in both themes; the decision choreography; reduced motion (91 anima
 dot primitives, AgentOrb and AudioWaveform; TaskList, Checkpoints, RunHeader, Terminal,
 FileChanges, Composer; nav, ⌘K layout, mobile nav, footer, sidebar marker, monochrome code; the
 390px home.
+
+---
+
+## Round 2 — commit 87f0d7b
+
+The docs dev server stopped mid-review (it reached its 2-hour background limit at 04:27), so
+neither reviewer finished the live Tab walk, the 390px component pages, reduced motion or the
+agent demo after it plays. Scores for interaction, accessibility, responsive and motion are
+provisional. Both reviewers saw all 14 shots, home at six widths in both themes, approve/deny,
+the full index and 15–20 component pages in both themes with axe.
+
+| #   | Category                 | Fable 5.2 | Opus 5.5 |
+| --- | ------------------------ | --------- | -------- |
+| 1   | Visual hierarchy         | 8.9       | 8.9      |
+| 2   | Typography               | 8.9       | 8.8      |
+| 3   | Colour & state semantics | 9.0       | 8.8      |
+| 4   | Layout & spacing         | 8.6       | 8.4      |
+| 5   | Consistency              | 8.7       | 8.4      |
+| 6   | Brand distinctiveness    | 9.3       | 9.2      |
+| 7   | Clarity & density        | 8.9       | 8.7      |
+| 8   | Interaction states       | 8.5*      | 8.5      |
+| 9   | Light/dark parity        | 9.2       | 9.0      |
+| 10  | Craft & polish           | 8.4       | 8.2      |
+| 11  | Accessibility            | 8.3*      | 7.8      |
+| 12  | Responsive               | 8.6*      | 8.6      |
+| 13  | Motion                   | 8.8*      | 8.9      |
+| 14  | Copy                     | 8.9       | 8.8      |
+|     | **OVERALL**              | **8.8***  | **8.5**  |
+
+### Round-1 verification
+
+Fixed: hero at 1024; ember overuse; "denied" as a dash; home repetition and the "Works with"
+strip; beta pill; timeline glyph; terminal header; story errors; light halftone wash; library
+focus rings (source + guard test). Partly: hero Trace (still no durations, kind icons, short
+rail); DiffView insets (16 vs 11px). Regressed: the BrowserSession halftone now runs under text;
+removing ScaleToFit means index cards cut sheets mid-row; the stage reflows on a decision.
+
+### Must-fix (merged, ranked)
+
+1. **Invisible focus on the site** (Opus): the header search trigger and the Related chips use
+   `outline-hidden` with no focus style. Extend the guard test to `apps/docs`.
+2. **Two serious axe failures** (both): CodeBlock line numbers 2.7–3.5:1 (`opacity-70`);
+   Citation domain key name does not start with its visible text.
+3. **Components index cuts sheets mid-row** (both): never crop a sheet's ring; primitives sit
+   left-anchored; the Status glyph card cuts a row; the Context meter card shows a 10-dot rail.
+4. **A decision reflows the hero** (both): Plan loses its detail line (−20px), the migrator rail
+   goes (−15px).
+5. **Hero Trace below the reference** (both): no durations, Lucide kind icons, a ~22-dot rail.
+6. **Paused BrowserSession halftone under text** (both).
+7. Nav link wraps at 768; props table breaks names mid-word; browser mock is 3–6px on phones.
+
+### Polish (merged)
+
+Agent demo left column ends ~300px short; empty 288px stages; stale bento paragraph; ⌘↵ in prose
+vs Ctrl ↵ on keys; ThinkingIndicator is a generic typing indicator; two Lucide status icons left
+(message error, spinner example); light wells on the canvas read as raised; two input recipes on
+/components; ringed hook chips; ContextPanel "Files" vs "Free" too close and no % on Free; red
+"M" in a terminal example; halftone loses its fade under reduced motion; DiffView and
+ApprovalPrompt each appear twice on home; JS durations do not mirror CSS; install transcript cut
+at 390; capability icon map left in ModelPicker; a console 404 on two component pages.
+
+### Verified good (do not touch)
+
+Hero at 1440 and its 768–1279 recut; approve/deny choreography; ember discipline; ApprovalPrompt
+page and resolved states; dot primitives, AgentOrb, AudioWaveform; AgentFleet, Checkpoints,
+TaskList, Terminal, FileChanges, Composer; nav (≥1024), footer, closing call to action, "Built
+right", the install table; ⌘K layout with a resetting query; 390px home; sentence-case titles.

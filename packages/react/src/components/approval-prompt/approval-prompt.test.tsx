@@ -182,12 +182,12 @@ describe("ApprovalPrompt", () => {
     expect(onApprove).not.toHaveBeenCalled();
   });
 
-  it("holds still under reduced motion: no blinking glyph, no fades or travel", () => {
+  it("holds still under reduced motion: no blinking glyph, no travel; the halftone only fades", () => {
     setReducedMotion(true);
     const { container } = render(<ApprovalPrompt title="Run?" />);
     expect(container.innerHTML).toContain("motion-reduce:animate-none");
     expect(container.querySelector("[data-slot=halftone]")?.className).toContain(
-      "motion-reduce:transition-none",
+      "transition-opacity",
     );
     expect(
       container.querySelector("[data-slot=approval-prompt-actions]")?.parentElement?.innerHTML,

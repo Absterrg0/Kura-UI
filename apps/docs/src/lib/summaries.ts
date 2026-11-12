@@ -8,7 +8,7 @@ const SUMMARIES: Record<string, string> = {
   "agent-orb": "A sphere of dots that breathes, listens, thinks and speaks.",
   "agent-sigil": "A face for an agent: a dot sigil generated from its name.",
   "agent-timeline": "A vertical plan tracker for multi-step agent work.",
-  "approval-prompt": "Ask before risky actions. Approve with ⌘↵, deny with Esc.",
+  "approval-prompt": "Ask before risky actions. Approve or deny from the keyboard.",
   "artifact-card": "A card for something the agent made: a doc, code, a page or an image.",
   attachment: "File and image chips with upload progress, errors and retry.",
   "audio-waveform": "A waveform drawn as a dot matrix, live or recorded.",

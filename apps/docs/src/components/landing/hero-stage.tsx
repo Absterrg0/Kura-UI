@@ -107,7 +107,8 @@ export function HeroStage({ className }: { className?: string }) {
       id: "migrate",
       title: "Migrate the sessions table",
       status: migrateStatus,
-      detail: pending ? "Needs you" : decision === "denied" ? "Denied by you" : undefined,
+      // One line in every state, so the plan keeps its height when a decision lands.
+      detail: pending ? "Needs you" : decision === "denied" ? "Denied by you" : "Approved by you",
       startedAt: approved && !migrated ? t0 : undefined,
       durationMs: migrated ? 5_100 : undefined,
     },
@@ -180,7 +181,7 @@ export function HeroStage({ className }: { className?: string }) {
     },
     {
       id: "migrate",
-      name: "db:migrate",
+      name: "migrate",
       kind: "tool",
       start: 425_000,
       end: pending || !approved ? 432_000 : migrated ? 470_000 : undefined,
@@ -190,7 +191,7 @@ export function HeroStage({ className }: { className?: string }) {
 
   return (
     <div data-slot="hero-stage" className={cn("flex flex-col gap-3", className)}>
-      <div className="min-w-0 hidden md:block">
+      <div className="hidden min-w-0 md:block max-lg:[&_[data-slot=run-header-model]]:hidden">
         <RunHeader
           title="Migrate session API to @acme/auth"
           agent="Kura"
@@ -253,7 +254,7 @@ export function HeroStage({ className }: { className?: string }) {
         </div>
         <div className="hidden min-w-0 flex-col gap-3 md:col-start-2 md:flex xl:order-3 xl:col-start-auto">
           <div className="min-w-0">
-            <AgentFleet agents={fleet} title="Subagents" />
+            <AgentFleet agents={fleet} title="Subagents" className="min-h-[254px]" />
           </div>
           <div className="hidden min-w-0 xl:block">
             <ContextPanel

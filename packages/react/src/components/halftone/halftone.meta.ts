@@ -43,7 +43,8 @@ export default defineComponent({
       "Purely decorative and aria-hidden. Never the only signal: pair it with a status-glyph and text that say the thing is waiting.",
       "Keep text out of its densest corner so contrast stays above 4.5:1.",
     ],
-    reducedMotion: "It appears and disappears without the fade.",
+    reducedMotion:
+      "Nothing in it moves. It still fades in and out: an opacity fade is not travel, and it is how ember leaves the screen.",
   },
   dependencies: { npm: [], kura: [] },
   related: ["approval-prompt", "status-glyph", "dot-rail"],

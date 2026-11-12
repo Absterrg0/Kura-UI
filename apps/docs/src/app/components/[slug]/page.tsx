@@ -266,7 +266,7 @@ export default async function ComponentPage({ params }: { params: Promise<{ slug
                     key={p.name}
                     className="flex flex-col gap-1.5 border-kura-border-subtle border-b py-3.5 align-top last:border-0 md:table-row md:py-0"
                   >
-                    <td className="font-kura-mono text-[13px] [overflow-wrap:anywhere] md:w-[10.5rem] md:py-3.5 md:pr-4">
+                    <td className="font-kura-mono text-[13px] max-md:[overflow-wrap:anywhere] md:w-[13rem] md:whitespace-nowrap md:py-3.5 md:pr-4">
                       {p.name}
                       {p.required && (
                         <span className="text-kura-fg-subtle" title="required">
@@ -274,13 +274,13 @@ export default async function ComponentPage({ params }: { params: Promise<{ slug
                         </span>
                       )}
                     </td>
-                    <td className="font-kura-mono text-[12px] text-kura-fg-muted [overflow-wrap:anywhere] md:w-[13rem] md:px-4 md:py-3.5">
+                    <td className="font-kura-mono text-[12px] text-kura-fg-muted max-md:[overflow-wrap:anywhere] md:w-[12rem] md:px-4 md:py-3.5">
                       {p.type}
                     </td>
                     <td
                       className={
                         p.default
-                          ? "font-kura-mono text-[12px] text-kura-fg-muted [overflow-wrap:anywhere] md:w-[6.5rem] md:px-4 md:py-3.5"
+                          ? "font-kura-mono text-[12px] text-kura-fg-muted max-md:[overflow-wrap:anywhere] md:w-[6.5rem] md:px-4 md:py-3.5"
                           : "font-kura-mono text-[12px] text-kura-fg-muted max-md:hidden md:w-[6.5rem] md:px-4 md:py-3.5"
                       }
                     >
@@ -316,15 +316,17 @@ export default async function ComponentPage({ params }: { params: Promise<{ slug
                   key={p.name}
                   className="flex flex-col gap-1 py-3.5 text-[14px] md:flex-row md:items-baseline md:gap-4"
                 >
-                  <span className="w-48 shrink-0 font-kura-mono text-[13px]">{p.name}</span>
+                  <span className="flex w-56 shrink-0 flex-col gap-0.5 font-kura-mono text-[13px]">
+                    {p.name}
+                    {p.dataSlot && (
+                      <code className="text-[11.5px] text-kura-fg-subtle [overflow-wrap:anywhere]">
+                        {p.dataSlot}
+                      </code>
+                    )}
+                  </span>
                   <span className="flex-1 text-kura-fg-muted">
                     <Prose>{p.description}</Prose>
                   </span>
-                  {p.dataSlot && (
-                    <code className="font-kura-mono text-kura-fg-subtle text-xs">
-                      data-slot=&quot;{p.dataSlot}&quot;
-                    </code>
-                  )}
                 </li>
               ))}
             </ol>
@@ -392,7 +394,7 @@ export default async function ComponentPage({ params }: { params: Promise<{ slug
                   <Link
                     key={r.slug}
                     href={`/components/${r.slug}`}
-                    className="inline-flex h-8 items-center rounded-[9px] bg-kura-raised px-[11px] font-kura-mono text-[12.5px] text-kura-fg shadow-kura-raised outline-hidden transition-colors duration-150 hover:bg-kura-raised-hover active:translate-y-px motion-reduce:transition-none"
+                    className="inline-flex h-8 items-center rounded-[9px] bg-kura-raised px-[11px] font-kura-mono text-[12.5px] text-kura-fg shadow-kura-raised outline-hidden transition-colors duration-150 hover:bg-kura-raised-hover focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-kura-ring active:translate-y-px motion-reduce:transition-none"
                   >
                     {r.slug}
                   </Link>

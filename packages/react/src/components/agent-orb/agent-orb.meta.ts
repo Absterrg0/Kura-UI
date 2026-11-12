@@ -133,7 +133,7 @@ export default defineComponent({
       name: "AgentOrbStates",
       kind: "state",
       title: "All five states",
-      description: "idle, listening, thinking, speaking and error side by side.",
+      description: "Idle, listening, thinking, speaking and error side by side.",
     },
     {
       name: "AgentOrbVoiceSession",

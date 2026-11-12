@@ -6,7 +6,6 @@ import { useElapsed } from "../../hooks/use-elapsed";
 import { cn } from "../../lib/cn";
 import { formatClock } from "../../lib/format";
 import { Button } from "../button";
-import { Halftone } from "../halftone";
 import { type AgentStatus, StatusGlyph } from "../status-glyph";
 
 export type BrowserStepKind = "navigate" | "click" | "type" | "scroll" | "extract";
@@ -322,13 +321,11 @@ export function BrowserSession({
       data-status={status}
       data-layout={layout}
       className={cn(
-        "@container relative isolate flex min-w-0 flex-col overflow-hidden rounded-kura-xl bg-kura-surface font-kura-sans text-kura-fg shadow-kura-surface",
+        "@container flex min-w-0 flex-col overflow-hidden rounded-kura-xl bg-kura-surface font-kura-sans text-kura-fg shadow-kura-surface",
         className,
       )}
       {...props}
     >
-      {/* Paused means the session is waiting on a person: the one thing ember is for. */}
-      <Halftone visible={status === "paused"} reach={0.5} />
       {/* Status line */}
       <div
         data-slot="browser-session-header"

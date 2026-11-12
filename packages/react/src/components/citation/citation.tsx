@@ -153,7 +153,12 @@ export function Citation({
       <HoverCardTrigger
         render={<a data-slot="citation" href={source.url} target="_blank" rel="noreferrer" />}
         data-state={open ? "open" : "closed"}
-        aria-label={`Source ${index}: ${source.title} (${domain})`}
+        // The name starts with what the key shows, so it can be found by what is on screen.
+        aria-label={
+          display === "domain"
+            ? `${label}, source ${index}: ${source.title}`
+            : `Source ${index}: ${source.title} (${domain})`
+        }
         className={cn(
           // A citation is a small keycap with the source number printed on it.
           "relative -top-[0.1em] mr-px ml-1 inline-flex h-[1.35em] min-w-[1.35em] items-center justify-center gap-1 rounded-[5px] bg-kura-raised px-[0.35em] align-middle font-kura-mono font-medium text-[0.7em] text-kura-fg-muted tabular-nums leading-none no-underline shadow-kura-key outline-hidden",

@@ -55,7 +55,7 @@ export function ComponentsBrowser({
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Filter"
-            className="h-9 w-full rounded-lg bg-kura-hover pr-3 pl-8.5 text-[14px] text-kura-fg shadow-[inset_0_0_0_1px_var(--kura-border-subtle)] outline-hidden placeholder:text-kura-fg-subtle focus-visible:shadow-kura-focus"
+            className="well h-9 w-full rounded-[9px] pr-3 pl-8.5 text-[13.5px] text-kura-fg outline-hidden placeholder:text-kura-fg-subtle focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-kura-ring"
           />
         </label>
       </div>
