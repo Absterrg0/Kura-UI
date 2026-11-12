@@ -13,6 +13,7 @@ const staticExport = process.env.NEXT_OUTPUT === "export";
 
 const config: NextConfig = {
   reactStrictMode: true,
+  devIndicators: false,
   ...(staticExport ? { output: "export" as const, trailingSlash: false } : {}),
   // The docs render the library from source (packages/react/src) for instant HMR.
   transpilePackages: ["@kura-ui/react"],

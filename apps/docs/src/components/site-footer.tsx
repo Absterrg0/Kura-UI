@@ -2,31 +2,64 @@ import Link from "next/link";
 import { GITHUB_URL } from "@/lib/catalog";
 import { Logo } from "./logo";
 
+const COLUMNS = [
+  {
+    title: "Library",
+    links: [
+      { href: "/components", label: "Components" },
+      { href: "/docs", label: "Getting started" },
+      { href: "/docs/wiring-events", label: "Wiring agent events" },
+      { href: "/docs/hooks", label: "Hooks" },
+    ],
+  },
+  {
+    title: "For agents",
+    links: [
+      { href: "/agents", label: "MCP server and CLI" },
+      { href: "/llms.txt", label: "llms.txt" },
+      { href: "/r/registry.json", label: "shadcn registry" },
+      { href: "/registry/index.json", label: "JSON catalog" },
+    ],
+  },
+  {
+    title: "Project",
+    links: [
+      { href: GITHUB_URL, label: "GitHub" },
+      { href: `${GITHUB_URL}/blob/main/DESIGN.md`, label: "Design language" },
+      { href: `${GITHUB_URL}/blob/main/AGENTS.md`, label: "Contributing" },
+    ],
+  },
+];
+
 export function SiteFooter() {
   return (
-    <footer className="mt-24 border-kura-border-subtle border-t">
-      <div className="mx-auto flex max-w-[1320px] flex-col gap-6 px-4 py-10 text-[13px] text-kura-fg-muted md:flex-row md:items-center md:justify-between md:px-6">
-        <div className="flex items-center gap-3">
-          <Logo className="text-kura-fg" />
-          <span className="text-kura-fg-subtle">Open source under MIT.</span>
+    <footer className="border-kura-border-subtle border-t">
+      <div className="px-5 md:px-6">
+      <div className="mx-auto grid max-w-[1200px] gap-10 pt-14 pb-12 text-[14px] sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1fr]">
+        <div className="flex flex-col gap-3">
+          <Logo />
+          <p className="max-w-[16rem] text-kura-fg-subtle leading-relaxed">
+            React components for agent interfaces. Open source under MIT.
+          </p>
         </div>
-        <nav className="flex flex-wrap gap-x-5 gap-y-2">
-          <Link href="/docs" className="hover:text-kura-fg">
-            Docs
-          </Link>
-          <Link href="/components" className="hover:text-kura-fg">
-            Components
-          </Link>
-          <Link href="/agents" className="hover:text-kura-fg">
-            Agents
-          </Link>
-          <a href="/llms.txt" className="hover:text-kura-fg">
-            llms.txt
-          </a>
-          <a href={GITHUB_URL} className="hover:text-kura-fg">
-            GitHub
-          </a>
-        </nav>
+        {COLUMNS.map((col) => (
+          <div key={col.title} className="flex flex-col gap-3">
+            <p className="font-medium text-kura-fg">{col.title}</p>
+            <ul className="flex flex-col gap-2">
+              {col.links.map((l) => (
+                <li key={l.href}>
+                  <Link
+                    href={l.href}
+                    className="rounded-sm text-kura-fg-muted outline-none transition-colors hover:text-kura-fg focus-visible:shadow-kura-focus"
+                  >
+                    {l.label}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
+      </div>
       </div>
     </footer>
   );

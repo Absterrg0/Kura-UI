@@ -10,16 +10,16 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
-  title: { default: "Kura UI — AI-native components for agents", template: "%s — Kura UI" },
+  title: { default: "Kura UI — Components for agent interfaces", template: "%s — Kura UI" },
   description:
-    "Beautiful, opinionated React components for AI products — composers, voice, shaders and agent surfaces — with a machine-readable manifest so coding agents choose and install them correctly.",
+    "Open-source React components for agent runs, plans, terminals, diffs and approvals. Copy them into your app, or let your coding agent install them from the registry, MCP server or CLI.",
   alternates: { types: { "text/plain": "/llms.txt" } },
 };
 
 export const viewport: Viewport = {
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#fcfcfc" },
-    { media: "(prefers-color-scheme: dark)", color: "#0a0a0a" },
+    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
+    { media: "(prefers-color-scheme: dark)", color: "#07080a" },
   ],
 };
 
@@ -34,7 +34,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <ThemeProvider>
           <a
             href="#main"
-            className="sr-only z-50 rounded-kura-md bg-kura-surface px-3 py-2 shadow-kura-md focus:not-sr-only focus:fixed focus:top-2 focus:left-2"
+            className="sr-only z-50 rounded-lg bg-kura-surface px-3 py-2 shadow-kura-md focus:not-sr-only focus:fixed focus:top-3 focus:left-3"
           >
             Skip to content
           </a>

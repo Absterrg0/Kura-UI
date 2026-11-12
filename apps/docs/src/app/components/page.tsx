@@ -1,42 +1,68 @@
 import type { Metadata } from "next";
-import { ComponentCard } from "@/components/component-card";
-import { DocsShell, PageHeader } from "@/components/docs-shell";
-import { components, componentsByCategory } from "@/lib/catalog";
+import type { CardData } from "@/components/component-card";
+import { ComponentsBrowser } from "@/components/components-browser";
+import { PageHeader } from "@/components/docs-shell";
+import { catalog, components } from "@/lib/catalog";
 
 export const metadata: Metadata = {
   title: "Components",
   description: "Every Kura UI component, with live previews.",
 };
 
+/** Small components read best centred; everything else is a panel, cropped by the card. */
+const CENTERED = new Set([
+  "agent-orb",
+  "audio-waveform",
+  "citation",
+  "model-picker",
+  "shimmer-text",
+  "thinking-indicator",
+  "voice-dictation",
+  "attachment",
+  "prompt-suggestions",
+  "streaming-text",
+]);
+
+/** A richer example where the minimal one is too small to read on a card. */
+const PREVIEW: Record<string, string> = {
+  "context-meter": "ContextMeterFull",
+  "thinking-indicator": "ThinkingIndicatorFull",
+  "voice-dictation": "VoiceDictationFull",
+  "shimmer-text": "ShimmerTextFull",
+};
+
 export default function ComponentsPage() {
+  const order = catalog.categories.map((c) => c.id);
+  const sorted = [...components].sort(
+    (a, b) => order.indexOf(a.category) - order.indexOf(b.category),
+  );
+  const cards: CardData[] = sorted.map((c) => {
+    const ex =
+      c.examples.find((e) => e.name === PREVIEW[c.slug]) ??
+      c.examples.find((e) => e.kind === "minimal") ??
+      c.examples[0];
+    return {
+      slug: c.slug,
+      title: c.title,
+      description: c.description,
+      category: c.category,
+      example: ex?.name ?? "",
+      fit: CENTERED.has(c.slug) ? "center" : "panel",
+    };
+  });
+  const categories = catalog.categories
+    .filter((cat) => components.some((c) => c.category === cat.id))
+    .map((cat) => ({ id: cat.id, title: cat.title }));
   return (
-    <DocsShell>
+    <div className="px-5 pt-14 pb-28 md:px-6 md:pt-20">
+      <div className="mx-auto max-w-[1200px]">
       <PageHeader
         title="Components"
-        description={`${components.length} components, each with a manifest your agent can read. New ones appear here as soon as their folder exists.`}
+        description={`${components.length} React components for agent interfaces, each with a manifest your coding agent can read. Supervision components first.`}
+        className="pb-8"
       />
-      <div className="flex flex-col gap-14">
-        {componentsByCategory().map(({ category, items }) => (
-          <section key={category.id} aria-labelledby={`cat-${category.id}`}>
-            <div className="flex items-baseline justify-between gap-4 pb-4">
-              <h2
-                id={`cat-${category.id}`}
-                className="font-semibold text-[18px] tracking-[-0.02em]"
-              >
-                {category.title}
-              </h2>
-              <p className="hidden text-[13px] text-kura-fg-subtle md:block">
-                {category.description}
-              </p>
-            </div>
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
-              {items.map((c) => (
-                <ComponentCard key={c.slug} component={c} />
-              ))}
-            </div>
-          </section>
-        ))}
+      <ComponentsBrowser cards={cards} categories={categories} />
       </div>
-    </DocsShell>
+    </div>
   );
 }

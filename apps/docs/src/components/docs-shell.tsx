@@ -1,34 +1,38 @@
 import type * as React from "react";
+import { cn } from "@/lib/cn";
 import { Sidebar } from "./sidebar";
 
 export function DocsShell({ children }: { children: React.ReactNode }) {
   return (
-    <div className="mx-auto flex max-w-[1320px] gap-10 px-4 md:px-6">
-      <Sidebar />
-      <div className="min-w-0 flex-1 pt-10 pb-10">{children}</div>
+    <div className="px-5 md:px-6">
+      <div className="mx-auto flex max-w-[1200px] gap-12">
+        <Sidebar />
+        <div className="min-w-0 flex-1 pt-12 pb-28 md:pt-16">{children}</div>
+      </div>
     </div>
   );
 }
 
 export function PageHeader({
-  eyebrow,
   title,
   description,
   children,
+  className,
 }: {
-  eyebrow?: React.ReactNode;
   title: React.ReactNode;
   description?: React.ReactNode;
   children?: React.ReactNode;
+  className?: string;
 }) {
   return (
-    <header className="flex flex-col gap-3 pb-10">
-      {eyebrow && <div className="font-medium text-[13px] text-kura-fg-subtle">{eyebrow}</div>}
-      <h1 className="font-semibold text-[32px] leading-tight tracking-[-0.035em] md:text-[36px]">
+    <header className={cn("flex flex-col gap-4 pb-4", className)}>
+      <h1 className="font-semibold text-[34px] leading-[1.08] tracking-[-0.03em] md:text-[40px]">
         {title}
       </h1>
       {description && (
-        <p className="max-w-2xl text-[16px] text-kura-fg-muted leading-relaxed">{description}</p>
+        <p className="max-w-2xl text-[17px] text-kura-fg-muted leading-relaxed text-pretty">
+          {description}
+        </p>
       )}
       {children}
     </header>
@@ -45,13 +49,25 @@ export function Section({
   children: React.ReactNode;
 }) {
   return (
-    <section id={id} className="scroll-mt-20 pt-12">
-      <h2 className="pb-4 font-semibold text-[20px] tracking-[-0.025em]">
-        <a href={`#${id}`} className="outline-none hover:underline focus-visible:shadow-kura-focus">
+    <section id={id} className="scroll-mt-24 pt-14">
+      <h2 className="pb-4 font-semibold text-[22px] tracking-[-0.02em]">
+        <a
+          href={`#${id}`}
+          className="rounded-sm outline-none hover:underline hover:decoration-kura-border-strong hover:underline-offset-4 focus-visible:shadow-kura-focus"
+        >
           {title}
         </a>
       </h2>
       {children}
     </section>
+  );
+}
+
+/** Inline code in prose. */
+export function C({ children }: { children: React.ReactNode }) {
+  return (
+    <code className="rounded-[5px] bg-kura-hover px-1 py-px font-kura-mono text-[0.88em] text-kura-fg">
+      {children}
+    </code>
   );
 }

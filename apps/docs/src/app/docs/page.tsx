@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { CodeBlock } from "@/components/code-block";
-import { DocsShell, PageHeader, Section } from "@/components/docs-shell";
+import { C, DocsShell, PageHeader, Section } from "@/components/docs-shell";
 import { catalog } from "@/lib/catalog";
 
 export const metadata: Metadata = {
@@ -14,9 +14,8 @@ export default function DocsPage() {
   const t = catalog.tokens;
   return (
     <DocsShell>
-      <div className="mx-auto max-w-3xl">
+      <div className="max-w-[46rem]">
         <PageHeader
-          eyebrow="Docs"
           title="Introduction"
           description="Kura UI needs React 19 and Tailwind CSS v4. Take the npm package, or copy the source into your project with the shadcn CLI."
         />
@@ -32,14 +31,11 @@ export default function DocsPage() {
             <CodeBlock
               code={`import { ShimmerText } from "@kura-ui/react/shimmer-text";\n\nexport function Status() {\n  return <ShimmerText>Thinking…</ShimmerText>;\n}`}
             />
-            <p className="text-[15px] text-kura-fg-muted">
-              Each component is its own entry point (
-              <code className="font-kura-mono">@kura-ui/react/&lt;slug&gt;</code>) — tree-shakeable,
-              with
-              <code className="font-kura-mono"> &quot;use client&quot;</code> only where needed.
-              Hooks live at <code className="font-kura-mono">@kura-ui/react/hooks</code>, utilities
-              (<code className="font-kura-mono">cn</code>, motion presets) at{" "}
-              <code className="font-kura-mono">@kura-ui/react/utils</code>.
+            <p className="text-[15.5px] text-kura-fg-muted leading-relaxed">
+              Each component is its own entry point (<C>@kura-ui/react/&lt;slug&gt;</C>),
+              tree-shakeable, with <C>&quot;use client&quot;</C> only where needed. Hooks live at{" "}
+              <C>@kura-ui/react/hooks</C>, utilities (<C>cn</C>, motion presets) at{" "}
+              <C>@kura-ui/react/utils</C>.
             </p>
           </div>
         </Section>
@@ -52,16 +48,14 @@ export default function DocsPage() {
         </Section>
 
         <Section id="dark-mode" title="2. Dark mode">
-          <p className="text-[15px] text-kura-fg-muted leading-relaxed">
-            Tokens switch under a <code className="font-kura-mono">.dark</code> class or{" "}
-            <code className="font-kura-mono">[data-theme=&quot;dark&quot;]</code> on any ancestor
-            (works with next-themes). Components never use{" "}
-            <code className="font-kura-mono">dark:</code> variants.
+          <p className="text-[15.5px] text-kura-fg-muted leading-relaxed">
+            Tokens switch under a <C>.dark</C> class or <C>[data-theme=&quot;dark&quot;]</C> on any
+            ancestor (works with next-themes). Components never use <C>dark:</C> variants.
           </p>
         </Section>
 
         <Section id="design" title="3. Design language">
-          <p className="pb-4 text-[15px] text-kura-fg-muted leading-relaxed">
+          <p className="pb-4 text-[15.5px] text-kura-fg-muted leading-relaxed">
             Everything is still until the model speaks. Neutral greys, hairline borders and one blue
             signal colour reserved for AI activity: streaming, listening, running, waiting on you.
             Geist for text, Geist Mono for data, and short, interruptible motion. Full guide in{" "}
@@ -90,7 +84,7 @@ export default function DocsPage() {
             {["accent", "accent-subtle", "ink", "danger", "success", "warning"].map((n) => (
               <div
                 key={n}
-                className="flex items-center gap-2 rounded-full bg-kura-surface py-1 pr-3 pl-1 text-[12px] shadow-kura-xs"
+                className="flex items-center gap-2 rounded-full py-1 pr-3 pl-1 font-kura-mono text-[12px] text-kura-fg-muted shadow-[inset_0_0_0_1px_var(--kura-border)]"
               >
                 <span
                   className="size-5 rounded-full shadow-kura-xs"
@@ -107,25 +101,17 @@ export default function DocsPage() {
           />
         </Section>
 
-        <Section id="hooks" title="Hooks">
-          <div className="flex flex-col gap-8">
-            {catalog.hooks.map((h) => (
-              <div key={h.name} className="border-kura-border border-t pt-5">
-                <h3 className="font-kura-mono text-[14px]">{h.name}</h3>
-                <p className="pt-1 pb-3 text-kura-fg-muted text-sm">{h.description}</p>
-                <CodeBlock
-                  lang="ts"
-                  code={`import { ${h.name} } from "${h.importPath}";\n\n${h.example}`}
-                />
-              </div>
-            ))}
-          </div>
-        </Section>
-
         <p className="pt-12 text-[15px] text-kura-fg-muted">
           Next:{" "}
-          <Link href="/components" className="underline underline-offset-4 hover:text-kura-fg">
-            browse components
+          <Link
+            href="/docs/wiring-events"
+            className="underline underline-offset-4 hover:text-kura-fg"
+          >
+            wire your agent&apos;s events to components
+          </Link>
+          ,{" "}
+          <Link href="/docs/hooks" className="underline underline-offset-4 hover:text-kura-fg">
+            the hooks
           </Link>{" "}
           or{" "}
           <Link href="/agents" className="underline underline-offset-4 hover:text-kura-fg">

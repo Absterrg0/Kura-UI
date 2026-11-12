@@ -78,9 +78,9 @@ function ComparePage({
     <div className="h-[500px] bg-kura-surface font-kura-sans text-kura-fg">
       <SiteBar />
       <div className="px-8 pt-6">
-        <h1 className="font-semibold text-[20px] leading-7 tracking-[-0.015em]">
+        <p className="font-semibold text-[20px] leading-7 tracking-[-0.015em]">
           Open a pull request
-        </h1>
+        </p>
         <p className="mt-1 text-[13px] text-kura-fg-muted leading-5">
           Create a new pull request by comparing changes across two branches.
         </p>
@@ -125,9 +125,9 @@ function PullRequestPage() {
     <div className="h-[500px] bg-kura-surface font-kura-sans text-kura-fg">
       <SiteBar />
       <div className="px-8 pt-6">
-        <h1 data-target="pr-h1" className="font-semibold text-[20px] leading-7 tracking-[-0.015em]">
+        <p data-target="pr-h1" className="font-semibold text-[20px] leading-7 tracking-[-0.015em]">
           {PR_TITLE} <span className="font-normal text-kura-fg-subtle">#482</span>
-        </h1>
+        </p>
         <div className="mt-2 flex items-center gap-2 text-[13px] text-kura-fg-muted">
           <span className="flex items-center gap-1 rounded-full bg-kura-success/15 px-2 py-0.5 font-medium text-[12px] text-kura-success-text">
             <GitPullRequest className="size-3" strokeWidth={2} /> Open
@@ -311,7 +311,7 @@ function TwoFactorPage() {
     <div className="flex h-[500px] flex-col items-center bg-kura-surface-sunken pt-16 font-kura-sans text-kura-fg">
       <div className="flex w-[360px] flex-col items-center gap-1 rounded-[14px] bg-kura-surface px-8 py-7 shadow-kura-sm">
         <span className="mb-3 size-8 rounded-[8px] bg-kura-fg" />
-        <h1 className="font-semibold text-[17px] tracking-[-0.01em]">Two-factor authentication</h1>
+        <p className="font-semibold text-[17px] tracking-[-0.01em]">Two-factor authentication</p>
         <p className="text-center text-[13px] text-kura-fg-muted leading-5">
           Enter the 6-digit code from your authenticator app to continue to Acme Cloud.
         </p>

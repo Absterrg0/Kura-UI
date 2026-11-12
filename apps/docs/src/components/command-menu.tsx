@@ -4,7 +4,17 @@ import type { CatalogCategory } from "@kura/catalog-types";
 import { useHotkey } from "@kura-ui/react/hooks";
 import { Kbd } from "@kura-ui/react/kbd";
 import { Command } from "cmdk";
-import { ArrowRight, BookOpen, Bot, Box, FileText, LayoutGrid, Search } from "lucide-react";
+import {
+  Anchor,
+  ArrowRight,
+  BookOpen,
+  Bot,
+  Box,
+  FileText,
+  LayoutGrid,
+  Search,
+  Workflow,
+} from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Dialog } from "radix-ui";
 import * as React from "react";
@@ -40,21 +50,19 @@ export function CommandMenu({
         type="button"
         onClick={() => setOpen(true)}
         data-testid="search-trigger"
-        className="group flex h-8 w-8 cursor-pointer items-center justify-center gap-2 rounded-kura-md bg-kura-surface-sunken text-[13px] text-kura-fg-subtle shadow-[inset_0_0_0_1px_var(--kura-border-subtle)] outline-none transition-colors hover:text-kura-fg-muted focus-visible:shadow-kura-focus sm:w-60 sm:justify-start sm:pr-1.5 sm:pl-2.5"
+        className="group flex size-9 cursor-pointer items-center justify-center gap-2 rounded-lg text-[13.5px] text-kura-fg-muted outline-none transition-colors hover:bg-kura-hover hover:text-kura-fg focus-visible:shadow-kura-focus md:h-8 md:w-auto md:justify-start md:bg-kura-hover md:pr-1.5 md:pl-2.5 md:shadow-[inset_0_0_0_1px_var(--kura-border-subtle)] lg:w-52"
       >
-        <Search className="size-3.5" />
-        <span className="hidden flex-1 truncate whitespace-nowrap text-left sm:block">
-          Search components…
-        </span>
-        <span className="sr-only sm:hidden">Search components</span>
-        <Kbd keys={["mod", "k"]} size="sm" variant="ghost" className="hidden sm:inline-flex" />
+        <Search className="size-4 md:size-3.5" />
+        <span className="hidden flex-1 truncate whitespace-nowrap text-left md:block">Search</span>
+        <span className="sr-only md:hidden">Search components</span>
+        <Kbd keys={["mod", "k"]} size="sm" variant="ghost" className="hidden md:inline-flex" />
       </button>
       <Dialog.Root open={open} onOpenChange={setOpen}>
         <Dialog.Portal>
           <Dialog.Overlay className="fixed inset-0 z-50 bg-kura-canvas/60 backdrop-blur-[2px] data-[state=closed]:animate-kura-fade-out data-[state=open]:animate-kura-fade-in" />
           <Dialog.Content
             aria-describedby={undefined}
-            className="fixed top-[14vh] left-1/2 z-50 w-[min(640px,calc(100vw-32px))] -translate-x-1/2 origin-top overflow-hidden rounded-kura-xl bg-kura-overlay shadow-kura-lg backdrop-blur-2xl backdrop-saturate-150 data-[state=closed]:animate-kura-pop-out data-[state=open]:animate-kura-pop-in"
+            className="fixed top-[14vh] left-1/2 z-50 w-[min(640px,calc(100vw-32px))] -translate-x-1/2 origin-top overflow-hidden rounded-2xl bg-kura-overlay shadow-kura-lg backdrop-blur-2xl backdrop-saturate-150 data-[state=closed]:animate-kura-pop-out data-[state=open]:animate-kura-pop-in"
           >
             <Dialog.Title className="sr-only">Search Kura UI</Dialog.Title>
             <Command
@@ -66,7 +74,7 @@ export function CommandMenu({
                 <Search className="size-4 text-kura-fg-subtle" />
                 <Command.Input
                   autoFocus
-                  placeholder="Find a component, hook or page… (try “voice” or “thinking”)"
+                  placeholder="Find a component, hook or page…"
                   className="h-12 flex-1 bg-transparent text-[15px] outline-none placeholder:text-kura-fg-subtle"
                 />
                 <Kbd size="sm">Esc</Kbd>
@@ -79,8 +87,10 @@ export function CommandMenu({
                 <Command.Group heading="Pages">
                   {[
                     { href: "/docs", label: "Getting started", icon: BookOpen },
+                    { href: "/docs/wiring-events", label: "Wiring agent events", icon: Workflow },
+                    { href: "/docs/hooks", label: "Hooks", icon: Anchor },
                     { href: "/components", label: "All components", icon: LayoutGrid },
-                    { href: "/agents", label: "Agents: MCP, llms.txt, CLI", icon: Bot },
+                    { href: "/agents", label: "For agents: MCP, llms.txt, CLI", icon: Bot },
                     { href: "/llms.txt", label: "llms.txt", icon: FileText },
                   ].map((p) => (
                     <Item key={p.href} value={p.label} onSelect={() => go(p.href)}>

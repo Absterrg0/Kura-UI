@@ -1,165 +1,185 @@
-import { Button } from "@kura-ui/react/button";
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
-import { CodeBlock } from "@/components/code-block";
-import { CopyButton } from "@/components/copy-button";
-import { ExamplePreview } from "@/components/example-preview";
-import { Hero } from "@/components/hero";
-import { catalog, components, getComponent } from "@/lib/catalog";
+import type * as React from "react";
+import { AgentTerminal } from "@/components/landing/agent-terminal";
+import { BuiltRight } from "@/components/landing/built-right";
+import { CtaBand } from "@/components/landing/cta-band";
+import { EmberLight } from "@/components/landing/ember-light";
+import { FeatureBento } from "@/components/landing/feature-bento";
+import { HeroStage } from "@/components/landing/hero-stage";
+import { InstallChip } from "@/components/landing/install-chip";
+import { siteButton } from "@/components/site-button";
+import { catalog } from "@/lib/catalog";
 
-/** The run, told in six moments. Each shows one component, live and large. */
-const STORY = [
-  {
-    n: "01",
-    slug: "task-list",
-    title: "Plan in the open",
-    body: "The agent's todo list as it thinks: what's done, what's running, what failed and why. Sub-tasks, live timers, a folded history.",
-  },
-  {
-    n: "02",
-    slug: "diff-view",
-    title: "Review every hunk",
-    body: "Accept or reject the agent's edits hunk by hunk, with syntax highlighting, word-level changes and j/k/a/r on the keyboard. Parses real unified diffs.",
-  },
-  {
-    n: "03",
-    slug: "approval-prompt",
-    title: "Say yes before it runs",
-    body: "Risky commands wait for a human. Risk level, the exact command, details on demand, ⌘↵ to approve and Esc to deny.",
-  },
-  {
-    n: "04",
-    slug: "trace-waterfall",
-    title: "See where the time went",
-    body: "Every model call, tool and subagent on one time axis. Running spans grow live; select one for its input, output, tokens and cost.",
-  },
-  {
-    n: "05",
-    slug: "browser-session",
-    title: "Follow it through the web",
-    body: "Computer-use made legible: the page, the agent's cursor and target, and a step log. Take over when it needs you.",
-  },
-  {
-    n: "06",
-    slug: "prompt-queue",
-    title: "Steer without stopping",
-    body: "Queue follow-ups while the agent works. Reorder, edit, or send one now to interrupt and redirect the run.",
-  },
+const WORKS_WITH = [
+  "Claude Agent SDK",
+  "Vercel AI SDK",
+  "OpenAI Agents SDK",
+  "shadcn/ui",
+  "Tailwind CSS v4",
 ];
 
-function fullExample(slug: string) {
-  const c = getComponent(slug);
-  const ex =
-    c?.examples.find((e) => e.kind === "full") ??
-    c?.examples.find((e) => e.kind === "composition") ??
-    c?.examples[0];
-  return c && ex ? { c, ex } : null;
+const AGENT_SURFACES = [
+  ["Typed manifests", "When to use it, when not to, every prop, anatomy and keyboard map."],
+  ["shadcn registry", "Every component is a registry item your agent can add by URL."],
+  ["MCP server", "Search, read and install components from inside the agent's loop."],
+  ["CLI", "kura list, search, info and add, each with --json output."],
+  ["llms.txt", "The whole library as plain text, one fetch away."],
+] as const;
+
+function SectionHead({
+  id,
+  title,
+  children,
+}: {
+  id: string;
+  title: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="grid gap-5 pb-12 md:pb-16 lg:grid-cols-2 lg:items-end lg:gap-16">
+      <h2
+        id={id}
+        className="font-semibold text-[36px] leading-[1.05] tracking-[-0.03em] text-balance md:text-[48px]"
+      >
+        {title}
+      </h2>
+      <p className="max-w-xl text-[17px] text-kura-fg-muted leading-relaxed lg:pb-1.5">
+        {children}
+      </p>
+    </div>
+  );
 }
 
 export default function Home() {
-  const install = `npx shadcn@latest add ${catalog.homepage}/r/diff-view.json`;
-  const agentCount = components.filter(
-    (c) => c.category === "agent" || c.category === "workspace",
-  ).length;
+  const install = `npx shadcn@latest add ${catalog.homepage}/r/run-header.json`;
   return (
     <div className="overflow-x-clip">
-      <section className="mx-auto max-w-[1320px] px-4 pt-16 md:px-6 md:pt-24">
-        <div className="grid gap-8 pb-12 lg:grid-cols-[1.15fr_1fr] lg:items-end lg:gap-16">
-          <h1 className="font-semibold text-[clamp(2.6rem,5.8vw,4.6rem)] leading-[0.98] tracking-[-0.05em] text-balance">
-            Interfaces for agents that do real work.
+      {/* Hero */}
+      <section
+        aria-labelledby="hero-title"
+        className="relative px-4 pt-14 md:px-6 md:pt-16 lg:pt-[72px]"
+      >
+        <div className="relative z-10 mx-auto flex max-w-3xl flex-col items-center text-center">
+          <h1
+            id="hero-title"
+            className="font-semibold text-[42px] leading-[1.02] tracking-[-0.035em] text-balance sm:text-[56px] lg:text-[72px]"
+          >
+            Components for agent interfaces.
           </h1>
-          <div className="flex flex-col gap-6 lg:pb-2">
-            <p className="max-w-[34rem] text-[17px] text-kura-fg-muted leading-relaxed text-pretty">
-              Runs, plans, terminals, diffs, traces and approvals. {agentCount} open-source React
-              components for supervising coding and computer-use agents, with a manifest your own
-              agent can install from.
-            </p>
-            <div className="flex flex-wrap items-center gap-2.5">
-              <Button asChild size="lg">
-                <Link href="/docs">Get started</Link>
-              </Button>
-              <Button asChild size="lg" variant="secondary">
-                <Link href="/components">Browse components</Link>
-              </Button>
-              <span className="hidden h-10 items-center gap-1 rounded-kura-lg pr-1 pl-3 font-kura-mono text-[12px] text-kura-fg-subtle shadow-kura-xs xl:inline-flex">
-                <span className="max-w-[17rem] truncate">{install}</span>
-                <CopyButton value={install} label="Copy install command" />
-              </span>
-            </div>
+          <p className="max-w-[40rem] pt-6 text-[16px] sm:text-[17px] text-kura-fg-muted leading-relaxed text-pretty md:text-[18px]">
+            Open-source React components for agent runs, plans, terminals, diffs and approvals. Copy
+            them into your app, or let your coding agent install them.
+          </p>
+          <div className="flex w-full flex-col items-center gap-3 pt-9 sm:w-auto sm:flex-row">
+            <Link href="/components" className={siteButton({ className: "w-full sm:w-auto" })}>
+              Browse components
+            </Link>
+            <Link
+              href="/docs"
+              className={siteButton({ variant: "dark", className: "w-full sm:w-auto" })}
+            >
+              Get started
+            </Link>
           </div>
+          <InstallChip command={install} className="mt-5" />
         </div>
-        <Hero />
+
+        <div className="relative isolate mx-auto mt-14 max-w-[1240px] md:mt-16">
+          <EmberLight className="-top-[120px] -z-10 max-md:scale-[0.55] max-md:origin-top" />
+          <HeroStage />
+        </div>
       </section>
 
-      <section aria-label="What Kura covers" className="mx-auto max-w-[1320px] px-4 pt-36 md:px-6">
-        <div className="flex flex-col gap-32">
-          {STORY.map((s) => {
-            const found = fullExample(s.slug);
-            if (!found) return null;
-            return (
-              <article
-                key={s.slug}
-                className="grid gap-8 lg:grid-cols-[minmax(0,0.72fr)_minmax(0,1.5fr)] lg:gap-14"
+      {/* Works with */}
+      <section aria-label="Works with" className="px-4 pt-20 md:px-6 md:pt-24">
+        <div className="mx-auto flex max-w-[1200px] flex-col items-center gap-5">
+          <p className="text-center text-[13.5px] text-kura-fg-subtle">
+            Plain props and callbacks. Wire them to any agent loop.
+          </p>
+          <ul className="flex flex-wrap items-center justify-center gap-x-10 gap-y-3">
+            {WORKS_WITH.map((w) => (
+              <li
+                key={w}
+                className="font-semibold text-[15.5px] text-kura-fg-muted tracking-[-0.015em]"
               >
-                <div className="flex flex-col gap-4 lg:sticky lg:top-28 lg:self-start">
-                  <span className="font-kura-mono text-[13px] text-kura-fg-subtle">{s.n}</span>
-                  <h2 className="font-semibold text-[clamp(1.9rem,3vw,2.5rem)] leading-[1.04] tracking-[-0.04em] text-balance">
-                    {s.title}
-                  </h2>
-                  <p className="max-w-md text-[16px] text-kura-fg-muted leading-relaxed">
-                    {s.body}
-                  </p>
-                  <Link
-                    href={`/components/${s.slug}`}
-                    className="group mt-2 inline-flex w-fit items-center gap-1.5 font-kura-mono text-[13px] text-kura-fg outline-none hover:text-kura-accent-text focus-visible:shadow-kura-focus"
-                  >
-                    &lt;{found.c.name} /&gt;
-                    <ArrowRight className="size-3.5 transition-transform group-hover:translate-x-0.5" />
-                  </Link>
-                </div>
-                <div className="rounded-[20px] bg-kura-surface-sunken p-2 shadow-[0_0_0_1px_var(--kura-border)]">
-                  <ExamplePreview
-                    slug={s.slug}
-                    name={found.ex.name}
-                    dots={false}
-                    className="min-h-[22rem] rounded-[14px] bg-kura-canvas p-6 shadow-[0_0_0_1px_var(--kura-border-subtle)] md:p-10"
-                  />
-                </div>
-              </article>
-            );
-          })}
+                {w}
+              </li>
+            ))}
+          </ul>
         </div>
       </section>
 
-      <section className="mx-auto max-w-[1320px] px-4 pt-40 md:px-6">
-        <div className="grid gap-12 border-kura-border-subtle border-t pt-16 lg:grid-cols-[minmax(0,0.72fr)_minmax(0,1.5fr)] lg:gap-14">
-          <div className="flex flex-col gap-4">
-            <span className="font-kura-mono text-[13px] text-kura-fg-subtle">Install</span>
-            <h2 className="font-semibold text-[clamp(1.9rem,3vw,2.5rem)] leading-[1.04] tracking-[-0.04em] text-balance">
-              Your agent can install it, too.
-            </h2>
-            <p className="max-w-md text-[16px] text-kura-fg-muted leading-relaxed">
-              Every component ships a typed manifest: when to use it, when not to, every prop, the
-              anatomy and the keyboard map. The registry, llms.txt, the MCP server and the CLI are
-              generated from it.
-            </p>
-            <div className="flex flex-wrap gap-2 pt-2">
-              <Button asChild variant="secondary">
-                <Link href="/agents">Agent setup</Link>
-              </Button>
-              <Button asChild variant="ghost">
-                <Link href="/components">
-                  All {components.length} components <ArrowRight />
-                </Link>
-              </Button>
-            </div>
+      {/* Every part of the run */}
+      <section aria-labelledby="parts" className="px-4 pt-36 md:px-6 md:pt-44">
+        <div className="mx-auto max-w-[1200px]">
+          <SectionHead id="parts" title="Every part of the run.">
+            Plans, diffs, terminals, traces and approvals as composable React components. Each one
+            is keyboard-complete, themeable and driven by plain props.
+          </SectionHead>
+          <FeatureBento />
+          <div className="flex justify-center pt-10">
+            <Link
+              href="/components"
+              className="group inline-flex items-center gap-1.5 rounded-lg px-2 py-1 text-[15px] text-kura-fg-muted outline-none transition-colors hover:text-kura-fg focus-visible:shadow-kura-focus"
+            >
+              See all components
+              <ArrowRight className="size-4 transition-transform duration-200 group-hover:translate-x-0.5 motion-reduce:transition-none" />
+            </Link>
           </div>
-          <CodeBlock
-            lang="bash"
-            code={`# give your coding agent the catalog\nclaude mcp add kura -- npx -y @kura-ui/mcp\n\n# then ask for what you need\n> add per-hunk review for the agent's edits, and a terminal for its test runs\n\n# or install directly\n${install}`}
-          />
         </div>
       </section>
+
+      {/* Your agent can install it */}
+      <section aria-labelledby="agents" className="px-4 pt-36 md:px-6 md:pt-44">
+        <div className="mx-auto grid max-w-[1200px] gap-12 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] lg:gap-20">
+          <div>
+            <h2
+              id="agents"
+              className="font-semibold text-[36px] leading-[1.05] tracking-[-0.03em] text-balance md:text-[48px]"
+            >
+              Your agent can install it.
+            </h2>
+            <p className="max-w-md pt-5 text-[17px] text-kura-fg-muted leading-relaxed">
+              Every component ships a typed manifest. The registry, MCP server, CLI and llms.txt are
+              generated from it, so your coding agent picks the right part and installs it
+              correctly.
+            </p>
+            <dl className="mt-9 flex flex-col border-kura-border-subtle border-t">
+              {AGENT_SURFACES.map(([name, desc]) => (
+                <div
+                  key={name}
+                  className="grid gap-1 border-kura-border-subtle border-b py-3.5 sm:grid-cols-[9.5rem_1fr] sm:gap-4"
+                >
+                  <dt className="font-medium text-[14.5px]">{name}</dt>
+                  <dd className="text-[14.5px] text-kura-fg-muted">{desc}</dd>
+                </div>
+              ))}
+            </dl>
+            <Link
+              href="/agents"
+              className="group mt-7 inline-flex items-center gap-1.5 rounded-lg py-1 text-[15px] text-kura-fg outline-none focus-visible:shadow-kura-focus"
+            >
+              Set up your agent
+              <ArrowRight className="size-4 transition-transform duration-200 group-hover:translate-x-0.5 motion-reduce:transition-none" />
+            </Link>
+          </div>
+          <AgentTerminal site={catalog.homepage} className="lg:h-full" />
+        </div>
+      </section>
+
+      {/* Built right */}
+      <section aria-labelledby="built" className="px-4 pt-36 md:px-6 md:pt-44">
+        <div className="mx-auto max-w-[1200px]">
+          <SectionHead id="built" title="Built right.">
+            The parts that usually get skipped are done for you, and checked in CI for every
+            component.
+          </SectionHead>
+          <BuiltRight />
+        </div>
+      </section>
+
+      <CtaBand install={install} />
     </div>
   );
 }

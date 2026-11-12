@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { CodeBlock } from "@/components/code-block";
-import { DocsShell, PageHeader, Section } from "@/components/docs-shell";
+import { C, DocsShell, PageHeader, Section } from "@/components/docs-shell";
 import { catalog } from "@/lib/catalog";
 
 export const metadata: Metadata = {
@@ -25,23 +25,17 @@ export default function AgentsPage() {
   const site = catalog.homepage;
   return (
     <DocsShell>
-      <div className="mx-auto max-w-3xl">
+      <div className="max-w-[46rem]">
         <PageHeader
-          eyebrow="Agent integration"
-          title="Built to be used by agents"
+          title="For agents"
           description="Humans browse; agents query. Every surface below is generated from the same component manifests, so they never drift."
         />
 
         <Section id="mcp" title="MCP server">
-          <p className="pb-4 text-[15px] text-kura-fg-muted leading-relaxed">
-            <code className="font-kura-mono">@kura-ui/mcp</code> is a stdio MCP server. Tools:{" "}
-            <code className="font-kura-mono">list_components</code>,{" "}
-            <code className="font-kura-mono">search_components</code>,{" "}
-            <code className="font-kura-mono">get_component</code>,{" "}
-            <code className="font-kura-mono">get_component_source</code>,{" "}
-            <code className="font-kura-mono">get_install_instructions</code>,{" "}
-            <code className="font-kura-mono">get_design_tokens</code>,{" "}
-            <code className="font-kura-mono">get_design_guidelines</code>.
+          <p className="pb-4 text-[15.5px] text-kura-fg-muted leading-relaxed">
+            <C>@kura-ui/mcp</C> is a stdio MCP server. Tools: <C>list_components</C>,{" "}
+            <C>search_components</C>, <C>get_component</C>, <C>get_component_source</C>,{" "}
+            <C>get_install_instructions</C>, <C>get_design_tokens</C>, <C>get_design_guidelines</C>.
           </p>
           <div className="flex flex-col gap-3">
             <CodeBlock
@@ -67,9 +61,8 @@ export default function AgentsPage() {
         </Section>
 
         <Section id="cli" title="CLI">
-          <p className="pb-4 text-[15px] text-kura-fg-muted leading-relaxed">
-            Every command accepts <code className="font-kura-mono">--json</code> so agents can parse
-            results.
+          <p className="pb-4 text-[15.5px] text-kura-fg-muted leading-relaxed">
+            Every command accepts <C>--json</C> so agents can parse results.
           </p>
           <CodeBlock
             lang="bash"
@@ -87,7 +80,7 @@ npx @kura-ui/cli doctor --json                   # checks Tailwind v4 + Kura tok
               lang="bash"
               code={`npx shadcn@latest add ${site}/r/kura-theme.json   # tokens, once\nnpx shadcn@latest add ${site}/r/shimmer-text.json`}
             />
-            <p className="text-[15px] text-kura-fg-muted">
+            <p className="text-[15.5px] text-kura-fg-muted">
               Or register the namespace in components.json and use short names:
             </p>
             <CodeBlock
@@ -105,7 +98,7 @@ npx @kura-ui/cli doctor --json                   # checks Tailwind v4 + Kura tok
               <li key={path} className="flex flex-col gap-1 py-3.5 md:flex-row md:gap-6">
                 <a
                   href={path?.includes("<") ? undefined : path}
-                  className="w-56 shrink-0 font-kura-mono text-[13px] hover:underline"
+                  className="w-56 shrink-0 rounded-sm font-kura-mono text-[13px] outline-none hover:underline focus-visible:shadow-kura-focus"
                 >
                   {path}
                 </a>
@@ -116,11 +109,10 @@ npx @kura-ui/cli doctor --json                   # checks Tailwind v4 + Kura tok
         </Section>
 
         <Section id="skills" title="Skills & rules">
-          <p className="pb-4 text-[15px] text-kura-fg-muted leading-relaxed">
-            The repo ships a Claude Code skill (
-            <code className="font-kura-mono">skills/kura-ui/SKILL.md</code>) and a Cursor rule (
-            <code className="font-kura-mono">.cursor/rules/kura-ui.mdc</code>) that teach an agent
-            how to pick, install and compose Kura components — copy them into your project.
+          <p className="pb-4 text-[15.5px] text-kura-fg-muted leading-relaxed">
+            The repo ships a Claude Code skill (<C>skills/kura-ui/SKILL.md</C>) and a Cursor rule (
+            <C>.cursor/rules/kura-ui.mdc</C>) that teach an agent how to pick, install and compose
+            Kura components — copy them into your project.
           </p>
           <CodeBlock
             lang="bash"
@@ -129,10 +121,10 @@ npx @kura-ui/cli doctor --json                   # checks Tailwind v4 + Kura tok
         </Section>
 
         <Section id="manifest" title="The manifest">
-          <p className="pb-4 text-[15px] text-kura-fg-muted leading-relaxed">
-            Each component folder has a <code className="font-kura-mono">&lt;slug&gt;.meta.ts</code>
-            . CI fails if its props drift from the TypeScript types, if its dependencies differ from
-            its imports, or if it lacks examples and accessibility tests.
+          <p className="pb-4 text-[15.5px] text-kura-fg-muted leading-relaxed">
+            Each component folder has a <C>&lt;slug&gt;.meta.ts</C>. CI fails if its props drift
+            from the TypeScript types, if its dependencies differ from its imports, or if it lacks
+            examples and accessibility tests.
           </p>
           <CodeBlock
             code={`export default defineComponent({

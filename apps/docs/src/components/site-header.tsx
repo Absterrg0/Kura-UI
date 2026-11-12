@@ -1,11 +1,14 @@
 import Link from "next/link";
-import { catalog, components, GITHUB_URL } from "@/lib/catalog";
+import { catalog, components, componentsByCategory } from "@/lib/catalog";
+import { DOCS_PAGES } from "@/lib/docs-pages";
 import { CommandMenu } from "./command-menu";
-import { GithubIcon } from "./icons";
 import { Logo } from "./logo";
+import { MobileNav, type NavGroup } from "./mobile-nav";
 import { NavLinks } from "./nav-links";
+import { siteButton } from "./site-button";
 import { ThemeToggle } from "./theme-toggle";
 
+/** The floating pill nav: logo, links, ⌘K, theme and one primary action. Sticky on every page. */
 export function SiteHeader() {
   const items = components.map((c) => ({
     slug: c.slug,
@@ -21,27 +24,34 @@ export function SiteHeader() {
         .filter((w) => w.length > 4),
     ].slice(0, 40),
   }));
+  const groups: NavGroup[] = [
+    { title: "Getting started", items: DOCS_PAGES.map((p) => ({ href: p.href, label: p.label })) },
+    ...componentsByCategory().map(({ category, items }) => ({
+      title: category.title,
+      items: items.map((c) => ({ href: `/components/${c.slug}`, label: c.title })),
+    })),
+  ];
   return (
-    <header className="sticky top-0 z-40 border-kura-border-subtle border-b bg-kura-canvas/80 backdrop-blur-lg">
-      <div className="mx-auto flex h-14 max-w-[1320px] items-center gap-6 px-4 md:px-6">
+    <header className="sticky top-0 z-40 bg-[linear-gradient(to_bottom,var(--kura-canvas)_30%,transparent)] px-2 pt-2 pb-1 md:px-4 md:pt-3">
+      <div className="mx-auto flex h-14 max-w-[1240px] items-center gap-2 rounded-2xl bg-(--site-chrome) pr-2 pl-4 shadow-[inset_0_1px_0_rgb(255_255_255/0.05),0_0_0_1px_var(--kura-border),0_8px_32px_-12px_rgb(0_0_0/0.35)] backdrop-blur-xl backdrop-saturate-150 md:gap-4 md:pr-2.5 md:pl-5">
         <Link
           href="/"
           aria-label="Kura UI home"
-          className="rounded-kura-sm outline-none focus-visible:shadow-kura-focus"
+          className="rounded-lg outline-none focus-visible:shadow-kura-focus"
         >
           <Logo />
         </Link>
         <NavLinks />
         <div className="ml-auto flex items-center gap-1.5">
           <CommandMenu items={items} categories={catalog.categories} />
-          <a
-            href={GITHUB_URL}
-            aria-label="GitHub"
-            className="inline-flex size-8 items-center justify-center rounded-kura-md text-kura-fg-muted outline-none transition-colors hover:bg-kura-hover hover:text-kura-fg focus-visible:shadow-kura-focus"
+          <ThemeToggle className="hidden md:inline-flex" />
+          <Link
+            href="/docs"
+            className={siteButton({ size: "sm", className: "hidden md:inline-flex" })}
           >
-            <GithubIcon className="size-4" />
-          </a>
-          <ThemeToggle />
+            Get started
+          </Link>
+          <MobileNav groups={groups} />
         </div>
       </div>
     </header>

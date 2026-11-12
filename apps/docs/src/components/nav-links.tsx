@@ -2,27 +2,34 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { GITHUB_URL } from "@/lib/catalog";
 import { cn } from "@/lib/cn";
 
-const links = [
-  { href: "/docs", label: "Docs" },
+export const NAV = [
   { href: "/components", label: "Components" },
-  { href: "/agents", label: "Agents" },
-];
+  { href: "/docs", label: "Docs" },
+  { href: "/agents", label: "For agents" },
+  { href: GITHUB_URL, label: "GitHub", external: true },
+] as const;
+
+export function useIsActive() {
+  const pathname = usePathname();
+  return (href: string) => pathname === href || pathname.startsWith(`${href}/`);
+}
 
 export function NavLinks() {
-  const pathname = usePathname();
+  const isActive = useIsActive();
   return (
-    <nav className="hidden items-center gap-0.5 md:flex">
-      {links.map((l) => {
-        const active = pathname === l.href || pathname.startsWith(`${l.href}/`);
+    <nav aria-label="Main" className="hidden items-center md:flex">
+      {NAV.map((l) => {
+        const active = !("external" in l) && isActive(l.href);
         return (
           <Link
             key={l.href}
             href={l.href}
             aria-current={active ? "page" : undefined}
             className={cn(
-              "rounded-kura-md px-2.5 py-1.5 text-[14px] outline-none transition-colors focus-visible:shadow-kura-focus",
+              "rounded-lg px-3 py-1.5 text-[14px] outline-none transition-colors duration-150 focus-visible:shadow-kura-focus",
               active ? "text-kura-fg" : "text-kura-fg-muted hover:text-kura-fg",
             )}
           >

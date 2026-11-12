@@ -30,7 +30,7 @@ export function ExamplePreview({
   className,
   replay = true,
   compact = false,
-  dots = true,
+  dots = false,
 }: {
   slug: string;
   name: string;
@@ -47,9 +47,9 @@ export function ExamplePreview({
       data-slot="example-preview"
       data-example={`${slug}/${name}`}
       className={cn(
-        "relative flex items-center justify-center overflow-hidden",
+        "live-gloss relative flex items-center justify-center overflow-hidden",
         dots && "bg-dots",
-        compact ? "min-h-40 p-6" : "min-h-72 p-10",
+        compact ? "min-h-40 p-6" : "min-h-80 px-5 py-12 md:p-12",
         className,
       )}
     >

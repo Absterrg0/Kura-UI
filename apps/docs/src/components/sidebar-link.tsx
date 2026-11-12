@@ -20,18 +20,14 @@ export function SidebarLink({
       href={href}
       aria-current={active ? "page" : undefined}
       className={cn(
-        "flex h-7.5 items-center justify-between rounded-kura-md px-2.5 outline-none transition-colors duration-(--kura-duration-fast) focus-visible:shadow-kura-focus",
+        "relative flex h-8 items-center justify-between rounded-lg px-3 outline-none transition-colors duration-150 focus-visible:shadow-kura-focus",
         active
-          ? "bg-kura-hover font-medium text-kura-fg"
-          : "text-kura-fg-muted hover:bg-kura-hover hover:text-kura-fg",
+          ? "bg-kura-hover font-medium text-kura-fg shadow-[inset_0_0_0_1px_var(--kura-border-subtle)]"
+          : "text-kura-fg-muted hover:text-kura-fg",
       )}
     >
       {children}
-      {status === "experimental" && (
-        <span className="rounded-full bg-kura-surface-sunken px-1.5 text-[10.5px] text-kura-fg-subtle shadow-kura-xs">
-          beta
-        </span>
-      )}
+      {status === "experimental" && <span className="text-[11px] text-kura-fg-subtle">beta</span>}
     </Link>
   );
 }
