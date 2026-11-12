@@ -6,7 +6,7 @@ import { StatusGlyph } from "../status-glyph";
 import { Halftone } from "./halftone";
 
 const sheet =
-  "relative isolate overflow-hidden rounded-kura-xl bg-kura-surface font-kura-sans text-kura-fg shadow-kura-sm";
+  "relative isolate overflow-hidden rounded-kura-xl bg-kura-surface font-kura-sans text-kura-fg shadow-kura-surface";
 
 export function HalftoneMinimal() {
   return (
@@ -22,17 +22,13 @@ export function HalftoneFull() {
   return (
     <div className="flex w-full max-w-md flex-col gap-3">
       <div className="grid grid-cols-2 gap-3">
-        <div className={`${sheet} h-24`}>
+        <div className={`${sheet} h-24 p-3.5`}>
           <Halftone visible={visible} />
+          <p className="font-kura-mono text-[12px] text-kura-fg-subtle">reach 0.62</p>
         </div>
-        <div className={`${sheet} h-24`}>
-          <Halftone corner="bottom-left" visible={visible} />
-        </div>
-        <div className={`${sheet} h-24`}>
-          <Halftone tone="ink" reach={0.9} />
-        </div>
-        <div className={`${sheet} h-24`}>
-          <Halftone corner="top-left" reach={0.4} visible={visible} />
+        <div className={`${sheet} h-24 p-3.5`}>
+          <Halftone reach={0.4} visible={visible} />
+          <p className="font-kura-mono text-[12px] text-kura-fg-subtle">reach 0.4</p>
         </div>
       </div>
       <Button

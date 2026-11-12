@@ -41,7 +41,7 @@ export function SlashCommandMenuMinimal() {
         aria-label="Prompt"
         placeholder="Type / for commands"
         rows={3}
-        className="w-full resize-none rounded-kura-xl bg-kura-surface-raised px-3.5 py-3 text-sm leading-6 shadow-kura-sm outline-none placeholder:text-kura-fg-subtle focus-visible:shadow-kura-focus"
+        className="w-full resize-none rounded-kura-xl bg-kura-surface-raised px-3.5 py-3 text-sm leading-6 shadow-kura-sm outline-hidden placeholder:text-kura-fg-subtle focus-visible:shadow-kura-focus"
       />
       <SlashCommandMenu textareaRef={ref} commands={basic} />
     </div>
@@ -138,7 +138,7 @@ export function SlashCommandMenuFull() {
         onChange={(e) => setValue(e.currentTarget.value)}
         placeholder="Write a message… try /sum or /debug"
         rows={4}
-        className="w-full resize-none rounded-kura-xl bg-kura-surface-raised px-3.5 py-3 text-sm leading-6 shadow-kura-sm outline-none placeholder:text-kura-fg-subtle focus-visible:shadow-kura-focus"
+        className="w-full resize-none rounded-kura-xl bg-kura-surface-raised px-3.5 py-3 text-sm leading-6 shadow-kura-sm outline-hidden placeholder:text-kura-fg-subtle focus-visible:shadow-kura-focus"
       />
       <SlashCommandMenu
         textareaRef={ref}

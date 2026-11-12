@@ -3,6 +3,7 @@
 import { Check, Gauge, Globe, Link, Lock, Settings2, Share } from "lucide-react";
 import * as React from "react";
 import { Button } from "../button";
+import { DotRail } from "../dot-rail";
 import { Popover, PopoverClose, PopoverContent, PopoverTrigger } from "./popover";
 
 export function PopoverMinimal() {
@@ -21,9 +22,7 @@ export function PopoverMinimal() {
             </h3>
             <span className="text-kura-fg-muted text-xs tabular-nums">38 / 50</span>
           </div>
-          <div className="h-1.5 overflow-hidden rounded-full bg-kura-gray-4">
-            <div className="h-full w-[76%] rounded-full bg-kura-ink" />
-          </div>
+          <DotRail value={0.76} label="Weekly usage" />
           <p className="text-kura-fg-muted text-xs leading-relaxed">
             Opus messages reset on Monday at 09:00. Haiku is unlimited.
           </p>
@@ -210,7 +209,7 @@ export function PopoverShareChat() {
               value={shared ? "kura.chat/s/q3-churn-7f2a" : "Link sharing is off"}
               disabled={!shared}
               onFocus={(e) => e.currentTarget.select()}
-              className="h-7 min-w-0 flex-1 rounded-kura-sm bg-kura-surface-sunken px-2 font-kura-mono text-kura-fg-muted text-xs shadow-kura-xs outline-none focus-visible:shadow-kura-focus disabled:font-kura-sans disabled:text-kura-fg-subtle"
+              className="h-7 min-w-0 flex-1 rounded-kura-sm bg-kura-surface-sunken px-2 font-kura-mono text-kura-fg-muted text-xs shadow-kura-xs outline-hidden focus-visible:shadow-kura-focus disabled:font-kura-sans disabled:text-kura-fg-subtle"
             />
             <Button
               size="sm"

@@ -10,7 +10,6 @@ import { Terminal } from "@kura-ui/react/terminal";
 import { type TraceSpan, TraceWaterfall } from "@kura-ui/react/trace-waterfall";
 import * as React from "react";
 import { cn } from "@/lib/cn";
-import { Spec } from "./spec";
 
 /**
  * The hero stage: one agent run, paused on a high-risk approval, composed from live Kura
@@ -34,7 +33,9 @@ const MIGRATE = [
   ` ${c("2", "migrate")} 20261112_session_refresh_hash`,
   ` ${c("32", "✓")} add column sessions.refresh_token_hash ${c("2", "(12ms)")}`,
   ` ${c("32", "✓")} create index sessions_refresh_hash_idx ${c("2", "(1.2s)")}`,
-  ` ${c("36", "…")} backfill 48,210 rows ${c("2", "(batch 3 of 10)")}`,
+  ` ${c("32", "✓")} backfill 48,210 rows ${c("2", "(10 batches, 3.6s)")}`,
+  "",
+  ` ${c("1;32", "migrated")} ${c("2", "in 5.1s")}`,
 ];
 
 function useStream(lines: readonly string[], key: string, reduced: boolean, every = 260) {
@@ -147,8 +148,13 @@ export function HeroStage({ className }: { className?: string }) {
           ? migrated
             ? "Backfilled 48,210 rows"
             : "Running the migration"
-          : "Told no. Nothing ran",
-      progress: approved && !migrated ? migrateLines.length / MIGRATE.length : undefined,
+          : "Denied by you. Nothing ran",
+      // The rail is there while the agent waits (unlit), so the row keeps its height when it runs.
+      progress: pending
+        ? 0
+        : approved && !migrated
+          ? migrateLines.length / MIGRATE.length
+          : undefined,
     },
   ];
 
@@ -184,7 +190,7 @@ export function HeroStage({ className }: { className?: string }) {
 
   return (
     <div data-slot="hero-stage" className={cn("flex flex-col gap-3", className)}>
-      <Spec name="RunHeader" slug="run-header" className="hidden md:block">
+      <div className="min-w-0 hidden md:block">
         <RunHeader
           title="Migrate session API to @acme/auth"
           agent="Kura"
@@ -199,10 +205,12 @@ export function HeroStage({ className }: { className?: string }) {
           shortcuts={false}
           onStop={() => {}}
         />
-      </Spec>
-      <div className="grid items-start gap-3 md:grid-cols-2 lg:grid-cols-[330px_minmax(0,1fr)_320px]">
-        <div className="order-1 flex min-w-0 flex-col gap-3 md:col-span-2 lg:order-2 lg:col-span-1">
-          <Spec name="ApprovalPrompt" slug="approval-prompt">
+      </div>
+      {/* Phone: prompt, terminal, plan. Tablet: prompt and terminal beside plan and subagents.
+          Desktop: the full three columns. The prompt never gets less than half the row. */}
+      <div className="grid items-start gap-3 md:grid-cols-[minmax(0,1fr)_minmax(0,320px)] xl:grid-cols-[330px_minmax(0,1fr)_320px]">
+        <div className="flex min-w-0 flex-col gap-3 md:row-span-2 xl:order-2 xl:row-span-1">
+          <div className="min-w-0">
             <ApprovalPrompt
               title="Run the sessions migration on production"
               agent={{ name: "migrator", detail: "for step 4 of the plan" }}
@@ -218,8 +226,8 @@ export function HeroStage({ className }: { className?: string }) {
               onDecisionChange={setDecision}
               approveLabel="Run migration"
             />
-          </Spec>
-          <Spec name="Terminal" slug="terminal">
+          </div>
+          <div className="min-w-0">
             <Terminal
               title="Terminal"
               cwd="~/acme-web"
@@ -233,21 +241,21 @@ export function HeroStage({ className }: { className?: string }) {
               copyable={false}
               className="[&_[data-slot=terminal-output]]:min-h-[176px]"
             />
-          </Spec>
+          </div>
         </div>
-        <div className="order-2 flex min-w-0 flex-col gap-3 lg:order-1">
-          <Spec name="TaskList" slug="task-list">
+        <div className="flex min-w-0 flex-col gap-3 md:col-start-2 xl:order-1 xl:col-start-auto">
+          <div className="min-w-0">
             <TaskList title="Plan" items={tasks} collapseCompleted={false} />
-          </Spec>
-          <Spec name="TraceWaterfall" slug="trace-waterfall" className="hidden lg:block">
+          </div>
+          <div className="hidden min-w-0 xl:block">
             <TraceWaterfall spans={spans} startedAt={t0 - 7 * 60_000 - 18_000} />
-          </Spec>
+          </div>
         </div>
-        <div className="order-3 hidden min-w-0 flex-col gap-3 md:flex">
-          <Spec name="AgentFleet" slug="agent-fleet">
+        <div className="hidden min-w-0 flex-col gap-3 md:col-start-2 md:flex xl:order-3 xl:col-start-auto">
+          <div className="min-w-0">
             <AgentFleet agents={fleet} title="Subagents" />
-          </Spec>
-          <Spec name="ContextMeter" slug="context-meter">
+          </div>
+          <div className="hidden min-w-0 xl:block">
             <ContextPanel
               max={200_000}
               segments={[
@@ -257,7 +265,7 @@ export function HeroStage({ className }: { className?: string }) {
                 { id: "files", label: "Files", tokens: 17_600 },
               ]}
             />
-          </Spec>
+          </div>
         </div>
       </div>
     </div>

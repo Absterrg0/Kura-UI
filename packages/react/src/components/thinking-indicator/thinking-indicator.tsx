@@ -4,7 +4,7 @@ import * as React from "react";
 import { cn } from "../../lib/cn";
 import { ShimmerText } from "../shimmer-text";
 
-export type ThinkingIndicatorVariant = "dots" | "pulse" | "orbit" | "wave" | "text";
+export type ThinkingIndicatorVariant = "dots" | "pulse" | "text";
 export type ThinkingIndicatorSize = "sm" | "md" | "lg";
 
 const CSS = `
@@ -14,8 +14,6 @@ const CSS = `
 }
 @keyframes kura-ti-ring { from { transform: scale(1); opacity: 0.55; } to { transform: scale(2.8); opacity: 0; } }
 @keyframes kura-ti-breathe { 0%, 100% { transform: scale(0.82); } 50% { transform: scale(1); } }
-@keyframes kura-ti-orbit { to { transform: rotate(360deg); } }
-@keyframes kura-ti-bar { 0%, 100% { transform: scaleY(0.3); opacity: 0.45; } 50% { transform: scaleY(1); opacity: 1; } }
 `;
 
 const SIZE: Record<ThinkingIndicatorSize, string> = {
@@ -90,59 +88,8 @@ function Pulse() {
   );
 }
 
-function Orbit() {
-  return (
-    <span
-      data-slot="thinking-indicator-shape"
-      className="relative inline-flex size-[calc(var(--ti-dot)*3.2)] items-center justify-center"
-    >
-      <span className="absolute inset-[calc(var(--ti-dot)*0.5)] rounded-full border border-current opacity-20" />
-      {[0, 1].map((i) => (
-        <span
-          key={i}
-          className={cn(
-            "absolute inset-0 [animation:kura-ti-orbit_1.4s_cubic-bezier(0.45,0.05,0.55,0.95)_infinite]",
-            motion,
-          )}
-          style={{
-            animationDelay: `${-i * 0.18}s`,
-            transform: `rotate(${i * 140}deg)`,
-          }}
-        >
-          <span
-            className="absolute top-0 left-1/2 size-(--ti-dot) -translate-x-1/2 rounded-full bg-current"
-            style={{ opacity: i === 0 ? 1 : 0.45, scale: i === 0 ? "1" : "0.75" }}
-          />
-        </span>
-      ))}
-    </span>
-  );
-}
-
-function Wave() {
-  const still = [0.45, 0.8, 1, 0.6];
-  return (
-    <span
-      data-slot="thinking-indicator-shape"
-      className="inline-flex h-[calc(var(--ti-dot)*2.4)] items-center gap-[calc(var(--ti-gap)*0.6)]"
-    >
-      {still.map((s, i) => (
-        <span
-          key={i}
-          className={cn(
-            "h-full w-[calc(var(--ti-dot)*0.42)] rounded-full bg-current [animation:kura-ti-bar_1.1s_cubic-bezier(0.45,0,0.55,1)_infinite]",
-            motion,
-            "motion-reduce:scale-y-(--ti-still)",
-          )}
-          style={{ animationDelay: `${i * 0.12}s`, ["--ti-still" as string]: s }}
-        />
-      ))}
-    </span>
-  );
-}
-
 /**
- * Compact AI "thinking" indicators — dots, pulse, orbit, wave, or cycling status text — wrapped in
+ * Compact AI "thinking" indicators — dots, a pulsing dot, or cycling status text — wrapped in
  * a polite live region. Shapes use `currentColor` (the blue accent by default); restyle with a text-colour
  * class. CSS-only animation; everything settles to a still glyph under reduced motion.
  */
@@ -168,16 +115,7 @@ export function ThinkingIndicator({
     return () => clearInterval(id);
   }, [cycling, key, interval]);
 
-  const shape =
-    variant === "dots" ? (
-      <Dots />
-    ) : variant === "pulse" ? (
-      <Pulse />
-    ) : variant === "orbit" ? (
-      <Orbit />
-    ) : variant === "wave" ? (
-      <Wave />
-    ) : null;
+  const shape = variant === "dots" ? <Dots /> : variant === "pulse" ? <Pulse /> : null;
 
   return (
     <span

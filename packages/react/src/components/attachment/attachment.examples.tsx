@@ -4,9 +4,10 @@ import * as React from "react";
 import { Attachment, AttachmentDropzone, AttachmentList } from "./attachment";
 import { type AttachmentItem, createAttachment } from "./attachment-utils";
 
-const photo = (a: number, b: number) =>
+// A stand-in photo in greys: hills under a sun. `tone` shifts how dark it is.
+const photo = (tone: number) =>
   `data:image/svg+xml;utf8,${encodeURIComponent(
-    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="hsl(${a} 55% 78%)"/><stop offset="1" stop-color="hsl(${a + 20} 45% 90%)"/></linearGradient></defs><rect width="64" height="64" fill="url(#g)"/><circle cx="44" cy="20" r="7" fill="hsl(${b} 80% 92%)"/><path d="M0 46 L18 30 L32 42 L44 34 L64 50 V64 H0Z" fill="hsl(${b} 25% 38%)"/><path d="M0 54 L22 44 L40 52 L64 46 V64 H0Z" fill="hsl(${b} 20% 26%)"/></svg>`,
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64"><rect width="64" height="64" fill="hsl(0 0% ${86 - (tone % 3) * 6}%)"/><circle cx="44" cy="20" r="7" fill="hsl(0 0% 97%)"/><path d="M0 46 L18 30 L32 42 L44 34 L64 50 V64 H0Z" fill="hsl(0 0% ${58 - (tone % 3) * 6}%)"/><path d="M0 54 L22 44 L40 54 L64 46 V64 H0Z" fill="hsl(0 0% ${42 - (tone % 3) * 6}%)"/></svg>`,
   )}`;
 
 export function AttachmentMinimal() {
@@ -15,7 +16,7 @@ export function AttachmentMinimal() {
 
 const initial: AttachmentItem[] = [
   { id: "1", name: "brief.md", type: "text/markdown", size: 4_210 },
-  { id: "2", name: "harbour.png", type: "image/png", size: 812_000, url: photo(205, 160) },
+  { id: "2", name: "harbour.png", type: "image/png", size: 812_000, url: photo(0) },
   {
     id: "3",
     name: "transactions.csv",
@@ -32,7 +33,7 @@ const initial: AttachmentItem[] = [
     status: "error",
     error: "Network connection lost",
   },
-  { id: "5", name: "dunes.jpg", type: "image/jpeg", size: 1_200_000, url: photo(30, 25) },
+  { id: "5", name: "dunes.jpg", type: "image/jpeg", size: 1_200_000, url: photo(1) },
   { id: "6", name: "interview.m4a", type: "audio/mp4", size: 6_300_000 },
   { id: "7", name: "notes.zip", type: "application/zip", size: 340_000 },
 ];

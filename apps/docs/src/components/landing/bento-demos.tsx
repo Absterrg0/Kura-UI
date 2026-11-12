@@ -1,40 +1,19 @@
 "use client";
 
+import { AgentOrb, type AgentOrbState } from "@kura-ui/react/agent-orb";
+import { AudioWaveform } from "@kura-ui/react/audio-waveform";
 import { type Checkpoint, Checkpoints } from "@kura-ui/react/checkpoints";
+import { type FileChange, FileChanges } from "@kura-ui/react/file-changes";
+import { useAudioAnalyser } from "@kura-ui/react/hooks";
 import { PromptQueue, type QueuedPrompt } from "@kura-ui/react/prompt-queue";
-import { TaskList, type TaskListItem } from "@kura-ui/react/task-list";
-import { Terminal } from "@kura-ui/react/terminal";
-import { type TraceSpan, TraceWaterfall } from "@kura-ui/react/trace-waterfall";
+import { ToolCall } from "@kura-ui/react/tool-call";
 import * as React from "react";
+import { examples } from "@/generated/examples";
 
 /**
  * Small, composed demos for the "Every part of the run" grid: each shows one component whole, at
  * a height that sits level with its neighbour, so nothing is cropped or faded.
  */
-
-const ESC = "\u001b[";
-const c = (code: string, s: string) => `${ESC}${code}m${s}${ESC}0m`;
-
-export function TerminalDemo() {
-  return (
-    <Terminal
-      cwd="~/acme-web"
-      command="pnpm vitest run src/auth"
-      status="failed"
-      exitCode={1}
-      duration={1_420}
-      wrap={false}
-      lines={[
-        ` ${c("32", "✓")} session.test.ts ${c("2", "(6)")} ${c("2", "41ms")}`,
-        ` ${c("32", "✓")} middleware.test.ts ${c("2", "(4)")} ${c("2", "18ms")}`,
-        ` ${c("31", "×")} login.test.ts ${c("2", "(5 |")} ${c("31", "1 failed")}${c("2", ")")}`,
-        `   ${c("31", "→ expected 'tok_expired' to be 'tok_next'")}`,
-        "",
-        ` ${c("2", "Tests")}  ${c("1;31", "1 failed")} ${c("2", "|")} ${c("1;32", "14 passed")}`,
-      ]}
-    />
-  );
-}
 
 export function QueueDemo() {
   const [items, setItems] = React.useState<QueuedPrompt[]>([
@@ -77,95 +56,103 @@ export function CheckpointsDemo() {
   return <Checkpoints checkpoints={checkpoints} onRestore={() => {}} />;
 }
 
-export function PlanDemo() {
-  const [t0] = React.useState(() => Date.now() - 29_000);
-  const items: TaskListItem[] = [
-    { id: "read", title: "Read the auth module", status: "done", durationMs: 21_400 },
-    { id: "map", title: "Map call sites of fetchUser()", status: "done", durationMs: 96_000 },
-    { id: "patch", title: "Patch src/middleware.ts", status: "done", durationMs: 74_000 },
-    {
-      id: "tests",
-      title: "Update the tests",
-      status: "running",
-      startedAt: t0,
-      children: [
-        { id: "login", title: "login.test.ts", status: "done" },
-        { id: "session", title: "session.test.ts", status: "running" },
-      ],
-    },
-    { id: "run", title: "Run pnpm test", status: "queued" },
-    { id: "pr", title: "Open a pull request", status: "queued" },
-  ];
-  return <TaskList title="Plan" items={items} collapseCompleted={false} />;
-}
-
-const TRACE: TraceSpan[] = [
+const FILES: FileChange[] = [
+  { path: "src/auth/client.ts", status: "M", additions: 13, deletions: 16 },
+  { path: "src/auth/types.ts", status: "A", additions: 6 },
   {
-    id: "run",
-    name: "Kura",
-    kind: "agent",
-    meta: "acme/web",
-    start: 0,
-    status: "running",
-    children: [
-      { id: "plan", name: "Plan the migration", kind: "llm", start: 0, end: 9_800, status: "done" },
-      {
-        id: "search",
-        name: "search_code",
-        kind: "tool",
-        meta: "fetchUser(",
-        start: 11_000,
-        end: 12_700,
-        status: "done",
-      },
-      {
-        id: "explorer",
-        name: "explorer",
-        kind: "agent",
-        meta: "subagent",
-        start: 14_000,
-        end: 63_500,
-        status: "done",
-      },
-      {
-        id: "draft",
-        name: "Draft the patch",
-        kind: "llm",
-        start: 66_000,
-        end: 103_000,
-        status: "done",
-      },
-      {
-        id: "edit",
-        name: "edit_file",
-        kind: "tool",
-        meta: "src/middleware.ts",
-        start: 104_000,
-        end: 104_700,
-        status: "done",
-      },
-      {
-        id: "test",
-        name: "pnpm test",
-        kind: "tool",
-        meta: "src/auth",
-        start: 108_000,
-        end: 126_000,
-        status: "done",
-      },
-      {
-        id: "writer",
-        name: "test-writer",
-        kind: "agent",
-        meta: "subagent",
-        start: 130_000,
-        status: "running",
-      },
-    ],
+    path: "src/auth/__tests__/login.test.ts",
+    status: "M",
+    additions: 2,
+    deletions: 3,
+    state: "editing",
   },
+  { path: "src/middleware.ts", status: "M", additions: 2, deletions: 2 },
+  { path: "src/lib/legacy-session.ts", status: "D", deletions: 10 },
+  { path: "package.json", status: "M", additions: 1, deletions: 1 },
 ];
 
-export function TraceDemo() {
-  const [t0] = React.useState(() => Date.now() - 171_000);
-  return <TraceWaterfall spans={TRACE} startedAt={t0} />;
+export function FilesDemo() {
+  return <FileChanges files={FILES} defaultSelectedPath="src/auth/client.ts" />;
+}
+
+export function ToolsDemo() {
+  const [t0] = React.useState(() => Date.now() - 2_400);
+  return (
+    <div className="flex flex-col gap-2">
+      <ToolCall
+        name="read_file"
+        status="success"
+        args={{ path: "src/auth/client.ts" }}
+        duration={180}
+        defaultOpen
+      />
+      <ToolCall
+        name="search_code"
+        status="success"
+        args={{ query: "fetchUser(" }}
+        result={{ matches: 23, files: 9 }}
+        duration={1_700}
+      />
+      <ToolCall
+        name="edit_file"
+        status="success"
+        args={{ path: "src/middleware.ts", hunks: 2 }}
+        duration={640}
+        defaultOpen
+      />
+      <ToolCall
+        name="bash"
+        status="running"
+        args={{ command: "pnpm test src/auth" }}
+        startedAt={t0}
+      />
+      <ToolCall name="open_pull_request" status="pending" args={{ base: "main" }} />
+    </div>
+  );
+}
+
+/** The library's own browser example, at the full width of its column so the page stays legible. */
+export function BrowserDemo() {
+  const Example = examples["browser-session"]?.BrowserSessionMinimal;
+  return Example ? (
+    <div className="[&>[data-slot=browser-session]]:max-w-none">
+      <Example />
+    </div>
+  ) : null;
+}
+
+const VOICE: { state: AgentOrbState; ms: number; caption: string }[] = [
+  { state: "listening", ms: 3200, caption: "Listening" },
+  { state: "thinking", ms: 2200, caption: "Thinking" },
+  { state: "speaking", ms: 3800, caption: "Speaking" },
+];
+
+export function VoiceDemo() {
+  const [step, setStep] = React.useState(0);
+  const analyser = useAudioAnalyser({ simulate: "speech" });
+  const current = VOICE[step % VOICE.length]!;
+  React.useEffect(() => {
+    const id = setTimeout(() => setStep((s) => s + 1), current.ms);
+    return () => clearTimeout(id);
+  }, [current]);
+  return (
+    <div className="flex items-center gap-6 px-1">
+      <AgentOrb
+        state={current.state}
+        analyser={analyser}
+        dots={15}
+        className="size-[132px] shrink-0"
+      />
+      <div className="flex min-w-0 flex-1 flex-col gap-3">
+        <p className="font-medium text-[13px] text-kura-fg">{current.caption}</p>
+        <AudioWaveform
+          analyser={analyser}
+          active={current.state !== "thinking"}
+          tone="muted"
+          label="Voice level"
+          className="h-10"
+        />
+      </div>
+    </div>
+  );
 }

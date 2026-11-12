@@ -314,10 +314,10 @@ export function ModelPicker({
           disabled={disabled}
           aria-label={selected ? `Model: ${selected.name}` : placeholder}
           className={cn(
-            "group/model-picker inline-flex min-w-0 shrink cursor-pointer select-none items-center gap-1.5 rounded-[9px] font-kura-sans font-medium text-kura-fg-muted outline-none",
+            "group/model-picker inline-flex min-w-0 shrink cursor-pointer select-none items-center gap-1.5 rounded-[9px] font-kura-sans font-medium text-kura-fg-muted outline-hidden",
             "transition-[background-color,color,transform] duration-(--kura-duration-fast) ease-kura-snap",
             "hover:not-disabled:bg-kura-hover hover:not-disabled:text-kura-fg data-[state=open]:bg-kura-hover data-[state=open]:text-kura-fg",
-            "focus-visible:outline-2 focus-visible:outline-kura-ring focus-visible:outline-offset-2 active:not-disabled:translate-y-px disabled:cursor-not-allowed disabled:opacity-50 motion-reduce:active:not-disabled:translate-y-0",
+            "focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-kura-ring focus-visible:outline-offset-2 active:not-disabled:translate-y-px disabled:cursor-not-allowed disabled:opacity-50 motion-reduce:active:not-disabled:translate-y-0",
             size === "sm" ? "h-7 px-2 text-[13px]" : "h-8 px-2.5 text-[13px]",
             className,
           )}
@@ -359,7 +359,7 @@ export function ModelPicker({
               placeholder={searchPlaceholder}
               onChange={(e) => setQuery(e.currentTarget.value)}
               onKeyDown={onKeyDown}
-              className="h-full min-w-0 flex-1 bg-transparent text-[13px] text-kura-fg outline-none placeholder:text-kura-fg-subtle"
+              className="h-full min-w-0 flex-1 bg-transparent text-[13px] text-kura-fg outline-hidden placeholder:text-kura-fg-subtle"
             />
           </div>
         )}
@@ -370,7 +370,7 @@ export function ModelPicker({
           aria-label="Models"
           tabIndex={showSearch ? -1 : 0}
           aria-activedescendant={!showSearch && active ? optionId(active) : undefined}
-          className="max-h-[min(20rem,var(--list-height,20rem))] scroll-py-1 overflow-y-auto overscroll-contain p-1 outline-none [scrollbar-width:thin]"
+          className="max-h-[min(20rem,var(--list-height,20rem))] scroll-py-1 overflow-y-auto overscroll-contain p-1 outline-hidden [scrollbar-width:thin]"
         >
           {flat.length === 0 && (
             <div className="px-3 py-6 text-center text-[13px] text-kura-fg-subtle">
@@ -453,6 +453,12 @@ export function ModelPicker({
           >
             <p className="line-clamp-2">
               {activeModel?.description ?? (activeModel ? activeModel.name : "")}
+              {activeModel?.capabilities?.length ? (
+                <span data-slot="model-picker-capabilities" className="text-kura-fg-subtle">
+                  {" "}
+                  {activeModel.capabilities.map((c) => CAPABILITIES[c].label).join(" · ")}
+                </span>
+              ) : null}
             </p>
           </div>
         )}
@@ -492,18 +498,9 @@ function ModelMeta({ model }: { model: ModelPickerModel }) {
           {p}
         </React.Fragment>
       ))}
+      {/* Capabilities are read out here, and spelled out in the details strip for the active row. */}
       {caps.length > 0 && (
-        <span className="ml-auto flex items-center gap-1.5 text-kura-fg-subtle">
-          {caps.map((c) => {
-            const { Icon, label } = CAPABILITIES[c];
-            return (
-              <span key={c} title={label} data-capability={c} className="inline-flex">
-                <Icon className="size-3" aria-hidden />
-                <span className="sr-only">{label}</span>
-              </span>
-            );
-          })}
-        </span>
+        <span className="sr-only">{caps.map((c) => CAPABILITIES[c].label).join(", ")}</span>
       )}
     </div>
   );

@@ -93,7 +93,7 @@ export function PromptQueueTray() {
         defaultItems={QUEUE.slice(0, 2)}
         onSendNow={() => {}}
       />
-      <div className="h-16 rounded-kura-xl bg-kura-surface shadow-kura-sm" />
+      <Composer placeholder="Queue a follow-up…" />
     </div>
   );
 }

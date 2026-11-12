@@ -21,7 +21,7 @@ export default defineComponent({
       type: '"primary" | "secondary" | "ghost" | "outline" | "accent" | "danger"',
       default: '"primary"',
       description:
-        "Every button is a keycap. primary = the ink fill (light on dark, dark on light); secondary and outline = a raised key; ghost = no chrome until hover; accent = the same ink fill as primary (there is no accent colour); danger = destructive.",
+        "Every button is a keycap. primary = the ink fill (light on dark, dark on light); secondary and outline = a raised key; ghost = no chrome until hover; accent = the same ink fill as primary (there is no accent colour); danger = a raised key with a red label, for destructive actions.",
     },
     {
       name: "size",

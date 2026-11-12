@@ -215,7 +215,7 @@ describe("ApprovalPrompt", () => {
     expect(container.querySelector("[data-slot=halftone]")).toHaveAttribute("data-state", "hidden");
     expect(container.querySelector("[data-slot=status-glyph]")).toHaveAttribute(
       "data-status",
-      "failed",
+      "skipped",
     );
     expect(screen.getByRole("status")).toHaveTextContent("Denied by you. Nothing ran.");
   });

@@ -6,10 +6,10 @@ export default defineComponent({
   category: "feedback",
   status: "beta",
   description:
-    "Kura's one light: a halftone of dots that shrink as they fade from a corner. In ember it marks the thing that needs a person.",
+    "Kura's one light: an ember halftone, dots that shrink as they fade from the top-right corner of the thing that needs a person.",
   whenToUse: [
     "Mark the single surface on screen that is waiting on a person (an approval, a blocked step) and fade it out once they decide.",
-    'A neutral dot texture behind an empty state or a hero (tone "ink").',
+    "A panel that is blocked on a person other than an approval, e.g. a browser session paused for a login.",
   ],
   whenNotToUse: [
     'Decoration on ordinary panels: ember means "this needs you" and nothing else.',
@@ -17,12 +17,6 @@ export default defineComponent({
     "State inside a row — use status-glyph.",
   ],
   props: [
-    {
-      name: "corner",
-      type: '"top-right" | "top-left" | "bottom-right" | "bottom-left"',
-      default: '"top-right"',
-      description: "Which corner the light comes from.",
-    },
     {
       name: "visible",
       type: "boolean",
@@ -35,19 +29,13 @@ export default defineComponent({
       default: "0.62",
       description: "How far the dots reach across the box, 0–1. Keep text clear of it.",
     },
-    {
-      name: "tone",
-      type: '"ember" | "ink"',
-      default: '"ember"',
-      description: '"ember" means this needs a person; "ink" is a neutral texture.',
-    },
   ],
   parts: [
     {
       name: "Halftone",
       dataSlot: "halftone",
       description:
-        'An absolutely positioned, aria-hidden layer. `data-tone`, `data-state="visible" | "hidden"`.',
+        'An absolutely positioned, aria-hidden layer of three dot sizes (no wash). `data-state="visible" | "hidden"`.',
     },
   ],
   a11y: {
@@ -62,7 +50,7 @@ export default defineComponent({
   tags: ["halftone", "dots", "attention", "ember", "light"],
   examples: [
     { name: "HalftoneMinimal", kind: "minimal", title: "Needs you" },
-    { name: "HalftoneFull", kind: "full", title: "Corners, tones and fading out" },
+    { name: "HalftoneFull", kind: "full", title: "Reach and fading out" },
     {
       name: "HalftoneComposition",
       kind: "composition",

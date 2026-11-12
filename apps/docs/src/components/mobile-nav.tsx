@@ -27,7 +27,7 @@ export function MobileNav({ groups }: { groups: NavGroup[] }) {
     <Dialog.Root open={open} onOpenChange={setOpen}>
       <Dialog.Trigger
         aria-label="Open menu"
-        className="inline-flex size-9 items-center justify-center rounded-lg text-kura-fg-muted outline-none transition-colors hover:bg-kura-hover hover:text-kura-fg focus-visible:shadow-kura-focus md:hidden"
+        className="inline-flex size-9 items-center justify-center rounded-lg text-kura-fg-muted outline-hidden transition-colors hover:bg-kura-hover hover:text-kura-fg focus-visible:shadow-kura-focus md:hidden"
       >
         <Menu className="size-[18px]" />
       </Dialog.Trigger>
@@ -42,7 +42,7 @@ export function MobileNav({ groups }: { groups: NavGroup[] }) {
             <Logo />
             <Dialog.Close
               aria-label="Close menu"
-              className="inline-flex size-9 items-center justify-center rounded-lg text-kura-fg-muted outline-none hover:bg-kura-hover hover:text-kura-fg focus-visible:shadow-kura-focus"
+              className="inline-flex size-9 items-center justify-center rounded-lg text-kura-fg-muted outline-hidden hover:bg-kura-hover hover:text-kura-fg focus-visible:shadow-kura-focus"
             >
               <X className="size-[18px]" />
             </Dialog.Close>
@@ -54,7 +54,7 @@ export function MobileNav({ groups }: { groups: NavGroup[] }) {
                   <Link
                     href={l.href}
                     aria-current={!("external" in l) && isActive(l.href) ? "page" : undefined}
-                    className="flex h-11 items-center font-medium text-[17px] tracking-[-0.01em] outline-none focus-visible:shadow-kura-focus aria-[current=page]:text-kura-fg [&:not([aria-current])]:text-kura-fg-muted"
+                    className="flex h-11 items-center font-medium text-[17px] tracking-[-0.01em] outline-hidden focus-visible:shadow-kura-focus aria-[current=page]:text-kura-fg [&:not([aria-current])]:text-kura-fg-muted"
                   >
                     {l.label}
                   </Link>
@@ -71,7 +71,7 @@ export function MobileNav({ groups }: { groups: NavGroup[] }) {
                         href={i.href}
                         aria-current={pathname === i.href ? "page" : undefined}
                         className={cn(
-                          "flex h-9 items-center truncate text-[14.5px] outline-none focus-visible:shadow-kura-focus",
+                          "flex h-9 items-center truncate text-[14.5px] outline-hidden focus-visible:shadow-kura-focus",
                           pathname === i.href ? "font-medium text-kura-fg" : "text-kura-fg-muted",
                         )}
                       >

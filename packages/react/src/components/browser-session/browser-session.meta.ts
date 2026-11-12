@@ -104,7 +104,7 @@ export default defineComponent({
       type: '"browsing" | "paused" | "done" | "failed"',
       default: '"browsing"',
       description:
-        "browsing = “Agent is browsing” (the chasing glyph); paused = “Paused for you” (ember: it needs you, and the viewport gets an ember edge); done; failed.",
+        "browsing = “Agent is browsing” (the chasing glyph); paused = “Paused for you” (it needs you: an ember glyph and label, and an ember halftone in the sheet's corner); done; failed.",
     },
     {
       name: "statusText",
@@ -186,8 +186,7 @@ export default defineComponent({
     {
       name: "Viewport",
       dataSlot: "browser-session-viewport",
-      description:
-        "Fixed-aspect frame (no layout shift), inset in the sheet; ember inner edge while paused.",
+      description: "Fixed-aspect frame (no layout shift), inset in the sheet.",
     },
     {
       name: "Page",
@@ -233,7 +232,7 @@ export default defineComponent({
       'The step log is an <ol> labelled “Browser actions”; each step speaks its status after the label, and the active one has aria-current="step".',
       "A polite status region announces the active step's label (when it is a string), “Paused for you” / your statusText, “Session ended” or “Session failed” — never the ticking clock.",
       "The address bar is a labelled group; the lock icon is labelled “Secure connection”. With `src`, the image gets alt text (default “Screenshot of {url}”).",
-      "Take over / Resume agent are real buttons with visible focus. Paused state is signalled by text and glyph, not only the ember edge.",
+      "Take over / Resume agent are real buttons with visible focus. Paused state is signalled by text and glyph, not only the halftone.",
     ],
     keyboard: [
       {
@@ -245,7 +244,7 @@ export default defineComponent({
     reducedMotion:
       "The cursor and highlight jump instead of gliding (the highlight still fades), the click ripple is skipped, page scroll is instant and the loading glyph holds still.",
   },
-  dependencies: { npm: ["lucide-react"], kura: ["button", "status-glyph"] },
+  dependencies: { npm: ["lucide-react"], kura: ["button", "halftone", "status-glyph"] },
   related: ["terminal", "task-list", "run-header", "approval-prompt", "tool-call"],
   tags: [
     "agent",
@@ -275,7 +274,8 @@ export default defineComponent({
       name: "BrowserSessionPaused",
       kind: "state",
       title: "Paused for you",
-      description: "A 2FA prompt only the human can answer: ember edge, “Resume agent”.",
+      description:
+        "A 2FA prompt only the human can answer: the halftone appears, with “Resume agent”.",
     },
     {
       name: "BrowserSessionComposition",

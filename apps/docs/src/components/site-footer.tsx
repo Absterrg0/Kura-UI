@@ -51,7 +51,7 @@ export function SiteFooter() {
                   <li key={l.href}>
                     <Link
                       href={l.href}
-                      className="rounded-sm text-kura-fg-muted outline-none transition-colors hover:text-kura-fg focus-visible:shadow-kura-focus"
+                      className="rounded-sm text-kura-fg-muted outline-hidden transition-colors hover:text-kura-fg focus-visible:shadow-kura-focus"
                     >
                       {l.label}
                     </Link>

@@ -1,1 +1,1 @@
-export { AgentOrb, type AgentOrbProps } from "./agent-orb";
+export { AgentOrb, type AgentOrbProps, type AgentOrbState } from "./agent-orb";

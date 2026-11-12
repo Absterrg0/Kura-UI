@@ -151,7 +151,7 @@ export function DiffViewFull() {
         onReviewChange={setReview}
         maxHeight={620}
       />
-      <div className="flex items-center gap-3 px-1 text-[12px] text-kura-fg-subtle">
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-2 px-1 text-[12px] text-kura-fg-subtle">
         <span className="flex items-center gap-1.5">
           <Kbd size="sm">J</Kbd>
           <Kbd size="sm">K</Kbd>
@@ -169,7 +169,7 @@ export function DiffViewFull() {
           <Kbd size="sm">U</Kbd>
           <span>undo</span>
         </span>
-        <span className="ml-auto font-kura-mono tabular-nums">
+        <span className="ml-auto whitespace-nowrap font-kura-mono tabular-nums">
           {accepted} accepted · {rejected} rejected
         </span>
       </div>

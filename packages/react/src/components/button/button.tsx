@@ -31,9 +31,9 @@ export interface ButtonProps extends Omit<React.ComponentProps<"button">, "onCli
 }
 
 const base =
-  "relative inline-flex shrink-0 cursor-pointer select-none items-center justify-center gap-2 whitespace-nowrap font-kura-sans font-medium tracking-[-0.005em] outline-none " +
+  "relative inline-flex shrink-0 cursor-pointer select-none items-center justify-center gap-2 whitespace-nowrap font-kura-sans font-medium tracking-[-0.005em] outline-hidden " +
   "transition-[background-color,background-image,color,box-shadow,transform,opacity] duration-(--kura-duration-fast) ease-kura-snap " +
-  "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-kura-ring active:not-disabled:not-aria-disabled:translate-y-px active:not-disabled:not-aria-disabled:scale-[0.985] motion-reduce:active:not-disabled:translate-y-0 motion-reduce:active:not-disabled:scale-100 " +
+  "focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-kura-ring active:not-disabled:not-aria-disabled:translate-y-px active:not-disabled:not-aria-disabled:scale-[0.985] motion-reduce:active:not-disabled:translate-y-0 motion-reduce:active:not-disabled:scale-100 " +
   "disabled:cursor-not-allowed disabled:not-aria-busy:opacity-50 aria-disabled:not-aria-busy:cursor-not-allowed aria-disabled:not-aria-busy:opacity-50 aria-busy:cursor-progress " +
   "[&_svg]:pointer-events-none [&_svg]:shrink-0";
 
@@ -49,8 +49,9 @@ const variants: Record<ButtonVariant, string> = {
   // Kura has no accent colour: `accent` is kept for compatibility and draws as primary.
   accent:
     "bg-kura-ink-fill text-kura-fg-inverted shadow-kura-ink hover:not-disabled:not-aria-disabled:bg-kura-ink-fill-hover",
+  // Destructive: the same raised key, with its label in red. Nothing in Kura is a red fill.
   danger:
-    "bg-kura-danger text-white shadow-[inset_0_1px_0_rgb(255_255_255/0.18),0_0_0_1px_rgb(0_0_0/0.35),0_1px_2px_rgb(0_0_0/0.25)] hover:not-disabled:not-aria-disabled:brightness-110",
+    "bg-kura-raised text-kura-danger-text shadow-kura-raised hover:not-disabled:not-aria-disabled:bg-kura-raised-hover",
 };
 
 // Heights 24 / 28 / 32 / 40. A leading or trailing icon trims the padding on that side so the
@@ -131,7 +132,8 @@ export function Button({
           <span className="absolute inset-0 flex items-center justify-center">
             <Spinner size={size === "lg" ? "md" : "sm"} label={null} />
           </span>
-          <span className="invisible inline-flex items-center gap-1.5">{children}</span>
+          {/* Transparent, not hidden: the label keeps the button's width and its spoken name. */}
+          <span className="inline-flex items-center gap-1.5 opacity-0">{children}</span>
         </>
       ) : (
         children

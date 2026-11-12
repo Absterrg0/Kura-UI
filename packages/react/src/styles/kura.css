@@ -32,7 +32,8 @@
   --radius-kura-xl: 14px;
   --radius-kura-2xl: 18px;
 
-  --ease-kura-out: cubic-bezier(0.23, 1, 0.32, 1);
+  /* One curve: `out` is the same curve as `snap` (see DESIGN.md, Motion). */
+  --ease-kura-out: cubic-bezier(0.2, 0.8, 0.2, 1);
   --ease-kura-in-out: cubic-bezier(0.77, 0, 0.175, 1);
   --ease-kura-in: cubic-bezier(0.55, 0, 1, 0.45);
   --ease-kura-spring: linear(
@@ -383,7 +384,7 @@
   --kura-gray-7: #3a3d43;
   --kura-gray-8: #4a4d54;
   --kura-gray-9: #6b6f76;
-  --kura-gray-10: #878b92;
+  --kura-gray-10: #8f939a;
   --kura-gray-11: #a4a7ad;
   --kura-gray-12: #f2f3f4;
 

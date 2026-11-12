@@ -75,7 +75,6 @@ export function KbdShortcut({
       data-bound={!!onTrigger && enabled}
       className={cn(
         "group inline-flex items-center gap-1.5 font-kura-sans text-kura-fg-subtle text-xs",
-        !enabled && "opacity-50",
         className,
       )}
       {...props}
@@ -88,7 +87,14 @@ export function KbdShortcut({
           {label}
         </span>
       )}
-      <Kbd keys={keys} variant={variant} size={size} pressed={pressed} />
+      <Kbd
+        keys={keys}
+        variant={variant}
+        size={size}
+        pressed={pressed}
+        // A ghost key takes its colour from the text around it; here that must stay readable.
+        className={variant === "ghost" ? "text-kura-fg-muted" : undefined}
+      />
     </span>
   );
 }

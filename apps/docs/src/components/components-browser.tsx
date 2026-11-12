@@ -34,7 +34,7 @@ export function ComponentsBrowser({
               aria-pressed={category === t.id}
               onClick={() => setCategory(t.id)}
               className={cn(
-                "h-8 shrink-0 cursor-pointer rounded-lg px-3 text-[14px] outline-none transition-colors duration-150 focus-visible:shadow-kura-focus",
+                "h-8 shrink-0 cursor-pointer rounded-lg px-3 text-[14px] outline-hidden transition-colors duration-150 focus-visible:shadow-kura-focus",
                 category === t.id
                   ? "bg-kura-hover font-medium text-kura-fg shadow-[inset_0_0_0_1px_var(--kura-border)]"
                   : "text-kura-fg-muted hover:text-kura-fg",
@@ -55,7 +55,7 @@ export function ComponentsBrowser({
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Filter"
-            className="h-9 w-full rounded-lg bg-kura-hover pr-3 pl-8.5 text-[14px] text-kura-fg shadow-[inset_0_0_0_1px_var(--kura-border-subtle)] outline-none placeholder:text-kura-fg-subtle focus-visible:shadow-kura-focus"
+            className="h-9 w-full rounded-lg bg-kura-hover pr-3 pl-8.5 text-[14px] text-kura-fg shadow-[inset_0_0_0_1px_var(--kura-border-subtle)] outline-hidden placeholder:text-kura-fg-subtle focus-visible:shadow-kura-focus"
           />
         </label>
       </div>

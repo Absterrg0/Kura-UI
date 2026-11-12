@@ -355,7 +355,7 @@ export function CommandPalette({
         initialFocus={() => inputRef.current}
         className={cn(
           "-translate-x-1/2 fixed top-[min(20vh,160px)] left-1/2 z-50 flex max-h-[min(520px,calc(100vh-120px))] w-[min(640px,calc(100vw-32px))] flex-col overflow-hidden",
-          "m-0 rounded-kura-xl border-0 bg-kura-surface p-0 font-kura-sans text-kura-fg shadow-kura-popover outline-none backdrop:bg-transparent",
+          "m-0 rounded-kura-xl border-0 bg-kura-surface p-0 font-kura-sans text-kura-fg shadow-kura-popover outline-hidden backdrop:bg-transparent",
           "origin-top transition-[opacity,scale] duration-(--kura-duration-base) ease-kura-snap data-ending-style:scale-[0.98] data-ending-style:opacity-0 data-starting-style:scale-[0.98] data-starting-style:opacity-0 motion-reduce:transition-none",
           className,
         )}
@@ -399,7 +399,7 @@ export function CommandPalette({
                 ? `Search ${page.title.replace(/(…|\.\.\.)$/, "").toLowerCase()}…`
                 : placeholder)
             }
-            className="h-full min-w-0 flex-1 bg-transparent text-[14px] text-kura-fg outline-none placeholder:text-kura-fg-subtle"
+            className="h-full min-w-0 flex-1 bg-transparent text-[14px] text-kura-fg outline-hidden placeholder:text-kura-fg-subtle"
           />
           <Kbd keys={["esc"]} size="sm" className="shrink-0" />
         </div>
@@ -533,8 +533,8 @@ export function CommandPaletteTrigger({
       type="button"
       data-slot="command-palette-trigger"
       className={cn(
-        "inline-flex h-8 w-full min-w-0 cursor-pointer items-center gap-2 rounded-[9px] bg-kura-surface-sunken pr-1.5 pl-2.5 font-kura-sans text-[13px] text-kura-fg-subtle shadow-kura-sunk outline-none",
-        "transition-colors duration-(--kura-duration-fast) ease-kura-snap hover:text-kura-fg-muted focus-visible:outline-2 focus-visible:outline-kura-ring focus-visible:outline-offset-2",
+        "inline-flex h-8 w-full min-w-0 cursor-pointer items-center gap-2 rounded-[9px] bg-kura-surface-sunken pr-1.5 pl-2.5 font-kura-sans text-[13px] text-kura-fg-subtle shadow-kura-sunk outline-hidden",
+        "transition-colors duration-(--kura-duration-fast) ease-kura-snap hover:text-kura-fg-muted focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-kura-ring focus-visible:outline-offset-2",
         className,
       )}
       {...props}

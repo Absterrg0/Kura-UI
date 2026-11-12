@@ -108,7 +108,7 @@ export default defineComponent({
       name: "Progress",
       dataSlot: "task-list-progress",
       description:
-        "A DotRail of the top-level items: lit for done, a pulsing leading dot while one is running.",
+        "A DotRail of the top-level items: lit for done, a pulsing leading dot while one is running or waiting. Red when one failed.",
     },
     {
       name: "Completed",

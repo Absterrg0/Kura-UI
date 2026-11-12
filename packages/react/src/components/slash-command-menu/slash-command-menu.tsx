@@ -454,25 +454,6 @@ export function SlashCommandMenu({
           );
         })}
       </div>
-      <div
-        data-slot="slash-command-menu-footer"
-        aria-hidden
-        className="flex h-9 shrink-0 items-center gap-3 px-3 text-[12px] text-kura-fg-subtle shadow-[inset_0_1px_0_var(--kura-border-subtle)]"
-      >
-        <span className="inline-flex items-center gap-1">
-          <Kbd keys={["up"]} size="sm" />
-          <Kbd keys={["down"]} size="sm" />
-          navigate
-        </span>
-        <span className="inline-flex items-center gap-1">
-          <Kbd keys={["enter"]} size="sm" />
-          insert
-        </span>
-        <span className="inline-flex items-center gap-1">
-          <Kbd keys={["esc"]} size="sm" />
-          dismiss
-        </span>
-      </div>
       <span role="status" className="sr-only">
         {results.length === 0
           ? (emptyMessage ?? "")

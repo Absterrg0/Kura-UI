@@ -72,7 +72,7 @@ export default defineComponent({
       name: "Header",
       dataSlot: "agent-fleet-header",
       description:
-        "Title, count and agent-fleet-summary ('3 running · 1 waiting · 2 done'; waiting in ember, failed in red).",
+        "Title, count and agent-fleet-summary ('3 running · 1 waiting · 2 done'; failed in red).",
     },
     {
       name: "Agent",
@@ -90,7 +90,7 @@ export default defineComponent({
     {
       name: "Progress",
       dataSlot: "agent-fleet-progress",
-      description: "A DotRail while live: ink running, ember waiting, muted paused.",
+      description: "A DotRail while live: ink while running, muted while waiting or paused.",
     },
     {
       name: "Tokens",

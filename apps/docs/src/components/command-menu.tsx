@@ -4,7 +4,15 @@ import type { CatalogCategory } from "@kura/catalog-types";
 import { useHotkey } from "@kura-ui/react/hooks";
 import { Kbd } from "@kura-ui/react/kbd";
 import { Command } from "cmdk";
-import { Anchor, BookOpen, Bot, Box, FileText, LayoutGrid, Search, Workflow } from "lucide-react";
+import {
+  Anchor,
+  BookOpen,
+  FileText,
+  LayoutGrid,
+  Search,
+  SquareTerminal,
+  Workflow,
+} from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Dialog } from "radix-ui";
 import * as React from "react";
@@ -53,7 +61,12 @@ export function CommandMenu({
   categories: CatalogCategory[];
 }) {
   const [open, setOpen] = React.useState(false);
+  const [query, setQuery] = React.useState("");
   const router = useRouter();
+  // Each time the palette opens it starts empty.
+  React.useEffect(() => {
+    if (!open) setQuery("");
+  }, [open]);
   useHotkey(["mod", "k"], () => setOpen((o) => !o));
   useHotkey(["/"], () => setOpen(true));
 
@@ -68,7 +81,7 @@ export function CommandMenu({
         type="button"
         onClick={() => setOpen(true)}
         data-testid="search-trigger"
-        className="group flex size-9 cursor-pointer items-center justify-center gap-2 rounded-[9px] text-[13px] text-kura-fg-subtle outline-none transition-colors hover:text-kura-fg max-md:hover:bg-kura-hover md:h-8 md:w-auto md:justify-start md:bg-kura-surface-sunken md:pr-1.5 md:pl-2.5 md:shadow-kura-sunk lg:w-52"
+        className="group flex size-9 cursor-pointer items-center justify-center gap-2 rounded-[9px] text-[13px] text-kura-fg-subtle outline-hidden transition-colors hover:text-kura-fg max-md:hover:bg-kura-hover md:h-8 md:w-auto md:justify-start md:bg-kura-surface-sunken md:pr-1.5 md:pl-2.5 md:shadow-kura-sunk lg:w-52"
       >
         <Search className="size-4 md:size-3.5" />
         <span className="hidden flex-1 truncate whitespace-nowrap text-left md:block">Search</span>
@@ -93,13 +106,15 @@ export function CommandMenu({
                 <Search className="size-4 text-kura-fg-subtle" />
                 <Command.Input
                   autoFocus
+                  value={query}
+                  onValueChange={setQuery}
                   placeholder="Find a component, hook or page…"
-                  className="h-12 flex-1 bg-transparent text-[14px] outline-none placeholder:text-kura-fg-subtle"
+                  className="h-12 flex-1 bg-transparent text-[14px] outline-hidden placeholder:text-kura-fg-subtle"
                 />
                 <Kbd size="sm">Esc</Kbd>
               </div>
               <Command.List className="max-h-[min(420px,60vh)] scroll-py-2 overflow-y-auto p-1.5">
-                <Command.Empty className="py-10 text-center text-kura-fg-subtle text-sm">
+                <Command.Empty className="px-4 py-10 text-center text-[13px] text-kura-fg-subtle text-balance">
                   No components match. Ask your agent:{" "}
                   <span className="font-kura-mono">kura search</span>
                 </Command.Empty>
@@ -109,11 +124,15 @@ export function CommandMenu({
                     { href: "/docs/wiring-events", label: "Wiring agent events", icon: Workflow },
                     { href: "/docs/hooks", label: "Hooks", icon: Anchor },
                     { href: "/components", label: "All components", icon: LayoutGrid },
-                    { href: "/agents", label: "For agents: MCP, llms.txt, CLI", icon: Bot },
+                    {
+                      href: "/agents",
+                      label: "For agents: MCP, llms.txt, CLI",
+                      icon: SquareTerminal,
+                    },
                     { href: "/llms.txt", label: "llms.txt", icon: FileText },
                   ].map((p) => (
                     <Item key={p.href} value={p.label} onSelect={() => go(p.href)}>
-                      <p.icon className="size-4 text-kura-fg-subtle" />
+                      <p.icon className="size-4 shrink-0 text-kura-fg-subtle" />
                       {p.label}
                     </Item>
                   ))}
@@ -130,7 +149,6 @@ export function CommandMenu({
                           keywords={item.keywords}
                           onSelect={() => go(`/components/${item.slug}`)}
                         >
-                          <Box className="size-4 text-kura-fg-subtle" />
                           <span className="shrink-0">{item.title}</span>
                           <span className="truncate text-kura-fg-subtle text-xs">
                             {item.description}

@@ -81,7 +81,8 @@ describe("ToolCall", () => {
   it("formats durations", () => {
     expect(formatDuration(42)).toBe("40ms");
     expect(formatDuration(1530)).toBe("1.5s");
-    expect(formatDuration(65_000)).toBe("1m 5s");
+    expect(formatDuration(65_000)).toBe("1m 05s");
+    expect(formatDuration(18_000)).toBe("18s");
   });
 
   it("stops the chasing light under reduced motion", () => {

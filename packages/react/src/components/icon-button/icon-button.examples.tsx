@@ -37,7 +37,6 @@ export function IconButtonFull() {
           size="sm"
           variant="primary"
           shortcut={["mod", "enter"]}
-          className="rounded-full"
         />
       </div>
       <div className="flex items-center gap-2">

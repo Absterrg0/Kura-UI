@@ -6,7 +6,7 @@ export default defineComponent({
   category: "input",
   status: "beta",
   description:
-    "Searchable popover for choosing an AI model, grouped by provider, with capability icons, context size, speed and cost hints.",
+    "Searchable popover for choosing an AI model, grouped by provider, with context size, speed and cost hints, and capabilities spelled out for the active row.",
   whenToUse: [
     "Let the user switch the model in a chat composer toolbar or a chat header.",
     "Compare models at a glance: vision/tools/reasoning support, context window, speed and price tier.",
@@ -114,7 +114,7 @@ export default defineComponent({
       name: "ModelPickerItem",
       dataSlot: "model-picker-item",
       description:
-        "role=option row: name, badge, meta line, capability icons, check. data-active, data-disabled.",
+        "role=option row: the model's sigil, name, badge word, meta line (context, speed dots, cost), check. data-active, data-disabled. Capabilities are spoken on the row and written in the details strip.",
     },
     {
       name: "ModelPickerDetails",
@@ -150,7 +150,7 @@ export default defineComponent({
       kind: "full",
       title: "Searchable, grouped, controlled",
       description:
-        "Eight models across providers, a disabled tier, badges, capability icons and a controlled open state.",
+        "Eight models across providers, a disabled tier, badges, capabilities and a controlled open state.",
     },
     {
       name: "ModelPickerInComposer",

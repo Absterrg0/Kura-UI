@@ -98,7 +98,7 @@ npx @kura-ui/cli doctor --json                   # checks Tailwind v4 + Kura tok
               <li key={path} className="flex flex-col gap-1 py-3.5 md:flex-row md:gap-6">
                 <a
                   href={path?.includes("<") ? undefined : path}
-                  className="w-56 shrink-0 rounded-sm font-kura-mono text-[13px] outline-none hover:underline focus-visible:shadow-kura-focus"
+                  className="w-56 shrink-0 rounded-sm font-kura-mono text-[13px] outline-hidden hover:underline focus-visible:shadow-kura-focus"
                 >
                   {path}
                 </a>

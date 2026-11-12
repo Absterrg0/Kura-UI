@@ -97,9 +97,9 @@ export function PromptSuggestions({
                 disabled={disabled}
                 onClick={() => onSelect?.(promptOf(s), s)}
                 className={cn(
-                  "group/suggestion relative flex w-full min-w-0 cursor-pointer items-center text-left outline-none",
+                  "group/suggestion relative flex w-full min-w-0 cursor-pointer items-center text-left outline-hidden",
                   "transition-[background-color,color,transform] duration-(--kura-duration-fast) ease-kura-snap",
-                  "focus-visible:outline-2 focus-visible:outline-kura-ring focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:opacity-50 motion-reduce:transform-none",
+                  "focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-kura-ring focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:opacity-50 motion-reduce:transform-none",
                   // Chips are keycaps; cards are sheets; the list is bare rows.
                   variant === "chips" &&
                     "h-8 gap-1.5 rounded-[9px] bg-kura-raised px-[11px] font-medium text-[13px] text-kura-fg shadow-kura-raised hover:not-disabled:bg-kura-raised-hover active:not-disabled:translate-y-px [&_[data-slot=prompt-suggestions-icon]_svg]:size-3.5",

@@ -4,8 +4,8 @@ import { Terminal } from "@kura-ui/react/terminal";
 
 const ESC = "\u001b[";
 const c = (code: string, s: string) => `${ESC}${code}m${s}${ESC}0m`;
-const dot = c("32", "⏺");
-const tree = c("2", "⎿");
+const dot = c("2", "●");
+const tree = c("2", "└");
 
 /** The install story, told in a Kura Terminal: add the MCP server, then ask for components. */
 export function AgentTerminal({ className }: { className?: string }) {

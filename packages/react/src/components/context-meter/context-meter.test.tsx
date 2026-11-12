@@ -24,16 +24,15 @@ const segments = [
 describe("ContextMeter", () => {
   afterEach(() => vi.useRealTimers());
 
-  it("renders a labelled ring with a level and data-slot", () => {
+  it("renders a labelled rail of dots with a level and data-slot", () => {
     render(<ContextMeter used={42_000} max={100_000} className="custom" />);
     const meter = screen.getByRole("button", {
       name: "42% context used: 42,000 of 100,000 tokens",
     });
     expect(meter).toHaveAttribute("data-slot", "context-meter");
-    expect(meter).toHaveAttribute("data-variant", "ring");
     expect(meter).toHaveAttribute("data-level", "ok");
     expect(meter).toHaveClass("custom");
-    expect(meter.querySelector("[data-slot=context-meter-ring]")).not.toBeNull();
+    expect(meter.querySelector("[data-slot=context-meter-bar]")).not.toBeNull();
   });
 
   it("switches to warning and danger at the thresholds", () => {
@@ -47,7 +46,7 @@ describe("ContextMeter", () => {
   });
 
   it("sums segments and shows the breakdown on hover", async () => {
-    render(<ContextMeter max={20_000} segments={segments} variant="bar" />);
+    render(<ContextMeter max={20_000} segments={segments} valueDisplay="tokens" />);
     const meter = screen.getByRole("button", { name: /10,000 of 20,000/ });
     expect(meter).toHaveTextContent("10k");
     await userEvent.hover(meter);

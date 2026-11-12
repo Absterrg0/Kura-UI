@@ -31,7 +31,7 @@ export function SiteHeader() {
         <Link
           href="/"
           aria-label="Kura UI home"
-          className="rounded-lg outline-none focus-visible:shadow-kura-focus"
+          className="rounded-lg outline-hidden focus-visible:shadow-kura-focus"
         >
           <Logo />
         </Link>

@@ -20,10 +20,10 @@ export function CtaBand({ install }: { install: string }) {
           id="cta-title"
           className="font-semibold text-[40px] leading-[1.04] tracking-[-0.035em] text-balance md:text-[56px]"
         >
-          Give your agent a proper interface.
+          Start with one component.
         </h2>
         <p className="max-w-xl text-[17px] text-kura-fg-muted leading-relaxed md:text-[18px]">
-          React 19 and Tailwind CSS v4. Start with one component, then add the rest as your agent
+          React 19 and Tailwind CSS v4. Copy the first one in, then add the rest as your agent
           grows.
         </p>
         <div className="flex w-full flex-col items-center gap-3 pt-2 sm:w-auto sm:flex-row">

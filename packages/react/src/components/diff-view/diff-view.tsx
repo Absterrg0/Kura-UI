@@ -492,7 +492,7 @@ export function DiffView({
       onKeyDown={handleKeyDown}
       {...props}
     >
-      <div data-slot="diff-view-header" className="flex h-11 shrink-0 items-center gap-3 pr-2 pl-4">
+      <div data-slot="diff-view-header" className="flex h-11 shrink-0 items-center gap-3 pr-3 pl-4">
         <span className="flex min-w-0 items-baseline gap-2.5">
           <span id={titleId} className="min-w-[3rem] truncate font-medium tracking-[-0.006em]">
             {title}
@@ -608,7 +608,7 @@ export function DiffView({
               <div
                 data-slot="diff-view-file-header"
                 className={cn(
-                  "sticky top-0 z-[2] flex h-10 items-center gap-2 bg-kura-surface pr-2",
+                  "sticky top-0 z-[2] flex h-10 items-center gap-2 bg-kura-surface pr-3",
                   open && "shadow-[inset_0_-1px_0_var(--kura-border-subtle)]",
                 )}
               >
@@ -621,7 +621,7 @@ export function DiffView({
                   aria-expanded={open}
                   aria-controls={bodyId}
                   onClick={() => setFileCollapsed(file.path, open)}
-                  className="flex h-full min-w-0 flex-1 cursor-pointer items-center gap-2 pl-3 text-left outline-none transition-colors duration-(--kura-duration-fast) ease-kura-out hover:bg-kura-hover focus-visible:shadow-[inset_0_0_0_2px_var(--kura-ring)] motion-reduce:transition-none"
+                  className="flex h-full min-w-0 flex-1 cursor-pointer items-center gap-2 pl-3 text-left outline-hidden transition-colors duration-(--kura-duration-fast) ease-kura-out hover:bg-kura-hover focus-visible:shadow-[inset_0_0_0_2px_var(--kura-ring)] motion-reduce:transition-none"
                 >
                   <ChevronRight
                     aria-hidden
@@ -821,7 +821,7 @@ function FileBody({
             aria-label={`Change ${ordinal(h.id)} of ${total}, ${file.path} ${range}, ${decision ?? "pending review"}`}
             tabIndex={active ? 0 : -1}
             onFocus={() => onFocusHunk(h.id)}
-            className="group/hunk relative scroll-mt-10 outline-none"
+            className="group/hunk relative scroll-mt-10 outline-hidden focus-visible:outline-2 focus-visible:outline-solid focus-visible:-outline-offset-2 focus-visible:outline-kura-ring"
           >
             <span
               aria-hidden
@@ -830,7 +830,7 @@ function FileBody({
             <div
               data-slot="diff-view-hunk-header"
               className={cn(
-                "flex h-8 items-center gap-3 bg-kura-surface-sunken pr-1.5 font-kura-mono text-[12px] text-kura-fg-subtle transition-colors duration-(--kura-duration-fast) ease-kura-out group-focus-within/hunk:bg-kura-accent-subtle/60 motion-reduce:transition-none",
+                "flex h-8 items-center gap-3 bg-kura-surface-sunken pr-3 font-kura-mono text-[12px] text-kura-fg-subtle transition-colors duration-(--kura-duration-fast) ease-kura-out group-focus-within/hunk:bg-kura-accent-subtle/60 motion-reduce:transition-none",
                 k > 0 && "border-kura-border-subtle border-t",
               )}
             >
@@ -955,7 +955,7 @@ function HunkLines({ label, children }: { label: string; children: React.ReactNo
       role="group"
       aria-label={label}
       tabIndex={overflows ? 0 : undefined}
-      className="overflow-x-auto outline-none [scrollbar-width:thin] focus-visible:shadow-[inset_0_0_0_2px_var(--kura-ring)]"
+      className="overflow-x-auto outline-hidden [scrollbar-width:thin] focus-visible:shadow-[inset_0_0_0_2px_var(--kura-ring)]"
     >
       {children}
     </div>

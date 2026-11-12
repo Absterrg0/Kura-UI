@@ -36,7 +36,8 @@ export default defineComponent({
     {
       name: "icon",
       type: "React.ReactNode",
-      description: "Tool icon (lucide), e.g. <Globe />. Default a wrench.",
+      description:
+        "Optional tool icon (lucide), e.g. <Globe />. Default none: the status glyph and the name are enough.",
     },
     {
       name: "status",
@@ -122,7 +123,11 @@ export default defineComponent({
       dataSlot: "tool-call-status",
       description: "20px status glyph (aria-hidden).",
     },
-    { name: "Icon", dataSlot: "tool-call-icon", description: "Tool icon (aria-hidden)." },
+    {
+      name: "Icon",
+      dataSlot: "tool-call-icon",
+      description: "Tool icon (aria-hidden); only rendered when `icon` is passed.",
+    },
     {
       name: "Title",
       dataSlot: "tool-call-title",

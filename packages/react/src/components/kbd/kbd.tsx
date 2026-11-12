@@ -28,7 +28,7 @@ const keyVariants = {
     "rounded-[5px] bg-kura-surface text-kura-fg-subtle shadow-kura-key " +
     "data-[pressed=true]:translate-y-px data-[pressed=true]:bg-kura-gray-4 data-[pressed=true]:text-kura-fg data-[pressed=true]:shadow-[inset_0_0_0_1px_var(--kura-border-strong)] motion-reduce:data-[pressed=true]:translate-y-0",
   ghost:
-    "rounded-[5px] bg-current/10 text-current opacity-75 shadow-[inset_0_0_0_1px_color-mix(in_oklab,currentColor_14%,transparent)] data-[pressed=true]:opacity-100",
+    "rounded-[5px] bg-current/10 text-current shadow-[inset_0_0_0_1px_color-mix(in_oklab,currentColor_14%,transparent)] data-[pressed=true]:bg-current/20",
 } as const;
 
 const keySizes = {

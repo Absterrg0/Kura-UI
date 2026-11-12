@@ -2,6 +2,7 @@
 
 import * as React from "react";
 import { cn } from "../../lib/cn";
+import { formatDuration } from "../../lib/format";
 import { type AgentStatus, StatusGlyph } from "../status-glyph";
 
 export type AgentStepStatus = "queued" | "active" | "done" | "failed" | "skipped";
@@ -41,13 +42,8 @@ const spoken: Record<AgentStepStatus, string> = {
   skipped: "skipped",
 };
 
-export function formatStepDuration(ms: number): string {
-  if (ms < 1000) return `${Math.round(ms)}ms`;
-  const s = ms / 1000;
-  if (s < 60) return `${s < 10 ? s.toFixed(1) : Math.round(s)}s`;
-  const r = Math.round(s);
-  return `${Math.floor(r / 60)}m ${String(r % 60).padStart(2, "0")}s`;
-}
+/** @deprecated The shared formatter under its old name. */
+export const formatStepDuration = formatDuration;
 
 function useLiveDuration(active: boolean, startedAt?: Date | number): number | null {
   const start = React.useRef<number | null>(null);
@@ -108,7 +104,7 @@ function Step({ step, last, small }: { step: AgentTimelineStep; last: boolean; s
           data-filled={filled}
           className={cn(
             "kura-dots absolute w-1.5",
-            small ? "top-[19px] bottom-px left-[3.5px]" : "top-[23px] bottom-0.5 left-[4.5px]",
+            small ? "top-[21px] bottom-0 left-[3.5px]" : "top-[25px] bottom-0 left-[4.5px]",
           )}
         >
           <span
@@ -120,7 +116,7 @@ function Step({ step, last, small }: { step: AgentTimelineStep; last: boolean; s
           />
         </span>
       )}
-      <span className={cn("flex shrink-0", small ? "pt-px" : "pt-0.5")}>
+      <span className={cn("flex shrink-0 items-start", small ? "pt-[2.5px]" : "pt-[4.5px]")}>
         <Node status={step.status} small={small} />
       </span>
       <div className="flex min-w-0 flex-1 flex-col gap-1">

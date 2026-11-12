@@ -29,6 +29,12 @@ const PATCH = `diff --git a/src/auth/session.ts b/src/auth/session.ts
  }
 `;
 
+const BRIDGE = [
+  ["Sees every component", "agent.snapshot()"],
+  ["Acts through the same API", "agent.act({ steps })"],
+  ["Stops for a person", "data-agent-confirm"],
+] as const;
+
 const DIFF = "Agent patch";
 const PROMPT = "Deploy the reviewed patch to a preview";
 
@@ -36,31 +42,36 @@ const ESC = "\u001b[";
 const c = (code: string, s: string) => `${ESC}${code}m${s}${ESC}0m`;
 const dim = (s: string) => c("2", s);
 
-type Ask = { text: string; answer: (yes: boolean) => void };
-
 export function AgentDemo({ className }: { className?: string }) {
   const reduced = useReducedMotion();
   const [review, setReview] = React.useState<DiffReview>({});
   const [decision, setDecision] = React.useState<ApprovalDecision>("pending");
   const [lines, setLines] = React.useState<string[]>([]);
-  const [ask, setAsk] = React.useState<Ask | null>(null);
   const [state, setState] = React.useState<"idle" | "running" | "waiting" | "done">("idle");
+  // While the agent's press on "Deploy" waits for a person, this settles it.
+  const settle = React.useRef<(() => void) | null>(null);
+  const decided = React.useRef<ApprovalDecision>("pending");
   const askRef = React.useRef<(text: string) => Promise<boolean>>(() => Promise.resolve(false));
   const agentRef = React.useRef<ReturnType<typeof createAgent> | null>(null);
   const root = React.useRef<HTMLDivElement>(null);
   const run = React.useRef(0);
 
-  askRef.current = (text) =>
+  // The agent may not approve: its press stops here until the person uses the prompt themselves.
+  askRef.current = () =>
     new Promise<boolean>((resolve) => {
       setState("waiting");
-      setAsk({
-        text,
-        answer: (yes) => {
-          setAsk(null);
-          resolve(yes);
-        },
-      });
+      setLines((l) => [...l, `  ${dim("needs a person: waiting on the prompt")}`]);
+      settle.current = () => {
+        settle.current = null;
+        resolve(false);
+      };
     });
+
+  const decide = (next: ApprovalDecision) => {
+    decided.current = next;
+    setDecision(next);
+    settle.current?.();
+  };
 
   const play = React.useCallback(async () => {
     const id = ++run.current;
@@ -73,8 +84,9 @@ export function AgentDemo({ className }: { className?: string }) {
     const print = (...next: string[]) => live() && setLines((l) => [...l, ...next]);
 
     setReview({});
+    decided.current = "pending";
     setDecision("pending");
-    setAsk(null);
+    settle.current?.();
     setLines([]);
     setState("running");
     await wait(500);
@@ -109,12 +121,13 @@ export function AgentDemo({ className }: { className?: string }) {
     print("", `${c("36", "›")} press ${dim('"Deploy"')}`);
     // "Deploy" alone also matches the prompt's title, so take the button's ref from the snapshot.
     const button = agent.snapshot().find((e) => e.component === "button" && e.label === "Deploy");
-    const r = await agent.act({ steps: [{ ref: button?.ref ?? "Deploy", action: "press" }] });
+    await agent.act({ steps: [{ ref: button?.ref ?? "Deploy", action: "press" }] });
     if (!live()) return;
+    const outcome = decided.current as ApprovalDecision;
     print(
-      r.ok
-        ? `  ${c("32", "✓")} the person allowed it`
-        : `  ${c("33", "■")} the person said no, nothing ran`,
+      outcome === "approved" || outcome === "always"
+        ? `  ${c("32", "✓")} approved by you`
+        : `  ${c("1", "■")} denied by you, nothing ran`,
     );
     setState("done");
   }, [reduced]);
@@ -148,13 +161,13 @@ export function AgentDemo({ className }: { className?: string }) {
       ref={root}
       data-slot="agent-demo"
       className={cn(
-        "relative grid gap-3 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)]",
+        "relative grid items-start gap-3 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)]",
         className,
       )}
     >
       <div className="flex min-h-0 flex-col">
         <Terminal
-          className="h-full min-h-[300px]"
+          className="w-full"
           title="in-app assistant"
           command={"createAgent({ allow: askThePerson })"}
           lines={lines}
@@ -180,32 +193,16 @@ export function AgentDemo({ className }: { className?: string }) {
             </Button>
           }
         />
-        <div
-          aria-live="polite"
-          className={cn(
-            "grid transition-[grid-template-rows,opacity] duration-(--kura-duration-base) ease-kura-out motion-reduce:transition-none",
-            ask ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0",
-          )}
-        >
-          <div className="min-h-0 overflow-hidden">
-            {ask && (
-              <div className="sheet mt-3 flex flex-col gap-3 rounded-kura-xl p-3.5 sm:flex-row sm:items-center">
-                <p className="min-w-0 flex-1 text-[13.5px] leading-snug">
-                  <span className="text-kura-fg-muted">The agent wants to: </span>
-                  {ask.text}
-                </p>
-                <div className="flex shrink-0 gap-2">
-                  <Button variant="secondary" size="sm" onClick={() => ask.answer(false)}>
-                    Don't allow
-                  </Button>
-                  <Button size="sm" onClick={() => ask.answer(true)}>
-                    Allow
-                  </Button>
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
+        {/* What the bridge gives an agent, as a property list. */}
+        <dl className="flex flex-col gap-2.5 px-1 pt-6 text-[13.5px]">
+          {BRIDGE.map(([term, code]) => (
+            <div key={term} className="flex items-baseline gap-2.5">
+              <dt className="shrink-0 text-kura-fg-muted">{term}</dt>
+              <span aria-hidden className="kura-leader h-[5px] min-w-6 flex-1" />
+              <dd className="min-w-0 truncate font-kura-mono text-[12.5px]">{code}</dd>
+            </div>
+          ))}
+        </dl>
       </div>
       <div className="flex min-w-0 flex-col gap-3">
         <DiffView
@@ -223,7 +220,7 @@ export function AgentDemo({ className }: { className?: string }) {
           description="Ships the reviewed patch to a preview URL."
           agentConfirm="Deploys the reviewed patch to a preview URL"
           decision={decision}
-          onDecisionChange={setDecision}
+          onDecisionChange={decide}
           approveLabel="Deploy"
           shortcuts={false}
         />

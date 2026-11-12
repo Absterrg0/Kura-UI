@@ -111,7 +111,7 @@ export function AgentOrbVoiceSession() {
           icon={muted ? <MicOff /> : <Mic />}
           onClick={() => setMuted((m) => !m)}
         />
-        <IconButton label="End call" variant="danger" size="lg" icon={<PhoneOff />} />
+        <IconButton label="End call" variant="secondary" size="lg" icon={<PhoneOff />} />
       </div>
     </div>
   );

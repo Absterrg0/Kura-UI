@@ -135,16 +135,14 @@ export function ToolCallApproval() {
       actions={
         status === "awaiting-approval" ? (
           <>
-            <Button variant="ghost" size="sm" onClick={() => setStatus("error")}>
+            <Button variant="secondary" onClick={() => setStatus("error")}>
               Deny
             </Button>
-            <Button size="sm" onClick={() => setStatus("success")}>
-              Approve
-            </Button>
+            <Button onClick={() => setStatus("success")}>Approve</Button>
           </>
         ) : undefined
       }
-      error={status === "error" ? "Denied by user." : undefined}
+      error={status === "error" ? "Denied by you. Nothing ran." : undefined}
     />
   );
 }

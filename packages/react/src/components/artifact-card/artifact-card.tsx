@@ -130,7 +130,7 @@ export function ArtifactCard({
           : `${title} ready`;
 
   const titleClass =
-    "min-w-0 truncate text-left font-medium text-kura-fg text-sm leading-5 outline-none";
+    "min-w-0 truncate text-left font-medium text-kura-fg text-sm leading-5 outline-hidden";
   // The open control stretches over the whole card (after: overlay), so the card is one target
   // while the version switcher and actions stay separately clickable above it.
   const stretch =
@@ -207,7 +207,7 @@ export function ArtifactCard({
         openable &&
           "hover:bg-kura-raised has-[[data-slot=artifact-card-open]:active]:translate-y-px motion-reduce:has-[[data-slot=artifact-card-open]:active]:translate-y-0",
         selected && "bg-kura-raised outline-2 outline-kura-border-strong -outline-offset-1",
-        "has-[[data-slot=artifact-card-open]:focus-visible]:outline-2 has-[[data-slot=artifact-card-open]:focus-visible]:outline-kura-ring has-[[data-slot=artifact-card-open]:focus-visible]:outline-offset-2",
+        "has-[[data-slot=artifact-card-open]:focus-visible]:outline-2 has-[[data-slot=artifact-card-open]:focus-visible]:outline-solid has-[[data-slot=artifact-card-open]:focus-visible]:outline-kura-ring has-[[data-slot=artifact-card-open]:focus-visible]:outline-offset-2",
         className,
       )}
       {...props}

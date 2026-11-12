@@ -53,7 +53,7 @@ export function Section({
       <h2 className="pb-4 font-semibold text-[22px] tracking-[-0.02em]">
         <a
           href={`#${id}`}
-          className="rounded-sm outline-none hover:underline hover:decoration-kura-border-strong hover:underline-offset-4 focus-visible:shadow-kura-focus"
+          className="rounded-sm outline-hidden hover:underline hover:decoration-kura-border-strong hover:underline-offset-4 focus-visible:shadow-kura-focus"
         >
           {title}
         </a>

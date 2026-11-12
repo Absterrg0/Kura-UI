@@ -6,7 +6,7 @@ export default defineComponent({
   category: "agent",
   status: "beta",
   description:
-    "Token / context-window usage as a compact ring or bar with warning and danger thresholds, rolling numbers and a segmented breakdown card.",
+    "How full the context window is: a compact rail of dots with a hover breakdown, and ContextPanel, the window as one hundred dots (one per percent).",
   whenToUse: [
     "Show how much of a model's context window a conversation uses (e.g. in a composer footer or chat header).",
     "Break usage down by source — system prompt, tool definitions, attached files, history — in a hover card.",
@@ -33,13 +33,6 @@ export default defineComponent({
         "Breakdown: { id, label, tokens, color? }[], e.g. system / tools / files / history. Enables the hover card and shades the hundred-dot matrix. Colors default to ink tints.",
     },
     {
-      name: "variant",
-      type: '"ring" | "bar"',
-      default: '"ring"',
-      description:
-        "ring = 18px donut + value for tight toolbars; bar = horizontal (segmented) bar + value.",
-    },
-    {
       name: "warningAt",
       type: "number",
       default: "0.7",
@@ -49,13 +42,13 @@ export default defineComponent({
       name: "dangerAt",
       type: "number",
       default: "0.9",
-      description: "Fraction (0–1) from which the meter is red.",
+      description:
+        "Fraction (0–1) from which the meter reads “nearly full” (it stays ink: a full window is not a failure).",
     },
     {
       name: "valueDisplay",
       type: '"percent" | "tokens" | "none"',
-      description:
-        "Value next to the meter: 42% or 84.2k / 200k. Default percent for ring, tokens for bar.",
+      description: "Value next to the rail: 42% (default) or 84.2k / 200k.",
     },
     {
       name: "label",
@@ -80,14 +73,13 @@ export default defineComponent({
     {
       name: "ContextMeter",
       dataSlot: "context-meter",
-      description: 'Trigger button. `data-variant`, `data-level="ok" | "warning" | "danger"`.',
+      description: 'Trigger button. `data-level="ok" | "warning" | "danger"`.',
     },
-    { name: "Ring", dataSlot: "context-meter-ring", description: "SVG donut (aria-hidden)." },
     {
       name: "Bar",
       dataSlot: "context-meter-bar",
       description:
-        "A DotRail of the window; muted ink while ok, full ink above the warning threshold, red above the danger threshold.",
+        "A DotRail of the window; muted ink while ok, full ink above the warning threshold.",
     },
     {
       name: "Value",
@@ -113,7 +105,7 @@ export default defineComponent({
       { keys: "Escape", action: "Close the card" },
     ],
     reducedMotion:
-      "Numbers, ring and bar jump to the new value instead of rolling/growing; the card only fades.",
+      "Numbers and the rail jump to the new value instead of rolling/growing; the card only fades.",
   },
   dependencies: { npm: [], kura: ["dot-rail", "popover"] },
   related: ["composer", "model-picker", "message", "tool-call"],
@@ -122,21 +114,23 @@ export default defineComponent({
     {
       name: "ContextMeterMinimal",
       kind: "minimal",
-      title: "Ring",
-      description: "Used and max; nothing else needed.",
+      title: "The hundred dots",
+      description:
+        "ContextPanel: the window as one hundred dots, shaded by segment, with the legend.",
     },
     {
       name: "ContextMeterFull",
       kind: "full",
       title: "Thread header with a breakdown",
       description:
-        "A ring in the thread header and a bar with a footer note, both with the segment breakdown on hover. Attach logs to watch the numbers roll into warning and danger.",
+        "A thread card with the meter and its breakdown on hover. Attach logs to watch the numbers roll past the thresholds.",
     },
     {
       name: "ContextMeterThresholds",
       kind: "state",
       title: "Thresholds",
-      description: "ok, warning and danger bars in a list of threads, each labelled by its thread.",
+      description:
+        "ok, filling-up and nearly-full meters in a list of threads, each labelled by its thread.",
     },
     {
       name: "ContextMeterInComposer",
@@ -148,6 +142,6 @@ export default defineComponent({
   agentNotes: [
     "Pass `segments` whenever you know the breakdown; the meter then sums them and gets a hover card. Without segments it is a plain reading (no card).",
     "Use the provider's real window size for `max` (e.g. 200000) and recount after every turn — counts roll smoothly between values.",
-    'For a quota rather than a context window, set `label` (e.g. "Output") and use variant="bar".',
+    'For a quota rather than a context window, set `label` (e.g. "Output").',
   ],
 });

@@ -1,4 +1,4 @@
-import { ArrowUpRight, GitBranch, Play, Plus, Trash2 } from "lucide-react";
+import { ArrowUpRight, GitBranch, Plus, Trash2 } from "lucide-react";
 import { Button } from "./button";
 
 export function ButtonMinimal() {
@@ -15,9 +15,6 @@ export function ButtonFull() {
           <GitBranch /> Branch chat
         </Button>
         <Button variant="ghost">Skip</Button>
-        <Button variant="accent">
-          <Play /> Run agent
-        </Button>
         <Button variant="danger">
           <Trash2 /> Delete
         </Button>

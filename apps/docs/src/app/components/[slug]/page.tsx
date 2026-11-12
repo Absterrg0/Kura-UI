@@ -53,20 +53,11 @@ export async function generateMetadata({
   };
 }
 
-function StatusPill({ status }: { status: string }) {
-  const label = status === "experimental" ? "Beta" : status === "stable" ? "Stable" : status;
-  return (
-    <span className="inline-flex h-6 items-center rounded-full bg-kura-hover px-2.5 font-medium text-[12px] text-kura-fg-muted capitalize shadow-[inset_0_0_0_1px_var(--kura-border-subtle)]">
-      {label}
-    </span>
-  );
-}
-
 const link =
-  "rounded-md px-2 py-1 text-kura-fg-muted outline-none transition-colors hover:text-kura-fg focus-visible:shadow-kura-focus";
+  "rounded-md px-2 py-1 text-kura-fg-muted outline-hidden transition-colors hover:text-kura-fg focus-visible:shadow-kura-focus";
 
 const quiet =
-  "inline-flex h-9 items-center gap-1.5 rounded-[10px] px-3 text-[13.5px] text-kura-fg-muted shadow-[inset_0_0_0_1px_var(--kura-border)] outline-none transition-colors hover:bg-kura-hover hover:text-kura-fg focus-visible:shadow-kura-focus";
+  "inline-flex h-9 items-center gap-1.5 rounded-kura-lg px-3 text-[13px] text-kura-fg-muted";
 
 export default async function ComponentPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
@@ -90,7 +81,7 @@ export default async function ComponentPage({ params }: { params: Promise<{ slug
             <nav aria-label="Breadcrumb" className="text-[13.5px] text-kura-fg-subtle">
               <Link
                 href="/components"
-                className="rounded-sm outline-none hover:text-kura-fg focus-visible:shadow-kura-focus"
+                className="rounded-sm outline-hidden hover:text-kura-fg focus-visible:shadow-kura-focus"
               >
                 Components
               </Link>
@@ -108,17 +99,14 @@ export default async function ComponentPage({ params }: { params: Promise<{ slug
               </a>
             </span>
           </div>
-          <div className="flex flex-wrap items-center gap-3">
-            <h1 className="font-semibold text-[34px] leading-[1.08] tracking-[-0.03em] md:text-[40px]">
-              {c.title}
-            </h1>
-            <StatusPill status={c.status} />
-          </div>
+          <h1 className="font-semibold text-[34px] leading-[1.08] tracking-[-0.03em] md:text-[40px]">
+            {c.title}
+          </h1>
           <p className="max-w-2xl text-[17px] text-kura-fg-muted leading-relaxed text-pretty">
             <Prose>{c.description}</Prose>
           </p>
           <div className="flex flex-wrap items-center gap-x-2 gap-y-3 pt-2">
-            <span className="inline-flex h-9 min-w-0 max-w-full items-center gap-2 rounded-[10px] bg-kura-hover pr-1 pl-3.5 font-kura-mono text-[12.5px] text-kura-fg-muted shadow-[inset_0_0_0_1px_var(--kura-border-subtle)]">
+            <span className="well inline-flex h-9 min-w-0 max-w-full items-center gap-2 rounded-kura-lg pr-1 pl-3.5 font-kura-mono text-[12.5px] text-kura-fg-muted">
               <span aria-hidden className="select-none text-kura-fg-subtle">
                 $
               </span>
@@ -262,51 +250,54 @@ export default async function ComponentPage({ params }: { params: Promise<{ slug
 
         <Section id="props" title="Props">
           {c.props.length ? (
-            // biome-ignore lint/a11y/useSemanticElements: a scrollable table wrapper, not a page section
-            <div
-              role="region"
-              aria-label={`${c.title} props`}
-              // biome-ignore lint/a11y/noNoninteractiveTabindex: a scrollable region must be keyboard-reachable
-              tabIndex={0}
-              className="overflow-x-auto border-kura-border border-t outline-none focus-visible:shadow-[inset_0_0_0_2px_var(--kura-ring)]"
-            >
-              <table className="w-full text-left text-sm">
-                <thead className="border-kura-border-subtle border-b text-[12.5px] text-kura-fg-subtle">
-                  <tr>
-                    <th className="py-3 pr-4 font-normal">Prop</th>
-                    <th className="px-4 py-3 font-normal">Type</th>
-                    <th className="px-4 py-3 font-normal">Default</th>
-                    <th className="px-4 py-3 font-normal">Description</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {c.props.map((p) => (
-                    <tr
-                      key={p.name}
-                      className="border-kura-border-subtle border-b align-top last:border-0"
+            // A real table on wide screens; on a phone each row stacks into its own block.
+            <table className="block w-full border-kura-border border-t text-left md:table">
+              <thead className="hidden text-[12.5px] text-kura-fg-subtle md:table-header-group">
+                <tr className="border-kura-border-subtle border-b">
+                  <th className="py-3 pr-4 font-normal">Prop</th>
+                  <th className="px-4 py-3 font-normal">Type</th>
+                  <th className="px-4 py-3 font-normal">Default</th>
+                  <th className="py-3 pl-4 font-normal">Description</th>
+                </tr>
+              </thead>
+              <tbody className="block md:table-row-group">
+                {c.props.map((p) => (
+                  <tr
+                    key={p.name}
+                    className="flex flex-col gap-1.5 border-kura-border-subtle border-b py-3.5 align-top last:border-0 md:table-row md:py-0"
+                  >
+                    <td className="font-kura-mono text-[13px] [overflow-wrap:anywhere] md:w-[10.5rem] md:py-3.5 md:pr-4">
+                      {p.name}
+                      {p.required && (
+                        <span className="text-kura-fg-subtle" title="required">
+                          *
+                        </span>
+                      )}
+                    </td>
+                    <td className="font-kura-mono text-[12px] text-kura-fg-muted [overflow-wrap:anywhere] md:w-[13rem] md:px-4 md:py-3.5">
+                      {p.type}
+                    </td>
+                    <td
+                      className={
+                        p.default
+                          ? "font-kura-mono text-[12px] text-kura-fg-muted [overflow-wrap:anywhere] md:w-[6.5rem] md:px-4 md:py-3.5"
+                          : "font-kura-mono text-[12px] text-kura-fg-muted max-md:hidden md:w-[6.5rem] md:px-4 md:py-3.5"
+                      }
                     >
-                      <td className="whitespace-nowrap py-3.5 pr-4 font-kura-mono text-[13px]">
-                        {p.name}
-                        {p.required && (
-                          <span className="text-kura-fg-subtle" title="required">
-                            *
-                          </span>
-                        )}
-                      </td>
-                      <td className="px-4 py-3.5 font-kura-mono text-[12px] text-kura-fg-muted">
-                        {p.type}
-                      </td>
-                      <td className="px-4 py-3.5 font-kura-mono text-[12px] text-kura-fg-muted">
-                        {p.default ?? "—"}
-                      </td>
-                      <td className="px-4 py-3.5 text-[14px] text-kura-fg-muted leading-relaxed">
-                        <Prose>{p.description}</Prose>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                      {p.default && (
+                        <span className="font-kura-sans text-kura-fg-subtle md:hidden">
+                          Default{" "}
+                        </span>
+                      )}
+                      {p.default ?? "—"}
+                    </td>
+                    <td className="text-[14px] text-kura-fg-muted leading-relaxed md:py-3.5 md:pl-4">
+                      <Prose>{p.description}</Prose>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           ) : (
             <p className="text-kura-fg-muted text-sm">
               No props beyond the root element&apos;s native attributes.
@@ -341,7 +332,7 @@ export default async function ComponentPage({ params }: { params: Promise<{ slug
         )}
 
         <Section id="accessibility" title="Accessibility">
-          <ul className="flex list-disc flex-col gap-2 pl-5 text-kura-fg-muted text-sm leading-relaxed marker:text-kura-fg-subtle">
+          <ul className="flex list-disc flex-col gap-2 pl-5 text-kura-fg-muted text-sm leading-relaxed [overflow-wrap:anywhere] marker:text-kura-fg-subtle">
             {c.a11y.role && (
               <li>
                 Role: <C>{c.a11y.role}</C>
@@ -383,7 +374,7 @@ export default async function ComponentPage({ params }: { params: Promise<{ slug
 
         {!!c.agentNotes?.length && (
           <Section id="agents" title="Notes for agents">
-            <ul className="sheet flex list-disc flex-col gap-2 rounded-kura-xl bg-kura-surface p-5 pl-9 text-[14.5px] leading-relaxed marker:text-kura-fg-subtle">
+            <ul className="sheet flex list-disc flex-col gap-2 rounded-kura-xl bg-kura-surface p-5 pl-9 text-[14.5px] leading-relaxed [overflow-wrap:anywhere] marker:text-kura-fg-subtle">
               {c.agentNotes.map((n) => (
                 <li key={n}>
                   <Prose>{n}</Prose>
@@ -401,7 +392,7 @@ export default async function ComponentPage({ params }: { params: Promise<{ slug
                   <Link
                     key={r.slug}
                     href={`/components/${r.slug}`}
-                    className="inline-flex h-8 items-center rounded-[9px] bg-kura-raised px-[11px] font-kura-mono text-[12.5px] text-kura-fg shadow-kura-raised outline-none transition-colors duration-150 hover:bg-kura-raised-hover active:translate-y-px motion-reduce:transition-none"
+                    className="inline-flex h-8 items-center rounded-[9px] bg-kura-raised px-[11px] font-kura-mono text-[12.5px] text-kura-fg shadow-kura-raised outline-hidden transition-colors duration-150 hover:bg-kura-raised-hover active:translate-y-px motion-reduce:transition-none"
                   >
                     {r.slug}
                   </Link>

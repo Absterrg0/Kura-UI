@@ -187,7 +187,7 @@ function Row({ item, depth, selectedId, onSelect }: RowProps) {
           onClick={() => onSelect(item.id, item)}
           className={cn(
             rowClass,
-            "cursor-default outline-none hover:bg-kura-hover focus-visible:shadow-[inset_0_0_0_2px_var(--kura-ring)]",
+            "cursor-default outline-hidden hover:bg-kura-hover focus-visible:shadow-[inset_0_0_0_2px_var(--kura-ring)]",
             selected && "hover:bg-kura-active",
           )}
         >
@@ -333,7 +333,7 @@ export function TaskList({
               aria-expanded={completedOpen}
               aria-controls={groupId}
               onClick={() => setCompletedOpen((o) => !o)}
-              className="flex h-9 w-full cursor-default items-center gap-[11px] rounded-[9px] px-2.5 text-left text-[13px] text-kura-fg-subtle outline-none transition-colors duration-(--kura-duration-fast) ease-kura-snap hover:bg-kura-hover hover:text-kura-fg-muted focus-visible:shadow-[inset_0_0_0_2px_var(--kura-ring)]"
+              className="flex h-9 w-full cursor-default items-center gap-[11px] rounded-[9px] px-2.5 text-left text-[13px] text-kura-fg-subtle outline-hidden transition-colors duration-(--kura-duration-fast) ease-kura-snap hover:bg-kura-hover hover:text-kura-fg-muted focus-visible:shadow-[inset_0_0_0_2px_var(--kura-ring)]"
             >
               <span className="grid size-[15px] place-items-center">
                 <ChevronRight
@@ -400,7 +400,7 @@ export function TaskList({
               data-slot="task-list-progress"
               value={(doneCount + (runningIndex >= 0 || waitingItem ? 0.5 : 0)) / total}
               live={runningIndex >= 0 || waitingItem != null}
-              tone={waitingItem ? "ember" : failedItem ? "danger" : "ink"}
+              tone={failedItem ? "danger" : "ink"}
               className="w-[clamp(60px,26%,120px)]"
             />
           )}

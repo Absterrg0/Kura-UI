@@ -453,7 +453,7 @@ export function ComposerInput({
         }
       }}
       className={cn(
-        "block w-full resize-none bg-transparent px-4 pt-3.5 pb-1.5 text-[15px] text-kura-fg leading-6 outline-none",
+        "block w-full resize-none bg-transparent px-4 pt-3.5 pb-1.5 text-[15px] text-kura-fg leading-6 outline-hidden",
         "placeholder:text-kura-fg-subtle disabled:cursor-not-allowed [scrollbar-gutter:stable] [scrollbar-width:thin]",
         className,
       )}
@@ -701,9 +701,9 @@ export function ComposerSubmit({
         else ctx.submit();
       }}
       className={cn(
-        "relative flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-[9px] outline-none",
+        "relative flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-[9px] outline-hidden",
         "transition-[background-color,color,transform] duration-(--kura-duration-fast) ease-kura-snap",
-        "focus-visible:outline-2 focus-visible:outline-kura-ring focus-visible:outline-offset-2 active:not-disabled:translate-y-px motion-reduce:active:not-disabled:translate-y-0",
+        "focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-kura-ring focus-visible:outline-offset-2 active:not-disabled:translate-y-px motion-reduce:active:not-disabled:translate-y-0",
         "disabled:cursor-not-allowed",
         ready
           ? "bg-kura-ink-fill text-kura-fg-inverted shadow-kura-ink hover:bg-kura-ink-fill-hover"

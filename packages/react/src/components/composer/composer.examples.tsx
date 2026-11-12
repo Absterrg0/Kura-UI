@@ -78,7 +78,7 @@ function ToolToggle({
       type="button"
       aria-pressed={pressed}
       onClick={() => onPressedChange(!pressed)}
-      className="inline-flex h-8 cursor-pointer items-center gap-1.5 rounded-kura-lg px-2.5 font-medium text-[13px] text-kura-fg-muted outline-none transition-[background-color,color,box-shadow] duration-(--kura-duration-fast) ease-kura-out hover:bg-kura-hover hover:text-kura-fg focus-visible:shadow-kura-focus aria-pressed:bg-kura-active aria-pressed:text-kura-fg aria-pressed:shadow-[inset_0_0_0_1px_var(--kura-border-subtle)] [&_svg]:size-3.5"
+      className="inline-flex h-8 cursor-pointer items-center gap-1.5 rounded-kura-lg px-2.5 font-medium text-[13px] text-kura-fg-muted outline-hidden transition-[background-color,color,box-shadow] duration-(--kura-duration-fast) ease-kura-out hover:bg-kura-hover hover:text-kura-fg focus-visible:shadow-kura-focus aria-pressed:bg-kura-active aria-pressed:text-kura-fg aria-pressed:shadow-[inset_0_0_0_1px_var(--kura-border-subtle)] [&_svg]:size-3.5"
     >
       {icon}
       {children}
@@ -185,7 +185,7 @@ export function ComposerStates() {
       <div>
         <StateLabel>Submitted — waiting for the first token</StateLabel>
         <Composer
-          defaultValue="Summarise the attached incident report for the #eng-oncall channel."
+          defaultValue="Summarize the attached incident report for the #eng-oncall channel."
           status="submitted"
         >
           <ComposerInput />

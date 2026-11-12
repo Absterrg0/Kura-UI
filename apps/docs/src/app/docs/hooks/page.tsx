@@ -22,7 +22,7 @@ export default function HooksPage() {
             <a
               key={h.name}
               href={`#${h.name}`}
-              className="rounded-[10px] px-2.5 py-1 font-kura-mono text-[12.5px] text-kura-fg-muted shadow-[inset_0_0_0_1px_var(--kura-border)] outline-none hover:bg-kura-hover hover:text-kura-fg focus-visible:shadow-kura-focus"
+              className="rounded-[10px] px-2.5 py-1 font-kura-mono text-[12.5px] text-kura-fg-muted shadow-[inset_0_0_0_1px_var(--kura-border)] outline-hidden hover:bg-kura-hover hover:text-kura-fg focus-visible:shadow-kura-focus"
             >
               {h.name}
             </a>
@@ -37,7 +37,7 @@ export default function HooksPage() {
             <h2 className="font-kura-mono font-medium text-[18px] tracking-[-0.01em]">
               <a
                 href={`#${h.name}`}
-                className="rounded-sm outline-none hover:underline hover:underline-offset-4 focus-visible:shadow-kura-focus"
+                className="rounded-sm outline-hidden hover:underline hover:underline-offset-4 focus-visible:shadow-kura-focus"
               >
                 {h.name}
               </a>

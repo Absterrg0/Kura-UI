@@ -64,7 +64,9 @@ function prune(dir: string, keep: Set<string>) {
   for (const f of readdirSync(dir)) if (!keep.has(f)) rmSync(join(dir, f), { recursive: true });
 }
 
-const titleCase = (name: string) => name.replace(/([a-z0-9])([A-Z])/g, "$1 $2");
+// "PromptQueue" → "Prompt queue": sentence case, like every other label in Kura.
+const titleCase = (name: string) =>
+  name.replace(/([a-z0-9])([A-Z])/g, (_, a: string, b: string) => `${a} ${b.toLowerCase()}`);
 const itemUrl = (name: string) => (name === "utils" ? "utils" : `${SITE_URL}/r/${name}.json`);
 const pkg = JSON.parse(readFileSync(join(REACT_DIR, "package.json"), "utf8"));
 

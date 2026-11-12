@@ -123,7 +123,7 @@ export function TooltipEditorToolbar() {
             <ToolbarTip label="Saved 12:04 · version 18" side="bottom">
               <button
                 type="button"
-                className="inline-flex h-7 cursor-default items-center gap-1.5 rounded-kura-sm px-2 text-kura-fg-subtle text-xs outline-none focus-visible:shadow-kura-focus"
+                className="inline-flex h-7 cursor-default items-center gap-1.5 rounded-kura-sm px-2 text-kura-fg-subtle text-xs outline-hidden focus-visible:shadow-kura-focus"
               >
                 <Cloud className="size-3.5" aria-hidden />
                 Saved

@@ -99,7 +99,7 @@ export function MessageList({
           if (e.deltaY < 0) stuck.current = false;
         }}
         data-slot="message-list-viewport"
-        className="min-h-0 flex-1 overflow-y-auto overscroll-contain outline-none [scrollbar-gutter:stable] [scrollbar-width:thin] focus-visible:shadow-[inset_0_0_0_2px_var(--kura-ring)]"
+        className="min-h-0 flex-1 overflow-y-auto overscroll-contain outline-hidden [scrollbar-gutter:stable] [scrollbar-width:thin] focus-visible:shadow-[inset_0_0_0_2px_var(--kura-ring)]"
       >
         <div
           ref={content}
@@ -118,8 +118,8 @@ export function MessageList({
           aria-hidden={!showJump || undefined}
           onClick={jump}
           className={cn(
-            "inline-flex h-8 cursor-pointer items-center gap-1.5 rounded-[9px] bg-kura-raised pr-3 pl-2.5 font-kura-sans font-medium text-kura-fg text-xs shadow-kura-popover outline-none",
-            "transition-[opacity,transform,background-color] duration-(--kura-duration-base) ease-kura-snap hover:bg-kura-raised-hover focus-visible:outline-2 focus-visible:outline-kura-ring focus-visible:outline-offset-2 active:translate-y-px",
+            "inline-flex h-8 cursor-pointer items-center gap-1.5 rounded-[9px] bg-kura-raised pr-3 pl-2.5 font-kura-sans font-medium text-kura-fg text-xs shadow-kura-popover outline-hidden",
+            "transition-[opacity,transform,background-color] duration-(--kura-duration-base) ease-kura-snap hover:bg-kura-raised-hover focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-kura-ring focus-visible:outline-offset-2 active:translate-y-px",
             showJump
               ? "pointer-events-auto translate-y-0 opacity-100"
               : "translate-y-2 opacity-0 duration-(--kura-duration-fast)",

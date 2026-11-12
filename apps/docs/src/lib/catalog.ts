@@ -4,13 +4,11 @@ import data from "../generated/catalog.json";
 /** The generated catalog (`pnpm generate`). Every page is derived from it. */
 export const catalog = data as unknown as Catalog;
 
-/** Internal building blocks (buttons, tooltips…) ship with the library but aren't listed. */
-export const INTERNAL_CATEGORY = "primitives";
+/** Ships with the library but is plumbing (the orb's shader runner), so the docs don't list it. */
+const HIDDEN = new Set(["shader-canvas"]);
 
-/** The components the docs present: everything except internal primitives. */
-export const components: CatalogComponent[] = catalog.components.filter(
-  (c) => c.category !== INTERNAL_CATEGORY,
-);
+/** The components the docs present. */
+export const components: CatalogComponent[] = catalog.components.filter((c) => !HIDDEN.has(c.slug));
 
 export function getComponent(slug: string): CatalogComponent | undefined {
   return components.find((c) => c.slug === slug);

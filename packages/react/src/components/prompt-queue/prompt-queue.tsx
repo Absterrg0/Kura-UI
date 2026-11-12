@@ -301,7 +301,7 @@ function QueueRow({
       data-slot="prompt-queue-item"
       data-state={editing ? "editing" : dragging ? "dragging" : undefined}
       className={cn(
-        "group/item relative mx-1.5 flex min-w-0 rounded-[9px] bg-transparent outline-none",
+        "group/item relative mx-1.5 flex min-w-0 rounded-[9px] bg-transparent outline-hidden",
         "focus-visible:shadow-[inset_0_0_0_2px_var(--kura-ring)]",
         !editing && "min-h-8 items-center gap-1 pr-1 pl-1 hover:bg-kura-hover",
         editing && "bg-kura-hover p-1.5",
@@ -443,7 +443,7 @@ function EditBox({
             onSave(text);
           }
         }}
-        className="w-full resize-none rounded-[7px] bg-kura-surface-sunken px-2 py-1.5 text-[13px] text-kura-fg leading-5 shadow-kura-sunk outline-none focus-visible:outline-2 focus-visible:outline-kura-ring"
+        className="w-full resize-none rounded-[7px] bg-kura-surface-sunken px-2 py-1.5 text-[13px] text-kura-fg leading-5 shadow-kura-sunk outline-hidden focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-kura-ring"
       />
       <div className="flex items-center justify-end gap-1">
         <span className="mr-auto truncate pl-1 text-[12px] text-kura-fg-subtle">

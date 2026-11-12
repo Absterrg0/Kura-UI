@@ -6,6 +6,7 @@ import { useElapsed } from "../../hooks/use-elapsed";
 import { cn } from "../../lib/cn";
 import { formatClock } from "../../lib/format";
 import { Button } from "../button";
+import { Halftone } from "../halftone";
 import { type AgentStatus, StatusGlyph } from "../status-glyph";
 
 export type BrowserStepKind = "navigate" | "click" | "type" | "scroll" | "extract";
@@ -177,7 +178,7 @@ function Ripple({ point }: { point: BrowserPoint }) {
         { transform: "translate(-50%, -50%) scale(0.2)", opacity: 1 },
         { transform: "translate(-50%, -50%) scale(1)", opacity: 0 },
       ],
-      { duration: 700, delay: 420, easing: "cubic-bezier(0.23, 1, 0.32, 1)", fill: "forwards" },
+      { duration: 700, delay: 420, easing: "cubic-bezier(0.2, 0.8, 0.2, 1)", fill: "forwards" },
     );
     return () => animation.cancel();
   }, []);
@@ -321,11 +322,13 @@ export function BrowserSession({
       data-status={status}
       data-layout={layout}
       className={cn(
-        "@container flex min-w-0 flex-col overflow-hidden rounded-kura-xl bg-kura-surface font-kura-sans text-kura-fg shadow-kura-sm",
+        "@container relative isolate flex min-w-0 flex-col overflow-hidden rounded-kura-xl bg-kura-surface font-kura-sans text-kura-fg shadow-kura-surface",
         className,
       )}
       {...props}
     >
+      {/* Paused means the session is waiting on a person: the one thing ember is for. */}
+      <Halftone visible={status === "paused"} reach={0.5} />
       {/* Status line */}
       <div
         data-slot="browser-session-header"
@@ -429,8 +432,6 @@ export function BrowserSession({
             data-slot="browser-session-viewport"
             className={cn(
               "relative mx-1.5 mb-1.5 overflow-hidden rounded-kura-lg bg-kura-canvas shadow-[0_0_0_1px_var(--kura-border)]",
-              status === "paused" &&
-                "after:pointer-events-none after:absolute after:inset-0 after:z-40 after:rounded-[inherit] after:shadow-[inset_0_0_0_2px_var(--kura-ember)]",
             )}
             style={{ aspectRatio: ratio }}
           >
@@ -495,9 +496,14 @@ export function BrowserSession({
         {/* Step log */}
         {steps && (
           <div data-slot="browser-session-log" className={cn("relative min-w-0")}>
+            {/* biome-ignore lint/a11y/useSemanticElements: a scrollable list wrapper, not a form group */}
             <div
+              role="group"
+              aria-label="Action log"
+              // biome-ignore lint/a11y/noNoninteractiveTabindex: a scrollable region must be keyboard-reachable
+              tabIndex={0}
               className={cn(
-                "overflow-y-auto overscroll-contain",
+                "overflow-y-auto overscroll-contain outline-hidden focus-visible:shadow-[inset_0_0_0_2px_var(--kura-ring)]",
                 side && "absolute inset-0",
                 !side && "max-h-56",
                 auto && "@3xl:absolute @3xl:inset-0 @3xl:max-h-none",

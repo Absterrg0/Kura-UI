@@ -6,7 +6,7 @@ export default defineComponent({
   category: "feedback",
   status: "beta",
   description:
-    "Compact AI “thinking” indicators — dots, pulse, orbit, wave, or cycling status text — inside a polite live region.",
+    "Compact AI “thinking” indicators — three dots, a pulsing dot, or cycling status text — inside a polite live region.",
   whenToUse: [
     "The assistant has received a prompt but not produced its first token yet.",
     "A pending assistant message bubble or a placeholder row in a chat list.",
@@ -22,10 +22,10 @@ export default defineComponent({
   props: [
     {
       name: "variant",
-      type: '"dots" | "pulse" | "orbit" | "wave" | "text"',
+      type: '"dots" | "pulse" | "text"',
       default: '"dots"',
       description:
-        "dots: three bouncing dots (staggered spring). pulse: a breathing dot with an expanding ring. orbit: two dots chasing round a track. wave: four equaliser bars. text: a pulse plus shimmering status text that cycles through `messages`.",
+        "dots: three bouncing dots (staggered). pulse: a breathing dot with an expanding ring. text: cycling status lines with no shape.",
     },
     {
       name: "size",
@@ -82,7 +82,7 @@ export default defineComponent({
     ],
     keyboard: [],
     reducedMotion:
-      "Loops stop. Dots show three static dots of rising opacity, the pulse is a still dot, orbit freezes with both dots visible, wave shows static bars of varied heights. Text still cycles but with an opacity cross-fade only (no blur, no rise, no shimmer).",
+      "Loops stop. Dots show three static dots of rising opacity and the pulse is a still dot; text lines swap without travel.",
   },
   dependencies: { npm: [], kura: ["shimmer-text"] },
   related: ["shimmer-text", "agent-orb", "streaming-text", "message", "run-header"],
@@ -93,7 +93,7 @@ export default defineComponent({
       name: "ThinkingIndicatorFull",
       kind: "full",
       title: "Every variant and size",
-      description: "dots, pulse, orbit and wave at sm/md/lg, cycling text, and a muted recolour.",
+      description: "dots and pulse at sm/md/lg, cycling text, and a muted recolour.",
     },
     {
       name: "ThinkingIndicatorInMessage",

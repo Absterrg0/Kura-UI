@@ -1,17 +1,6 @@
 "use client";
 
-import {
-  BookOpen,
-  Bug,
-  Calendar,
-  ChartLine,
-  FlaskConical,
-  Mail,
-  Plane,
-  RefreshCw,
-  Scale,
-  Telescope,
-} from "lucide-react";
+import { RefreshCw } from "lucide-react";
 import * as React from "react";
 import { Button } from "../button";
 import {
@@ -30,67 +19,60 @@ export function PromptSuggestionsMinimal() {
     <PromptSuggestions
       variant="chips"
       suggestions={[
-        { title: "Summarize a PDF" },
-        { title: "Write a SQL query" },
-        { title: "Plan a sprint" },
-        { title: "Explain a regex" },
+        { title: "Fix the failing test" },
+        { title: "Review my diff" },
+        { title: "Update the changelog" },
+        { title: "Explain this stack trace" },
       ]}
       onSelect={(prompt) => console.log(prompt)}
     />
   );
 }
 
+// What you would hand a coding agent: a task and where to do it. No icons; the words are enough.
 const sets: PromptSuggestion[][] = [
   [
     {
-      id: "trip",
-      title: "Plan a trip",
-      description: "Four slow days in Kyoto in early April",
-      icon: <Plane />,
+      id: "tests",
+      title: "Fix the failing test",
+      description: "login.test.ts fails on expired sessions since the auth refactor",
     },
     {
-      id: "metrics",
-      title: "Analyze metrics",
-      description: "Why did weekly actives dip after the release?",
-      icon: <ChartLine />,
+      id: "migrate",
+      title: "Migrate a call site",
+      description: "Replace fetchUser() with the auth client in src/routes",
     },
     {
-      id: "email",
-      title: "Draft an email",
-      description: "Decline a meeting without closing the door",
-      icon: <Mail />,
+      id: "review",
+      title: "Review my diff",
+      description: "Look for missing error handling before I open the PR",
     },
     {
-      id: "bug",
-      title: "Debug a crash",
-      description: "TypeError: cannot read properties of undefined",
-      icon: <Bug />,
+      id: "trace",
+      title: "Explain a stack trace",
+      description: "TypeError: cannot read properties of undefined (reading 'user')",
     },
   ],
   [
     {
-      id: "learn",
-      title: "Teach me",
-      description: "How transformers attend, with a tiny example",
-      icon: <BookOpen />,
+      id: "deps",
+      title: "Upgrade a dependency",
+      description: "Move to React 19 and fix what breaks",
     },
     {
-      id: "compare",
-      title: "Compare options",
-      description: "Postgres vs. SQLite for a local-first app",
-      icon: <Scale />,
+      id: "docs",
+      title: "Write the README section",
+      description: "Document the new session API with one example",
     },
     {
-      id: "research",
-      title: "Research",
-      description: "What changed in the EU AI Act this year",
-      icon: <Telescope />,
+      id: "perf",
+      title: "Find the slow query",
+      description: "The account page takes two seconds to load",
     },
     {
-      id: "week",
-      title: "Plan my week",
-      description: "Fit deep work around six meetings",
-      icon: <Calendar />,
+      id: "cleanup",
+      title: "Remove dead code",
+      description: "Delete src/legacy once nothing imports it",
     },
   ],
 ];
@@ -121,9 +103,9 @@ export function PromptSuggestionsFull() {
 }
 
 const starters: PromptSuggestion[] = [
-  { title: "Summarize this week's customer feedback", icon: <ChartLine /> },
-  { title: "Write tests for the billing service", icon: <FlaskConical /> },
-  { title: "Draft a launch announcement", icon: <Mail /> },
+  { title: "Fix the failing test in login.test.ts" },
+  { title: "Write tests for the billing service" },
+  { title: "Review my diff before I open the PR" },
 ];
 
 export function PromptSuggestionsEmptyChat() {

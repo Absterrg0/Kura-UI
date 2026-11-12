@@ -114,8 +114,8 @@ export function Reasoning({
           setOpen(!open);
         }}
         className={cn(
-          "group/trigger -mx-1.5 inline-flex h-7 w-fit cursor-pointer items-center gap-1 rounded-[8px] px-1.5 text-[13px] text-kura-fg-muted outline-none",
-          "transition-colors duration-(--kura-duration-fast) ease-kura-snap hover:text-kura-fg focus-visible:outline-2 focus-visible:outline-kura-ring",
+          "group/trigger -mx-1.5 inline-flex h-7 w-fit cursor-pointer items-center gap-1 rounded-[8px] px-1.5 text-[13px] text-kura-fg-muted outline-hidden",
+          "transition-colors duration-(--kura-duration-fast) ease-kura-snap hover:text-kura-fg focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-kura-ring",
         )}
       >
         {active && <StatusGlyph status="running" size="sm" label={null} className="mr-0.5" />}

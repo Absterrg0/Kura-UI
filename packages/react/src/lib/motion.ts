@@ -12,10 +12,8 @@ export const springs = {
   snappy: { type: "spring", visualDuration: 0.2, bounce: 0.1 },
   /** Default for layout changes, panels, popovers. No overshoot. */
   smooth: { type: "spring", visualDuration: 0.35, bounce: 0 },
-  /** Large surfaces (sheets, drawers, hero elements). */
-  gentle: { type: "spring", visualDuration: 0.5, bounce: 0.05 },
-  /** Playful confirmation and "alive" elements (orbs, success ticks). Use sparingly. */
-  bouncy: { type: "spring", visualDuration: 0.4, bounce: 0.25 },
+  /** Large surfaces (sheets, drawers). No overshoot: nothing in Kura bounces. */
+  gentle: { type: "spring", visualDuration: 0.5, bounce: 0 },
 } as const;
 
 /** Durations in seconds (motion) — mirror of --kura-duration-* in CSS (ms). */
@@ -27,10 +25,11 @@ export const durations = {
   slower: 0.48,
 } as const;
 
-/** Cubic-bezier easings — mirror of --ease-kura-* in CSS. */
+/** Kura has one curve. `snap` is it; `out` is an alias kept for older code. */
 export const easings = {
-  /** Default. Strong ease-out: responsive start, soft landing. Enter + user-initiated motion. */
-  out: [0.23, 1, 0.32, 1],
+  /** The curve: a quick start and a soft landing. --ease-kura-snap in CSS. */
+  snap: [0.2, 0.8, 0.2, 1],
+  out: [0.2, 0.8, 0.2, 1],
   /** Elements moving on-screen from A to B. */
   inOut: [0.77, 0, 0.175, 1],
   /** Exits only. Never for enters. */

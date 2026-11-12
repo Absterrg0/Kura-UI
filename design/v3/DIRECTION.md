@@ -46,7 +46,7 @@ is the identity; the rest is a quiet, crisp frame for it.
 | sheet (surface)                | `#141518`                         | `#ffffff`                         |
 | well (sunken)                  | `#0a0b0d`                         | `#f2f3f5`                         |
 | raised (keys, tiles, popovers) | `#1e2024`                         | `#ffffff`                         |
-| ink / ink-2 / ink-3            | `#f2f3f4` / `#a4a7ad` / `#878b92` | `#111214` / `#53565c` / `#62666d` |
+| ink / ink-2 / ink-3            | `#f2f3f4` / `#a4a7ad` / `#8f939a` | `#111214` / `#53565c` / `#62666d` |
 | faint (decoration only)        | `#3a3d43`                         | `#c4c7cc`                         |
 | hairline                       | `rgb(255 255 255 / .07)`          | `rgb(17 18 20 / .075)`            |
 | unlit dot                      | `rgb(255 255 255 / .13)`          | `rgb(17 18 20 / .15)`             |

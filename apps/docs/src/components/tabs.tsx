@@ -24,7 +24,7 @@ export function TabsTrigger({
   return (
     <TabsPrimitive.Trigger
       className={cn(
-        "h-7 cursor-pointer rounded-[7px] px-3 font-medium text-[13px] text-kura-fg-muted outline-none transition-colors duration-(--kura-duration-fast)",
+        "h-7 cursor-pointer rounded-[7px] px-3 font-medium text-[13px] text-kura-fg-muted outline-hidden transition-colors duration-(--kura-duration-fast)",
         "hover:text-kura-fg focus-visible:ring-2 focus-visible:ring-kura-ring data-[state=active]:bg-kura-raised data-[state=active]:text-kura-fg data-[state=active]:shadow-kura-raised",
         className,
       )}
@@ -37,5 +37,13 @@ export function TabsContent({
   className,
   ...props
 }: React.ComponentProps<typeof TabsPrimitive.Content>) {
-  return <TabsPrimitive.Content className={cn("outline-none", className)} {...props} />;
+  return (
+    <TabsPrimitive.Content
+      className={cn(
+        "outline-hidden focus-visible:outline-2 focus-visible:outline-solid focus-visible:-outline-offset-2 focus-visible:outline-kura-ring",
+        className,
+      )}
+      {...props}
+    />
+  );
 }

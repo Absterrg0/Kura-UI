@@ -418,7 +418,7 @@ export function FileChanges({
               else rowEls.current.delete(key);
             };
             const rowClass =
-              "relative mx-1.5 flex h-8 cursor-pointer select-none items-center gap-1.5 rounded-[9px] pr-2.5 outline-none transition-colors duration-(--kura-duration-fast) ease-kura-out hover:bg-kura-hover focus-visible:shadow-[inset_0_0_0_2px_var(--kura-ring)] motion-reduce:transition-none";
+              "relative mx-1.5 flex h-8 cursor-pointer select-none items-center gap-1.5 rounded-[9px] pr-2.5 outline-hidden transition-colors duration-(--kura-duration-fast) ease-kura-out hover:bg-kura-hover focus-visible:shadow-[inset_0_0_0_2px_var(--kura-ring)] motion-reduce:transition-none";
 
             if (node.kind === "folder") {
               const open = !collapsed.has(node.path);

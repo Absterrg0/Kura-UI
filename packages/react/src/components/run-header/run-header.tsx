@@ -48,7 +48,7 @@ export interface RunHeaderProps extends Omit<React.ComponentProps<"section">, "t
   budget?: number;
   /** Git branch the agent works on, shown in mono with a branch icon. */
   branch?: string;
-  /** Plan progress, drawn as a rail of dots (ember while the run waits on a person). */
+  /** Plan progress, drawn as a rail of dots (red when the run failed). */
   progress?: RunHeaderProgress;
   /** Extra controls placed before Pause / Stop, e.g. an "Open PR" button. */
   actions?: React.ReactNode;
@@ -96,7 +96,7 @@ function StatusLabel({ status }: { status: AgentStatus }) {
   );
 }
 
-/** Plan progress as a rail of dots: ember while it waits on a person, red when it failed. */
+/** Plan progress as a rail of dots: ink, or red when the run failed. Ember stays on the glyph. */
 function StepsRail({
   progress,
   status,
@@ -116,7 +116,7 @@ function StepsRail({
       data-slot="run-header-progress"
       value={value}
       live={live}
-      tone={status === "waiting" ? "ember" : status === "failed" ? "danger" : "ink"}
+      tone={status === "failed" ? "danger" : "ink"}
       className={className}
     />
   );
@@ -394,7 +394,7 @@ export function RunHeader({
             )}
           </div>
         </div>
-        <span className="inline-flex h-7 shrink-0 items-center gap-2 rounded-kura-md bg-kura-surface-sunken pr-2.5 pl-2 font-medium text-[12.5px] shadow-kura-sunk">
+        <span className="inline-flex h-7 shrink-0 items-center gap-2 font-medium text-[12.5px]">
           <StatusGlyph status={status} label={null} />
           <StatusLabel status={status} />
         </span>

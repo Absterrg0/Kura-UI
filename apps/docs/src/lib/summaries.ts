@@ -42,7 +42,7 @@ const SUMMARIES: Record<string, string> = {
   "streaming-text": "Token-by-token output with an even, calm reveal.",
   "task-list": "The agent's plan as a todo list, updating as it works.",
   terminal: "Streamed command output with real ANSI colours and exit codes.",
-  "thinking-indicator": "Compact thinking indicators: dots, pulse, orbit or wave.",
+  "thinking-indicator": "Compact thinking indicators: dots, a pulse, or cycling text.",
   "tool-call": "One tool call: its status, arguments and result.",
   tooltip: "A short label on hover or focus, with an optional shortcut.",
   "trace-waterfall": "Every span of a run on one time axis.",

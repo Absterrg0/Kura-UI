@@ -85,11 +85,6 @@ export default defineComponent({
       description:
         "role=option row: icon tile, label (matched text emphasised), description, shortcut. data-active, data-disabled.",
     },
-    {
-      name: "SlashCommandMenuFooter",
-      dataSlot: "slash-command-menu-footer",
-      description: "Key hints: ↑↓ navigate, ↵ insert, Esc dismiss.",
-    },
   ],
   a11y: {
     role: "listbox",

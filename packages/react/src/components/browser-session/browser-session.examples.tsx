@@ -50,7 +50,7 @@ function Field({ value, focused, tall }: { value: string; focused: boolean; tall
       }
       style={{
         boxShadow: focused
-          ? "0 0 0 1px var(--kura-accent), 0 0 0 3px var(--kura-ring)"
+          ? "0 0 0 1px var(--kura-fg), 0 0 0 3px var(--kura-ring)"
           : "0 0 0 1px var(--kura-border-strong)",
       }}
     >
@@ -129,8 +129,8 @@ function PullRequestPage() {
           {PR_TITLE} <span className="font-normal text-kura-fg-subtle">#482</span>
         </p>
         <div className="mt-2 flex items-center gap-2 text-[13px] text-kura-fg-muted">
-          <span className="flex items-center gap-1 rounded-full bg-kura-success/15 px-2 py-0.5 font-medium text-[12px] text-kura-success-text">
-            <GitPullRequest className="size-3" strokeWidth={2} /> Open
+          <span className="flex items-center gap-1 font-medium text-kura-fg">
+            <GitPullRequest className="size-3.5" strokeWidth={2} /> Open
           </span>
           <span>
             <span className="font-medium text-kura-fg">kura</span> wants to merge 4 commits into{" "}

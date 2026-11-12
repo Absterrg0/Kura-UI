@@ -48,7 +48,7 @@ hard-code colours and never use `dark:`**; tokens flip under `.dark` or `[data-t
 | `surface` (`bg-kura-surface`)                | `#141518`                         | `#ffffff`                         | sheets                            |
 | `surface-sunken` (`bg-kura-surface-sunken`)  | `#0a0b0d`                         | `#f2f3f5`                         | wells                             |
 | `raised` (`bg-kura-raised`)                  | `#1e2024`                         | `#ffffff`                         | keys, tiles, popovers             |
-| `fg` / `fg-muted` / `fg-subtle`              | `#f2f3f4` / `#a4a7ad` / `#878b92` | `#111214` / `#53565c` / `#62666d` | ink, ink-2, ink-3 (all text-safe) |
+| `fg` / `fg-muted` / `fg-subtle`              | `#f2f3f4` / `#a4a7ad` / `#8f939a` | `#111214` / `#53565c` / `#62666d` | ink, ink-2, ink-3 (all text-safe) |
 | `faint` (`text-kura-faint`)                  | `#3a3d43`                         | `#c4c7cc`                         | decoration only: leaders, spines  |
 | `dot-off` (`bg-kura-dot-off`)                | `rgb(255 255 255 / .13)`          | `rgb(17 18 20 / .15)`             | unlit dots                        |
 | `border` / `border-subtle` / `border-strong` | white at 6–14%                    | ink at 6.5–16%                    | hairlines inside a sheet          |

@@ -170,11 +170,11 @@ export function Attachment({
       aria-label={`Remove ${name}`}
       onClick={onRemove}
       className={cn(
-        "-top-1.5 -right-1.5 absolute z-10 flex size-5 cursor-pointer items-center justify-center rounded-[6px] bg-kura-raised text-kura-fg-muted shadow-kura-raised outline-none",
+        "-top-1.5 -right-1.5 absolute z-10 flex size-5 cursor-pointer items-center justify-center rounded-[6px] bg-kura-raised text-kura-fg-muted shadow-kura-raised outline-hidden",
         "after:-inset-1 after:absolute",
         "opacity-0 transition-[opacity,color,background-color] duration-(--kura-duration-fast) ease-kura-snap",
         "group-hover/attachment:opacity-100 group-focus-within/attachment:opacity-100",
-        "pointer-coarse:opacity-100 hover:bg-kura-raised-hover hover:text-kura-fg focus-visible:outline-2 focus-visible:outline-kura-ring focus-visible:outline-offset-1 active:translate-y-px",
+        "pointer-coarse:opacity-100 hover:bg-kura-raised-hover hover:text-kura-fg focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-kura-ring focus-visible:outline-offset-1 active:translate-y-px",
       )}
     >
       <X className="size-3" strokeWidth={2.25} aria-hidden />
@@ -231,7 +231,7 @@ export function Attachment({
                   data-slot="attachment-retry"
                   onClick={onRetry}
                   aria-label={`Retry uploading ${name}`}
-                  className="flex size-full cursor-pointer items-center justify-center outline-none focus-visible:shadow-[inset_0_0_0_2px_var(--kura-ring)]"
+                  className="flex size-full cursor-pointer items-center justify-center outline-hidden focus-visible:shadow-[inset_0_0_0_2px_var(--kura-ring)]"
                 >
                   <StatusGlyph status="failed" label={null} />
                 </button>
@@ -299,7 +299,7 @@ export function Attachment({
                 data-slot="attachment-retry"
                 onClick={onRetry}
                 aria-label={`Retry uploading ${name}`}
-                className="cursor-pointer rounded-kura-xs font-medium text-kura-fg underline decoration-kura-border-strong underline-offset-2 outline-none hover:decoration-current focus-visible:outline-2 focus-visible:outline-kura-ring"
+                className="cursor-pointer rounded-kura-xs font-medium text-kura-fg underline decoration-kura-border-strong underline-offset-2 outline-hidden hover:decoration-current focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-kura-ring"
               >
                 Retry
               </button>
@@ -402,8 +402,8 @@ export function AttachmentList({
                 .map((i) => i.name)
                 .join("\n")}
               className={cn(
-                "flex h-11 min-w-11 cursor-pointer items-center justify-center rounded-kura-lg bg-kura-raised px-2.5 font-kura-mono font-medium text-[12.5px] text-kura-fg-muted tabular-nums shadow-kura-raised outline-none",
-                "transition-[color,background-color,transform] duration-(--kura-duration-fast) ease-kura-snap hover:bg-kura-raised-hover hover:text-kura-fg focus-visible:outline-2 focus-visible:outline-kura-ring focus-visible:outline-offset-2 active:translate-y-px motion-reduce:active:translate-y-0",
+                "flex h-11 min-w-11 cursor-pointer items-center justify-center rounded-kura-lg bg-kura-raised px-2.5 font-kura-mono font-medium text-[12.5px] text-kura-fg-muted tabular-nums shadow-kura-raised outline-hidden",
+                "transition-[color,background-color,transform] duration-(--kura-duration-fast) ease-kura-snap hover:bg-kura-raised-hover hover:text-kura-fg focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-kura-ring focus-visible:outline-offset-2 active:translate-y-px motion-reduce:active:translate-y-0",
               )}
             >
               +{hidden}
@@ -526,7 +526,7 @@ export function AttachmentDropzone({
         disabled={disabled}
         aria-describedby={description ? descId : undefined}
         onClick={() => inputRef.current?.click()}
-        className="flex w-full cursor-pointer flex-col items-center justify-center gap-3 rounded-[inherit] p-6 text-center outline-none focus-visible:outline-2 focus-visible:outline-kura-ring disabled:cursor-not-allowed"
+        className="flex w-full cursor-pointer flex-col items-center justify-center gap-3 rounded-[inherit] p-6 text-center outline-hidden focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-kura-ring disabled:cursor-not-allowed"
       >
         <span
           aria-hidden

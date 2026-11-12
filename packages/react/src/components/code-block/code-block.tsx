@@ -336,7 +336,7 @@ export function CodeBlock({
           // biome-ignore lint/a11y/noNoninteractiveTabindex: scrollable code must be keyboard-scrollable
           tabIndex={0}
           className={cn(
-            "overflow-x-auto py-3 leading-[22px] outline-none [scrollbar-width:thin]",
+            "overflow-x-auto py-3 leading-[22px] outline-hidden [scrollbar-width:thin]",
             "focus-visible:shadow-[inset_0_0_0_2px_var(--kura-ring)]",
           )}
         >
@@ -426,8 +426,8 @@ export function CodeBlock({
               aria-expanded={false}
               onClick={() => setExpanded(true)}
               className={cn(
-                "inline-flex h-7 cursor-pointer items-center gap-1.5 rounded-[8px] bg-kura-raised px-2.5 font-kura-sans text-kura-fg-muted text-xs shadow-kura-raised outline-none",
-                "transition-[color,background-color,transform] duration-(--kura-duration-fast) ease-kura-snap hover:bg-kura-raised-hover hover:text-kura-fg focus-visible:outline-2 focus-visible:outline-kura-ring focus-visible:outline-offset-2 active:translate-y-px motion-reduce:active:translate-y-0",
+                "inline-flex h-7 cursor-pointer items-center gap-1.5 rounded-[8px] bg-kura-raised px-2.5 font-kura-sans text-kura-fg-muted text-xs shadow-kura-raised outline-hidden",
+                "transition-[color,background-color,transform] duration-(--kura-duration-fast) ease-kura-snap hover:bg-kura-raised-hover hover:text-kura-fg focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-kura-ring focus-visible:outline-offset-2 active:translate-y-px motion-reduce:active:translate-y-0",
               )}
             >
               <ChevronsUpDown aria-hidden className="size-3" />

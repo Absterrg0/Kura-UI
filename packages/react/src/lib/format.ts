@@ -1,13 +1,16 @@
 /**
  * Number formatting shared by agent surfaces, so every component reads the same:
- * 820ms · 4.2s · 1m 04s · 1h 12m, 812 · 84.2k · 1.2M tokens, $0.04 · $1.82 · $12.40.
+ * 820ms · 4.2s · 18s · 1m 04s · 1h 12m, 812 · 84.2k · 1.2M tokens, $0.04 · $1.82 · $12.40.
+ * A finished thing shows a duration; only a timer that is still running shows a clock (0:42).
  */
 
 export function formatDuration(ms: number): string {
   if (!Number.isFinite(ms) || ms < 0) return "0ms";
   if (ms < 1000) return `${Math.round(ms / 10) * 10}ms`;
-  if (ms < 60_000) return `${(ms / 1000).toFixed(1)}s`;
-  const s = Math.floor(ms / 1000);
+  // One decimal while it matters, whole seconds from ten up.
+  if (ms < 9950) return `${(ms / 1000).toFixed(1)}s`;
+  const s = Math.round(ms / 1000);
+  if (s < 60) return `${s}s`;
   if (s < 3600) return `${Math.floor(s / 60)}m ${String(s % 60).padStart(2, "0")}s`;
   return `${Math.floor(s / 3600)}h ${String(Math.floor((s % 3600) / 60)).padStart(2, "0")}m`;
 }

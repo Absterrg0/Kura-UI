@@ -37,7 +37,8 @@ describe("AgentFleet", () => {
     const rows = document.querySelectorAll("[data-slot=agent-fleet-agent]");
     expect(rows).toHaveLength(4);
     expect(rows[0]).toHaveAttribute("data-status", "done");
-    expect(rows[0]?.querySelector("[data-slot=agent-fleet-elapsed]")).toHaveTextContent("1:34");
+    // a finished agent shows a duration; only a live one shows a clock
+    expect(rows[0]?.querySelector("[data-slot=agent-fleet-elapsed]")).toHaveTextContent("1m 34s");
     expect(rows[0]?.querySelector("[data-slot=agent-fleet-tokens]")).toHaveTextContent("84.2k");
     expect(screen.getByRole("img", { name: "Waiting for you" })).toBeInTheDocument();
   });

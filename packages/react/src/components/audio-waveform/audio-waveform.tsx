@@ -446,7 +446,7 @@ export function AudioWaveform({
         "relative h-10 w-full min-w-0 select-none",
         TONES[tone],
         seekable &&
-          "cursor-pointer touch-none rounded-kura-sm outline-none focus-visible:outline-2 focus-visible:outline-kura-ring focus-visible:outline-offset-2",
+          "cursor-pointer touch-none rounded-kura-sm outline-hidden focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-kura-ring focus-visible:outline-offset-2",
         className,
       )}
       {...props}

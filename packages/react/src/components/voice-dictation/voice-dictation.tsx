@@ -432,9 +432,9 @@ export function VoiceDictation({
             disabled={disabled || effective === "unsupported" || status === "processing"}
             {...holdHandlers}
             className={cn(
-              "relative flex size-7 shrink-0 cursor-pointer items-center justify-center rounded-[7px] outline-none",
+              "relative flex size-7 shrink-0 cursor-pointer items-center justify-center rounded-[7px] outline-hidden",
               "transition-[background-color,color] duration-(--kura-duration-fast) ease-kura-snap",
-              "focus-visible:outline-2 focus-visible:outline-kura-ring focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
+              "focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-kura-ring focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
               live
                 ? "bg-kura-ink-fill text-kura-fg-inverted shadow-kura-ink hover:bg-kura-ink-fill-hover"
                 : blocked
@@ -494,7 +494,7 @@ export function VoiceDictation({
                     data-slot="voice-dictation-cancel"
                     aria-label="Cancel dictation"
                     onClick={cancel}
-                    className="-mr-1.5 flex size-6 cursor-pointer items-center justify-center rounded-[6px] text-kura-fg-muted outline-none transition-colors duration-(--kura-duration-fast) hover:bg-kura-hover hover:text-kura-fg focus-visible:outline-2 focus-visible:outline-kura-ring"
+                    className="-mr-1.5 flex size-6 cursor-pointer items-center justify-center rounded-[6px] text-kura-fg-muted outline-hidden transition-colors duration-(--kura-duration-fast) hover:bg-kura-hover hover:text-kura-fg focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-kura-ring"
                   >
                     <X aria-hidden className="size-3.5" />
                   </button>

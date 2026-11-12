@@ -41,7 +41,7 @@ export default defineComponent({
       type: '"queued" | "running" | "waiting" | "done" | "failed" | "skipped" | "paused"',
       required: true,
       description:
-        "Run state, drawn with StatusGlyph in a sunk well. running = chasing ring + 'Running'; waiting = ember 'Needs you'; done = 'Completed'; failed = red; skipped = 'Stopped'. queued/running/waiting/paused keep the clock ticking.",
+        "Run state, drawn with StatusGlyph and a word. running = chasing ring + 'Running'; waiting = ember 'Needs you'; done = 'Completed'; failed = red; skipped = 'Stopped'. queued/running/waiting/paused keep the clock ticking.",
     },
     {
       name: "startedAt",
@@ -77,7 +77,7 @@ export default defineComponent({
       name: "progress",
       type: "{ done: number; total: number }",
       description:
-        "Plan progress, drawn as a full-width DotRail (the step in hand counts as half). Ink while running, ember while waiting on a person, red when failed. '4 of 7' is spoken, not shown.",
+        "Plan progress, drawn as a full-width DotRail (the step in hand counts as half). Ink, or red when the run failed; ember stays on the glyph and its label. '4 of 7' is spoken, not shown.",
     },
     {
       name: "actions",

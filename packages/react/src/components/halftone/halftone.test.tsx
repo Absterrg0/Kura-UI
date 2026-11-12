@@ -4,25 +4,25 @@ import { Halftone } from "./halftone";
 import { HalftoneComposition, HalftoneFull, HalftoneMinimal } from "./halftone.examples";
 
 describe("Halftone", () => {
-  it("renders a hidden decorative layer with data-slot, tone and className", () => {
+  it("renders a hidden decorative layer with data-slot and className", () => {
     const { container } = render(<Halftone className="custom" />);
     const el = container.querySelector("[data-slot=halftone]")!;
     expect(el).toHaveAttribute("aria-hidden", "true");
-    expect(el).toHaveAttribute("data-tone", "ember");
     expect(el).toHaveAttribute("data-state", "visible");
     expect(el).toHaveClass("custom");
-    // a wash and three rings of dots
-    expect(el.children).toHaveLength(4);
+    // three sizes of dot and nothing else: no wash
+    expect(el.children).toHaveLength(3);
+    expect((el.children[0] as HTMLElement).style.maskImage).toContain("at 100% 0%");
   });
 
   it("fades out when not visible, without the fade under reduced motion", () => {
     setReducedMotion(true);
-    const { container } = render(<Halftone visible={false} tone="ink" corner="bottom-left" />);
+    const { container } = render(<Halftone visible={false} reach={0.4} />);
     const el = container.querySelector("[data-slot=halftone]")!;
     expect(el).toHaveAttribute("data-state", "hidden");
     expect(el).toHaveClass("opacity-0");
     expect(el.className).toContain("motion-reduce:transition-none");
-    expect((el.children[1] as HTMLElement).style.maskImage).toContain("at 0% 100%");
+    expect((el.children[1] as HTMLElement).style.maskImage).toContain("40% 57%");
   });
 
   it("leaves when the person decides (composition)", async () => {

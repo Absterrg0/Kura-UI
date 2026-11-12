@@ -52,13 +52,12 @@ export function AudioWaveformFull() {
   const t = progress * DURATION;
   return (
     <div className="flex w-full max-w-lg flex-col gap-6">
-      <div className="flex items-center gap-3 rounded-kura-xl bg-kura-surface p-2 pr-4 shadow-kura-sm">
+      <div className="flex items-center gap-3 rounded-kura-xl bg-kura-surface p-2 pr-4 shadow-kura-surface">
         <IconButton
           label={playing ? "Pause" : "Play"}
           icon={playing ? <Pause className="fill-current" /> : <Play className="fill-current" />}
           variant="primary"
           size="md"
-          className="rounded-full"
           tooltip={false}
           onClick={() => {
             if (progress >= 1) setProgress(0);
@@ -108,13 +107,12 @@ export function AudioWaveformVoiceNote() {
   const [progress, setProgress] = React.useState(0);
   return (
     <div className="flex w-full max-w-sm flex-col items-end gap-2">
-      <div className="flex w-64 items-center gap-2.5 rounded-kura-2xl rounded-br-kura-sm bg-kura-surface-sunken py-2 pr-3.5 pl-2 shadow-kura-xs">
+      <div className="flex w-64 items-center gap-2.5 rounded-kura-xl bg-kura-raised py-2 pr-3.5 pl-2 shadow-kura-raised">
         <IconButton
           label="Play voice note"
           icon={<Play className="fill-current" />}
           variant="secondary"
           size="sm"
-          className="rounded-full"
           tooltip={false}
           onClick={() => setProgress((p) => (p >= 1 ? 0 : Math.min(1, p + 0.25)))}
         />

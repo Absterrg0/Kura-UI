@@ -25,13 +25,11 @@ export interface ContextMeterProps extends Omit<React.ComponentProps<"button">, 
   used?: number;
   /** Breakdown shown in the bar and the hover card, e.g. system, history, tools, files. */
   segments?: readonly ContextSegment[];
-  /** `ring` = compact donut + value; `bar` = a horizontal (segmented) bar with value. Default "ring". */
-  variant?: "ring" | "bar";
   /** Fraction (0–1) at which the meter turns to warning. Default 0.7. */
   warningAt?: number;
   /** Fraction (0–1) at which the meter turns to danger. Default 0.9. */
   dangerAt?: number;
-  /** What the value shows next to the meter. Default "percent" for ring, "tokens" for bar. */
+  /** What the value shows next to the rail. Default "percent". */
   valueDisplay?: "percent" | "tokens" | "none";
   /** Short name used in the accessible label and the card title. Default “Context”. */
   label?: string;
@@ -85,23 +83,15 @@ const SHADES = [100, 62, 38, 22];
 const segmentColor = (s: ContextSegment, i: number) =>
   s.color ?? `color-mix(in oklab, var(--kura-fg) ${SHADES[i % SHADES.length]}%, transparent)`;
 
-// The ring of a 5×5 dot matrix, clockwise from the top.
-// biome-ignore format: a 5×5 ring reads better as two rows of pairs
-const RING: readonly (readonly [number, number])[] = [
-  [2, 0], [3, 0], [4, 1], [4, 2], [4, 3], [3, 4],
-  [2, 4], [1, 4], [0, 3], [0, 2], [0, 1], [1, 0],
-];
-
 /**
- * Token / context-window usage as a compact dial or rail of dots with warning and danger
- * thresholds, rolling tabular numbers, and a hover card that draws the window as one hundred dots
- * (one per percent), shaded by segment.
+ * Token / context-window usage as a compact rail of dots with warning and danger thresholds,
+ * rolling tabular numbers, and a hover card that draws the window as one hundred dots (one per
+ * percent), shaded by segment. `ContextPanel` is the same hundred dots as a standing panel.
  */
 export function ContextMeter({
   max,
   used: usedProp,
   segments,
-  variant = "ring",
   warningAt = 0.7,
   dangerAt = 0.9,
   valueDisplay,
@@ -119,7 +109,7 @@ export function ContextMeter({
   const used = usedProp ?? segments?.reduce((sum, s) => sum + s.tokens, 0) ?? 0;
   const ratio = max > 0 ? Math.min(1, Math.max(0, used / max)) : 0;
   const level = ratio >= dangerAt ? "danger" : ratio >= warningAt ? "warning" : "ok";
-  const display = valueDisplay ?? (variant === "ring" ? "percent" : "tokens");
+  const display = valueDisplay ?? "percent";
   const tweenedRatio = useTweened(ratio);
   const tweenedUsed = useTweened(used);
 
@@ -141,11 +131,7 @@ export function ContextMeter({
         : "";
   const accessibleName = `${shown ? `${shown} ` : ""}${label.toLowerCase()} used: ${used.toLocaleString("en-US")} of ${max.toLocaleString("en-US")} tokens${levelText}`;
 
-  const tone = cn(
-    level === "ok" && "text-kura-fg-muted",
-    level === "warning" && "text-kura-fg",
-    level === "danger" && "text-kura-danger-text",
-  );
+  const tone = cn(level === "ok" && "text-kura-fg-muted", level !== "ok" && "text-kura-fg");
 
   const value =
     display === "none" ? null : (
@@ -168,9 +154,6 @@ export function ContextMeter({
       </span>
     );
 
-  // A dial of twelve dots: one lights for every twelfth of the window in use.
-  const litDots = ratio === 0 ? 0 : Math.max(1, Math.round(tweenedRatio * RING.length));
-
   return (
     <Popover
       open={open}
@@ -183,7 +166,6 @@ export function ContextMeter({
         <button
           type="button"
           data-slot="context-meter"
-          data-variant={variant}
           data-level={level}
           aria-label={accessibleName}
           onPointerEnter={onPointerEnter}
@@ -191,47 +173,25 @@ export function ContextMeter({
           onFocus={onFocus}
           onBlur={onBlur}
           className={cn(
-            "group/meter inline-flex h-7 cursor-pointer items-center gap-2 rounded-kura-md px-1.5 font-kura-sans outline-none",
-            "transition-[background-color] duration-(--kura-duration-fast) ease-kura-snap hover:bg-kura-hover focus-visible:outline-2 focus-visible:outline-kura-ring data-open:bg-kura-hover",
+            "group/meter inline-flex h-7 cursor-pointer items-center gap-2 rounded-kura-md px-1.5 font-kura-sans outline-hidden",
+            "transition-[background-color] duration-(--kura-duration-fast) ease-kura-snap hover:bg-kura-hover focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-kura-ring data-open:bg-kura-hover",
             className,
           )}
           {...props}
         >
-          {variant === "ring" ? (
-            <svg
-              aria-hidden
-              data-slot="context-meter-ring"
-              viewBox="0 0 15 15"
-              className={cn("size-[15px] shrink-0", tone)}
-            >
-              {RING.map(([x, y], i) => (
-                <circle
-                  key={`${x}-${y}`}
-                  cx={1.5 + x * 3}
-                  cy={1.5 + y * 3}
-                  r={1.1}
-                  className={cn(
-                    "transition-[fill] duration-(--kura-duration-base) ease-kura-snap motion-reduce:transition-none",
-                    i < litDots ? "fill-current" : "fill-kura-dot-off",
-                  )}
-                />
-              ))}
-            </svg>
-          ) : (
-            <DotRail
-              data-slot="context-meter-bar"
-              value={tweenedRatio}
-              tone={level === "danger" ? "danger" : level === "warning" ? "ink" : "muted"}
-              className="w-28 shrink-0"
-            />
-          )}
+          <DotRail
+            data-slot="context-meter-bar"
+            value={tweenedRatio}
+            tone={level === "ok" ? "muted" : "ink"}
+            className="w-[60px] shrink-0"
+          />
           {value}
         </button>
       </PopoverTrigger>
       {segments && segments.length > 0 && (
         <PopoverContent
           side="top"
-          align={variant === "bar" ? "start" : "center"}
+          align="start"
           data-slot="context-meter-card"
           className="w-[302px] p-4"
           initialFocus="none"
@@ -254,10 +214,12 @@ function levelOf(ratio: number, warningAt: number, dangerAt: number) {
   return ratio >= dangerAt ? "danger" : ratio >= warningAt ? "warning" : "ok";
 }
 
+// A filling window is not a failure, so it never turns red: it goes from muted to full ink, and
+// the words say "filling up" or "nearly full".
 const TONE = {
   ok: "text-kura-fg-muted",
   warning: "text-kura-fg",
-  danger: "text-kura-danger-text",
+  danger: "text-kura-fg",
 } as const;
 
 /** The breakdown shared by the hover card and the panel: figures, one hundred dots, a legend. */
@@ -287,7 +249,7 @@ function Breakdown({
           {formatTokens(used)} <span className="text-kura-fg-subtle">/ {formatTokens(max)}</span>
         </span>
       </div>
-      <DotMatrix segments={segments} max={max} level={level} />
+      <DotMatrix segments={segments} max={max} />
       <ul className="flex flex-col gap-1.5" aria-label="Breakdown">
         {segments.map((s, i) => (
           <li
@@ -389,15 +351,7 @@ export function ContextPanel({
 }
 
 /** The window as one hundred dots, one per percent, lit in the shade of the segment that fills it. */
-function DotMatrix({
-  segments,
-  max,
-  level,
-}: {
-  segments: readonly ContextSegment[];
-  max: number;
-  level: "ok" | "warning" | "danger";
-}) {
+function DotMatrix({ segments, max }: { segments: readonly ContextSegment[]; max: number }) {
   const cells: (string | undefined)[] = [];
   if (max > 0) {
     let filled = 0;
@@ -406,7 +360,7 @@ function DotMatrix({
       exact += (s.tokens / max) * 100;
       const upTo = Math.min(100, Math.round(exact));
       for (; filled < upTo; filled++) {
-        cells[filled] = level === "danger" ? "var(--kura-danger-text)" : segmentColor(s, i);
+        cells[filled] = segmentColor(s, i);
       }
     });
   }

@@ -118,7 +118,7 @@ export function PopoverContent({
       collisionPadding={collisionPadding}
       anchor={anchor ?? ctx?.anchor ?? undefined}
       className={cn(
-        "z-50 m-0 w-72 max-w-[calc(100vw-16px)] overflow-visible rounded-kura-xl border-0 bg-kura-surface-raised p-3 font-kura-sans text-kura-fg text-sm shadow-kura-lg outline-none",
+        "z-50 m-0 w-72 max-w-[calc(100vw-16px)] overflow-visible rounded-kura-xl border-0 bg-kura-surface-raised p-3 font-kura-sans text-kura-fg text-sm shadow-kura-lg outline-hidden",
         "origin-(--transform-origin) transition-[opacity,scale] duration-(--kura-duration-base) ease-kura-out",
         "data-starting-style:scale-95 data-starting-style:opacity-0 data-ending-style:scale-95 data-ending-style:opacity-0 motion-reduce:transition-none",
         className,

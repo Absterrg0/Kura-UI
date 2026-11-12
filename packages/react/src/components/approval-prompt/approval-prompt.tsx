@@ -94,7 +94,8 @@ const stateLabel: Record<ApprovalDecision, string> = {
 const glyph: Record<ApprovalDecision, AgentStatus> = {
   pending: "waiting",
   approved: "done",
-  denied: "failed",
+  // A person's "no" is not a failure: it is the dash (skipped), as the plan and the fleet draw it.
+  denied: "skipped",
   always: "done",
 };
 
@@ -280,7 +281,7 @@ export function ApprovalPrompt({
               aria-expanded={open}
               aria-controls={`${id}-details`}
               onClick={() => setOpen((o) => !o)}
-              className="-mx-1.5 inline-flex h-7 w-fit cursor-pointer items-center gap-1 rounded-[7px] px-1.5 font-medium text-[12.5px] text-kura-fg-muted outline-none transition-colors duration-(--kura-duration-fast) ease-kura-snap hover:bg-kura-hover hover:text-kura-fg focus-visible:outline-2 focus-visible:outline-kura-ring"
+              className="-mx-1.5 inline-flex h-7 w-fit cursor-pointer items-center gap-1 rounded-[7px] px-1.5 font-medium text-[12.5px] text-kura-fg-muted outline-hidden transition-colors duration-(--kura-duration-fast) ease-kura-snap hover:bg-kura-hover hover:text-kura-fg focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-kura-ring"
             >
               <ChevronRight
                 aria-hidden
@@ -313,7 +314,7 @@ export function ApprovalPrompt({
 
       <div
         data-slot="approval-prompt-footer"
-        className="relative mt-auto flex min-h-14 items-center border-kura-border-subtle border-t py-2.5 pr-3.5 pl-[18px]"
+        className="relative mt-auto flex min-h-14 items-center border-kura-border-subtle border-t px-[18px] py-2.5"
       >
         <div
           data-slot="approval-prompt-actions"
@@ -446,7 +447,7 @@ function CopyCommand({ command }: { command: string }) {
       onClick={() => {
         void navigator.clipboard?.writeText(command).then(() => setCopied(true));
       }}
-      className="absolute top-1.5 right-1.5 grid size-7 cursor-pointer place-items-center rounded-[7px] text-kura-fg-subtle opacity-0 outline-none transition-[opacity,background-color,color,box-shadow] duration-(--kura-duration-fast) hover:bg-kura-raised hover:text-kura-fg hover:shadow-kura-raised focus-visible:opacity-100 focus-visible:outline-2 focus-visible:outline-kura-ring group-hover/cmd:opacity-100"
+      className="absolute top-1.5 right-1.5 grid size-7 cursor-pointer place-items-center rounded-[7px] text-kura-fg-subtle opacity-0 outline-hidden transition-[opacity,background-color,color,box-shadow] duration-(--kura-duration-fast) hover:bg-kura-raised hover:text-kura-fg hover:shadow-kura-raised focus-visible:opacity-100 focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-kura-ring group-hover/cmd:opacity-100"
     >
       {copied ? (
         <Check strokeWidth={2.25} className="size-3.5" />

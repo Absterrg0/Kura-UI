@@ -19,7 +19,7 @@ describe("ThinkingIndicator", () => {
     expect(el).toHaveTextContent("Thinking");
   });
 
-  it.each(["dots", "pulse", "orbit", "wave"] as const)("renders the %s shape", (variant) => {
+  it.each(["dots", "pulse"] as const)("renders the %s shape", (variant) => {
     const { container } = render(<ThinkingIndicator variant={variant} label="Working" />);
     expect(container.querySelector("[data-slot=thinking-indicator-shape]")).toBeInTheDocument();
     expect(screen.getByRole("status")).toHaveTextContent("Working");
@@ -58,7 +58,7 @@ describe("ThinkingIndicator", () => {
 
   it("stops loops under reduced motion", () => {
     setReducedMotion(true);
-    const { container } = render(<ThinkingIndicator variant="wave" />);
+    const { container } = render(<ThinkingIndicator variant="pulse" />);
     for (const bar of container.querySelectorAll("[data-slot=thinking-indicator-shape] > span"))
       expect(bar.className).toContain("motion-reduce:animate-none");
   });

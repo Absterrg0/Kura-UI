@@ -6,7 +6,7 @@ import { useControllableState } from "../../hooks/use-controllable-state";
 import { useElapsed } from "../../hooks/use-elapsed";
 import { agentSurface } from "../../lib/agent-surface";
 import { cn } from "../../lib/cn";
-import { formatClock, formatCost, formatTokens } from "../../lib/format";
+import { formatClock, formatCost, formatDuration, formatTokens } from "../../lib/format";
 import { AgentSigil } from "../agent-sigil";
 import { DotRail } from "../dot-rail";
 import { type AgentStatus, StatusGlyph } from "../status-glyph";
@@ -54,7 +54,7 @@ const LIVE: AgentStatus[] = ["running", "waiting", "paused"];
 
 const SUMMARY_ORDER: { status: AgentStatus; word: string; tone?: string }[] = [
   { status: "running", word: "running" },
-  { status: "waiting", word: "waiting", tone: "text-kura-ember-text" },
+  { status: "waiting", word: "waiting" },
   { status: "paused", word: "paused" },
   { status: "failed", word: "failed", tone: "text-kura-danger-text" },
   { status: "done", word: "done" },
@@ -94,7 +94,7 @@ const { Root: AgentFleetRoot } = createParts(agentSurface("agent-fleet", ["selec
 
 /**
  * Parallel subagents at a glance: one row per agent with its status glyph, name and role, what it
- * is doing now (shimmering while it runs), a thin progress bar, elapsed time, tokens and cost.
+ * is doing now, a rail of dots for progress, elapsed time, tokens and cost.
  * The header sums the fleet ("3 running · 1 waiting · 2 done"). Rows are a selectable listbox
  * when `onSelect` is given.
  */
@@ -288,7 +288,7 @@ function AgentRow({
       data-slot="agent-fleet-progress"
       value={agent.progress ?? 0}
       live={agent.status !== "paused"}
-      tone={agent.status === "waiting" ? "ember" : agent.status === "paused" ? "muted" : "ink"}
+      tone={agent.status === "running" ? "ink" : "muted"}
     />
   ) : null;
 
@@ -314,7 +314,7 @@ function AgentRow({
         </span>
       )}
       <span data-slot="agent-fleet-elapsed" className="inline-block text-right">
-        {elapsed != null ? formatClock(elapsed) : ""}
+        {elapsed == null ? "" : live ? formatClock(elapsed) : formatDuration(elapsed)}
       </span>
       <StatusGlyph status={agent.status} />
     </span>
@@ -324,7 +324,7 @@ function AgentRow({
     <span
       data-slot="agent-fleet-name"
       className={cn(
-        "shrink-0 font-medium text-[13px]",
+        "min-w-0 truncate font-medium text-[13px]",
         (agent.status === "done" || agent.status === "skipped") && "text-kura-fg-muted",
       )}
     >
@@ -352,7 +352,7 @@ function AgentRow({
       onClick={selectable ? onChoose : undefined}
       onFocus={selectable ? onFocus : undefined}
       className={cn(
-        "relative min-w-0 rounded-[9px] px-2.5 outline-none transition-colors duration-(--kura-duration-fast) ease-kura-snap hover:bg-kura-hover motion-reduce:transition-none",
+        "relative min-w-0 rounded-[9px] px-2.5 outline-hidden transition-colors duration-(--kura-duration-fast) ease-kura-snap hover:bg-kura-hover motion-reduce:transition-none",
         selectable && "cursor-pointer focus-visible:shadow-[inset_0_0_0_2px_var(--kura-ring)]",
         selected && "bg-kura-active hover:bg-kura-active",
         compact

@@ -11,7 +11,7 @@ import {
   ComposerTools,
 } from "../composer";
 import { KbdShortcut } from "../kbd-shortcut";
-import { VoiceDictation, type VoiceDictationStatus } from "./voice-dictation";
+import { VoiceDictation } from "./voice-dictation";
 
 export function VoiceDictationMinimal() {
   return (
@@ -23,7 +23,6 @@ export function VoiceDictationMinimal() {
 
 export function VoiceDictationFull() {
   const [notes, setNotes] = React.useState<string[]>([]);
-  const [status, setStatus] = React.useState<VoiceDictationStatus>("idle");
   const [mode, setMode] = React.useState<"toggle" | "hold">("toggle");
   return (
     <div className="flex w-full max-w-md flex-col gap-4">
@@ -35,7 +34,7 @@ export function VoiceDictationFull() {
               type="button"
               aria-pressed={mode === m}
               onClick={() => setMode(m)}
-              className="cursor-pointer rounded-kura-sm px-2.5 py-1 text-kura-fg-muted capitalize outline-none transition-colors duration-(--kura-duration-fast) focus-visible:shadow-kura-focus aria-pressed:bg-kura-surface aria-pressed:text-kura-fg aria-pressed:shadow-kura-xs"
+              className="cursor-pointer rounded-kura-sm px-2.5 py-1 text-kura-fg-muted capitalize outline-hidden transition-colors duration-(--kura-duration-fast) focus-visible:shadow-kura-focus aria-pressed:bg-kura-surface aria-pressed:text-kura-fg aria-pressed:shadow-kura-xs"
             >
               {m}
             </button>
@@ -50,12 +49,8 @@ export function VoiceDictationFull() {
         lang="en-US"
         showTranscript
         transcriptPlaceholder="Speak — your words appear here"
-        onStatusChange={setStatus}
         onTranscript={(text) => setNotes((n) => [text, ...n])}
       />
-      <p className="text-kura-fg-subtle text-xs capitalize" aria-live="polite">
-        Status: {status}
-      </p>
       <ul aria-label="Dictated notes" className="flex flex-col gap-2">
         {notes.length === 0 && (
           <li className="rounded-kura-lg bg-kura-surface-sunken px-3.5 py-3 text-kura-fg-subtle text-sm">

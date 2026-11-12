@@ -1,8 +1,8 @@
 "use client";
 
-import { Check } from "lucide-react";
 import * as React from "react";
 import { Button } from "../button";
+import { StatusGlyph } from "../status-glyph";
 import { ShimmerText } from "./shimmer-text";
 
 export function ShimmerTextMinimal() {
@@ -31,13 +31,7 @@ export function ShimmerTextInToolStep() {
   }, []);
   return (
     <div className="flex w-72 items-center gap-2.5 rounded-kura-lg bg-kura-surface px-3 py-2.5 text-sm shadow-kura-sm">
-      <span className="flex size-5 items-center justify-center rounded-full bg-kura-accent-subtle text-kura-accent-text">
-        {done ? (
-          <Check className="size-3" />
-        ) : (
-          <span className="size-1.5 animate-kura-pulse rounded-full bg-current" />
-        )}
-      </span>
+      <StatusGlyph status={done ? "done" : "running"} label={null} />
       <span role="status" aria-live="polite">
         <ShimmerText active={!done}>
           {done ? "Read package.json" : "Reading package.json…"}

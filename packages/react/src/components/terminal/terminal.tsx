@@ -343,10 +343,7 @@ export function Terminal({
       {...props}
     >
       {header && (
-        <div
-          data-slot="terminal-header"
-          className="flex h-11 shrink-0 items-center gap-2.5 pr-1.5 pl-4"
-        >
+        <div data-slot="terminal-header" className="flex h-11 shrink-0 items-center gap-2.5 px-4">
           {status !== "idle" && (
             <StatusGlyph
               status={status === "running" ? "running" : status === "done" ? "done" : "failed"}
@@ -391,7 +388,7 @@ export function Terminal({
             )}
           </span>
           {(copyable || actions) && (
-            <span className="flex shrink-0 items-center gap-0.5">
+            <span className="-mr-2.5 flex shrink-0 items-center gap-0.5">
               {actions}
               {copyable && (
                 <IconButton
@@ -438,7 +435,7 @@ export function Terminal({
           tabIndex={0}
           onScroll={onScroll}
           className={cn(
-            "h-full overflow-y-auto overscroll-contain px-3.5 py-3 font-kura-mono text-[12.5px] text-kura-fg-muted leading-5 outline-none [scrollbar-width:thin] [tab-size:4]",
+            "h-full overflow-y-auto overscroll-contain px-3.5 py-3 font-kura-mono text-[12.5px] text-kura-fg-muted leading-5 outline-hidden [scrollbar-width:thin] [tab-size:4]",
             "focus-visible:shadow-[inset_0_0_0_2px_var(--kura-ring)]",
             wrap ? "whitespace-pre-wrap break-all" : "whitespace-pre",
           )}
@@ -460,7 +457,7 @@ export function Terminal({
                 data-slot="terminal-expand"
                 aria-expanded={false}
                 onClick={() => setExpanded(true)}
-                className="my-1 flex h-6 w-full cursor-pointer items-center gap-2 rounded-kura-sm px-1.5 -mx-1.5 font-kura-sans text-[12px] text-kura-fg-subtle outline-none transition-colors duration-(--kura-duration-fast) ease-kura-out hover:bg-kura-hover hover:text-kura-fg-muted focus-visible:shadow-kura-focus motion-reduce:transition-none"
+                className="my-1 flex h-6 w-full cursor-pointer items-center gap-2 rounded-kura-sm px-1.5 -mx-1.5 font-kura-sans text-[12px] text-kura-fg-subtle outline-hidden transition-colors duration-(--kura-duration-fast) ease-kura-out hover:bg-kura-hover hover:text-kura-fg-muted focus-visible:shadow-kura-focus motion-reduce:transition-none"
                 style={{ width: "calc(100% + 0.75rem)" }}
               >
                 <ChevronsUpDown aria-hidden className="size-3.5" strokeWidth={1.75} />
@@ -486,7 +483,7 @@ export function Terminal({
                 data-slot="terminal-collapse"
                 aria-expanded
                 onClick={() => setExpanded(false)}
-                className="mt-1 inline-flex h-6 cursor-pointer items-center gap-1.5 rounded-kura-sm px-1.5 -mx-1.5 font-kura-sans text-[12px] text-kura-fg-subtle outline-none hover:bg-kura-hover hover:text-kura-fg-muted focus-visible:shadow-kura-focus"
+                className="mt-1 inline-flex h-6 cursor-pointer items-center gap-1.5 rounded-kura-sm px-1.5 -mx-1.5 font-kura-sans text-[12px] text-kura-fg-subtle outline-hidden hover:bg-kura-hover hover:text-kura-fg-muted focus-visible:shadow-kura-focus"
               >
                 Show last {maxLines} lines
               </button>
@@ -499,7 +496,7 @@ export function Terminal({
             data-slot="terminal-jump"
             onClick={jumpToLatest}
             className={cn(
-              "absolute bottom-3 left-1/2 inline-flex h-7 -translate-x-1/2 cursor-pointer items-center gap-1.5 rounded-[9px] bg-kura-raised px-2.5 text-[12px] text-kura-fg-muted shadow-kura-popover outline-none animate-kura-pop-in",
+              "absolute bottom-3 left-1/2 inline-flex h-7 -translate-x-1/2 cursor-pointer items-center gap-1.5 rounded-[9px] bg-kura-raised px-2.5 text-[12px] text-kura-fg-muted shadow-kura-popover outline-hidden animate-kura-pop-in",
               "transition-colors duration-(--kura-duration-fast) ease-kura-out hover:text-kura-fg focus-visible:shadow-kura-focus motion-reduce:transition-none",
             )}
           >

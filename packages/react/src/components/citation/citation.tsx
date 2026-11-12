@@ -86,7 +86,7 @@ export function CitationCard({ source, index, className, ...props }: CitationCar
         href={source.url}
         target="_blank"
         rel="noreferrer"
-        className="group/title -mx-1 line-clamp-2 rounded-kura-xs px-1 font-medium text-kura-fg text-sm leading-snug outline-none hover:underline hover:decoration-kura-border-strong hover:underline-offset-2 focus-visible:shadow-kura-focus"
+        className="group/title -mx-1 line-clamp-2 rounded-kura-xs px-1 font-medium text-kura-fg text-sm leading-snug outline-hidden hover:underline hover:decoration-kura-border-strong hover:underline-offset-2 focus-visible:shadow-kura-focus"
       >
         {source.title}
         <ArrowUpRight
@@ -156,8 +156,8 @@ export function Citation({
         aria-label={`Source ${index}: ${source.title} (${domain})`}
         className={cn(
           // A citation is a small keycap with the source number printed on it.
-          "relative -top-[0.1em] mr-px ml-1 inline-flex h-[1.35em] min-w-[1.35em] items-center justify-center gap-1 rounded-[5px] bg-kura-raised px-[0.35em] align-middle font-kura-mono font-medium text-[0.7em] text-kura-fg-muted tabular-nums leading-none no-underline shadow-kura-key outline-none",
-          "transition-[background-color,color] duration-(--kura-duration-fast) ease-kura-snap hover:bg-kura-raised-hover hover:text-kura-fg focus-visible:outline-2 focus-visible:outline-kura-ring focus-visible:outline-offset-1 data-open:bg-kura-raised-hover data-open:text-kura-fg",
+          "relative -top-[0.1em] mr-px ml-1 inline-flex h-[1.35em] min-w-[1.35em] items-center justify-center gap-1 rounded-[5px] bg-kura-raised px-[0.35em] align-middle font-kura-mono font-medium text-[0.7em] text-kura-fg-muted tabular-nums leading-none no-underline shadow-kura-key outline-hidden",
+          "transition-[background-color,color] duration-(--kura-duration-fast) ease-kura-snap hover:bg-kura-raised-hover hover:text-kura-fg focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-kura-ring focus-visible:outline-offset-1 data-open:bg-kura-raised-hover data-open:text-kura-fg",
           className,
         )}
         {...props}
@@ -173,7 +173,7 @@ export function Citation({
         sideOffset={6}
         render={<div data-slot="citation-preview" />}
         className={cn(
-          "z-50 m-0 w-80 max-w-[calc(100vw-16px)] overflow-visible rounded-kura-xl border-0 bg-kura-raised p-3 font-kura-sans text-[13px] text-kura-fg shadow-kura-popover outline-none",
+          "z-50 m-0 w-80 max-w-[calc(100vw-16px)] overflow-visible rounded-kura-xl border-0 bg-kura-raised p-3 font-kura-sans text-[13px] text-kura-fg shadow-kura-popover outline-hidden",
           "origin-(--transform-origin) transition-[opacity,scale] duration-(--kura-duration-base) ease-kura-snap",
           "data-starting-style:scale-95 data-starting-style:opacity-0 data-ending-style:scale-95 data-ending-style:opacity-0 motion-reduce:transition-none",
         )}
@@ -237,7 +237,7 @@ export function Sources({
                   href={source.url}
                   target="_blank"
                   rel="noreferrer"
-                  className="flex w-44 flex-col gap-1.5 rounded-kura-lg bg-kura-raised px-3 py-2.5 shadow-kura-raised outline-none transition-colors duration-(--kura-duration-fast) ease-kura-snap hover:bg-kura-raised-hover focus-visible:outline-2 focus-visible:outline-kura-ring focus-visible:outline-offset-2"
+                  className="flex w-44 flex-col gap-1.5 rounded-kura-lg bg-kura-raised px-3 py-2.5 shadow-kura-raised outline-hidden transition-colors duration-(--kura-duration-fast) ease-kura-snap hover:bg-kura-raised-hover focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-kura-ring focus-visible:outline-offset-2"
                 >
                   <span className="flex items-center gap-1.5 text-kura-fg-subtle text-xs">
                     <Favicon source={source} className="size-3.5" />
@@ -253,7 +253,7 @@ export function Sources({
                   href={source.url}
                   target="_blank"
                   rel="noreferrer"
-                  className="-mx-2 flex gap-3 rounded-[9px] px-2 py-2 outline-none transition-colors duration-(--kura-duration-fast) ease-kura-snap hover:bg-kura-hover focus-visible:outline-2 focus-visible:outline-kura-ring"
+                  className="-mx-2 flex gap-3 rounded-[9px] px-2 py-2 outline-hidden transition-colors duration-(--kura-duration-fast) ease-kura-snap hover:bg-kura-hover focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-kura-ring"
                 >
                   <span className="w-4 shrink-0 pt-px text-right font-kura-mono text-kura-fg-subtle text-xs tabular-nums">
                     {i + 1}

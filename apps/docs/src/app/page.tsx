@@ -12,14 +12,6 @@ import { InstallChip } from "@/components/landing/install-chip";
 import { siteButton } from "@/components/site-button";
 import { catalog } from "@/lib/catalog";
 
-const WORKS_WITH = [
-  "Claude Agent SDK",
-  "Vercel AI SDK",
-  "OpenAI Agents SDK",
-  "shadcn/ui",
-  "Tailwind CSS v4",
-];
-
 const AGENT_SURFACES = [
   ["Typed manifests", "When to use it, every prop, anatomy, keyboard map."],
   ["shadcn registry", "Every component is an item your agent adds by URL."],
@@ -92,25 +84,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Works with */}
-      <section aria-label="Works with" className="px-4 pt-20 md:px-6 md:pt-24">
-        <div className="mx-auto flex max-w-[1180px] flex-col items-center gap-5">
-          <p className="text-center text-[13.5px] text-kura-fg-subtle">
-            Plain props and callbacks. Wire them to any agent loop.
-          </p>
-          <ul className="flex flex-wrap items-center justify-center gap-x-10 gap-y-3">
-            {WORKS_WITH.map((w) => (
-              <li
-                key={w}
-                className="font-semibold text-[15.5px] text-kura-fg-muted tracking-[-0.015em]"
-              >
-                {w}
-              </li>
-            ))}
-          </ul>
-        </div>
-      </section>
-
       {/* Every part of the run */}
       <section aria-labelledby="parts" className="px-4 pt-36 md:px-6 md:pt-44">
         <div className="mx-auto max-w-[1180px]">
@@ -122,7 +95,7 @@ export default function Home() {
           <div className="flex justify-center pt-10">
             <Link
               href="/components"
-              className="group inline-flex items-center gap-1.5 rounded-lg px-2 py-1 text-[15px] text-kura-fg-muted outline-none transition-colors hover:text-kura-fg focus-visible:shadow-kura-focus"
+              className="group inline-flex items-center gap-1.5 rounded-lg px-2 py-1 text-[15px] text-kura-fg-muted outline-hidden transition-colors hover:text-kura-fg focus-visible:shadow-kura-focus"
             >
               See all components
               <ArrowRight className="size-4 transition-transform duration-200 group-hover:translate-x-0.5 motion-reduce:transition-none" />
@@ -145,7 +118,7 @@ export default function Home() {
 
       {/* Your agent can install it */}
       <section aria-labelledby="agents" className="px-4 pt-36 md:px-6 md:pt-44">
-        <div className="mx-auto grid max-w-[1180px] gap-12 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:gap-16">
+        <div className="mx-auto grid max-w-[1180px] items-start gap-12 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:gap-16">
           <div>
             <h2
               id="agents"
@@ -172,13 +145,13 @@ export default function Home() {
             <span aria-hidden className="kura-leader block h-[5px]" />
             <Link
               href="/agents"
-              className="group mt-7 inline-flex items-center gap-1.5 rounded-lg py-1 text-[15px] text-kura-fg outline-none focus-visible:shadow-kura-focus"
+              className="group mt-7 inline-flex items-center gap-1.5 rounded-lg py-1 text-[15px] text-kura-fg outline-hidden focus-visible:shadow-kura-focus"
             >
               Set up your agent
               <ArrowRight className="size-4 transition-transform duration-200 group-hover:translate-x-0.5 motion-reduce:transition-none" />
             </Link>
           </div>
-          <AgentTerminal className="lg:h-full" />
+          <AgentTerminal />
         </div>
       </section>
 

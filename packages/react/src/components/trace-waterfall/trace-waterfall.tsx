@@ -152,7 +152,7 @@ function barTone(span: TraceSpan, selected: boolean): string {
     case "failed":
       return "text-kura-danger-text";
     case "waiting":
-      return "text-kura-ember";
+      return "text-kura-fg-muted";
     case "queued":
     case "skipped":
       return "text-kura-faint";
@@ -164,8 +164,9 @@ function barTone(span: TraceSpan, selected: boolean): string {
 }
 
 const TRACK = "absolute inset-y-0 left-3 right-5";
+// The time axis never gets less than about half the panel: spans are the point of a trace.
 const GRID =
-  "grid grid-cols-[minmax(0,58%)_1fr] @sm:grid-cols-[minmax(150px,54%)_1fr] @lg:grid-cols-[minmax(176px,46%)_1fr] @3xl:grid-cols-[minmax(300px,40%)_1fr]";
+  "grid grid-cols-[minmax(0,52%)_1fr] @sm:grid-cols-[minmax(150px,50%)_1fr] @lg:grid-cols-[minmax(176px,46%)_1fr] @3xl:grid-cols-[minmax(300px,40%)_1fr]";
 
 function Text({ children, tone }: { children: React.ReactNode; tone?: "danger" }) {
   return (
@@ -318,6 +319,8 @@ export function TraceWaterfall({
   const pct = (ms: number) => `${Math.min(100, Math.max(0, (ms / axis) * 100))}%`;
 
   const rows = flatten(spans, collapsed);
+  // A flat list has nothing to expand, so it does not reserve room for a chevron.
+  const flat = spans.every((sp) => !sp.children?.length);
   const rowIndex = new Map(rows.map((r, i) => [r.span.id, i] as const));
   const activeFocus =
     focusedId != null && rowIndex.has(focusedId)
@@ -516,7 +519,7 @@ export function TraceWaterfall({
                   {runningNow != null && (
                     <span
                       data-slot="trace-waterfall-now"
-                      className="absolute inset-y-0 w-px bg-kura-border-strong transition-[left] duration-(--kura-duration-base) ease-linear motion-reduce:transition-none"
+                      className="absolute top-0 bottom-2.5 w-px bg-kura-border-strong transition-[left] duration-(--kura-duration-base) ease-linear motion-reduce:transition-none"
                       style={{ left: pct(runningNow) }}
                     />
                   )}
@@ -540,6 +543,7 @@ export function TraceWaterfall({
                 const details = selected
                   ? (renderDetails?.(span) ?? <Details span={span} end={end} />)
                   : null;
+                const spoken = `${span.name}${span.meta ? ` ${span.meta}` : ""} ${formatDuration(dur)}, ${KIND_LABEL[span.kind]}, ${STATUS_WORD[span.status]}`;
                 return (
                   <div
                     key={span.id}
@@ -553,8 +557,9 @@ export function TraceWaterfall({
                     aria-setsize={row.setsize}
                     aria-expanded={hasKids ? open : undefined}
                     aria-selected={selected}
-                    aria-label={`${span.name}${span.meta ? ` ${span.meta}` : ""} ${formatDuration(dur)}, ${KIND_LABEL[span.kind]}, ${STATUS_WORD[span.status]}`}
-                    aria-describedby={selected ? detailsId : undefined}
+                    // Closed, the row has a full spoken name. Open, its details are on screen inside
+                    // it, so the name comes from the content (the kind and state are added below).
+                    aria-label={selected ? undefined : spoken}
                     tabIndex={activeFocus === span.id ? 0 : -1}
                     data-slot="trace-waterfall-span"
                     data-kind={span.kind}
@@ -564,7 +569,7 @@ export function TraceWaterfall({
                     onFocus={(e) => {
                       if (e.target === e.currentTarget) setFocusedId(span.id);
                     }}
-                    className="group/item outline-none transition-opacity duration-(--kura-duration-base) ease-kura-out starting:opacity-0"
+                    className="group/item outline-hidden transition-opacity duration-(--kura-duration-base) ease-kura-out starting:opacity-0"
                   >
                     {/* biome-ignore lint/a11y/noStaticElementInteractions: pointer shortcut; the treeitem owns keyboard interaction. */}
                     {/* biome-ignore lint/a11y/useKeyWithClickEvents: Enter/Space are handled on the treeitem. */}
@@ -583,7 +588,7 @@ export function TraceWaterfall({
                     >
                       <div
                         className="flex min-w-0 items-center gap-1.5 pr-3.5"
-                        style={{ paddingLeft: `${10 + depth * 16}px` }}
+                        style={{ paddingLeft: `${(flat ? 16 : 10) + depth * 16}px` }}
                       >
                         {hasKids ? (
                           // biome-ignore lint/a11y/noStaticElementInteractions: mouse affordance; ArrowLeft/Right on the treeitem do the same.
@@ -606,7 +611,7 @@ export function TraceWaterfall({
                               )}
                             />
                           </span>
-                        ) : (
+                        ) : flat ? null : (
                           <span className="size-5 shrink-0" />
                         )}
                         {span.kind === "agent" ? (
@@ -642,7 +647,7 @@ export function TraceWaterfall({
                         <span
                           data-slot="trace-waterfall-duration"
                           className={cn(
-                            "hidden min-w-[6ch] shrink-0 text-right font-kura-mono text-[12px] tabular-nums @sm:inline",
+                            "hidden min-w-[5ch] shrink-0 text-right font-kura-mono text-[12px] tabular-nums @sm:inline",
                             span.status === "running"
                               ? "text-kura-fg-muted"
                               : "text-kura-fg-subtle",
@@ -650,6 +655,11 @@ export function TraceWaterfall({
                         >
                           {span.status === "queued" ? "—" : formatDuration(dur)}
                         </span>
+                        {selected && (
+                          <span className="sr-only">
+                            , {KIND_LABEL[span.kind]}, {STATUS_WORD[span.status]}.
+                          </span>
+                        )}
                       </div>
                       <div className="relative">
                         <div className={TRACK}>

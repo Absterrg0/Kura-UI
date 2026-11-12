@@ -1,6 +1,5 @@
 "use client";
 
-import { FilePen, FileSearch, SquareTerminal } from "lucide-react";
 import * as React from "react";
 import { ToolCall } from "../tool-call";
 import { AgentFleet, type FleetAgent } from "./agent-fleet";
@@ -123,7 +122,7 @@ function initialFleet(): FleetAgent[] {
       name: "docs-reader",
       role: "Reads @acme/auth docs",
       status: "done",
-      activity: "Summarised the session and refresh APIs",
+      activity: "Summarized the session and refresh APIs",
       startedAt: ago(605),
       endedAt: ago(561),
       tokens: 26_700,
@@ -231,20 +230,20 @@ const CALLS: Record<string, React.ReactNode> = {
     <>
       <ToolCall
         name="grep"
-        icon={<FileSearch />}
         args={{ pattern: "fetchUser\\(", path: "src" }}
         status="success"
         duration={420}
         summary="fetchUser\( in src/ · 23 matches"
         variant="inline"
+        className="mx-0 w-full"
       />
       <ToolCall
         name="read_file"
-        icon={<FileSearch />}
         args={{ path: "src/routes/api/session.ts" }}
         status="success"
         duration={180}
         variant="inline"
+        className="mx-0 w-full"
       />
     </>
   ),
@@ -252,19 +251,19 @@ const CALLS: Record<string, React.ReactNode> = {
     <>
       <ToolCall
         name="edit_file"
-        icon={<FilePen />}
         args={{ path: "src/auth/__tests__/login.test.ts" }}
         status="success"
         duration={2_400}
         summary="login.test.ts · +18 −9"
         variant="inline"
+        className="mx-0 w-full"
       />
       <ToolCall
         name="bash"
-        icon={<SquareTerminal />}
         args={{ command: "pnpm test --filter web" }}
         status="running"
         variant="inline"
+        className="mx-0 w-full"
       />
     </>
   ),

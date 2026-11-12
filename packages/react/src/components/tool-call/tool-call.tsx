@@ -1,9 +1,10 @@
 "use client";
 
-import { ChevronRight, Wrench } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import * as React from "react";
 import { useControllableState } from "../../hooks/use-controllable-state";
 import { cn } from "../../lib/cn";
+import { formatDuration } from "../../lib/format";
 import { CodeBlock } from "../code-block";
 import { type AgentStatus, StatusGlyph } from "../status-glyph";
 
@@ -41,12 +42,7 @@ export interface ToolCallProps extends Omit<React.ComponentProps<"div">, "title"
   actions?: React.ReactNode;
 }
 
-export function formatDuration(ms: number): string {
-  if (ms < 1000) return `${Math.max(0, Math.round(ms / 10) * 10)}ms`;
-  if (ms < 60_000) return `${(ms / 1000).toFixed(1)}s`;
-  const s = Math.round(ms / 1000);
-  return `${Math.floor(s / 60)}m ${s % 60}s`;
-}
+export { formatDuration };
 
 const statusText: Record<ToolCallStatus, string> = {
   pending: "Queued",
@@ -151,13 +147,15 @@ export function ToolCall({
   const headerContent = (
     <>
       <StatusMark status={status} small={inline} />
-      <span
-        aria-hidden
-        className="shrink-0 text-kura-fg-subtle [&_svg]:size-3.5"
-        data-slot="tool-call-icon"
-      >
-        {icon ?? <Wrench />}
-      </span>
+      {icon != null && (
+        <span
+          aria-hidden
+          className="shrink-0 text-kura-fg-subtle [&_svg]:size-3.5"
+          data-slot="tool-call-icon"
+        >
+          {icon}
+        </span>
+      )}
       <span className="flex min-w-0 flex-1 items-baseline gap-2">
         <span data-slot="tool-call-title" className="shrink-0 font-medium text-kura-fg">
           {label}
@@ -190,7 +188,7 @@ export function ToolCall({
   );
 
   const headerClass = cn(
-    "flex w-full min-w-0 items-center gap-2 text-left outline-none",
+    "flex w-full min-w-0 items-center gap-2 text-left outline-hidden",
     inline ? "h-7 rounded-[8px] px-1.5 text-[13px]" : "h-11 px-4 text-[13px]",
   );
 
