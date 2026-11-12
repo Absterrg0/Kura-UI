@@ -1,3 +1,4 @@
+import { createAgent } from "@ui-sdk/react/agent";
 import { describe, expect, it, vi } from "vitest";
 import { axe, fireEvent, render, screen, setReducedMotion, userEvent } from "../../../test/utils";
 import { PromptQueue, type QueuedPrompt } from "./prompt-queue";
@@ -91,6 +92,27 @@ describe("PromptQueue", () => {
     await user.keyboard("{Escape}");
     expect(screen.queryByRole("textbox")).toBeNull();
     expect(onItemsChange).toHaveBeenCalledOnce();
+  });
+
+  it("an agent can read the queue and send, move and remove prompts by their text", async () => {
+    const agent = createAgent();
+    const onSendNow = vi.fn();
+    render(<PromptQueue defaultItems={items} onSendNow={onSendNow} />);
+    const entry = agent.snapshot().find((e) => e.component === "prompt-queue");
+    expect(entry?.label).toBe("Queued");
+    expect(entry?.value).toBe("3 queued");
+    expect(entry?.actions).toEqual(["sendNow", "remove", "moveUp", "moveDown"]);
+
+    const run = (action: string, text: string) =>
+      agent.act({ steps: [{ ref: "Queued", action, args: [text] }] });
+    expect((await run("moveDown", "Use refreshSession()")).ok).toBe(true);
+    expect(texts()).toEqual(["Skip src/legacy/", "Use refreshSession()", "Update the README"]);
+    expect((await run("remove", "Update the README")).ok).toBe(true);
+    expect(texts()).toEqual(["Skip src/legacy/", "Use refreshSession()"]);
+    expect((await run("sendNow", "Skip src/legacy/")).ok).toBe(true);
+    expect(onSendNow).toHaveBeenCalledWith(expect.objectContaining({ id: "b" }));
+    const missing = await run("remove", "Nothing like this");
+    expect(missing.ok).toBe(false);
   });
 
   it("renders the tray variant", () => {

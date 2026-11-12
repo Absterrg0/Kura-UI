@@ -52,7 +52,27 @@ folder) and stay consistent.
 - Audio/voice: `useMediaRecorder` → `stream` → `useAudioAnalyser({ source: stream })`; use
   `simulate: true` for demos and tests. Speech: `useSpeechRecognition` (check `isSupported`).
 
-## 5. Verify
+## 5. Let an in-app agent use the UI (optional)
+
+Kura is built on ui-sdk, so an assistant inside the app can read and operate Kura components
+through one bridge instead of clicking the page:
+
+```ts
+"use client";
+import { agentTools, createAgent } from "@ui-sdk/react/agent";
+export const agent = createAgent({
+  // Steps on controls marked data-agent-confirm (approving a prompt, restoring a checkpoint) ask
+  // the person first. Show step.confirm and return their answer.
+  allow: (step) => (step.confirm ? askThePerson(step.confirm) : true),
+});
+```
+
+`agent.snapshot()` lists components with a name, value, items and actions (ApprovalPrompt: deny;
+PromptQueue: sendNow/remove/moveUp/moveDown; DiffView: accept/reject/undo/acceptAll/rejectAll;
+Checkpoints: restore). `agentTools` has the tool schemas for your model; `registerTools` exposes
+them over WebMCP. Change callbacks report `source: "agent"` so the app can tell who acted.
+
+## 6. Verify
 
 Render it in light and dark mode, tab through it with the keyboard, and toggle reduced motion.
 Follow the `agentNotes` in the manifest — they list known pitfalls.

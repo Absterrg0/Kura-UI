@@ -1,3 +1,4 @@
+import { createAgent } from "@ui-sdk/react/agent";
 import { describe, expect, it, vi } from "vitest";
 import {
   act,
@@ -105,6 +106,28 @@ describe("Checkpoints", () => {
     expect(onRestore).toHaveBeenCalledWith("c1");
     await user.click(screen.getByRole("button", { name: "Save checkpoint" }));
     expect(onCreate).toHaveBeenCalledOnce();
+  });
+
+  it("an agent can read the checkpoints, but restoring waits for the person", async () => {
+    let personSaysYes = false;
+    const agent = createAgent({ allow: (step) => !step.confirm || personSaysYes });
+    const onRestore = vi.fn();
+    render(<Checkpoints checkpoints={list} onRestore={onRestore} />);
+    const entry = agent.snapshot().find((e) => e.component === "checkpoints-list");
+    expect(entry?.label).toBe("Checkpoints");
+    expect(entry?.value).toBe("At “Updated tests”");
+    expect(entry?.actions).toEqual(["restore"]);
+    expect(entry?.confirm).toMatch(/Restores the workspace/);
+
+    const step = {
+      steps: [{ ref: "Checkpoints", action: "restore", args: ["Before middleware"] }],
+    };
+    expect((await agent.act(step)).ok).toBe(false);
+    expect(onRestore).not.toHaveBeenCalled();
+    personSaysYes = true;
+    const result = await agent.act(step);
+    expect(result.ok, result.error?.message).toBe(true);
+    expect(onRestore).toHaveBeenCalledWith("c2");
   });
 
   it("shows an empty state", () => {

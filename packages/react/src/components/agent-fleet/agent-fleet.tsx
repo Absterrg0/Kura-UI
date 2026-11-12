@@ -1,8 +1,10 @@
 "use client";
 
+import { createParts } from "@ui-sdk/react/primitive";
 import * as React from "react";
 import { useControllableState } from "../../hooks/use-controllable-state";
 import { useElapsed } from "../../hooks/use-elapsed";
+import { agentSurface } from "../../lib/agent-surface";
 import { cn } from "../../lib/cn";
 import { formatClock, formatCost, formatTokens } from "../../lib/format";
 import { ShimmerText } from "../shimmer-text";
@@ -85,6 +87,10 @@ function useAnnouncements(agents: FleetAgent[]) {
   return message;
 }
 
+const { Root: AgentFleetRoot } = createParts(agentSurface("agent-fleet", ["select"]), {
+  root: "div",
+});
+
 /**
  * Parallel subagents at a glance: one row per agent with its status glyph, name and role, what it
  * is doing now (shimmering while it runs), a thin progress bar, elapsed time, tokens and cost.
@@ -142,8 +148,19 @@ export function AgentFleet({
   };
 
   return (
-    <div
-      data-slot="agent-fleet"
+    <AgentFleetRoot
+      value={summary.map((s) => `${counts.get(s.status)} ${s.status}`).join(", ")}
+      items={agents.map((a) => ({
+        value: a.id,
+        label: `${a.name}: ${a.status}${a.activity ? `, ${a.activity}` : ""}`,
+      }))}
+      onAction={(_, [ref]) => {
+        const a = agents.find((x) => x.id === ref || x.name === ref);
+        if (!a) throw new Error(`No subagent "${String(ref)}".`);
+        if (!selectable) throw new Error("This fleet doesn't select subagents.");
+        setSelected(a.id);
+      }}
+      aria-labelledby={`${id}-title`}
       data-density={density}
       className={cn(
         "@container flex min-w-0 flex-col overflow-hidden rounded-kura-xl bg-kura-surface font-kura-sans text-kura-fg shadow-kura-sm",
@@ -155,8 +172,8 @@ export function AgentFleet({
         data-slot="agent-fleet-header"
         className="flex h-10 shrink-0 items-center gap-3 border-kura-border-subtle border-b px-3.5"
       >
-        <h3 id={`${id}-title`} className="flex items-baseline gap-2 font-medium text-[13px]">
-          {title}
+        <h3 className="flex items-baseline gap-2 font-medium text-[13px]">
+          <span id={`${id}-title`}>{title}</span>
           <span className="font-kura-mono font-normal text-[12px] text-kura-fg-subtle tabular-nums">
             {agents.length}
           </span>
@@ -221,7 +238,7 @@ export function AgentFleet({
       <span role="status" className="sr-only">
         {message}
       </span>
-    </div>
+    </AgentFleetRoot>
   );
 }
 

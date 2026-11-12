@@ -125,7 +125,7 @@ export default defineComponent({
     reducedMotion:
       "New rows fade in without rising; running glyphs, activity shimmer and progress width transitions stop.",
   },
-  dependencies: { npm: [], kura: ["shimmer-text", "status-glyph"] },
+  dependencies: { npm: ["@ui-sdk/react"], kura: ["shimmer-text", "status-glyph"] },
   related: ["run-header", "task-list", "trace-waterfall", "tool-call", "agent-timeline"],
   tags: [
     "agent",
@@ -171,6 +171,7 @@ export default defineComponent({
     },
   ],
   agentNotes: [
+    `Agent-ready (ui-sdk): createAgent lists the fleet by its title with a status summary as its value and each subagent (name, status, activity) as an item; when selectable, an agent can \`select\` one to show the person.`,
     "Give every agent a stable id; rows key on it and the announcer diffs statuses by id.",
     "Write activity in present tense while running ('Rewriting mocks in login.test.ts') and as a result when done ('Found 23 calls in 9 files'), or the failure when failed.",
     "Pass startedAt from the harness (not Date.now() at render) and endedAt when the agent stops so clocks stay correct across reloads.",

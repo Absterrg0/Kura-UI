@@ -66,7 +66,17 @@ exports, no docs pages, no registry). Everything is discovered from the folder.
    - Controlled + uncontrolled via `useControllableState` (`value`/`defaultValue`/`onValueChange`, `open`/`defaultOpen`/`onOpenChange`).
    - Style only with Kura tokens: `bg-kura-*`, `text-kura-*`, `border-kura-*`, `shadow-kura-*`, `rounded-kura-*`, `font-kura-*`, `ease-kura-*`, `duration-(--kura-duration-*)`, `animate-kura-*`. **No hex/rgb colors, no `dark:` variants**, no outer margins, no fixed widths on the root.
    - Motion: CSS transitions or `motion/react` with `springs.*` from `../../lib/motion`. Respect reduced motion (`motion-reduce:*` classes, or `useReducedMotion()`).
-   - Icons: `lucide-react`. Popover/tooltip/dialog behaviour: reuse Kura `Popover`/`Tooltip` or `radix-ui` primitives.
+   - Icons: `lucide-react`. Behaviour comes from **ui-sdk** (`@ui-sdk/core` + `@ui-sdk/react`, Vercel's
+     library of UI behaviors): reuse Kura `Button`/`Popover`/`Tooltip`, or import a ui-sdk part from its
+     own entry (`@ui-sdk/react/dialog`, `/hover-card`, `/select`, `/tree`…). Never hand-roll a
+     `role="listbox|menu|dialog|tablist|tree|…"` that ui-sdk ships. Pass `render={<el data-slot="x" />}`
+     to rename a ui-sdk part's `data-slot` (it owns the attribute); `asChild` maps to `render` via
+     `lib/as-child`.
+   - Agent-ready: every interactive control is a ui-sdk part (Kura `Button` is one), so
+     `createAgent` from `@ui-sdk/react/agent` can find it by name and act on it. Agent-facing
+     components wrap their root in `agentSurface("<slug>", [actions])` from `lib/agent-surface`
+     (value + items + actions). Mark anything a person must decide (approve, restore, delete, pay)
+     with `data-agent-confirm="<what it does>"`. Name every root and control.
    - Audio: `useAudioAnalyser` (+ `simulate` for demos/tests), `useMediaRecorder`, `useSpeechRecognition`. GPU: build on `ShaderCanvas`.
 3. Fill the meta honestly (validation fails while any `TODO` remains). Write for an agent that has
    never seen the library: concrete `whenToUse`, `whenNotToUse` that names alternative slugs, every
@@ -77,6 +87,8 @@ exports, no docs pages, no registry). Everything is discovered from the folder.
    code (imports are rewritten to `@kura-ui/react/<slug>`), the MCP examples, and test fixtures.
    Non-exported top-level helpers (shader strings, sample data) used by an example are inlined into its code automatically.
 5. Tests (all required by `validate:meta`): render + `data-slot`, interaction (userEvent/fireEvent),
+   an agent test for agent-facing components (`createAgent()` → `snapshot()` → `act()`; see
+   approval-prompt.test.tsx),
    controlled/uncontrolled if applicable, `axe()` on every example, and a reduced-motion test
    (`setReducedMotion(true)`). jsdom has no WebGL/Web Audio: assert graceful fallbacks.
 6. Run: `pnpm generate && pnpm validate:meta && pnpm --filter @kura-ui/react exec vitest run src/components/<slug> && pnpm lint && pnpm typecheck`.

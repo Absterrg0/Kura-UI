@@ -1,8 +1,10 @@
 "use client";
 
+import { createParts } from "@ui-sdk/react/primitive";
 import { Check, ChevronRight, CircleSlash2, FileDiff, RotateCcw, X } from "lucide-react";
 import * as React from "react";
 import { useControllableState } from "../../hooks/use-controllable-state";
+import { agentSurface } from "../../lib/agent-surface";
 import { cn } from "../../lib/cn";
 import { Button } from "../button";
 import { type CodeToken, type CodeTokenType, highlightCode } from "../code-block";
@@ -30,6 +32,8 @@ export type DiffReview = Readonly<Record<string, HunkDecision>>;
 export interface DiffReviewChange {
   /** File the change happened in (the last file for "Accept all"). */
   path: string;
+  /** "agent" when an agent connected through `createAgent` made the decision. */
+  source?: "agent";
   /** Hunks whose decision changed. */
   hunkIds: string[];
   /** New decision; "pending" means the decision was undone. */
@@ -227,6 +231,11 @@ function Counts({ additions, deletions }: { additions: number; deletions: number
  * Each hunk can be accepted or rejected (j/k to move, a/r to decide, u to undo), each file
  * accepted at once, and the header keeps the running tally.
  */
+const { Root: DiffViewRoot } = createParts(
+  agentSurface("diff-view", ["accept", "reject", "undo", "acceptAll", "rejectAll"]),
+  { root: "div" },
+);
+
 export function DiffView({
   diff,
   files: filesProp,
@@ -332,7 +341,12 @@ export function DiffView({
       return value ? [...prev, path] : prev.filter((p) => p !== path);
     });
 
-  const decide = (ids: string[], decision: HunkDecision | "pending", path: string) => {
+  const decide = (
+    ids: string[],
+    decision: HunkDecision | "pending",
+    path: string,
+    source?: "agent",
+  ) => {
     const next: Record<string, HunkDecision> = { ...review };
     let changed = false;
     for (const id of ids) {
@@ -348,7 +362,10 @@ export function DiffView({
     }
     if (!changed) return null;
     setReview(next);
-    onReviewChange?.(next, { path, hunkIds: ids, decision });
+    onReviewChange?.(
+      next,
+      source ? { path, hunkIds: ids, decision, source } : { path, hunkIds: ids, decision },
+    );
     const done = allHunks.filter((h) => next[h.id]).length;
     const verb =
       decision === "pending" ? "Undid" : decision === "accepted" ? "Accepted" : "Rejected";
@@ -435,11 +452,38 @@ export function DiffView({
   };
 
   const pendingCount = allHunks.length - reviewed;
+  const titleId = React.useId();
+
+  // An agent names a change by its file and number ("src/auth.ts change 2") or by its id.
+  const hunkLabel = (h: (typeof allHunks)[number]) => `${h.path} change ${h.index + 1}`;
+  const onAgentAction = (action: string, [ref]: unknown[]) => {
+    if (!reviewable) throw new Error("This diff isn't open for review.");
+    if (action === "acceptAll" || action === "rejectAll") {
+      const pending = allHunks.filter((h) => !review[h.id]);
+      decide(
+        pending.map((h) => h.id),
+        action === "acceptAll" ? "accepted" : "rejected",
+        pending.at(-1)?.path ?? "",
+        "agent",
+      );
+      return;
+    }
+    const h = allHunks.find((x) => x.id === ref || hunkLabel(x) === ref);
+    if (!h) throw new Error(`No change "${String(ref)}".`);
+    const decision =
+      action === "accept" ? "accepted" : action === "reject" ? "rejected" : "pending";
+    decide([h.id], decision, h.path, "agent");
+  };
 
   return (
-    // biome-ignore lint/a11y/noStaticElementInteractions: delegates j/k/a/r/u from the focused hunk (the hunks are the focus targets)
-    <div
-      data-slot="diff-view"
+    <DiffViewRoot
+      value={`${reviewed} of ${allHunks.length} reviewed`}
+      items={allHunks.map((h) => ({
+        value: h.id,
+        label: `${hunkLabel(h)}${review[h.id] ? ` (${review[h.id]})` : ""}`,
+      }))}
+      onAction={onAgentAction}
+      aria-labelledby={titleId}
       data-reviewable={reviewable || undefined}
       data-state={allHunks.length === 0 ? "empty" : pendingCount === 0 ? "reviewed" : "pending"}
       className={cn(
@@ -455,7 +499,9 @@ export function DiffView({
         className="flex h-10 shrink-0 items-center gap-3 border-kura-border-subtle border-b pr-2 pl-3.5"
       >
         <span className="flex min-w-0 items-baseline gap-2.5">
-          <span className="min-w-[3rem] truncate font-medium tracking-[-0.006em]">{title}</span>
+          <span id={titleId} className="min-w-[3rem] truncate font-medium tracking-[-0.006em]">
+            {title}
+          </span>
           <span
             data-slot="diff-view-summary"
             className="flex shrink-0 items-baseline gap-2.5 font-kura-mono text-[12px] text-kura-fg-subtle tabular-nums"
@@ -710,7 +756,7 @@ export function DiffView({
       <span className="sr-only" role="status" aria-live="polite">
         {announcement}
       </span>
-    </div>
+    </DiffViewRoot>
   );
 }
 

@@ -177,7 +177,7 @@ export default defineComponent({
     reducedMotion:
       "The cursor stops pulsing, the running glyph stops spinning, and the copy icon swap and pill entrance become plain fades. Jump to latest still scrolls smoothly only if the browser allows it.",
   },
-  dependencies: { npm: ["lucide-react"], kura: ["icon-button", "status-glyph"] },
+  dependencies: { npm: ["@ui-sdk/react", "lucide-react"], kura: ["icon-button", "status-glyph"] },
   related: ["diff-view", "file-changes", "code-block", "tool-call", "agent-timeline"],
   tags: ["terminal", "shell", "logs", "ansi", "streaming", "command", "agent", "workspace"],
   examples: [
@@ -209,6 +209,7 @@ export default defineComponent({
     },
   ],
   agentNotes: [
+    `Agent-ready (ui-sdk): createAgent lists the terminal by its command with the status and exit code as its value. It has no actions.`,
     "Pass raw process output; don't strip ANSI codes. Escape sequences split across chunks are buffered.",
     "For a growing string, only append — replacing earlier text triggers a full re-parse (still correct, just slower).",
     "Keep the same Terminal mounted from running → done so the measured duration works; for history pass `duration`.",

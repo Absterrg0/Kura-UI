@@ -1,9 +1,11 @@
 "use client";
 
+import { createParts } from "@ui-sdk/react/primitive";
 import { ChevronRight, ListTodo } from "lucide-react";
 import * as React from "react";
 import { useControllableState } from "../../hooks/use-controllable-state";
 import { useElapsed } from "../../hooks/use-elapsed";
+import { agentSurface } from "../../lib/agent-surface";
 import { cn } from "../../lib/cn";
 import { formatClock, formatDuration } from "../../lib/format";
 import { ShimmerText } from "../shimmer-text";
@@ -238,6 +240,10 @@ function sumDurations(items: readonly TaskListItem[]): number {
   return items.reduce((acc, i) => acc + (i.durationMs ?? 0), 0);
 }
 
+const { Root: TaskListRoot } = createParts(agentSurface("task-list", []), {
+  root: "div",
+});
+
 /**
  * The agent's plan as a todo list (Claude Code TodoWrite style): a header with "3 of 7" and a
  * segmented progress bar, one row per task with a status glyph, a shimmering title for the running
@@ -379,9 +385,10 @@ export function TaskList({
     );
 
   return (
-    // biome-ignore lint/a11y/noStaticElementInteractions: arrow-key roving between the native row buttons inside.
-    <div
-      data-slot="task-list"
+    <TaskListRoot
+      value={`${doneCount} of ${total} done`}
+      items={items.map((it) => ({ value: it.id, label: `${it.title}: ${it.status}` }))}
+      aria-label={listLabel}
       data-variant={variant}
       data-progress={`${doneCount}/${total}`}
       className={cn(
@@ -430,6 +437,6 @@ export function TaskList({
       <span role="status" className="sr-only">
         {announcement}
       </span>
-    </div>
+    </TaskListRoot>
   );
 }

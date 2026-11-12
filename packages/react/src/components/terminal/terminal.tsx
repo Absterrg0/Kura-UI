@@ -1,9 +1,11 @@
 "use client";
 
+import { createParts } from "@ui-sdk/react/primitive";
 import { ArrowDown, Check, ChevronsUpDown, Copy } from "lucide-react";
 import * as React from "react";
 import { useControllableState } from "../../hooks/use-controllable-state";
 import { useElapsed } from "../../hooks/use-elapsed";
+import { agentSurface } from "../../lib/agent-surface";
 import { cn } from "../../lib/cn";
 import { formatClock, formatDuration } from "../../lib/format";
 import { IconButton } from "../icon-button";
@@ -148,6 +150,10 @@ function Cursor() {
     />
   );
 }
+
+const { Root: TerminalRoot } = createParts(agentSurface("terminal", []), {
+  root: "div",
+});
 
 /**
  * Streamed command output that looks and behaves like a real terminal: a prompt line, ANSI
@@ -320,8 +326,9 @@ export function Terminal({
   const heading = title ?? cwd ?? "Terminal";
 
   return (
-    <div
-      data-slot="terminal"
+    <TerminalRoot
+      value={`${status}${exitCode != null ? `, exit ${exitCode}` : ""}`}
+      aria-label={command ? `Terminal: ${command}` : "Terminal"}
       data-status={status}
       data-state={
         maxLines != null && total > maxLines ? (expanded ? "expanded" : "collapsed") : undefined
@@ -500,6 +507,6 @@ export function Terminal({
         {announcement}
         {copied ? " Copied to clipboard" : ""}
       </span>
-    </div>
+    </TerminalRoot>
   );
 }

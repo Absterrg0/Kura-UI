@@ -158,7 +158,8 @@ for (const folder of folders) {
       source.includes(`"data-slot": "${folder.slug}"`) ||
       // A root built on a ui-sdk part (or primitive) of the same name gets the slot from ui-sdk.
       source.includes(`from "@ui-sdk/react/${folder.slug}"`) ||
-      source.includes(`name: "${folder.slug}"`)
+      source.includes(`name: "${folder.slug}"`) ||
+      source.includes(`agentSurface("${folder.slug}"`)
     )
       hasDataSlot = true;
     const isClient = /^\s*(\/\/[^\n]*\n|\/\*[\s\S]*?\*\/\s*)*["']use client["']/.test(source);

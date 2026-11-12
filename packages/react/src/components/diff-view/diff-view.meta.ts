@@ -173,7 +173,10 @@ export default defineComponent({
     reducedMotion:
       "Chevron rotation, the review-dimming fade and the progress colour change apply instantly; no motion is essential.",
   },
-  dependencies: { npm: ["lucide-react"], kura: ["button", "code-block", "icon-button", "tooltip"] },
+  dependencies: {
+    npm: ["@ui-sdk/react", "lucide-react"],
+    kura: ["button", "code-block", "icon-button", "tooltip"],
+  },
   related: ["file-changes", "code-block", "terminal", "approval-prompt", "tool-call"],
   tags: [
     "diff",
@@ -213,6 +216,7 @@ export default defineComponent({
     },
   ],
   agentNotes: [
+    `Agent-ready (ui-sdk): createAgent lists the diff by its title with "n of m reviewed" as its value and each change as an item named "<path> change <n>". Actions: accept, reject, undo, acceptAll, rejectAll; onReviewChange gets source: "agent" for them.`,
     "Pass the raw `git diff` string to `diff`; don't pre-split it. Use `files` when you already have structured hunks (raw '+'/'-'/' ' strings are fine as lines).",
     "Review state is keyed by hunk id: `hunk.id` if you set one (do this when hunks can shift, e.g. while an agent keeps editing), else `<path>#<index>`. Export `hunkId(file, hunk, index)` to compute it.",
     'To apply decisions, walk parseUnifiedDiff(diff) and keep hunks whose id is "accepted"; rejected and pending hunks are not applied.',

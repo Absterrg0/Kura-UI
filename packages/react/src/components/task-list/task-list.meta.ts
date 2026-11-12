@@ -177,7 +177,7 @@ export default defineComponent({
     reducedMotion:
       "Rows fade in without rising, the title shimmer and running segment pulse stop, and the chevron turns without animating.",
   },
-  dependencies: { npm: ["lucide-react"], kura: ["shimmer-text", "status-glyph"] },
+  dependencies: { npm: ["@ui-sdk/react", "lucide-react"], kura: ["shimmer-text", "status-glyph"] },
   related: ["agent-timeline", "agent-fleet", "run-header", "trace-waterfall", "status-glyph"],
   tags: ["agent", "plan", "todo", "tasks", "checklist", "progress", "claude-code", "run"],
   examples: [
@@ -209,6 +209,7 @@ export default defineComponent({
     },
   ],
   agentNotes: [
+    `Agent-ready (ui-sdk): createAgent lists the plan by its label with "n of m done" as its value and each task with its status as an item, so an assistant can answer what the agent is doing. It has no actions.`,
     "Map a model-maintained todo list directly: pending → queued, in_progress → running, completed → done. Keep ids stable so rows don't remount.",
     "Pass `startedAt` for the running item (from your server) so the live timer survives reloads; pass `durationMs` once it finishes.",
     "Only one top-level item should be `running`; it carries the blue signal and the shimmer.",

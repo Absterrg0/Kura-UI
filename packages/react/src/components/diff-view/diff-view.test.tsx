@@ -1,3 +1,4 @@
+import { createAgent } from "@ui-sdk/react/agent";
 import { describe, expect, it, vi } from "vitest";
 import { axe, render, screen, setReducedMotion, userEvent, within } from "../../../test/utils";
 import { type DiffReview, DiffView, normalizeFiles, parseUnifiedDiff, wordDiff } from "./diff-view";
@@ -230,6 +231,31 @@ describe("normalizeFiles and wordDiff", () => {
 });
 
 describe("DiffView", () => {
+  it("an agent can read the review and accept or reject each change by name", async () => {
+    const agent = createAgent();
+    const onReviewChange = vi.fn();
+    render(<DiffView diff={TWO_FILES} onReviewChange={onReviewChange} />);
+    const entry = agent.snapshot().find((e) => e.component === "diff-view");
+    expect(entry?.label).toBe("Changes");
+    expect(entry?.value).toBe("0 of 3 reviewed");
+    expect(entry?.actions).toEqual(["accept", "reject", "undo", "acceptAll", "rejectAll"]);
+
+    const act = (action: string, ...args: string[]) =>
+      agent.act({ steps: [{ ref: "Changes", action, args }] });
+    let result = await act("reject", "src/a.ts change 2");
+    expect(result.ok, result.error?.message).toBe(true);
+    expect(onReviewChange).toHaveBeenLastCalledWith(
+      { "src/a.ts#1": "rejected" },
+      expect.objectContaining({ decision: "rejected", source: "agent" }),
+    );
+    result = await act("acceptAll");
+    expect(result.ok, result.error?.message).toBe(true);
+    expect(agent.snapshot().find((e) => e.component === "diff-view")?.value).toBe(
+      "3 of 3 reviewed",
+    );
+    expect((await act("accept", "src/zzz.ts change 9")).ok).toBe(false);
+  });
+
   it("renders files, summary and data attributes", () => {
     const { container } = render(<DiffView diff={TWO_FILES} className="custom" />);
     const root = container.querySelector("[data-slot=diff-view]")!;

@@ -109,7 +109,7 @@ export default defineComponent({
     reducedMotion:
       "Rows fade in without rising; the confirm opens with a fade instead of a height transition.",
   },
-  dependencies: { npm: ["lucide-react"], kura: ["button"] },
+  dependencies: { npm: ["@ui-sdk/react", "lucide-react"], kura: ["button"] },
   related: ["run-header", "diff-view", "file-changes", "task-list"],
   tags: ["agent", "checkpoint", "restore", "rewind", "undo", "history", "snapshot"],
   examples: [
@@ -138,6 +138,7 @@ export default defineComponent({
     },
   ],
   agentNotes: [
+    `Agent-ready (ui-sdk): createAgent lists the checkpoint list with where the workspace is as its value and each earlier checkpoint as an item. Its one action, \`restore\`, is marked data-agent-confirm, so an agent's restore always waits for the person.`,
     "Pass checkpoints newest first and mark exactly one current; the component uses `at` to work out which are undone.",
     "Restore only rewinds files in your harness; keep the conversation and say so in your UI copy if that differs.",
     "Make onRestore async when restoring takes time so the confirm shows a spinner and blocks double restores.",

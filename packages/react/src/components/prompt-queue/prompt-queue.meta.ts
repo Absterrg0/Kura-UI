@@ -124,7 +124,10 @@ export default defineComponent({
     reducedMotion:
       "Reorders jump into place instead of sliding; the drag still follows the pointer.",
   },
-  dependencies: { npm: ["lucide-react", "motion"], kura: ["button", "icon-button"] },
+  dependencies: {
+    npm: ["@ui-sdk/react", "lucide-react", "motion"],
+    kura: ["button", "icon-button"],
+  },
   related: ["composer", "run-header", "prompt-suggestions", "task-list"],
   tags: ["agent", "queue", "prompts", "follow-up", "steer", "reorder", "drag", "composer"],
   examples: [
@@ -149,6 +152,7 @@ export default defineComponent({
     },
   ],
   agentNotes: [
+    `Agent-ready (ui-sdk): createAgent lists the queue by its title with "n queued" as its value and each prompt as an item. Actions: sendNow, remove, moveUp, moveDown, naming a prompt by its text or id.`,
     "When the agent finishes a turn, shift the first item off `items` and send it yourself — the component never sends on its own.",
     "onSendNow means 'interrupt and send': stop the current turn in your harness before sending.",
     "Keep ids stable across edits; reordering and focus rely on them.",

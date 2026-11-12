@@ -1,5 +1,6 @@
 "use client";
 
+import { createParts } from "@ui-sdk/react/primitive";
 import {
   ArrowDown,
   ArrowUp,
@@ -14,6 +15,7 @@ import { Reorder, useDragControls } from "motion/react";
 import * as React from "react";
 import { useControllableState } from "../../hooks/use-controllable-state";
 import { useReducedMotion } from "../../hooks/use-reduced-motion";
+import { agentSurface } from "../../lib/agent-surface";
 import { cn } from "../../lib/cn";
 import { springs } from "../../lib/motion";
 import { Button } from "../button";
@@ -51,6 +53,11 @@ export interface PromptQueueProps
   /** `panel` = a standalone card; `tray` = rounded on top only, to sit flush on a composer. Default "panel". */
   variant?: "panel" | "tray";
 }
+
+const { Root: QueueRoot } = createParts(
+  agentSurface("prompt-queue", ["sendNow", "remove", "moveUp", "moveDown"]),
+  { root: "div" },
+);
 
 /**
  * Follow-up prompts queued while an agent works, as a compact stack above the composer. Each
@@ -130,9 +137,24 @@ export function PromptQueue({
     );
   }
 
+  // An agent names a prompt by its text (or id) and calls one of the queue's actions.
+  const onAgentAction = (action: string, [ref]: unknown[]) => {
+    const index = items.findIndex((it) => it.id === ref || it.text === ref);
+    if (index < 0) throw new Error(`No queued prompt "${String(ref)}".`);
+    if (action === "sendNow") {
+      if (!onSendNow) throw new Error("This queue doesn't send prompts early.");
+      sendNow(index);
+    } else if (action === "remove") remove(index, false);
+    else if (action === "moveUp") move(index, -1);
+    else if (action === "moveDown") move(index, 1);
+  };
+
   return (
-    <div
-      data-slot="prompt-queue"
+    <QueueRoot
+      value={`${items.length} queued`}
+      items={items.map((it) => ({ value: it.id, label: it.text }))}
+      onAction={onAgentAction}
+      aria-labelledby={`${id}-title`}
       data-variant={variant}
       className={cn(
         "@container flex min-w-0 flex-col overflow-hidden font-kura-sans text-kura-fg",
@@ -147,11 +169,8 @@ export function PromptQueue({
         data-slot="prompt-queue-header"
         className="flex h-9 shrink-0 items-center gap-2 border-kura-border-subtle border-b px-3"
       >
-        <h3
-          id={`${id}-title`}
-          className="flex shrink-0 items-baseline gap-1.5 font-medium text-[13px]"
-        >
-          {title}
+        <h3 className="flex shrink-0 items-baseline gap-1.5 font-medium text-[13px]">
+          <span id={`${id}-title`}>{title}</span>
           <span className="font-kura-mono font-normal text-[12px] text-kura-fg-subtle tabular-nums">
             {items.length}
           </span>
@@ -209,7 +228,7 @@ export function PromptQueue({
       <span role="status" className="sr-only">
         {message}
       </span>
-    </div>
+    </QueueRoot>
   );
 }
 

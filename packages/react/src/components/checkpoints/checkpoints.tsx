@@ -1,7 +1,9 @@
 "use client";
 
+import { createParts } from "@ui-sdk/react/primitive";
 import { Plus, RotateCcw } from "lucide-react";
 import * as React from "react";
+import { agentSurface } from "../../lib/agent-surface";
 import { cn } from "../../lib/cn";
 import { Button } from "../button";
 
@@ -55,6 +57,10 @@ function formatAgo(ms: number): string {
   if (h < 24) return `${h}h ago`;
   return `${Math.floor(h / 24)}d ago`;
 }
+
+const { Root: CheckpointList } = createParts(agentSurface("checkpoints-list", ["restore"]), {
+  root: "ol",
+});
 
 /**
  * Restore points across an agent run, newest first: what the agent had just done, how many
@@ -112,8 +118,8 @@ export function Checkpoints({
         data-slot="checkpoints-header"
         className="flex h-10 shrink-0 items-center gap-2 border-kura-border-subtle border-b pr-2 pl-3.5"
       >
-        <h3 id={`${id}-title`} className="flex items-baseline gap-2 font-medium text-[13px]">
-          {title}
+        <h3 className="flex items-baseline gap-2 font-medium text-[13px]">
+          <span id={`${id}-title`}>{title}</span>
           <span className="font-kura-mono font-normal text-[12px] text-kura-fg-subtle tabular-nums">
             {checkpoints.length}
           </span>
@@ -147,7 +153,22 @@ export function Checkpoints({
           )}
         </div>
       ) : (
-        <ol aria-labelledby={`${id}-title`} className="flex flex-col py-1">
+        // Restoring rewinds the workspace, so an agent's restore always waits for the person.
+        <CheckpointList
+          aria-labelledby={`${id}-title`}
+          className="flex flex-col py-1"
+          value={current ? `At “${current.label}”` : ""}
+          items={checkpoints
+            .filter((c) => !c.current)
+            .map((c) => ({ value: c.id, label: c.label }))}
+          onAction={(_, [ref]) => {
+            const c = checkpoints.find((x) => x.id === ref || x.label === ref);
+            if (!c) throw new Error(`No checkpoint "${String(ref)}".`);
+            if (!onRestore) throw new Error("These checkpoints can't be restored.");
+            return restore(c);
+          }}
+          data-agent-confirm="Restores the workspace to an earlier checkpoint, undoing the changes after it"
+        >
           {checkpoints.map((c, i) => {
             const at = +new Date(c.at);
             const ahead = currentAt != null && at > currentAt;
@@ -285,7 +306,7 @@ export function Checkpoints({
               </li>
             );
           })}
-        </ol>
+        </CheckpointList>
       )}
       <span role="status" className="sr-only">
         {message}
