@@ -3,13 +3,14 @@
 Reviewer: Fable 5.2 (high effort), single reviewer. Fixed 14-shot set (`design/v2/shots.mjs`),
 scored on the 14-category rubric (`RUBRIC.md`) against `DIRECTION.md`. Target: ≥ 9.5.
 
-| Round | Score | Notes |
-| --- | --- | --- |
-| R1 | 7.3/10 | On-direction, clear step up; short of Raycast/Linear polish. |
+| Round | Score  | Notes                                                        |
+| ----- | ------ | ------------------------------------------------------------ |
+| R1    | 7.3/10 | On-direction, clear step up; short of Raycast/Linear polish. |
 
 ## R1 findings (to fix in R2)
 
 Must-fix
+
 1. Previews cropped mid-control (bento, index cards, stage, mobile): fit examples to their cards
    (container-width props or scale-to-fit ≥ ~0.8), crop only at a deliberate bottom fade.
 2. Ember light: fewer, crisper spans with a hot core and sharp leading edge; light starts below the

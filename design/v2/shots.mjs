@@ -1,5 +1,6 @@
 // Fixed council screenshot set. Usage: node council/shots.mjs <outDir>
 import { chromium } from "@playwright/test";
+
 const out = process.argv[2];
 const B = process.env.KURA_URL ?? "http://localhost:3000";
 const SHOTS = [
@@ -20,17 +21,37 @@ const SHOTS = [
 ];
 const b = await chromium.launch();
 for (const [name, path, theme, w, h, o] of SHOTS) {
-  const ctx = await b.newContext({ viewport: { width: w, height: h }, colorScheme: theme, deviceScaleFactor: 1 });
+  const ctx = await b.newContext({
+    viewport: { width: w, height: h },
+    colorScheme: theme,
+    deviceScaleFactor: 1,
+  });
   await ctx.addInitScript((t) => localStorage.setItem("theme", t), theme);
   const p = await ctx.newPage();
   await p.goto(B + path, { waitUntil: "networkidle" });
-  if (o.gate) await p.waitForFunction(() => document.documentElement.dataset.run === "attention", null, { timeout: 20000 }).catch(() => {});
+  if (o.gate)
+    await p
+      .waitForFunction(() => document.documentElement.dataset.run === "attention", null, {
+        timeout: 20000,
+      })
+      .catch(() => {});
   await p.waitForTimeout(o.at ?? 900);
   if (o.full) {
-    await p.evaluate(async () => { for (let y = 0; y < document.body.scrollHeight; y += 600) { window.scrollTo(0, y); await new Promise((r) => setTimeout(r, 90)); } window.scrollTo(0, 0); });
+    await p.evaluate(async () => {
+      for (let y = 0; y < document.body.scrollHeight; y += 600) {
+        window.scrollTo(0, y);
+        await new Promise((r) => setTimeout(r, 90));
+      }
+      window.scrollTo(0, 0);
+    });
     await p.waitForTimeout(400);
   }
-  if (o.cmdk) { await p.keyboard.press("Control+k"); await p.waitForTimeout(300); await p.keyboard.type(o.cmdk); await p.waitForTimeout(400); }
+  if (o.cmdk) {
+    await p.keyboard.press("Control+k");
+    await p.waitForTimeout(300);
+    await p.keyboard.type(o.cmdk);
+    await p.waitForTimeout(400);
+  }
   await p.screenshot({ path: `${out}/${name}.jpg`, type: "jpeg", quality: 70, fullPage: !!o.full });
   await ctx.close();
 }

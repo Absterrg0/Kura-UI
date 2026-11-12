@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { CodeBlock } from "@/components/code-block";
 import { CopyButton } from "@/components/copy-button";
-import { C, DocsShell, Section } from "@/components/docs-shell";
+import { C, DocsShell, Prose, Section } from "@/components/docs-shell";
 import { ExamplePreview } from "@/components/example-preview";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/tabs";
 import { components, getComponent } from "@/lib/catalog";
@@ -38,6 +38,9 @@ function StatusPill({ status }: { status: string }) {
   );
 }
 
+const link =
+  "rounded-md px-2 py-1 text-kura-fg-muted outline-none transition-colors hover:text-kura-fg focus-visible:shadow-kura-focus";
+
 const quiet =
   "inline-flex h-9 items-center gap-1.5 rounded-[10px] px-3 text-[13.5px] text-kura-fg-muted shadow-[inset_0_0_0_1px_var(--kura-border)] outline-none transition-colors hover:bg-kura-hover hover:text-kura-fg focus-visible:shadow-kura-focus";
 
@@ -59,18 +62,28 @@ export default async function ComponentPage({ params }: { params: Promise<{ slug
     <DocsShell>
       <article data-testid="component-page" className="max-w-[56rem]">
         <header className="flex flex-col gap-4 pb-10">
-          <nav aria-label="Breadcrumb" className="text-[13.5px] text-kura-fg-subtle">
-            <Link
-              href="/components"
-              className="rounded-sm outline-none hover:text-kura-fg focus-visible:shadow-kura-focus"
-            >
-              Components
-            </Link>
-            <span aria-hidden className="px-1.5">
-              /
+          <div className="flex items-center justify-between gap-4">
+            <nav aria-label="Breadcrumb" className="text-[13.5px] text-kura-fg-subtle">
+              <Link
+                href="/components"
+                className="rounded-sm outline-none hover:text-kura-fg focus-visible:shadow-kura-focus"
+              >
+                Components
+              </Link>
+              <span aria-hidden className="px-1.5">
+                /
+              </span>
+              <span className="capitalize">{c.category}</span>
+            </nav>
+            <span className="-mr-2 flex items-center text-[13.5px]">
+              <a href={`/components/${c.slug}.md`} className={link}>
+                Markdown
+              </a>
+              <a href={`/r/${c.slug}.json`} className={link}>
+                JSON
+              </a>
             </span>
-            <span className="capitalize">{c.category}</span>
-          </nav>
+          </div>
           <div className="flex flex-wrap items-center gap-3">
             <h1 className="font-semibold text-[34px] leading-[1.08] tracking-[-0.03em] md:text-[40px]">
               {c.title}
@@ -78,10 +91,10 @@ export default async function ComponentPage({ params }: { params: Promise<{ slug
             <StatusPill status={c.status} />
           </div>
           <p className="max-w-2xl text-[17px] text-kura-fg-muted leading-relaxed text-pretty">
-            {c.description}
+            <Prose>{c.description}</Prose>
           </p>
-          <div className="flex flex-wrap items-center gap-2 pt-2">
-            <span className="inline-flex h-9 min-w-0 max-w-full items-center gap-2 rounded-[10px] bg-kura-hover pr-1 pl-3.5 lg:max-w-[25rem] font-kura-mono text-[12.5px] text-kura-fg-muted shadow-[inset_0_0_0_1px_var(--kura-border-subtle)]">
+          <div className="flex flex-wrap items-center gap-x-2 gap-y-3 pt-2">
+            <span className="inline-flex h-9 min-w-0 max-w-full items-center gap-2 rounded-[10px] bg-kura-hover pr-1 pl-3.5 font-kura-mono text-[12.5px] text-kura-fg-muted shadow-[inset_0_0_0_1px_var(--kura-border-subtle)]">
               <span aria-hidden className="select-none text-kura-fg-subtle">
                 $
               </span>
@@ -96,12 +109,6 @@ export default async function ComponentPage({ params }: { params: Promise<{ slug
               Copy for agents
               <CopyButton fetchUrl={`/components/${c.slug}.md`} label="Copy markdown" />
             </span>
-            <a href={`/components/${c.slug}.md`} className={quiet}>
-              Markdown
-            </a>
-            <a href={`/r/${c.slug}.json`} className={quiet}>
-              Registry JSON
-            </a>
           </div>
         </header>
 
@@ -118,7 +125,9 @@ export default async function ComponentPage({ params }: { params: Promise<{ slug
                     {ex.title}
                   </h2>
                   {ex.description && (
-                    <p className="text-[15px] text-kura-fg-muted">{ex.description}</p>
+                    <p className="text-[15px] text-kura-fg-muted">
+                      <Prose>{ex.description}</Prose>
+                    </p>
                   )}
                 </div>
               )}
@@ -205,7 +214,7 @@ export default async function ComponentPage({ params }: { params: Promise<{ slug
                     key={w}
                     className="border-kura-border-subtle border-b py-3 text-[14.5px] leading-relaxed"
                   >
-                    {w}
+                    <Prose>{w}</Prose>
                   </li>
                 ))}
               </ul>
@@ -218,7 +227,7 @@ export default async function ComponentPage({ params }: { params: Promise<{ slug
                     key={w}
                     className="border-kura-border-subtle border-b py-3 text-[14.5px] text-kura-fg-muted leading-relaxed"
                   >
-                    {w}
+                    <Prose>{w}</Prose>
                   </li>
                 ))}
               </ul>
@@ -259,7 +268,7 @@ export default async function ComponentPage({ params }: { params: Promise<{ slug
                         {p.default ?? "—"}
                       </td>
                       <td className="px-4 py-3.5 text-[14px] text-kura-fg-muted leading-relaxed">
-                        {p.description}
+                        <Prose>{p.description}</Prose>
                       </td>
                     </tr>
                   ))}
@@ -285,7 +294,9 @@ export default async function ComponentPage({ params }: { params: Promise<{ slug
                   className="flex flex-col gap-1 py-3.5 text-[14px] md:flex-row md:items-baseline md:gap-4"
                 >
                   <span className="w-48 shrink-0 font-kura-mono text-[13px]">{p.name}</span>
-                  <span className="flex-1 text-kura-fg-muted">{p.description}</span>
+                  <span className="flex-1 text-kura-fg-muted">
+                    <Prose>{p.description}</Prose>
+                  </span>
                   {p.dataSlot && (
                     <code className="font-kura-mono text-kura-fg-subtle text-xs">
                       data-slot=&quot;{p.dataSlot}&quot;
@@ -305,10 +316,13 @@ export default async function ComponentPage({ params }: { params: Promise<{ slug
               </li>
             )}
             {c.a11y.notes.map((n) => (
-              <li key={n}>{n}</li>
+              <li key={n}>
+                <Prose>{n}</Prose>
+              </li>
             ))}
             <li>
-              <span className="text-kura-fg">Reduced motion:</span> {c.a11y.reducedMotion}
+              <span className="text-kura-fg">Reduced motion:</span>{" "}
+              <Prose>{c.a11y.reducedMotion}</Prose>
             </li>
           </ul>
           {!!c.a11y.keyboard?.length && (
@@ -323,7 +337,9 @@ export default async function ComponentPage({ params }: { params: Promise<{ slug
                 {c.a11y.keyboard.map((k) => (
                   <tr key={k.keys} className="border-kura-border-subtle border-t">
                     <td className="py-2 pr-4 font-kura-mono text-[13px]">{k.keys}</td>
-                    <td className="py-2 text-kura-fg-muted">{k.action}</td>
+                    <td className="py-2 text-kura-fg-muted">
+                      <Prose>{k.action}</Prose>
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -335,7 +351,9 @@ export default async function ComponentPage({ params }: { params: Promise<{ slug
           <Section id="agents" title="Notes for agents">
             <ul className="gloss flex list-disc flex-col gap-2 rounded-[16px] bg-kura-surface p-5 pl-9 text-[15px] leading-relaxed marker:text-kura-fg-subtle">
               {c.agentNotes.map((n) => (
-                <li key={n}>{n}</li>
+                <li key={n}>
+                  <Prose>{n}</Prose>
+                </li>
               ))}
             </ul>
           </Section>

@@ -8,9 +8,10 @@ components. The site must sell **a UI library**: beautiful components, easy inst
 Reference feel: **raycast.com** — rich near-black, one vivid brand colour used in light and glow,
 glossy, premium, polished product visuals, a floating pill nav, big confident sans headlines,
 generous space. Supporting references for structure: linear.app (section rhythm), ui.shadcn.com and
-ui.elevenlabs.io (a component library whose hero *is* the components).
+ui.elevenlabs.io (a component library whose hero _is_ the components).
 
 ## Rejected — never do these
+
 - Marketing-speak headlines about "watching agents" (it is a UI library — say what it is).
 - Wide/expanded display fonts, serif/italic display, paper/washi textures, brush strokes, mascots.
 - Purple-to-pink "AI" gradients, sparkles, generic gradient blobs behind text.
@@ -19,6 +20,7 @@ ui.elevenlabs.io (a component library whose hero *is* the components).
 - Boxes inside boxes inside boxes.
 
 ## Brand
+
 - **Canvas:** near-black `#07080a` (dark is the hero theme); surfaces `#0e0f12` / `#131418`;
   hairlines `rgba(255,255,255,.07–.10)`. Light mode: clean white/near-white, same structure, done
   properly but secondary.
@@ -34,6 +36,7 @@ ui.elevenlabs.io (a component library whose hero *is* the components).
 - **Logo:** keep it simple and clean — an ember-filled rounded mark + "Kura" wordmark in Geist 600.
 
 ## Landing (apps/docs/src/app/page.tsx and components)
+
 1. **Nav:** floating pill container (max-w ~1200, rounded-2xl, hairline, translucent dark + blur),
    logo left, links (Components, Docs, For agents, GitHub), ⌘K search, theme toggle, primary
    "Get started" button (light pill). Sticky.
@@ -54,9 +57,9 @@ ui.elevenlabs.io (a component library whose hero *is* the components).
    - right: **AgentFleet** (subagents running);
    - bottom-wide: **DiffView** excerpt or **Terminal** streaming tests;
    - small: **ContextMeter** / **RunHeader** bar across the top of the stage.
-   Use real examples from `@/generated/examples` or compose with real props. Calm motion only (the
-   components' own live states); no scripted multi-phase hero machine, no toolbars, no legend.
-   Each card can show its component name on hover as a quiet link to its page.
+     Use real examples from `@/generated/examples` or compose with real props. Calm motion only (the
+     components' own live states); no scripted multi-phase hero machine, no toolbars, no legend.
+     Each card can show its component name on hover as a quiet link to its page.
 4. **Logos/trust strip (optional, honest):** "Works with" Claude Agent SDK · Vercel AI SDK · OpenAI
    Agents · shadcn/ui · Tailwind v4 — small monochrome text marks, no fake customer logos.
 5. **Sections** (Linear rhythm: headline left 40–48px + paragraph right, then one big visual; ~160px
@@ -74,21 +77,25 @@ ui.elevenlabs.io (a component library whose hero *is* the components).
 6. **Footer:** compact, 4 columns, hairline top, small logo.
 
 ## Components index (/components)
+
 - Same nav. Header: H1 "Components" (40px, Geist 600) + one-line lede + group tabs and filter in one row.
 - Grid of glossy cards (3 columns at xl): live preview at legible scale (no tiny specimens floating),
   name + one line. Supervision components first.
 
 ## Component page & docs (/components/[slug], /docs, /agents)
+
 - Same nav + left sidebar. Clean, calm, Linear-docs-like: H1 40px Geist 600, lede, install command
   row, a glossy preview stage (dark) with tabs Preview/Code, then sections. No ambient washes, no
   decorative glows on docs pages. Code blocks: dark glossy panes.
 - Keep all existing functionality (tabs, props tables, ⌘K, copy buttons, mobile nav if present).
 
 ## Mobile
+
 - Composed, not shrunk: hero H1 ~40px, CTAs full width, hero stage becomes a vertical stack of 2–3
   key component cards (ApprovalPrompt first). Bento → single column. Nav → logo + menu button with a
   sheet.
 
 ## Quality bar
+
 - axe: zero serious/critical; visible focus everywhere; reduced motion respected; no console errors;
   no horizontal overflow at 390px; one h1 per page; `pnpm check` green.

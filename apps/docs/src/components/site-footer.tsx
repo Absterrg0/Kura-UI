@@ -35,31 +35,31 @@ export function SiteFooter() {
   return (
     <footer className="border-kura-border-subtle border-t">
       <div className="px-5 md:px-6">
-      <div className="mx-auto grid max-w-[1200px] gap-10 pt-14 pb-12 text-[14px] sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1fr]">
-        <div className="flex flex-col gap-3">
-          <Logo />
-          <p className="max-w-[16rem] text-kura-fg-subtle leading-relaxed">
-            React components for agent interfaces. Open source under MIT.
-          </p>
-        </div>
-        {COLUMNS.map((col) => (
-          <div key={col.title} className="flex flex-col gap-3">
-            <p className="font-medium text-kura-fg">{col.title}</p>
-            <ul className="flex flex-col gap-2">
-              {col.links.map((l) => (
-                <li key={l.href}>
-                  <Link
-                    href={l.href}
-                    className="rounded-sm text-kura-fg-muted outline-none transition-colors hover:text-kura-fg focus-visible:shadow-kura-focus"
-                  >
-                    {l.label}
-                  </Link>
-                </li>
-              ))}
-            </ul>
+        <div className="mx-auto grid max-w-[1200px] gap-10 pt-14 pb-12 text-[14px] sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1fr]">
+          <div className="flex flex-col gap-3">
+            <Logo />
+            <p className="max-w-[16rem] text-kura-fg-subtle leading-relaxed">
+              React components for agent interfaces. Open source under MIT.
+            </p>
           </div>
-        ))}
-      </div>
+          {COLUMNS.map((col) => (
+            <div key={col.title} className="flex flex-col gap-3">
+              <p className="font-medium text-kura-fg">{col.title}</p>
+              <ul className="flex flex-col gap-2">
+                {col.links.map((l) => (
+                  <li key={l.href}>
+                    <Link
+                      href={l.href}
+                      className="rounded-sm text-kura-fg-muted outline-none transition-colors hover:text-kura-fg focus-visible:shadow-kura-focus"
+                    >
+                      {l.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ))}
+        </div>
       </div>
     </footer>
   );

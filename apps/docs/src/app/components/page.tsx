@@ -3,6 +3,7 @@ import type { CardData } from "@/components/component-card";
 import { ComponentsBrowser } from "@/components/components-browser";
 import { PageHeader } from "@/components/docs-shell";
 import { catalog, components } from "@/lib/catalog";
+import { summaryFor } from "@/lib/summaries";
 
 export const metadata: Metadata = {
   title: "Components",
@@ -44,7 +45,7 @@ export default function ComponentsPage() {
     return {
       slug: c.slug,
       title: c.title,
-      description: c.description,
+      description: summaryFor(c.slug, c.description),
       category: c.category,
       example: ex?.name ?? "",
       fit: CENTERED.has(c.slug) ? "center" : "panel",
@@ -56,12 +57,12 @@ export default function ComponentsPage() {
   return (
     <div className="px-5 pt-14 pb-28 md:px-6 md:pt-20">
       <div className="mx-auto max-w-[1200px]">
-      <PageHeader
-        title="Components"
-        description={`${components.length} React components for agent interfaces, each with a manifest your coding agent can read. Supervision components first.`}
-        className="pb-8"
-      />
-      <ComponentsBrowser cards={cards} categories={categories} />
+        <PageHeader
+          title="Components"
+          description={`${components.length} React components for agent interfaces, each with a manifest your coding agent can read. Supervision components first.`}
+          className="pb-8"
+        />
+        <ComponentsBrowser cards={cards} categories={categories} />
       </div>
     </div>
   );

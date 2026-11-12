@@ -2,10 +2,8 @@
 
 import { AgentFleet, type FleetAgent } from "@kura-ui/react/agent-fleet";
 import { type ApprovalDecision, ApprovalPrompt } from "@kura-ui/react/approval-prompt";
-import { type Checkpoint, Checkpoints } from "@kura-ui/react/checkpoints";
 import { ContextMeter } from "@kura-ui/react/context-meter";
 import { useReducedMotion } from "@kura-ui/react/hooks";
-import { PromptQueue, type QueuedPrompt } from "@kura-ui/react/prompt-queue";
 import { RunHeader } from "@kura-ui/react/run-header";
 import { TaskList, type TaskListItem } from "@kura-ui/react/task-list";
 import { Terminal } from "@kura-ui/react/terminal";
@@ -159,41 +157,17 @@ export function HeroStage({ className }: { className?: string }) {
     },
   ];
 
-  const [queue, setQueue] = React.useState<QueuedPrompt[]>([
-    { id: "q1", text: "Keep the old /api/v1/session route for one release" },
-    { id: "q2", text: "Draft the PR description when tests pass" },
-  ]);
-
-  const [checkpoints] = React.useState<Checkpoint[]>(() => [
-    {
-      id: "c3",
-      label: "Moved refresh into middleware",
-      at: Date.now() - 95_000,
-      filesChanged: 2,
-      kind: "auto",
-      current: true,
-    },
-    {
-      id: "c2",
-      label: "Patched src/auth/client.ts",
-      at: Date.now() - 260_000,
-      filesChanged: 3,
-      kind: "auto",
-    },
-    { id: "c1", label: "Before the migration work", at: Date.now() - 410_000, kind: "manual" },
-  ]);
-
   return (
     <div
       data-slot="hero-stage"
       className={cn(
-        "relative rounded-[24px] bg-stage p-2.5 shadow-(--stage-shadow) md:p-4 lg:p-5",
+        "relative md:rounded-[24px] md:bg-stage md:p-4 md:shadow-(--stage-shadow) lg:p-5",
         // light leaking over the top edge
-        "before:pointer-events-none before:absolute before:inset-x-[18%] before:-top-px before:h-px before:bg-[linear-gradient(90deg,transparent,var(--ember-hot),transparent)] before:opacity-80",
+        "before:pointer-events-none before:absolute before:inset-x-[18%] before:-top-px max-md:before:hidden before:h-px before:bg-[linear-gradient(90deg,transparent,var(--ember-hot),transparent)] before:opacity-80",
         className,
       )}
     >
-      <div className="flex flex-col gap-2.5 md:gap-4">
+      <div className="flex flex-col gap-3 md:gap-4">
         <Spec name="RunHeader" slug="run-header" className="hidden md:block">
           <RunHeader
             variant="bar"
@@ -223,74 +197,44 @@ export function HeroStage({ className }: { className?: string }) {
             }
           />
         </Spec>
-        <div className="grid gap-2.5 md:grid-cols-2 md:gap-4 lg:grid-cols-[minmax(0,0.72fr)_minmax(0,1.6fr)_minmax(0,0.72fr)]">
-          <div className="order-1 flex min-h-0 flex-col gap-4 md:col-span-2 lg:order-2 lg:col-span-1">
-            <Spec name="ApprovalPrompt" slug="approval-prompt" className="shrink-0">
-              <ApprovalPrompt
-                className="gloss gloss-raised shrink-0"
-                title="Kura wants to run a migration"
-                icon={<Database />}
-                command="pnpm db:migrate --env production"
-                description="Adds refresh_token_hash to sessions and backfills 48,210 rows. Takes a short write lock on the table."
-                risk="high"
-                details={
-                  <ul className="flex list-disc flex-col gap-1 pl-4">
-                    <li>Database: acme-prod (Postgres 16)</li>
-                    <li>Requested by step 6 of 8, “Migrate the sessions table”</li>
-                    <li>A snapshot is taken first; rollback takes about two minutes</li>
-                  </ul>
-                }
-                decision={decision}
-                onDecisionChange={setDecision}
-                shortcuts={false}
-                approveLabel="Run migration"
-              />
-            </Spec>
-            <Spec name="Terminal" slug="terminal" className="hidden min-h-0 flex-1 lg:block">
-              <Terminal
-                className="gloss h-full"
-                cwd="~/acme-web"
-                command={term.command}
-                lines={term.lines}
-                status={term.status}
-                exitCode={term.status === "done" ? 0 : null}
-                duration={term.status === "done" ? 1_840 : undefined}
-                maxHeight={232}
-              />
-            </Spec>
-          </div>
-          <div className="order-2 flex min-h-0 flex-col gap-4 lg:order-1">
-            <Spec name="TaskList" slug="task-list" className="min-h-0 flex-1">
-              <TaskList
-                className="gloss h-full"
-                title="Plan"
-                items={tasks}
-                collapseCompleted={false}
-              />
-            </Spec>
-            <Spec name="PromptQueue" slug="prompt-queue" className="hidden shrink-0 lg:block">
-              <PromptQueue
-                className="gloss"
-                items={queue}
-                onItemsChange={setQueue}
-                onSendNow={(item) => setQueue((q) => q.filter((i) => i.id !== item.id))}
-                hint="Sends after this step"
-              />
-            </Spec>
-          </div>
-          <div className="order-3 hidden min-h-0 flex-col gap-4 md:flex">
-            <Spec name="AgentFleet" slug="agent-fleet">
-              <AgentFleet className="gloss" agents={fleet} title="Subagents" />
-            </Spec>
-            <Spec name="Checkpoints" slug="checkpoints" className="hidden min-h-0 flex-1 lg:block">
-              <Checkpoints
-                className="gloss h-full"
-                checkpoints={checkpoints}
-                onRestore={() => {}}
-              />
-            </Spec>
-          </div>
-          <Spec name="Terminal" slug="terminal" className="order-4 md:col-span-2 lg:hidden">
+        <div className="grid gap-3 md:grid-cols-2 md:gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.36fr)_minmax(0,1fr)]">
+          <Spec
+            name="ApprovalPrompt"
+            slug="approval-prompt"
+            className="order-1 md:col-span-2 lg:order-2 lg:col-span-1 lg:self-center"
+          >
+            <ApprovalPrompt
+              className="gloss gloss-raised"
+              title="Kura wants to run a migration"
+              icon={<Database />}
+              command="pnpm db:migrate --env production"
+              description="Adds refresh_token_hash to sessions and backfills 48,210 rows. Takes a short write lock on the table."
+              risk="high"
+              details={
+                <ul className="flex list-disc flex-col gap-1 pl-4">
+                  <li>Database: acme-prod (Postgres 16)</li>
+                  <li>Requested by step 6 of 8, “Migrate the sessions table”</li>
+                  <li>A snapshot is taken first; rollback takes about two minutes</li>
+                </ul>
+              }
+              decision={decision}
+              onDecisionChange={setDecision}
+              shortcuts={false}
+              approveLabel="Run migration"
+            />
+          </Spec>
+          <Spec name="TaskList" slug="task-list" className="order-2 lg:order-1">
+            <TaskList
+              className="gloss h-full"
+              title="Plan"
+              items={tasks}
+              collapseCompleted={false}
+            />
+          </Spec>
+          <Spec name="AgentFleet" slug="agent-fleet" className="order-3 hidden md:block">
+            <AgentFleet className="gloss h-full" agents={fleet} title="Subagents" />
+          </Spec>
+          <Spec name="Terminal" slug="terminal" className="order-4 md:col-span-2 lg:col-span-3">
             <Terminal
               className="gloss"
               cwd="~/acme-web"
@@ -299,7 +243,7 @@ export function HeroStage({ className }: { className?: string }) {
               status={term.status}
               exitCode={term.status === "done" ? 0 : null}
               duration={term.status === "done" ? 1_840 : undefined}
-              maxHeight={220}
+              maxHeight={196}
               wrap={false}
             />
           </Spec>

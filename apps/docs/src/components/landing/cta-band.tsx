@@ -1,15 +1,24 @@
 import Link from "next/link";
+import { LogoMark } from "../logo";
 import { siteButton } from "../site-button";
 import { EmberLight } from "./ember-light";
 import { InstallChip } from "./install-chip";
 
+/** The closing call to action: the mark lit from behind, one headline, two buttons. */
 export function CtaBand({ install }: { install: string }) {
   return (
     <section
       aria-labelledby="cta-title"
-      className="relative isolate overflow-hidden px-5 pt-40 text-center md:pt-48"
+      className="relative isolate px-5 pt-36 pb-28 text-center md:pt-44 md:pb-36"
     >
-      <div className="mx-auto flex max-w-3xl flex-col items-center gap-6">
+      <div className="relative mx-auto flex h-[120px] max-w-[1200px] items-center justify-center">
+        <EmberLight
+          variant="band"
+          className="top-1/2 -z-10 -translate-y-1/2 max-md:scale-x-[0.6]"
+        />
+        <LogoMark className="size-[76px] rounded-[22px] shadow-[0_0_0_1px_rgb(255_255_255/0.12),0_20px_60px_-12px_color-mix(in_oklch,var(--ember-deep)_70%,transparent)]" />
+      </div>
+      <div className="mx-auto flex max-w-3xl flex-col items-center gap-6 pt-12">
         <h2
           id="cta-title"
           className="font-semibold text-[40px] leading-[1.04] tracking-[-0.035em] text-balance md:text-[56px]"
@@ -32,10 +41,6 @@ export function CtaBand({ install }: { install: string }) {
           </Link>
         </div>
         <InstallChip command={install} className="mt-1" />
-      </div>
-      {/* The horizon: light bursting outward from under the call to action. */}
-      <div className="relative -z-10 mt-6 h-[150px] md:h-[170px]">
-        <EmberLight variant="band" className="-top-[96px] max-md:origin-top max-md:scale-[0.6]" />
       </div>
     </section>
   );

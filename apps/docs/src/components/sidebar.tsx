@@ -23,7 +23,7 @@ export function Sidebar() {
           <div key={category.id} className="flex flex-col gap-px">
             <Label>{category.title}</Label>
             {items.map((c) => (
-              <SidebarLink key={c.slug} href={`/components/${c.slug}`} status={c.status}>
+              <SidebarLink key={c.slug} href={`/components/${c.slug}`}>
                 {c.title}
               </SidebarLink>
             ))}

@@ -1,7 +1,7 @@
 import { useId } from "react";
 import { cn } from "@/lib/cn";
 
-/** The Kura mark: an ember tile with a K drawn from a stem and an angle bracket, the shape of a prompt. */
+/** The Kura mark: an ember tile with three staggered spans, a trace waterfall in miniature. */
 export function LogoMark({ className }: { className?: string }) {
   const id = useId();
   return (
@@ -23,15 +23,9 @@ export function LogoMark({ className }: { className?: string }) {
         stroke="white"
         strokeOpacity="0.18"
       />
-      <rect x="9.5" y="8" width="3.4" height="16" rx="1.2" fill="white" />
-      <path
-        d="M22.6 8.6 15.6 16l7 7.4"
-        fill="none"
-        stroke="white"
-        strokeWidth="3.4"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
+      <rect x="7" y="8.4" width="11" height="4.6" rx="2.3" fill="white" />
+      <rect x="11.5" y="13.7" width="13.5" height="4.6" rx="2.3" fill="white" />
+      <rect x="16" y="19" width="9" height="4.6" rx="2.3" fill="white" />
     </svg>
   );
 }

@@ -36,7 +36,8 @@
     inset 0 1px 0 oklch(1 0 0), 0 0 0 1px oklch(0.2 0.005 260 / 0.16),
     0 2px 4px oklch(0.2 0.01 260 / 0.06), 0 24px 48px -18px oklch(0.2 0.01 260 / 0.22);
   --gloss-bg: linear-gradient(180deg, oklch(1 0 0), oklch(0.992 0.001 260));
-  --raise-shadow: 0 0 0 1px oklch(0.2 0.005 260 / 0.06), 0 28px 60px -20px oklch(0.2 0.01 260 / 0.28);
+  --raise-shadow:
+    0 0 0 1px oklch(0.2 0.005 260 / 0.06), 0 28px 60px -20px oklch(0.2 0.01 260 / 0.28);
   --stage-shadow:
     inset 0 1px 0 oklch(1 0 0), 0 0 0 1px oklch(0.2 0.005 260 / 0.09),
     0 40px 90px -40px oklch(0.35 0.08 40 / 0.28);
@@ -145,7 +146,7 @@
  * halo. The container fades out at its sides so nothing stops hard at the viewport edge.
  */
 .ember-light {
-  mask-image: linear-gradient(90deg, transparent, #000 15%, #000 85%, transparent);
+  mask-image: linear-gradient(90deg, transparent, #000 4%, #000 96%, transparent);
 }
 .ember-span {
   position: absolute;
@@ -190,16 +191,25 @@
     transparent
   );
 }
-/* On white: thinner, saturated lines with a tight halo, and only a trace of glow. */
+.ember-glow-wide {
+  opacity: 0.7;
+}
+/*
+ * On white the light can't glow, so it becomes ink: thin, saturated lines with a tight halo,
+ * and only a narrow warm haze along the lit edge (no wash across the page).
+ */
 :root:not(.dark) .ember-span {
-  scale: 1 0.6;
+  scale: 1 0.55;
 }
 :root:not(.dark) .ember-span::after {
-  opacity: 0.35;
-  filter: blur(8px);
+  opacity: 0.3;
+  filter: blur(6px);
 }
 :root:not(.dark) .ember-glow {
-  opacity: 0.22;
+  opacity: 0.16;
+}
+:root:not(.dark) .ember-glow-wide {
+  display: none;
 }
 
 /* Shiki dual-theme code (light/dark via CSS variables). */

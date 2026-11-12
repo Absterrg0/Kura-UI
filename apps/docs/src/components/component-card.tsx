@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { cn } from "@/lib/cn";
 import { LiveExample } from "./landing/live-example";
+import { ScaleToFit } from "./scale-to-fit";
 
 export interface CardData {
   slug: string;
@@ -17,7 +18,7 @@ export function ComponentCard({ card, className }: { card: CardData; className?:
     <article
       data-testid={`card-${card.slug}`}
       className={cn(
-        "gloss group relative flex flex-col overflow-hidden rounded-[18px] bg-kura-surface",
+        "gloss gloss-hover group relative flex flex-col overflow-hidden rounded-[18px] bg-kura-surface",
         className,
       )}
     >
@@ -25,18 +26,20 @@ export function ComponentCard({ card, className }: { card: CardData; className?:
         inert
         className={cn(
           "live-gloss relative h-64 overflow-hidden border-kura-border-subtle border-b bg-stage",
-          card.fit === "panel" ? "pt-6 pl-6" : "flex items-center justify-center p-6",
+          card.fit === "panel" ? "px-6 pt-6" : "flex items-center justify-center p-6",
         )}
       >
-        <div
-          className={cn(
-            card.fit === "panel"
-              ? "fade-b h-full w-[460px] [&>*]:max-w-none"
-              : "flex w-full justify-center",
-          )}
-        >
-          <LiveExample slug={card.slug} name={card.example} lazy />
-        </div>
+        {card.fit === "panel" ? (
+          <div className="fade-b h-full">
+            <ScaleToFit width={400}>
+              <LiveExample slug={card.slug} name={card.example} lazy />
+            </ScaleToFit>
+          </div>
+        ) : (
+          <div className="flex w-full justify-center">
+            <LiveExample slug={card.slug} name={card.example} lazy />
+          </div>
+        )}
       </div>
       <div className="flex flex-col gap-1 px-5 pt-4 pb-5">
         <h3 className="font-semibold text-[15.5px] tracking-[-0.015em]">

@@ -27,6 +27,34 @@ export interface CommandItemData {
   keywords: string[];
 }
 
+/**
+ * Ranks title and slug matches first, then tags. A query word matches a word that starts with it,
+ * or with its stem ("approve" finds "approval"); every query word has to match something, so a
+ * search narrows the list instead of fuzzily matching nearly everything.
+ */
+function rank(value: string, search: string, keywords: string[] = []): number {
+  const q = search.trim().toLowerCase();
+  if (!q) return 1;
+  const v = value.toLowerCase();
+  const words = v.split(/[\s\-/.]+/);
+  const tags = keywords.map((k) => k.toLowerCase());
+  const stem = (t: string) => (t.length >= 5 ? t.slice(0, -1) : t);
+  const tokens = q.split(/\s+/);
+  let total = 0;
+  for (const t of tokens) {
+    const st = stem(t);
+    let s = 0;
+    if (v.startsWith(t)) s = 1;
+    else if (words.some((w) => w.startsWith(t))) s = 0.9;
+    else if (words.some((w) => w.startsWith(st))) s = 0.8;
+    else if (v.includes(t)) s = 0.6;
+    else if (tags.some((k) => k.startsWith(st))) s = 0.3;
+    if (!s) return 0;
+    total += s;
+  }
+  return total / tokens.length;
+}
+
 export function CommandMenu({
   items,
   categories,
@@ -68,6 +96,7 @@ export function CommandMenu({
             <Command
               label="Search Kura UI"
               loop
+              filter={rank}
               className="flex flex-col [&_[cmdk-group-heading]]:px-3 [&_[cmdk-group-heading]]:pt-3 [&_[cmdk-group-heading]]:pb-1.5 [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group-heading]]:text-kura-fg-subtle [&_[cmdk-group-heading]]:text-xs"
             >
               <div className="flex items-center gap-2 border-kura-border-subtle border-b px-4">

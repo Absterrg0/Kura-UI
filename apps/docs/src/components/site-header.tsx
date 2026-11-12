@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { catalog, components, componentsByCategory } from "@/lib/catalog";
 import { DOCS_PAGES } from "@/lib/docs-pages";
+import { summaryFor } from "@/lib/summaries";
 import { CommandMenu } from "./command-menu";
 import { Logo } from "./logo";
 import { MobileNav, type NavGroup } from "./mobile-nav";
@@ -13,16 +14,9 @@ export function SiteHeader() {
   const items = components.map((c) => ({
     slug: c.slug,
     title: c.title,
-    description: c.description,
+    description: summaryFor(c.slug, c.description),
     category: c.category,
-    keywords: [
-      ...c.tags,
-      ...c.whenToUse
-        .join(" ")
-        .toLowerCase()
-        .split(/\W+/)
-        .filter((w) => w.length > 4),
-    ].slice(0, 40),
+    keywords: c.tags,
   }));
   const groups: NavGroup[] = [
     { title: "Getting started", items: DOCS_PAGES.map((p) => ({ href: p.href, label: p.label })) },

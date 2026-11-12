@@ -5,6 +5,7 @@ Score each category 0–10 against the design intent in DIRECTION.md, at a best-
 Be strict and specific; every point below 9 must come with the concrete change that would raise it.
 
 Design (10):
+
 1. Visual hierarchy — one clear focal point per screen; the eye knows where to go.
 2. Typography — scale, weights, rhythm, line lengths, legibility.
 3. Colour & state semantics — colour means state; nothing decorative; contrast.

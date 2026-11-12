@@ -20,10 +20,10 @@ const WORKS_WITH = [
 ];
 
 const AGENT_SURFACES = [
-  ["Typed manifests", "When to use it, when not to, every prop, anatomy and keyboard map."],
-  ["shadcn registry", "Every component is a registry item your agent can add by URL."],
-  ["MCP server", "Search, read and install components from inside the agent's loop."],
-  ["CLI", "kura list, search, info and add, each with --json output."],
+  ["Typed manifests", "When to use it, every prop, anatomy, keyboard map."],
+  ["shadcn registry", "Every component is an item your agent adds by URL."],
+  ["MCP server", "Search, read and install from inside the agent's loop."],
+  ["CLI", "kura list, search, info and add, all with --json."],
   ["llms.txt", "The whole library as plain text, one fetch away."],
 ] as const;
 
@@ -86,7 +86,7 @@ export default function Home() {
         </div>
 
         <div className="relative isolate mx-auto mt-14 max-w-[1240px] md:mt-16">
-          <EmberLight className="-top-[120px] -z-10 max-md:scale-[0.55] max-md:origin-top" />
+          <EmberLight className="-top-[120px] -z-10 max-md:-top-[56px] max-md:origin-top max-md:scale-[0.55]" />
           <HeroStage />
         </div>
       </section>
@@ -132,7 +132,7 @@ export default function Home() {
 
       {/* Your agent can install it */}
       <section aria-labelledby="agents" className="px-4 pt-36 md:px-6 md:pt-44">
-        <div className="mx-auto grid max-w-[1200px] gap-12 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] lg:gap-20">
+        <div className="mx-auto grid max-w-[1200px] gap-12 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:gap-16">
           <div>
             <h2
               id="agents"
@@ -149,7 +149,7 @@ export default function Home() {
               {AGENT_SURFACES.map(([name, desc]) => (
                 <div
                   key={name}
-                  className="grid gap-1 border-kura-border-subtle border-b py-3.5 sm:grid-cols-[9.5rem_1fr] sm:gap-4"
+                  className="grid gap-1 border-kura-border-subtle border-b py-3.5 sm:grid-cols-[8.5rem_1fr] sm:gap-4"
                 >
                   <dt className="font-medium text-[14.5px]">{name}</dt>
                   <dd className="text-[14.5px] text-kura-fg-muted">{desc}</dd>
@@ -164,7 +164,7 @@ export default function Home() {
               <ArrowRight className="size-4 transition-transform duration-200 group-hover:translate-x-0.5 motion-reduce:transition-none" />
             </Link>
           </div>
-          <AgentTerminal site={catalog.homepage} className="lg:h-full" />
+          <AgentTerminal className="lg:h-full" />
         </div>
       </section>
 

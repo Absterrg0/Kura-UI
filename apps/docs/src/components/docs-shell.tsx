@@ -71,3 +71,9 @@ export function C({ children }: { children: React.ReactNode }) {
     </code>
   );
 }
+
+/** Manifest prose with `backtick` spans rendered as inline code. */
+export function Prose({ children }: { children: string }) {
+  const parts = children.split(/`([^`]+)`/);
+  return <>{parts.map((part, i) => (i % 2 ? <C key={`${i}-${part}`}>{part}</C> : part))}</>;
+}
