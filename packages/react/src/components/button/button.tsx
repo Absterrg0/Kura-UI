@@ -31,31 +31,35 @@ export interface ButtonProps extends Omit<React.ComponentProps<"button">, "onCli
 }
 
 const base =
-  "relative inline-flex shrink-0 cursor-pointer select-none items-center justify-center gap-1.5 whitespace-nowrap font-kura-sans font-medium tracking-[-0.006em] outline-none " +
-  "transition-[background-color,color,box-shadow,transform,opacity] duration-(--kura-duration-fast) ease-kura-out " +
-  "focus-visible:shadow-kura-focus active:not-disabled:not-aria-disabled:scale-[0.98] motion-reduce:active:not-disabled:scale-100 " +
+  "relative inline-flex shrink-0 cursor-pointer select-none items-center justify-center gap-2 whitespace-nowrap font-kura-sans font-medium tracking-[-0.005em] outline-none " +
+  "transition-[background-color,background-image,color,box-shadow,transform,opacity] duration-(--kura-duration-fast) ease-kura-snap " +
+  "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-kura-ring active:not-disabled:not-aria-disabled:translate-y-px active:not-disabled:not-aria-disabled:scale-[0.985] motion-reduce:active:not-disabled:translate-y-0 motion-reduce:active:not-disabled:scale-100 " +
   "disabled:cursor-not-allowed disabled:not-aria-busy:opacity-50 aria-disabled:not-aria-busy:cursor-not-allowed aria-disabled:not-aria-busy:opacity-50 aria-busy:cursor-progress " +
   "[&_svg]:pointer-events-none [&_svg]:shrink-0";
 
 const variants: Record<ButtonVariant, string> = {
-  primary: "bg-kura-ink text-kura-fg-inverted hover:not-disabled:bg-kura-ink-hover",
+  primary:
+    "bg-kura-ink-fill text-kura-fg-inverted shadow-kura-ink hover:not-disabled:not-aria-disabled:bg-kura-ink-fill-hover",
   secondary:
-    "bg-kura-gray-4 text-kura-fg hover:not-disabled:bg-kura-gray-5 active:not-disabled:bg-kura-gray-6",
+    "bg-kura-raised text-kura-fg shadow-kura-raised hover:not-disabled:not-aria-disabled:bg-kura-raised-hover",
   outline:
-    "bg-kura-surface text-kura-fg shadow-kura-xs hover:not-disabled:bg-kura-gray-3 active:not-disabled:bg-kura-gray-4",
+    "bg-kura-raised text-kura-fg shadow-kura-raised hover:not-disabled:not-aria-disabled:bg-kura-raised-hover",
   ghost:
-    "bg-transparent text-kura-fg-muted hover:not-disabled:bg-kura-hover hover:not-disabled:text-kura-fg active:not-disabled:bg-kura-active",
-  accent: "bg-kura-accent text-kura-accent-fg hover:not-disabled:bg-kura-accent-hover",
-  danger: "bg-kura-danger text-white hover:not-disabled:opacity-90",
+    "bg-transparent text-kura-fg-muted hover:not-disabled:not-aria-disabled:bg-kura-hover hover:not-disabled:not-aria-disabled:text-kura-fg active:not-disabled:bg-kura-active",
+  // Kura has no accent colour: `accent` is kept for compatibility and draws as primary.
+  accent:
+    "bg-kura-ink-fill text-kura-fg-inverted shadow-kura-ink hover:not-disabled:not-aria-disabled:bg-kura-ink-fill-hover",
+  danger:
+    "bg-kura-danger text-white shadow-[inset_0_1px_0_rgb(255_255_255/0.18),0_0_0_1px_rgb(0_0_0/0.35),0_1px_2px_rgb(0_0_0/0.25)] hover:not-disabled:not-aria-disabled:brightness-110",
 };
 
 // Heights 24 / 28 / 32 / 40. A leading or trailing icon trims the padding on that side so the
 // icon sits optically centred against the label.
 const sizes: Record<ButtonSize, string> = {
-  xs: "h-6 rounded-kura-sm px-2 text-xs has-[>svg]:px-1.5 [&_svg:not([class*='size-'])]:size-3",
-  sm: "h-7 rounded-kura-md px-2.5 text-[13px] has-[>svg]:px-2 [&_svg:not([class*='size-'])]:size-3.5",
-  md: "h-8 rounded-kura-md px-3 text-sm has-[>svg]:px-2.5 [&_svg:not([class*='size-'])]:size-4",
-  lg: "h-10 rounded-kura-lg px-4 text-[15px] has-[>svg]:px-3.5 [&_svg:not([class*='size-'])]:size-4",
+  xs: "h-6 rounded-[7px] px-2 text-xs has-[>svg]:px-1.5 [&_svg:not([class*='size-'])]:size-3",
+  sm: "h-7 rounded-[8px] px-2.5 text-[12.5px] has-[>svg]:px-2 [&_svg:not([class*='size-'])]:size-3.5",
+  md: "h-8 rounded-[9px] px-[11px] text-[13px] has-[>svg]:px-2.5 [&_svg:not([class*='size-'])]:size-3.5",
+  lg: "h-10 rounded-[11px] px-4 text-[14px] has-[>svg]:px-3.5 [&_svg:not([class*='size-'])]:size-4",
 };
 
 /** Class string for a button look, for elements that cannot use <Button> directly. */

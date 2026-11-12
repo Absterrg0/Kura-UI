@@ -10,7 +10,7 @@ export default defineComponent({
   whenToUse: [
     "The top of a page or pane that shows one agent session (Claude Code, Codex, Devin-style runs): what it is doing, how long, how much it costs, and a way to stop it.",
     "A dense status row above a run's transcript, plan or fleet (variant='bar').",
-    "Showing spend against a per-run budget, with the meter turning amber at 80% and red past 100%.",
+    "Showing spend against a per-run budget; the cost turns red past 100%.",
     "Giving the human Stop / Pause / Resume with keyboard shortcuts while an agent works.",
   ],
   whenNotToUse: [
@@ -41,7 +41,7 @@ export default defineComponent({
       type: '"queued" | "running" | "waiting" | "done" | "failed" | "skipped" | "paused"',
       required: true,
       description:
-        "Run state, drawn with StatusGlyph. running = blue arc + shimmering 'Running'; waiting = amber 'Waiting for you'; done = 'Completed'; failed = red; skipped = 'Stopped'. queued/running/waiting/paused keep the clock ticking.",
+        "Run state, drawn with StatusGlyph in a sunk well. running = chasing ring + 'Running'; waiting = ember 'Needs you'; done = 'Completed'; failed = red; skipped = 'Stopped'. queued/running/waiting/paused keep the clock ticking.",
     },
     {
       name: "startedAt",
@@ -65,7 +65,7 @@ export default defineComponent({
       name: "budget",
       type: "number",
       description:
-        "Budget in USD. Shows '$1.82 of $5.00' with a 4px meter; amber from 80%, red (and red cost) past 100%.",
+        "Budget in USD. Shows the cost with 'of $5.00' under it; the cost turns red past 100%.",
     },
     {
       name: "branch",
@@ -77,7 +77,7 @@ export default defineComponent({
       name: "progress",
       type: "{ done: number; total: number }",
       description:
-        "Plan progress: '4 of 7' plus a segmented bar (continuous above 24 steps). The current segment is blue while running, amber while waiting, red when failed.",
+        "Plan progress, drawn as a full-width DotRail (the step in hand counts as half). Ink while running, ember while waiting on a person, red when failed. '4 of 7' is spoken, not shown.",
     },
     {
       name: "actions",
@@ -127,7 +127,7 @@ export default defineComponent({
     {
       name: "Status",
       dataSlot: "run-header-status",
-      description: "Status word; shimmers while running, amber when waiting, red when failed.",
+      description: "Status word; ember when waiting on a person, red when failed.",
     },
     { name: "Agent", dataSlot: "run-header-agent", description: "Agent name (panel)." },
     { name: "Model", dataSlot: "run-header-model", description: "Model id in mono (panel)." },
@@ -163,11 +163,11 @@ export default defineComponent({
       { keys: "Tab", action: "Actions, Pause, Stop" },
     ],
     reducedMotion:
-      "The running arc, the current step's pulse and the status shimmer stop; meters change width without transition.",
+      "The running glyph and the rail's leading dot hold still; the rail changes length without transition.",
   },
   dependencies: {
     npm: ["lucide-react"],
-    kura: ["button", "icon-button", "shimmer-text", "status-glyph", "tooltip"],
+    kura: ["agent-sigil", "button", "dot-rail", "icon-button", "status-glyph", "tooltip"],
   },
   related: ["agent-fleet", "task-list", "checkpoints", "context-meter", "agent-timeline"],
   tags: [

@@ -118,12 +118,12 @@ export function MessageList({
           aria-hidden={!showJump || undefined}
           onClick={jump}
           className={cn(
-            "inline-flex h-8 cursor-pointer items-center gap-1.5 rounded-full bg-kura-overlay pr-3.5 pl-3 font-kura-sans font-medium text-kura-fg text-xs shadow-kura-md outline-none backdrop-blur-xl",
-            "transition-[opacity,transform,scale] duration-(--kura-duration-base) ease-kura-out focus-visible:shadow-kura-focus active:scale-[0.97]",
+            "inline-flex h-8 cursor-pointer items-center gap-1.5 rounded-[9px] bg-kura-raised pr-3 pl-2.5 font-kura-sans font-medium text-kura-fg text-xs shadow-kura-popover outline-none",
+            "transition-[opacity,transform,background-color] duration-(--kura-duration-base) ease-kura-snap hover:bg-kura-raised-hover focus-visible:outline-2 focus-visible:outline-kura-ring focus-visible:outline-offset-2 active:translate-y-px",
             showJump
               ? "pointer-events-auto translate-y-0 opacity-100"
-              : "translate-y-2 scale-95 opacity-0 duration-(--kura-duration-fast)",
-            "motion-reduce:translate-y-0 motion-reduce:scale-100 motion-reduce:active:scale-100",
+              : "translate-y-2 opacity-0 duration-(--kura-duration-fast)",
+            "motion-reduce:translate-y-0 motion-reduce:active:translate-y-0",
           )}
         >
           <ArrowDown aria-hidden className="size-3.5 text-kura-fg-muted" />

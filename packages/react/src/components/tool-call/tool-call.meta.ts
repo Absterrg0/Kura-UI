@@ -43,7 +43,7 @@ export default defineComponent({
       type: '"pending" | "running" | "success" | "error" | "awaiting-approval"',
       default: '"running"',
       description:
-        "Lifecycle. pending = hollow ring; running = blue pulse + shimmering title + ticking timer; success = check; error = cross (details open by default); awaiting-approval = blue hand.",
+        "Lifecycle, drawn with StatusGlyph. pending = hollow ring; running = chasing ring + ticking timer; success = solid disc; error = cross (details open by default); awaiting-approval = ember ring with a blinking centre.",
     },
     {
       name: "args",
@@ -126,7 +126,7 @@ export default defineComponent({
     {
       name: "Title",
       dataSlot: "tool-call-title",
-      description: "Title or mono name; shimmers while running.",
+      description: "Title or mono name.",
     },
     { name: "Summary", dataSlot: "tool-call-summary", description: "Truncated one-line summary." },
     {
@@ -163,9 +163,9 @@ export default defineComponent({
       { keys: "Tab", action: "Into the JSON panes and footer actions" },
     ],
     reducedMotion:
-      "The running pulse and title shimmer stop; the chevron and details change without travel (fade only).",
+      "The running glyph stops chasing; the chevron and details change without travel (fade only).",
   },
-  dependencies: { npm: ["lucide-react"], kura: ["code-block", "shimmer-text", "status-glyph"] },
+  dependencies: { npm: ["lucide-react"], kura: ["code-block", "status-glyph"] },
   related: ["agent-timeline", "approval-prompt", "code-block", "reasoning", "message"],
   tags: ["tool", "function-calling", "agent", "mcp", "status", "json", "timer", "collapsible"],
   examples: [
@@ -180,7 +180,7 @@ export default defineComponent({
       kind: "full",
       title: "Live lifecycle",
       description:
-        "pending → running (shimmer + timer) → success with a JSON result; controlled open state.",
+        "pending → running (chasing glyph + timer) → success with a JSON result; controlled open state.",
     },
     {
       name: "ToolCallStates",

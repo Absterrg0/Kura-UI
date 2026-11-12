@@ -1,11 +1,12 @@
 "use client";
 
-import { Bot, BrainCircuit, ChevronRight, FileSearch, Waypoints, Wrench } from "lucide-react";
+import { Bot, BrainCircuit, ChevronRight, FileSearch, Wrench } from "lucide-react";
 import * as React from "react";
 import { useControllableState } from "../../hooks/use-controllable-state";
 import { useElapsed } from "../../hooks/use-elapsed";
 import { cn } from "../../lib/cn";
 import { formatCost, formatDuration, formatTokens } from "../../lib/format";
+import { AgentSigil } from "../agent-sigil";
 import { type AgentStatus, StatusGlyph } from "../status-glyph";
 
 export type TraceSpanKind = "agent" | "llm" | "tool" | "retrieval";
@@ -143,24 +144,23 @@ function flatten(
   return out;
 }
 
+/** Colour of a span's lit dots. Ember only when the span waits on a person. */
 function barTone(span: TraceSpan, selected: boolean): string {
   switch (span.status) {
     case "running":
-      return "bg-kura-accent";
+      return "text-kura-fg";
     case "failed":
-      return "bg-kura-danger";
+      return "text-kura-danger-text";
     case "waiting":
-      return "bg-kura-warning";
+      return "text-kura-ember";
     case "queued":
     case "skipped":
-      return "bg-transparent shadow-[inset_0_0_0_1px_var(--kura-border-strong)]";
+      return "text-kura-faint";
     case "paused":
-      return "bg-kura-gray-7";
+      return "text-kura-fg-subtle";
   }
-  if (selected) return "bg-kura-fg";
-  if (span.kind === "agent") return "bg-kura-gray-8";
-  if (span.kind === "llm") return "bg-kura-gray-11";
-  return "bg-kura-gray-9";
+  if (selected) return "text-kura-fg";
+  return span.kind === "agent" ? "text-kura-fg-muted" : "text-kura-fg-subtle";
 }
 
 const TRACK = "absolute inset-y-0 left-3 right-5";
@@ -407,10 +407,9 @@ export function TraceWaterfall({
     >
       <div
         data-slot="trace-waterfall-header"
-        className="flex h-10 shrink-0 items-center gap-3 border-kura-border-subtle border-b px-3.5"
+        className="flex h-11 shrink-0 items-center gap-3 px-4"
       >
-        <Waypoints aria-hidden strokeWidth={1.75} className="size-3.5 text-kura-fg-subtle" />
-        <span className="font-medium text-[13px] tracking-[-0.005em]">{title}</span>
+        <span className="font-semibold text-[13px] tracking-[-0.01em]">{title}</span>
         <span className="flex-1" />
         {count > 0 && (
           <span
@@ -467,34 +466,40 @@ export function TraceWaterfall({
             aria-hidden
             className={cn(
               GRID,
-              "sticky top-0 z-20 h-7 border-kura-border-subtle border-b bg-kura-surface text-[11px] text-kura-fg-subtle",
+              "sticky top-0 z-20 h-7 bg-kura-surface text-[11.5px] text-kura-fg-subtle",
             )}
           >
-            <div className="flex items-center justify-between border-kura-border-subtle border-r px-3.5">
+            <div className="flex items-center justify-between px-4">
               <span>Span</span>
               <span className="hidden @md:inline">Duration</span>
             </div>
             <div className="relative">
               <div className={TRACK}>
-                {ticks.map((t, i) => (
-                  <span
-                    key={t}
-                    className={cn(
-                      "absolute top-1/2 -translate-y-1/2 whitespace-nowrap font-kura-mono tabular-nums",
-                      i === 0 ? "" : "-translate-x-1/2",
-                      // Narrow containers keep only the first and last labels.
-                      i > 0 && i < ticks.length - 1 && "hidden @lg:inline",
-                      // Keep the outermost labels inside the track.
-                      i === ticks.length - 1 && "-translate-x-full",
-                    )}
-                    style={{ left: pct(t) }}
-                  >
-                    {formatTick(t)}
-                  </span>
-                ))}
+                {ticks.map((t, i) => {
+                  // More than five ticks: label every other one, so labels never collide.
+                  if (ticks.length > 5 && i % 2 === 1) return null;
+                  const lastLabel =
+                    ticks.length > 5 ? i >= ticks.length - 2 : i === ticks.length - 1;
+                  return (
+                    <span
+                      key={t}
+                      className={cn(
+                        "absolute top-1/2 -translate-y-1/2 whitespace-nowrap font-kura-mono tabular-nums",
+                        i === 0 ? "" : "-translate-x-1/2",
+                        // Narrow containers keep only the first and last labels.
+                        i > 0 && !lastLabel && "hidden @lg:inline",
+                        // Keep the outermost label inside the track.
+                        i === ticks.length - 1 && "-translate-x-full",
+                      )}
+                      style={{ left: pct(t) }}
+                    >
+                      {formatTick(t)}
+                    </span>
+                  );
+                })}
                 {anyRunning && (
                   <span
-                    className="absolute bottom-0 h-2 w-px bg-kura-accent transition-[left] duration-(--kura-duration-base) ease-linear motion-reduce:transition-none"
+                    className="absolute bottom-0 h-2 w-px bg-kura-fg-subtle transition-[left] duration-(--kura-duration-base) ease-linear motion-reduce:transition-none"
                     style={{ left: pct(now) }}
                   />
                 )}
@@ -505,20 +510,13 @@ export function TraceWaterfall({
           <div className="relative">
             {/* Grid lines and the "now" marker, under the rows. */}
             <div aria-hidden className={cn(GRID, "pointer-events-none absolute inset-0 z-0")}>
-              <div className="border-kura-border-subtle border-r" />
+              <div />
               <div className="relative">
                 <div className={TRACK}>
-                  {ticks.map((t) => (
-                    <span
-                      key={t}
-                      className="absolute inset-y-0 w-px bg-kura-border-subtle"
-                      style={{ left: pct(t) }}
-                    />
-                  ))}
                   {runningNow != null && (
                     <span
                       data-slot="trace-waterfall-now"
-                      className="absolute inset-y-0 w-px bg-kura-accent transition-[left] duration-(--kura-duration-base) ease-linear motion-reduce:transition-none"
+                      className="absolute inset-y-0 w-px bg-kura-border-strong transition-[left] duration-(--kura-duration-base) ease-linear motion-reduce:transition-none"
                       style={{ left: pct(runningNow) }}
                     />
                   )}
@@ -526,7 +524,7 @@ export function TraceWaterfall({
               </div>
             </div>
 
-            <div role="tree" aria-label={label} className="relative z-10 py-1">
+            <div role="tree" aria-label={label} className="relative z-10 pb-1.5">
               {rows.map((row) => {
                 const { span, depth } = row;
                 const end = endOf(span);
@@ -555,7 +553,7 @@ export function TraceWaterfall({
                     aria-setsize={row.setsize}
                     aria-expanded={hasKids ? open : undefined}
                     aria-selected={selected}
-                    aria-label={`${span.name}${span.meta ? ` ${span.meta}` : ""}, ${KIND_LABEL[span.kind]}, ${formatDuration(dur)}, ${STATUS_WORD[span.status]}`}
+                    aria-label={`${span.name}${span.meta ? ` ${span.meta}` : ""} ${formatDuration(dur)}, ${KIND_LABEL[span.kind]}, ${STATUS_WORD[span.status]}`}
                     aria-describedby={selected ? detailsId : undefined}
                     tabIndex={activeFocus === span.id ? 0 : -1}
                     data-slot="trace-waterfall-span"
@@ -578,16 +576,14 @@ export function TraceWaterfall({
                       }}
                       className={cn(
                         GRID,
-                        "relative h-8 cursor-default transition-colors duration-(--kura-duration-instant)",
+                        "relative h-8 cursor-default transition-colors duration-(--kura-duration-fast) ease-kura-snap",
                         "group-focus-visible/item:shadow-[inset_0_0_0_2px_var(--kura-ring)]",
-                        selected
-                          ? "bg-kura-active before:absolute before:inset-y-0 before:left-0 before:z-10 before:w-[2px] before:bg-kura-accent"
-                          : "hover:bg-kura-hover",
+                        selected ? "bg-kura-active" : "hover:bg-kura-hover",
                       )}
                     >
                       <div
                         className="flex min-w-0 items-center gap-1.5 pr-3.5"
-                        style={{ paddingLeft: `${8 + depth * 16}px` }}
+                        style={{ paddingLeft: `${10 + depth * 16}px` }}
                       >
                         {hasKids ? (
                           // biome-ignore lint/a11y/noStaticElementInteractions: mouse affordance; ArrowLeft/Right on the treeitem do the same.
@@ -613,14 +609,15 @@ export function TraceWaterfall({
                         ) : (
                           <span className="size-5 shrink-0" />
                         )}
-                        <Icon
-                          aria-hidden
-                          strokeWidth={1.75}
-                          className={cn(
-                            "size-3.5 shrink-0",
-                            span.kind === "agent" ? "text-kura-fg-muted" : "text-kura-fg-subtle",
-                          )}
-                        />
+                        {span.kind === "agent" ? (
+                          <AgentSigil name={span.name} size="sm" bare className="size-3.5" />
+                        ) : (
+                          <Icon
+                            aria-hidden
+                            strokeWidth={2}
+                            className="size-3.5 shrink-0 text-kura-fg-subtle"
+                          />
+                        )}
                         <span
                           className={cn(
                             "min-w-0 shrink truncate text-[13px]",
@@ -631,13 +628,17 @@ export function TraceWaterfall({
                         >
                           {span.name}
                         </span>
+                        {/* Real spaces between the parts, so the row's text reads as its name does. */}
                         {span.meta && (
-                          <span className="hidden min-w-0 flex-1 truncate font-kura-mono text-[12px] text-kura-fg-subtle @md:inline">
-                            {span.meta}
-                          </span>
+                          <>
+                            {" "}
+                            <span className="hidden min-w-0 flex-1 truncate font-kura-mono text-[12px] text-kura-fg-subtle @md:inline">
+                              {span.meta}
+                            </span>
+                          </>
                         )}
                         <span className={cn("flex-1", span.meta && "@md:hidden")} />
-                        {showGlyph && <StatusGlyph status={span.status} size="sm" label={null} />}
+                        {showGlyph && <StatusGlyph status={span.status} size="sm" label={null} />}{" "}
                         <span
                           data-slot="trace-waterfall-duration"
                           className={cn(
@@ -652,19 +653,33 @@ export function TraceWaterfall({
                       </div>
                       <div className="relative">
                         <div className={TRACK}>
+                          {/* The time axis for this row: faint dots, lit where the span ran. */}
+                          <span className="kura-dots absolute inset-x-0 top-1/2 h-1.5 -translate-y-1/2" />
                           <span
                             data-slot="trace-waterfall-bar"
                             className={cn(
-                              "absolute top-1/2 -translate-y-1/2 rounded-[3px] transition-[left,width,background-color] duration-(--kura-duration-base) ease-kura-out motion-reduce:transition-none",
-                              span.kind === "agent" && depth === 0 ? "h-1" : "h-2.5",
-                              span.kind === "agent" && depth > 0 && "h-1.5",
+                              "kura-dots absolute top-1/2 h-1.5 -translate-y-1/2 transition-[left,width,color] duration-(--kura-duration-base) ease-kura-snap motion-reduce:transition-none",
                               barTone(span, selected),
                             )}
-                            style={{
-                              left: pct(span.start),
-                              width: `max(3px, calc(${pct(end)} - ${pct(span.start)}))`,
-                            }}
+                            style={
+                              {
+                                "--kura-dots-color": "currentColor",
+                                left: `round(down, ${pct(span.start)}, 6px)`,
+                                width: `max(6px, round(up, calc(${pct(end)} - ${pct(span.start)}), 6px))`,
+                              } as React.CSSProperties
+                            }
                           />
+                          {span.status === "running" && (
+                            <span
+                              aria-hidden
+                              className="absolute top-1/2 size-1.5 -translate-y-1/2 animate-kura-dot-pulse text-kura-fg motion-reduce:animate-none"
+                              style={{
+                                left: `round(down, ${pct(end)}, 6px)`,
+                                backgroundImage:
+                                  "radial-gradient(circle at center, currentColor 1.6px, transparent 2px)",
+                              }}
+                            />
+                          )}
                         </div>
                       </div>
                     </div>
@@ -672,8 +687,7 @@ export function TraceWaterfall({
                       <div
                         id={detailsId}
                         data-slot="trace-waterfall-details"
-                        className="relative border-kura-border-subtle border-y bg-kura-surface-sunken px-3.5 py-3 animate-kura-fade-in"
-                        style={{ paddingLeft: `${36 + depth * 16}px` }}
+                        className="relative mx-1.5 my-1 rounded-kura-lg bg-kura-surface-sunken px-3.5 py-3 shadow-kura-sunk animate-kura-fade-in"
                       >
                         {details}
                       </div>

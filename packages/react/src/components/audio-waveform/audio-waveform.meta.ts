@@ -15,7 +15,7 @@ export default defineComponent({
   whenNotToUse: [
     "A complete dictation control with permissions, transcript and states — use voice-dictation (it renders this).",
     "An ambient “the agent is speaking” blob — use agent-orb.",
-    "A non-audio progress indicator — use a progress bar or context-meter.",
+    "A non-audio progress indicator — use dot-rail or context-meter.",
   ],
   props: [
     {
@@ -81,7 +81,7 @@ export default defineComponent({
       type: '"default" | "muted" | "accent"',
       default: '"default"',
       description:
-        "Colour from tokens: ink, subtle ink, or the blue accent (only for live AI listening — once per view).",
+        "Colour from tokens: ink, subtle ink, or the theme accent (ink unless you retheme it).",
     },
     {
       name: "active",
@@ -143,6 +143,6 @@ export default defineComponent({
     "For a mic: const rec = useMediaRecorder(); <AudioWaveform source={rec.stream} />. For playback pass the <audio> element as source.",
     "Pass one `analyser` to several visuals instead of creating an analyser per component.",
     "peaksFromSamples(audioBuffer.getChannelData(0), 200) turns decoded audio into peaks.",
-    'Use tone="accent" only while the AI is actively listening, and only once per view.',
+    "The waveform is a dot matrix: `barWidth` is the dot diameter and `barGap` the spacing, across and down.",
   ],
 });

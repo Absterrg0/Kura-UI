@@ -6,7 +6,7 @@ import { type DiffReview, DiffView } from "@kura-ui/react/diff-view";
 import { useReducedMotion } from "@kura-ui/react/hooks";
 import { Terminal } from "@kura-ui/react/terminal";
 import { createAgent } from "@ui-sdk/react/agent";
-import { Rocket, RotateCcw } from "lucide-react";
+import { RotateCcw } from "lucide-react";
 import * as React from "react";
 import { cn } from "@/lib/cn";
 
@@ -30,7 +30,7 @@ const PATCH = `diff --git a/src/auth/session.ts b/src/auth/session.ts
 `;
 
 const DIFF = "Agent patch";
-const PROMPT = "Kura wants to deploy a preview";
+const PROMPT = "Deploy the reviewed patch to a preview";
 
 const ESC = "\u001b[";
 const c = (code: string, s: string) => `${ESC}${code}m${s}${ESC}0m`;
@@ -148,13 +148,13 @@ export function AgentDemo({ className }: { className?: string }) {
       ref={root}
       data-slot="agent-demo"
       className={cn(
-        "relative grid gap-3 rounded-[24px] bg-stage p-2.5 shadow-(--stage-shadow) md:p-4 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)] lg:gap-4",
+        "relative grid gap-3 lg:grid-cols-[minmax(0,0.95fr)_minmax(0,1.05fr)]",
         className,
       )}
     >
       <div className="flex min-h-0 flex-col">
         <Terminal
-          className="gloss h-full min-h-[300px]"
+          className="h-full min-h-[300px]"
           title="in-app assistant"
           command={"createAgent({ allow: askThePerson })"}
           lines={lines}
@@ -189,7 +189,7 @@ export function AgentDemo({ className }: { className?: string }) {
         >
           <div className="min-h-0 overflow-hidden">
             {ask && (
-              <div className="gloss mt-3 flex flex-col gap-3 rounded-[14px] bg-kura-surface p-3.5 sm:flex-row sm:items-center">
+              <div className="sheet mt-3 flex flex-col gap-3 rounded-kura-xl p-3.5 sm:flex-row sm:items-center">
                 <p className="min-w-0 flex-1 text-[13.5px] leading-snug">
                   <span className="text-kura-fg-muted">The agent wants to: </span>
                   {ask.text}
@@ -207,9 +207,8 @@ export function AgentDemo({ className }: { className?: string }) {
           </div>
         </div>
       </div>
-      <div className="flex min-w-0 flex-col gap-3 lg:gap-4">
+      <div className="flex min-w-0 flex-col gap-3">
         <DiffView
-          className="gloss"
           title={DIFF}
           diff={PATCH}
           review={review}
@@ -218,9 +217,8 @@ export function AgentDemo({ className }: { className?: string }) {
           autoAdvance={false}
         />
         <ApprovalPrompt
-          className="gloss"
           title={PROMPT}
-          icon={<Rocket />}
+          agent={{ name: "Kura" }}
           command="vercel deploy --prebuilt"
           description="Ships the reviewed patch to a preview URL."
           agentConfirm="Deploys the reviewed patch to a preview URL"

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { act, axe, fireEvent, render, screen, setReducedMotion } from "../../../test/utils";
-import { AgentOrb, agentOrbPresets } from "./agent-orb";
+import { AgentOrb } from "./agent-orb";
 import {
   AgentOrbFull,
   AgentOrbMinimal,
@@ -35,27 +35,30 @@ describe("AgentOrb", () => {
     expect(screen.getByText("Speaking")).toHaveClass("sr-only");
   });
 
-  it("renders a CSS fallback sphere without WebGL, spinning while thinking", () => {
+  it("renders a CSS halftone without WebGL, pulsing while thinking", () => {
     const { container, rerender } = render(<AgentOrb state="thinking" />);
     const fallback = container.querySelector("[data-slot=agent-orb-fallback]")!;
     expect(fallback).toBeInTheDocument();
-    expect(fallback.firstElementChild).toHaveClass("animate-kura-spin");
+    expect(fallback).toHaveClass("animate-kura-pulse");
+    expect(fallback.querySelectorAll(".kura-dots")).toHaveLength(2);
     rerender(<AgentOrb state="error" />);
     expect(container.querySelector("[data-slot=agent-orb]")).toHaveAttribute("data-state", "error");
+    expect(
+      container.querySelector<HTMLElement>("[data-slot=agent-orb-fallback]")!.style.color,
+    ).toBe("var(--kura-danger-text)");
   });
 
-  it("ships neutral and blue presets with signal as the theme-aware default", () => {
-    expect(Object.keys(agentOrbPresets)).toEqual(["signal", "pearl", "graphite", "ocean", "amber"]);
-    expect(agentOrbPresets.signal[0]).toBe("var(--kura-accent)");
-    // The palette is neutral + blue: no green/teal hues (≈150–200) in the fixed presets.
-    for (const palette of Object.values(agentOrbPresets)) {
-      for (const color of palette) {
-        const hue = /oklch\([\d.]+ ([\d.]+) ([\d.]+)\)/.exec(color);
-        if (hue && Number(hue[1]) > 0.03) {
-          expect(Number(hue[2]) < 150 || Number(hue[2]) > 200).toBe(true);
-        }
-      }
-    }
+  it("draws in ink by default and takes a colour and a dot count", () => {
+    const { container, rerender } = render(<AgentOrb />);
+    const fallback = () => container.querySelector<HTMLElement>("[data-slot=agent-orb-fallback]")!;
+    expect(fallback().style.color).toBe("var(--kura-fg)");
+    rerender(<AgentOrb color="rebeccapurple" dots={11} />);
+    expect(fallback().style.color).toBe("rebeccapurple");
+    expect(
+      fallback()
+        .querySelector<HTMLElement>(".kura-dots")!
+        .style.getPropertyValue("--kura-dots-pitch"),
+    ).toBe(`${100 / 11}%`);
   });
 
   it("switches states from the full example", () => {
@@ -68,16 +71,16 @@ describe("AgentOrb", () => {
     );
   });
 
-  it("keeps state semantics and disables spin under reduced motion", () => {
+  it("keeps state semantics and holds still under reduced motion", () => {
     setReducedMotion(true);
     const { container } = render(<AgentOrb state="thinking" />);
     expect(container.querySelector("[data-slot=agent-orb]")).toHaveAttribute(
       "data-state",
       "thinking",
     );
-    expect(
-      container.querySelector("[data-slot=agent-orb-fallback]")!.firstElementChild!.className,
-    ).toContain("motion-reduce:animate-none");
+    expect(container.querySelector("[data-slot=agent-orb-fallback]")!.className).toContain(
+      "motion-reduce:animate-none",
+    );
   });
 
   it("examples render without a11y violations", async () => {

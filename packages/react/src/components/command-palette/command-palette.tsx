@@ -12,7 +12,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@ui-sdk/react/dialog";
-import { ChevronRight, CornerDownLeft, Search } from "lucide-react";
+import { ChevronRight, Search } from "lucide-react";
 import * as React from "react";
 import { useControllableState } from "../../hooks/use-controllable-state";
 import { useHotkey } from "../../hooks/use-hotkey";
@@ -355,8 +355,8 @@ export function CommandPalette({
         initialFocus={() => inputRef.current}
         className={cn(
           "-translate-x-1/2 fixed top-[min(20vh,160px)] left-1/2 z-50 flex max-h-[min(520px,calc(100vh-120px))] w-[min(640px,calc(100vw-32px))] flex-col overflow-hidden",
-          "m-0 rounded-kura-xl border-0 bg-kura-surface-raised p-0 font-kura-sans text-kura-fg shadow-kura-lg outline-none backdrop:bg-transparent",
-          "origin-top transition-[opacity,scale] duration-(--kura-duration-base) ease-kura-out data-ending-style:scale-[0.98] data-ending-style:opacity-0 data-starting-style:scale-[0.98] data-starting-style:opacity-0 motion-reduce:transition-none",
+          "m-0 rounded-kura-xl border-0 bg-kura-surface p-0 font-kura-sans text-kura-fg shadow-kura-popover outline-none backdrop:bg-transparent",
+          "origin-top transition-[opacity,scale] duration-(--kura-duration-base) ease-kura-snap data-ending-style:scale-[0.98] data-ending-style:opacity-0 data-starting-style:scale-[0.98] data-starting-style:opacity-0 motion-reduce:transition-none",
           className,
         )}
         {...props}
@@ -364,7 +364,7 @@ export function CommandPalette({
         <DialogTitle className="sr-only">{label}</DialogTitle>
         <div
           data-slot="command-palette-search"
-          className="flex h-13 shrink-0 items-center gap-2.5 px-4 shadow-[inset_0_-1px_0_var(--kura-border-subtle)]"
+          className="flex h-12 shrink-0 items-center gap-2.5 px-4 shadow-[inset_0_-1px_0_var(--kura-border-subtle)]"
         >
           <Search aria-hidden className="size-4 shrink-0 text-kura-fg-subtle" />
           {pages.length > 0 && (
@@ -375,7 +375,7 @@ export function CommandPalette({
               {pages.map((p) => (
                 <span
                   key={p.id}
-                  className="rounded-kura-sm bg-kura-active px-1.5 py-0.5 font-medium text-kura-fg-muted text-xs"
+                  className="rounded-[5px] bg-kura-raised px-1.5 py-0.5 font-medium text-kura-fg-muted text-xs shadow-kura-key"
                 >
                   {p.title}
                 </span>
@@ -399,9 +399,9 @@ export function CommandPalette({
                 ? `Search ${page.title.replace(/(…|\.\.\.)$/, "").toLowerCase()}…`
                 : placeholder)
             }
-            className="h-full min-w-0 flex-1 bg-transparent text-[15px] text-kura-fg outline-none placeholder:text-kura-fg-subtle"
+            className="h-full min-w-0 flex-1 bg-transparent text-[14px] text-kura-fg outline-none placeholder:text-kura-fg-subtle"
           />
-          <Kbd keys={["esc"]} variant="ghost" size="sm" className="shrink-0 text-kura-fg-subtle" />
+          <Kbd keys={["esc"]} size="sm" className="shrink-0" />
         </div>
 
         <div
@@ -409,7 +409,7 @@ export function CommandPalette({
           role="listbox"
           aria-label={page ? page.title : "Commands"}
           aria-busy={isLoading || undefined}
-          className="min-h-0 flex-1 scroll-py-2 overflow-y-auto overscroll-contain p-2 [scrollbar-width:thin]"
+          className="min-h-0 flex-1 scroll-py-1.5 overflow-y-auto overscroll-contain p-1.5 [scrollbar-width:thin]"
         >
           {rows.map((row) => {
             const heading = row.group !== lastGroup ? row.group : null;
@@ -422,7 +422,7 @@ export function CommandPalette({
                   <div
                     role="presentation"
                     data-slot="command-palette-group"
-                    className="select-none px-2.5 pt-3 pb-1.5 font-medium text-[11px] text-kura-fg-subtle first:pt-1"
+                    className="select-none px-2.5 pt-3 pb-1.5 text-[12px] text-kura-fg-subtle first:pt-1.5"
                   >
                     {heading}
                   </div>
@@ -445,7 +445,7 @@ export function CommandPalette({
                     if (!item.disabled && !isActive) setActive(row.key);
                   }}
                   onClick={() => choose(item)}
-                  className="flex h-10 cursor-pointer select-none items-center gap-3 rounded-kura-md px-2.5 text-sm data-active:bg-kura-hover data-disabled:cursor-not-allowed data-disabled:opacity-45"
+                  className="flex h-9 cursor-pointer select-none items-center gap-3 rounded-[9px] px-2.5 text-[13px] data-active:bg-kura-hover data-disabled:cursor-not-allowed data-disabled:opacity-45"
                 >
                   <span
                     aria-hidden
@@ -461,9 +461,7 @@ export function CommandPalette({
                       </span>
                     )}
                   </span>
-                  {item.shortcut && (
-                    <Kbd keys={item.shortcut} variant="ghost" size="sm" className="shrink-0" />
-                  )}
+                  {item.shortcut && <Kbd keys={item.shortcut} size="sm" className="shrink-0" />}
                   {nested(item) && (
                     <ChevronRight aria-hidden className="size-4 shrink-0 text-kura-fg-subtle" />
                   )}
@@ -478,10 +476,9 @@ export function CommandPalette({
               className="flex flex-col gap-1 pt-1"
             >
               {[0.62, 0.48, 0.55].map((w, i) => (
-                <div key={i} className="flex h-10 items-center gap-3 px-2.5">
-                  <span className="size-4 animate-kura-pulse rounded-kura-xs bg-kura-active motion-reduce:animate-none" />
+                <div key={i} className="flex h-9 items-center px-2.5">
                   <span
-                    className="h-2.5 animate-kura-pulse rounded-full bg-kura-active motion-reduce:animate-none"
+                    className="kura-dots h-1.5 animate-kura-pulse motion-reduce:animate-none"
                     style={{ width: `${w * 100}%`, animationDelay: `${i * 120}ms` }}
                   />
                 </div>
@@ -489,7 +486,9 @@ export function CommandPalette({
             </div>
           )}
           {!isLoading && rows.length === 0 && (
-            <div className="px-3 py-10 text-center text-kura-fg-subtle text-sm">{emptyMessage}</div>
+            <div className="px-3 py-10 text-center text-[13px] text-kura-fg-subtle">
+              {emptyMessage}
+            </div>
           )}
         </div>
 
@@ -506,12 +505,7 @@ export function CommandPalette({
           </span>
           <span className="flex shrink-0 items-center gap-1.5">
             {activeRow && nested(activeRow.item) ? "Open" : "Run"}
-            <span
-              aria-hidden
-              className="inline-flex size-[18px] items-center justify-center rounded-kura-xs bg-kura-hover"
-            >
-              <CornerDownLeft className="size-3" />
-            </span>
+            <Kbd aria-hidden keys={["enter"]} size="sm" />
           </span>
         </div>
       </DialogContent>
@@ -539,13 +533,13 @@ export function CommandPaletteTrigger({
       type="button"
       data-slot="command-palette-trigger"
       className={cn(
-        "inline-flex h-9 w-full min-w-0 cursor-pointer items-center gap-2 rounded-kura-lg bg-kura-surface pr-1.5 pl-3 font-kura-sans text-kura-fg-subtle text-sm shadow-kura-sm outline-none",
-        "transition-[box-shadow,color] duration-(--kura-duration-fast) ease-kura-out hover:text-kura-fg-muted focus-visible:shadow-kura-focus",
+        "inline-flex h-8 w-full min-w-0 cursor-pointer items-center gap-2 rounded-[9px] bg-kura-surface-sunken pr-1.5 pl-2.5 font-kura-sans text-[13px] text-kura-fg-subtle shadow-kura-sunk outline-none",
+        "transition-colors duration-(--kura-duration-fast) ease-kura-snap hover:text-kura-fg-muted focus-visible:outline-2 focus-visible:outline-kura-ring focus-visible:outline-offset-2",
         className,
       )}
       {...props}
     >
-      <Search aria-hidden className="size-4 shrink-0" />
+      <Search aria-hidden className="size-3.5 shrink-0" />
       <span className="flex-1 truncate text-left">{placeholder}</span>
       <Kbd keys={shortcut} size="sm" />
     </button>

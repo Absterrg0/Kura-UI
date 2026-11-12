@@ -87,11 +87,10 @@ describe("AgentFleet", () => {
     expect(screen.getByText("No subagents yet")).toBeInTheDocument();
   });
 
-  it("drops rise, shimmer and progress transitions under reduced motion", () => {
+  it("holds the glyph, the rail and its rows still under reduced motion", () => {
     setReducedMotion(true);
     const { container } = render(<AgentFleet agents={agents} />);
     const html = container.innerHTML;
-    expect(html).toContain("motion-reduce:[--kura-rise-y:0px]");
     expect(html).toContain("motion-reduce:animate-none");
     expect(html).toContain("motion-reduce:transition-none");
     setReducedMotion(false);

@@ -30,15 +30,12 @@ export function ExamplePreview({
   className,
   replay = true,
   compact = false,
-  dots = false,
 }: {
   slug: string;
   name: string;
   className?: string;
   replay?: boolean;
   compact?: boolean;
-  /** Draw the dot-grid stage. */
-  dots?: boolean;
 }) {
   const [key, setKey] = React.useState(0);
   const Example = examples[slug]?.[name];
@@ -47,9 +44,8 @@ export function ExamplePreview({
       data-slot="example-preview"
       data-example={`${slug}/${name}`}
       className={cn(
-        "live-gloss relative flex items-center justify-center overflow-hidden",
-        dots && "bg-dots",
-        compact ? "min-h-40 p-6" : "min-h-80 px-5 py-12 md:p-12",
+        "relative flex items-center justify-center overflow-hidden",
+        compact ? "min-h-40 p-6" : "min-h-72 px-5 pt-8 pb-12 md:px-12",
         className,
       )}
     >

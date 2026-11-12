@@ -74,8 +74,8 @@ describe("kura MCP server", () => {
   it("serves tokens and guidelines", async () => {
     const client = await connect();
     const tokens = json(await client.callTool({ name: "get_design_tokens", arguments: {} }));
-    expect(tokens.light["--kura-accent"]).toMatch(/oklch/);
+    expect(tokens.light["--kura-ember"]).toMatch(/^#/);
     const g = await client.callTool({ name: "get_design_guidelines", arguments: {} });
-    expect((g.content as Array<{ text: string }>)[0]!.text).toContain("Kura Signal");
+    expect((g.content as Array<{ text: string }>)[0]!.text).toContain("dot language");
   });
 });

@@ -1,7 +1,6 @@
 "use client";
 
 import {
-  CircleAlert,
   CloudUpload,
   FileArchive,
   FileAudio,
@@ -18,6 +17,7 @@ import * as React from "react";
 import { useReducedMotion } from "../../hooks/use-reduced-motion";
 import { cn } from "../../lib/cn";
 import { springs } from "../../lib/motion";
+import { StatusGlyph } from "../status-glyph";
 import {
   type AttachmentItem,
   type AttachmentKind,
@@ -47,57 +47,55 @@ const KIND_ICON: Record<AttachmentKind, React.ComponentType<{ className?: string
 // ---------------------------------------------------------------------------------------------
 
 export interface AttachmentProgressRingProps extends Omit<React.ComponentProps<"svg">, "children"> {
-  /** 0..1. Omit for an indeterminate spinning arc. */
+  /** 0..1. Omit for an indeterminate chasing ring. */
   progress?: number;
-  /** Stroke width in px. Default 2. */
-  thickness?: number;
 }
 
-/** Circular upload progress. Inherits `currentColor`; the track is the same color at 20%. */
+// The ring of a 5×5 dot matrix, clockwise from twelve o'clock.
+// biome-ignore format: a 5×5 ring reads better as two rows of pairs
+const RING: readonly (readonly [number, number])[] = [
+  [2, 0], [3, 0], [4, 1], [4, 2], [4, 3], [3, 4],
+  [2, 4], [1, 4], [0, 3], [0, 2], [0, 1], [1, 0],
+];
+
+/**
+ * Upload progress as a dial of twelve dots that light clockwise; with no `progress` a light chases
+ * round the ring. Inherits `currentColor`; unlit dots are the same colour at 25%.
+ */
 export function AttachmentProgressRing({
   progress,
-  thickness = 2,
   className,
   ...props
 }: AttachmentProgressRingProps) {
   const determinate = typeof progress === "number" && Number.isFinite(progress);
-  const value = determinate ? Math.min(1, Math.max(0, progress)) : 0.28;
-  const r = 12 - thickness / 2;
+  const value = determinate ? Math.min(1, Math.max(0, progress)) : 0;
+  const lit = value === 0 ? 0 : Math.max(1, Math.round(value * RING.length));
   return (
     <svg
       data-slot="attachment-progress"
       data-indeterminate={!determinate || undefined}
-      viewBox="0 0 24 24"
-      fill="none"
+      viewBox="0 0 15 15"
       aria-hidden
-      className={cn(
-        "-rotate-90 size-6 shrink-0",
-        !determinate &&
-          "animate-kura-spin [animation-duration:1.1s] motion-reduce:animate-kura-pulse",
-        className,
-      )}
+      className={cn("size-6 shrink-0", className)}
       {...props}
     >
-      <circle
-        cx="12"
-        cy="12"
-        r={r}
-        stroke="currentColor"
-        strokeOpacity={0.2}
-        strokeWidth={thickness}
-      />
-      <circle
-        cx="12"
-        cy="12"
-        r={r}
-        stroke="currentColor"
-        strokeWidth={thickness}
-        strokeLinecap="round"
-        pathLength={100}
-        strokeDasharray="100"
-        strokeDashoffset={100 - value * 100}
-        className="transition-[stroke-dashoffset] duration-(--kura-duration-slow) ease-kura-out motion-reduce:transition-none"
-      />
+      {RING.map(([x, y], i) => (
+        <circle
+          key={`${x}-${y}`}
+          cx={1.5 + x * 3}
+          cy={1.5 + y * 3}
+          r={1.1}
+          style={determinate ? undefined : { animationDelay: `${i * 100}ms` }}
+          className={cn(
+            "fill-current",
+            determinate
+              ? "transition-opacity duration-(--kura-duration-base) ease-kura-snap motion-reduce:transition-none"
+              : "animate-kura-chase opacity-20 motion-reduce:animate-none",
+            determinate && (i < lit ? "opacity-100" : "opacity-25"),
+            !determinate && i < 3 && "motion-reduce:opacity-100",
+          )}
+        />
+      ))}
     </svg>
   );
 }
@@ -172,11 +170,11 @@ export function Attachment({
       aria-label={`Remove ${name}`}
       onClick={onRemove}
       className={cn(
-        "-top-1.5 -right-1.5 absolute z-10 flex size-5 cursor-pointer items-center justify-center rounded-full bg-kura-surface-raised text-kura-fg-muted shadow-kura-sm outline-none",
-        "after:-inset-1 after:absolute after:rounded-full",
-        "scale-90 opacity-0 transition-[opacity,transform,color] duration-(--kura-duration-fast) ease-kura-out",
-        "group-hover/attachment:scale-100 group-hover/attachment:opacity-100 group-focus-within/attachment:scale-100 group-focus-within/attachment:opacity-100",
-        "pointer-coarse:scale-100 pointer-coarse:opacity-100 hover:text-kura-fg focus-visible:shadow-kura-focus active:scale-90 motion-reduce:scale-100",
+        "-top-1.5 -right-1.5 absolute z-10 flex size-5 cursor-pointer items-center justify-center rounded-[6px] bg-kura-raised text-kura-fg-muted shadow-kura-raised outline-none",
+        "after:-inset-1 after:absolute",
+        "opacity-0 transition-[opacity,color,background-color] duration-(--kura-duration-fast) ease-kura-snap",
+        "group-hover/attachment:opacity-100 group-focus-within/attachment:opacity-100",
+        "pointer-coarse:opacity-100 hover:bg-kura-raised-hover hover:text-kura-fg focus-visible:outline-2 focus-visible:outline-kura-ring focus-visible:outline-offset-1 active:translate-y-px",
       )}
     >
       <X className="size-3" strokeWidth={2.25} aria-hidden />
@@ -192,7 +190,7 @@ export function Attachment({
         data-status={status}
         title={title ?? (status === "error" && error ? error : name)}
         className={cn(
-          "group/attachment relative isolate inline-flex size-11 shrink-0 rounded-kura-lg bg-kura-surface-sunken shadow-kura-xs",
+          "group/attachment relative isolate inline-flex size-11 shrink-0 rounded-kura-lg bg-kura-surface-sunken shadow-kura-raised",
           className,
         )}
         {...props}
@@ -214,15 +212,10 @@ export function Attachment({
               <span className="sr-only">{name}</span>
             </span>
           )}
-          {/* inner hairline so light images keep an edge */}
-          <span
-            aria-hidden
-            className="pointer-events-none absolute inset-0 rounded-[inherit] shadow-[inset_0_0_0_1px_var(--kura-border-subtle)]"
-          />
           {status === "uploading" && (
             <span
               data-slot="attachment-overlay"
-              className="absolute inset-0 flex animate-kura-fade-in items-center justify-center bg-kura-ink/35 text-kura-fg-inverted"
+              className="absolute inset-0 flex animate-kura-fade-in items-center justify-center bg-kura-surface/80 text-kura-fg"
             >
               <AttachmentProgressRing progress={progress} className="size-5" />
             </span>
@@ -230,7 +223,7 @@ export function Attachment({
           {status === "error" && (
             <span
               data-slot="attachment-overlay"
-              className="absolute inset-0 flex animate-kura-fade-in items-center justify-center bg-kura-danger-subtle/85 text-kura-danger-text"
+              className="absolute inset-0 flex animate-kura-fade-in items-center justify-center bg-kura-surface/85 text-kura-danger-text"
             >
               {onRetry ? (
                 <button
@@ -240,10 +233,10 @@ export function Attachment({
                   aria-label={`Retry uploading ${name}`}
                   className="flex size-full cursor-pointer items-center justify-center outline-none focus-visible:shadow-[inset_0_0_0_2px_var(--kura-ring)]"
                 >
-                  <CircleAlert className="size-4" aria-hidden />
+                  <StatusGlyph status="failed" label={null} />
                 </button>
               ) : (
-                <CircleAlert className="size-4" aria-hidden />
+                <StatusGlyph status="failed" label={null} />
               )}
             </span>
           )}
@@ -264,10 +257,7 @@ export function Attachment({
       data-status={status}
       title={title ?? (status === "error" && error ? error : name)}
       className={cn(
-        "group/attachment relative inline-flex h-11 min-w-0 max-w-64 shrink-0 items-center gap-2.5 rounded-kura-lg bg-kura-surface-raised py-1 pr-3 pl-1 font-kura-sans shadow-kura-xs",
-        "transition-[background-color,box-shadow] duration-(--kura-duration-fast) ease-kura-out",
-        status === "error" &&
-          "shadow-[0_0_0_1px_color-mix(in_oklch,var(--kura-danger)_35%,transparent)]",
+        "group/attachment relative inline-flex h-11 min-w-0 max-w-64 shrink-0 items-center gap-1.5 rounded-kura-lg bg-kura-raised py-1 pr-3 pl-1 font-kura-sans shadow-kura-raised",
         className,
       )}
       {...props}
@@ -275,23 +265,13 @@ export function Attachment({
       <span
         data-slot="attachment-icon"
         className={cn(
-          "relative flex size-9 shrink-0 items-center justify-center rounded-kura-sm transition-colors duration-(--kura-duration-base)",
-          status === "error"
-            ? "bg-kura-danger-subtle text-kura-danger-text"
-            : "bg-kura-hover text-kura-fg-muted shadow-[inset_0_0_0_1px_var(--kura-border-subtle)]",
+          "relative flex size-8 shrink-0 items-center justify-center text-kura-fg-muted",
         )}
       >
         {status === "uploading" ? (
-          <>
-            <Icon className="size-3.5 opacity-60" aria-hidden />
-            <AttachmentProgressRing
-              progress={progress}
-              className="absolute inset-1 size-7 text-kura-fg"
-              thickness={1.75}
-            />
-          </>
+          <AttachmentProgressRing progress={progress} className="size-[15px] text-kura-fg" />
         ) : status === "error" ? (
-          <CircleAlert className="size-4" aria-hidden />
+          <StatusGlyph status="failed" label={null} />
         ) : (
           <Icon className="size-4" aria-hidden />
         )}
@@ -319,7 +299,7 @@ export function Attachment({
                 data-slot="attachment-retry"
                 onClick={onRetry}
                 aria-label={`Retry uploading ${name}`}
-                className="cursor-pointer rounded-kura-xs font-medium text-kura-fg underline decoration-kura-border-strong underline-offset-2 outline-none hover:decoration-current focus-visible:shadow-kura-focus"
+                className="cursor-pointer rounded-kura-xs font-medium text-kura-fg underline decoration-kura-border-strong underline-offset-2 outline-none hover:decoration-current focus-visible:outline-2 focus-visible:outline-kura-ring"
               >
                 Retry
               </button>
@@ -380,9 +360,9 @@ export function AttachmentList({
       }
     : {
         layout: "position" as const,
-        initial: { opacity: 0, scale: 0.92, filter: "blur(2px)" },
-        animate: { opacity: 1, scale: 1, filter: "blur(0px)" },
-        exit: { opacity: 0, scale: 0.92, filter: "blur(2px)", transition: { duration: 0.12 } },
+        initial: { opacity: 0, scale: 0.96 },
+        animate: { opacity: 1, scale: 1 },
+        exit: { opacity: 0, scale: 0.96, transition: { duration: 0.12 } },
         transition: springs.snappy,
       };
 
@@ -422,24 +402,11 @@ export function AttachmentList({
                 .map((i) => i.name)
                 .join("\n")}
               className={cn(
-                "group/overflow relative isolate mr-2.5 flex h-11 min-w-11 cursor-pointer items-center justify-center rounded-kura-lg px-2.5 font-kura-sans font-medium text-[13px] text-kura-fg-muted tabular-nums outline-none",
-                "transition-[color,transform] duration-(--kura-duration-fast) ease-kura-out hover:text-kura-fg focus-visible:shadow-kura-focus active:scale-[0.97] motion-reduce:active:scale-100",
+                "flex h-11 min-w-11 cursor-pointer items-center justify-center rounded-kura-lg bg-kura-raised px-2.5 font-kura-mono font-medium text-[12.5px] text-kura-fg-muted tabular-nums shadow-kura-raised outline-none",
+                "transition-[color,background-color,transform] duration-(--kura-duration-fast) ease-kura-snap hover:bg-kura-raised-hover hover:text-kura-fg focus-visible:outline-2 focus-visible:outline-kura-ring focus-visible:outline-offset-2 active:translate-y-px motion-reduce:active:translate-y-0",
               )}
             >
-              {/* the "deck": two cards peeking out behind the counter's face */}
-              <span
-                aria-hidden
-                className="-z-20 absolute inset-0 translate-x-[10px] scale-[0.78] rounded-[inherit] bg-kura-surface-raised shadow-kura-xs transition-transform duration-(--kura-duration-base) ease-kura-out group-hover/overflow:translate-x-[13px] motion-reduce:transition-none"
-              />
-              <span
-                aria-hidden
-                className="-z-10 absolute inset-0 translate-x-[5px] scale-[0.89] rounded-[inherit] bg-kura-surface-raised shadow-kura-xs transition-transform duration-(--kura-duration-base) ease-kura-out group-hover/overflow:translate-x-[7px] motion-reduce:transition-none"
-              />
-              <span
-                aria-hidden
-                className="absolute inset-0 rounded-[inherit] bg-kura-surface-raised shadow-kura-xs"
-              />
-              <span className="relative">+{hidden}</span>
+              +{hidden}
             </button>
           </motion.li>
         )}
@@ -537,10 +504,10 @@ export function AttachmentDropzone({
       )}
       {...props}
     >
-      {/* dashed hairline drawn in SVG so the dash, radius and color are precise */}
+      {/* a dotted outline drawn in SVG so the dots, radius and colour are precise */}
       <svg
         aria-hidden
-        className="pointer-events-none absolute inset-0 size-full overflow-visible text-kura-border-strong transition-colors duration-(--kura-duration-base) group-data-dragging/dropzone:text-kura-fg-subtle"
+        className="pointer-events-none absolute inset-0 size-full overflow-visible text-kura-faint transition-colors duration-(--kura-duration-base) group-data-dragging/dropzone:text-kura-fg"
       >
         <rect
           x="0.5"
@@ -548,8 +515,9 @@ export function AttachmentDropzone({
           rx="13.5"
           fill="none"
           stroke="currentColor"
-          strokeWidth="1"
-          strokeDasharray="5 4"
+          strokeWidth="1.6"
+          strokeLinecap="round"
+          strokeDasharray="0.1 5"
           style={{ width: "calc(100% - 1px)", height: "calc(100% - 1px)" }}
         />
       </svg>
@@ -558,19 +526,19 @@ export function AttachmentDropzone({
         disabled={disabled}
         aria-describedby={description ? descId : undefined}
         onClick={() => inputRef.current?.click()}
-        className="flex w-full cursor-pointer flex-col items-center justify-center gap-3 rounded-[inherit] p-6 text-center outline-none focus-visible:shadow-kura-focus disabled:cursor-not-allowed"
+        className="flex w-full cursor-pointer flex-col items-center justify-center gap-3 rounded-[inherit] p-6 text-center outline-none focus-visible:outline-2 focus-visible:outline-kura-ring disabled:cursor-not-allowed"
       >
         <span
           aria-hidden
           className={cn(
-            "flex size-10 items-center justify-center rounded-kura-lg bg-kura-surface text-kura-fg-muted shadow-kura-sm",
-            "transition-transform duration-(--kura-duration-base) ease-kura-out group-hover/dropzone:-translate-y-0.5 group-data-dragging/dropzone:-translate-y-1 group-data-dragging/dropzone:text-kura-fg motion-reduce:translate-y-0",
+            "flex size-10 items-center justify-center rounded-[11px] bg-kura-raised text-kura-fg-muted shadow-kura-raised",
+            "transition-colors duration-(--kura-duration-base) ease-kura-snap group-data-dragging/dropzone:text-kura-fg",
           )}
         >
           <CloudUpload className="size-[18px]" strokeWidth={1.75} />
         </span>
         <span className="flex flex-col gap-1">
-          <span className="font-medium text-kura-fg text-sm">
+          <span className="font-medium text-[13px] text-kura-fg">
             {dragging ? "Release to attach" : title}
           </span>
           {description && (

@@ -75,7 +75,7 @@ export default defineComponent({
       type: '"idle" | "submitted" | "streaming" | "error"',
       default: '"idle"',
       description:
-        "Request lifecycle. submitted = waiting for the first token (stop button with a travelling arc), streaming = model writing (stop button).",
+        "Request lifecycle. submitted = waiting for the first token (the chasing ring on the send key), streaming = model writing (stop key).",
     },
     {
       name: "disabled",
@@ -87,7 +87,7 @@ export default defineComponent({
       name: "maxLength",
       type: "number",
       description:
-        "Character limit. The hint turns amber at 90% and red above; sending is blocked when over.",
+        "Character limit. The hint turns ink at 90% and red above; sending is blocked when over.",
     },
     {
       name: "submitKey",
@@ -244,9 +244,12 @@ export default defineComponent({
       { keys: "Mod+V", action: "Paste text, or attach pasted files/images" },
     ],
     reducedMotion:
-      "The send/stop icon swap and attachment enter/exit become plain fades (no scale or blur); the pending arc stops travelling and pulses instead.",
+      "The send/stop icon swap and attachment enter/exit become plain fades (no scale); the pending ring stops chasing and pulses instead.",
   },
-  dependencies: { npm: ["lucide-react", "motion"], kura: ["attachment", "icon-button", "tooltip"] },
+  dependencies: {
+    npm: ["lucide-react", "motion"],
+    kura: ["attachment", "icon-button", "spinner", "tooltip"],
+  },
   related: [
     "attachment",
     "model-picker",

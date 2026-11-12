@@ -128,8 +128,11 @@ describe("ArtifactCard", () => {
     );
     const root = container.querySelector("[data-slot=artifact-card]")!;
     expect(root.className).toContain("motion-reduce:transition-none");
-    const sweep = container.querySelector("[data-slot=artifact-card-progress] > div")!;
-    expect(sweep.className).toContain("motion-reduce:animate-none");
+    const head = container.querySelector(
+      "[data-slot=artifact-card-progress] [data-slot=dot-rail-head]",
+    )!;
+    expect(head.className).toContain("motion-reduce:animate-none");
+    expect(container.querySelector("[data-slot=status-glyph][data-status=running]")).not.toBeNull();
     setReducedMotion(false);
   });
 

@@ -2,7 +2,6 @@
 
 import * as React from "react";
 import { cn } from "../../lib/cn";
-import { ShimmerText } from "../shimmer-text";
 import { type AgentStatus, StatusGlyph } from "../status-glyph";
 
 export type AgentStepStatus = "queued" | "active" | "done" | "failed" | "skipped";
@@ -81,7 +80,7 @@ function Node({ status, small }: { status: AgentStepStatus; small: boolean }) {
       aria-hidden
       data-slot="agent-timeline-node"
       data-status={status}
-      className="relative z-10 grid shrink-0 place-items-center rounded-full bg-kura-surface"
+      className="relative z-10 grid shrink-0 place-items-center"
     >
       <StatusGlyph status={GLYPH[status]} size={small ? "sm" : "md"} label={null} />
     </span>
@@ -102,21 +101,22 @@ function Step({ step, last, small }: { step: AgentTimelineStep; last: boolean; s
       className={cn("relative flex gap-3", !last && (small ? "pb-3" : "pb-5"))}
     >
       {!last && (
+        // A column of dots between two glyphs; they light as the agent moves past the step.
         <span
           aria-hidden
           data-slot="agent-timeline-connector"
           data-filled={filled}
           className={cn(
-            "absolute w-px overflow-hidden rounded-full bg-kura-border",
-            small ? "top-[20px] bottom-[2px] left-[7.5px]" : "top-[25px] bottom-px left-[9.5px]",
+            "kura-dots absolute w-1.5",
+            small ? "top-[19px] bottom-px left-[3.5px]" : "top-[23px] bottom-0.5 left-[4.5px]",
           )}
         >
           <span
             className={cn(
-              "absolute inset-0 origin-top transition-[scale,opacity] duration-(--kura-duration-slower) ease-kura-in-out motion-reduce:transition-opacity",
-              "bg-kura-gray-8",
-              filled ? "scale-y-100 opacity-100" : "scale-y-0 opacity-0 motion-reduce:scale-y-100",
+              "kura-dots absolute inset-x-0 top-0 text-kura-fg-subtle transition-[height] duration-(--kura-duration-slower) ease-kura-snap motion-reduce:transition-none",
+              filled ? "h-full" : "h-0",
             )}
+            style={{ "--kura-dots-color": "currentColor" } as React.CSSProperties}
           />
         </span>
       )}
@@ -142,7 +142,7 @@ function Step({ step, last, small }: { step: AgentTimelineStep; last: boolean; s
                 "text-kura-fg-subtle line-through decoration-kura-border-strong",
             )}
           >
-            {active ? <ShimmerText duration={2.4}>{step.title}</ShimmerText> : step.title}
+            {step.title}
             <span className="sr-only"> ({spoken[step.status]})</span>
           </span>
           {ms != null && (
@@ -200,9 +200,9 @@ function StepList({
 }
 
 /**
- * Vertical plan/step tracker for multi-step agents. Steps are queued, active (blue pulse,
- * shimmering title, live timer), done, failed or skipped; sub-steps nest; the connector between
- * nodes fills as the agent moves past each step.
+ * Vertical plan/step tracker for multi-step agents. Steps are queued, active (the chasing glyph
+ * and a live timer), done, failed or skipped; sub-steps nest; the column of dots between two
+ * glyphs lights as the agent moves past each step.
  */
 export function AgentTimeline({
   steps,

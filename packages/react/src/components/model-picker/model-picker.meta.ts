@@ -140,7 +140,7 @@ export default defineComponent({
     reducedMotion:
       "The popover fades without scale or travel and the chevron flips without rotating; highlight changes are instant in all modes.",
   },
-  dependencies: { npm: ["lucide-react"], kura: ["popover"] },
+  dependencies: { npm: ["lucide-react"], kura: ["agent-sigil", "popover"] },
   related: ["composer", "command-palette", "slash-command-menu"],
   tags: ["model", "llm", "select", "combobox", "picker", "provider", "dropdown"],
   examples: [

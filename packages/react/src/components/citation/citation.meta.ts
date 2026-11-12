@@ -6,11 +6,11 @@ export default defineComponent({
   category: "conversation",
   status: "beta",
   description:
-    "Inline numbered citation pill that links to its source and previews favicon, title, domain and snippet on hover/focus, plus a Sources strip or list.",
+    "Inline numbered citation keycap that links to its source and previews title, domain and snippet on hover or focus, plus a Sources strip or list.",
   whenToUse: [
-    "Attribute sentences of a model's answer to retrieved sources (RAG, web search, file search) with inline [1] [2] pills.",
-    "Preview a source without leaving the answer: hover or keyboard-focus the pill to see title, domain and the snippet used.",
-    "List all sources behind an answer under it, as a compact chip strip or a numbered list (`Sources`).",
+    "Attribute sentences of a model's answer to retrieved sources (RAG, web search, file search) with inline [1] [2] keys.",
+    "Preview a source without leaving the answer: hover or keyboard-focus the key to see title, domain and the snippet used.",
+    "List all sources behind an answer under it, as a compact strip of tiles or a numbered list (`Sources`).",
   ],
   whenNotToUse: [
     "Plain links in prose with no source metadata — use an <a>.",
@@ -22,7 +22,7 @@ export default defineComponent({
       name: "index",
       type: "number",
       required: true,
-      description: "1-based citation number shown in the pill and the card corner.",
+      description: "1-based citation number printed on the key and in the card corner.",
     },
     {
       name: "source",
@@ -35,7 +35,7 @@ export default defineComponent({
       name: "display",
       type: '"number" | "domain"',
       default: '"number"',
-      description: "Pill shows the number, or a favicon + site name (Perplexity style).",
+      description: "The key shows the number, or a favicon + site name.",
     },
     {
       name: "openDelay",
@@ -55,13 +55,13 @@ export default defineComponent({
       name: "Citation",
       dataSlot: "citation",
       description:
-        'The pill: a real <a target="_blank"> to the source, `data-state="open" | "closed"`. Sized in em so it scales with the surrounding text.',
+        'The key: a real <a target="_blank"> to the source, `data-state="open" | "closed"`. Sized in em so it scales with the surrounding text.',
     },
     {
       name: "Preview",
       dataSlot: "citation-preview",
       description:
-        "The hover card (Kura Popover content, origin-aware pop-in, opens above the pill).",
+        "The hover card (ui-sdk HoverCard content, origin-aware pop-in, opens above the key).",
     },
     {
       name: "CitationCard",
@@ -93,7 +93,7 @@ export default defineComponent({
           name: "variant",
           type: '"strip" | "list"',
           default: '"strip"',
-          description: "strip = horizontally scrolling chips; list = numbered rows with snippets.",
+          description: "strip = horizontally scrolling tiles; list = numbered rows with snippets.",
         },
         {
           name: "label",
@@ -107,13 +107,13 @@ export default defineComponent({
   ],
   a11y: {
     notes: [
-      "Each pill is a link named “Source 2: <title> (<domain>)”, so it makes sense out of context and in a links list.",
+      "Each key is a link named “Source 2: <title> (<domain>)”, so it makes sense out of context and in a links list.",
       "The preview opens on hover (with delay) and on keyboard focus, without moving focus; Escape or blur closes it. It never contains information that is not also reachable by following the link.",
       "Sources is an ordered list labelled by its heading.",
       'Links open in a new tab (`target="_blank" rel="noreferrer"`).',
     ],
     keyboard: [
-      { keys: "Tab", action: "Focus a pill — its preview opens" },
+      { keys: "Tab", action: "Focus a citation — its preview opens" },
       { keys: "Enter", action: "Open the source in a new tab" },
       { keys: "Escape", action: "Close the preview" },
     ],
@@ -137,13 +137,13 @@ export default defineComponent({
       name: "CitationMinimal",
       kind: "minimal",
       title: "One citation",
-      description: "A numbered pill at the end of a sentence.",
+      description: "A numbered key at the end of a sentence.",
     },
     {
       name: "CitationFull",
       kind: "full",
       title: "Citations with a sources strip",
-      description: "Number and domain pills, a custom open delay, and the Sources strip below.",
+      description: "Number and domain keys, a custom open delay, and the Sources strip below.",
     },
     {
       name: "CitationSourcesList",
@@ -155,11 +155,11 @@ export default defineComponent({
       name: "CitationInMessage",
       kind: "composition",
       title: "In an assistant message",
-      description: "Pills inside a Message with a label-less strip.",
+      description: "Citations inside a Message with a label-less strip.",
     },
   ],
   agentNotes: [
-    "Place the pill directly after the punctuation-free end of the claim, inside the same text node's parent (it is inline and em-sized).",
+    "Place the citation directly after the punctuation-free end of the claim, inside the same text node's parent (it is inline and em-sized).",
     "Reuse the same index for repeated citations of the same source; Sources numbering is by array position.",
     "Pass favicons you already have (e.g. from your search API); the component never fetches favicons itself.",
     'Import Sources from the same entry: `import { Citation, Sources } from "@kura-ui/react/citation"`.',

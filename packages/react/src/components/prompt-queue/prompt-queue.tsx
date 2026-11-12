@@ -159,16 +159,13 @@ export function PromptQueue({
       className={cn(
         "@container flex min-w-0 flex-col overflow-hidden font-kura-sans text-kura-fg",
         variant === "panel"
-          ? "rounded-kura-xl bg-kura-surface shadow-kura-sm"
-          : "rounded-t-kura-xl bg-kura-surface-sunken shadow-[inset_0_0_0_1px_var(--kura-border)]",
+          ? "rounded-kura-xl bg-kura-surface shadow-kura-surface"
+          : "rounded-t-kura-xl bg-kura-surface-sunken shadow-kura-sunk",
         className,
       )}
       {...props}
     >
-      <div
-        data-slot="prompt-queue-header"
-        className="flex h-9 shrink-0 items-center gap-2 border-kura-border-subtle border-b px-3"
-      >
+      <div data-slot="prompt-queue-header" className="flex h-11 shrink-0 items-center gap-2 px-4">
         <h3 className="flex shrink-0 items-baseline gap-1.5 font-medium text-[13px]">
           <span id={`${id}-title`}>{title}</span>
           <span className="font-kura-mono font-normal text-[12px] text-kura-fg-subtle tabular-nums">
@@ -304,11 +301,11 @@ function QueueRow({
       data-slot="prompt-queue-item"
       data-state={editing ? "editing" : dragging ? "dragging" : undefined}
       className={cn(
-        "group/item relative mx-1 flex min-w-0 rounded-kura-md bg-transparent outline-none",
+        "group/item relative mx-1.5 flex min-w-0 rounded-[9px] bg-transparent outline-none",
         "focus-visible:shadow-[inset_0_0_0_2px_var(--kura-ring)]",
         !editing && "min-h-8 items-center gap-1 pr-1 pl-1 hover:bg-kura-hover",
         editing && "bg-kura-hover p-1.5",
-        dragging && "bg-kura-surface-raised shadow-kura-md",
+        dragging && "bg-kura-raised shadow-kura-popover",
       )}
     >
       {editing ? (
@@ -446,7 +443,7 @@ function EditBox({
             onSave(text);
           }
         }}
-        className="w-full resize-none rounded-kura-sm bg-kura-surface px-2 py-1.5 text-[13px] text-kura-fg leading-5 shadow-kura-xs outline-none transition-shadow duration-(--kura-duration-fast) focus:shadow-kura-focus"
+        className="w-full resize-none rounded-[7px] bg-kura-surface-sunken px-2 py-1.5 text-[13px] text-kura-fg leading-5 shadow-kura-sunk outline-none focus-visible:outline-2 focus-visible:outline-kura-ring"
       />
       <div className="flex items-center justify-end gap-1">
         <span className="mr-auto truncate pl-1 text-[12px] text-kura-fg-subtle">

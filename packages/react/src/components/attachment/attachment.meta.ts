@@ -6,7 +6,7 @@ export default defineComponent({
   category: "input",
   status: "beta",
   description:
-    "File and image attachment chips with thumbnails, upload progress rings, error/retry, remove, a “+N” overflow stack and a dropzone.",
+    "File and image attachment chips with thumbnails, a dial of dots for upload progress, error/retry, remove, a “+N” overflow key and a dotted dropzone.",
   whenToUse: [
     "Show files the user attached to a prompt before sending (inside or above a composer).",
     "Display upload progress, failures and a retry action for files sent to a model.",
@@ -47,7 +47,7 @@ export default defineComponent({
     {
       name: "progress",
       type: "number",
-      description: "Upload progress 0..1 while uploading. Omit for an indeterminate spinning arc.",
+      description: "Upload progress 0..1 while uploading. Omit for an indeterminate chasing ring.",
     },
     {
       name: "error",
@@ -173,9 +173,9 @@ export default defineComponent({
       { keys: "Enter / Space", action: "Activates Remove, Retry, the +N stack or the dropzone" },
     ],
     reducedMotion:
-      "Items fade in and out without scale, blur or layout travel; the indeterminate ring pulses instead of spinning; hover lifts are removed.",
+      "Items fade in and out without scale or layout travel; the indeterminate ring holds still.",
   },
-  dependencies: { npm: ["lucide-react", "motion"], kura: [] },
+  dependencies: { npm: ["lucide-react", "motion"], kura: ["status-glyph"] },
   related: ["composer", "artifact-card", "audio-waveform"],
   tags: [
     "file",

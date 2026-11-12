@@ -1,12 +1,11 @@
 "use client";
 
-import { Hand, Lock, Play } from "lucide-react";
+import { Globe, Hand, Lock, Play } from "lucide-react";
 import * as React from "react";
 import { useElapsed } from "../../hooks/use-elapsed";
 import { cn } from "../../lib/cn";
 import { formatClock } from "../../lib/format";
 import { Button } from "../button";
-import { ShimmerText } from "../shimmer-text";
 import { type AgentStatus, StatusGlyph } from "../status-glyph";
 
 export type BrowserStepKind = "navigate" | "click" | "type" | "scroll" | "extract";
@@ -201,8 +200,8 @@ function StepRow({ step, active }: { step: BrowserStep; active: boolean }) {
       data-active={active || undefined}
       aria-current={active ? "step" : undefined}
       className={cn(
-        "relative flex items-start gap-2.5 border-kura-border-subtle border-t px-3.5 py-2 first:border-t-0",
-        "transition-[opacity,translate,background-color] duration-(--kura-duration-base) ease-kura-out starting:translate-y-[2px] starting:opacity-0 motion-reduce:starting:translate-y-0",
+        "relative mx-1.5 flex items-start gap-2.5 rounded-[9px] px-2.5 py-1.5",
+        "transition-[opacity,background-color] duration-(--kura-duration-base) ease-kura-snap starting:opacity-0",
         active && "bg-kura-hover",
       )}
     >
@@ -218,11 +217,7 @@ function StepRow({ step, active }: { step: BrowserStep; active: boolean }) {
             step.status === "skipped" && "text-kura-fg-subtle line-through",
           )}
         >
-          {step.status === "running" ? (
-            <ShimmerText duration={2.4}>{step.label}</ShimmerText>
-          ) : (
-            step.label
-          )}
+          {step.label}
           <span className="sr-only"> ({STEP_SPOKEN[step.status]})</span>
         </span>
         {step.detail != null && (
@@ -334,21 +329,17 @@ export function BrowserSession({
       {/* Status line */}
       <div
         data-slot="browser-session-header"
-        className="flex h-10 shrink-0 items-center gap-2.5 border-kura-border-subtle border-b px-3.5"
+        className="flex h-11 shrink-0 items-center gap-2.5 px-4"
       >
         <StatusGlyph status={STATUS_GLYPH[status]} size="sm" label={null} />
         <span className="flex min-w-0 items-baseline gap-2 text-[13px]">
           <span
             className={cn(
               "min-w-0 truncate font-medium @md:shrink-0",
-              status === "paused" && "text-kura-warning-text",
+              status === "paused" && "text-kura-ember-text",
             )}
           >
-            {status === "browsing" ? (
-              <ShimmerText duration={2.4}>{STATUS_TEXT.browsing}</ShimmerText>
-            ) : (
-              STATUS_TEXT[status]
-            )}
+            {STATUS_TEXT[status]}
           </span>
           {statusText != null && (
             <span className="hidden min-w-0 truncate text-kura-fg-subtle @md:inline">
@@ -394,19 +385,15 @@ export function BrowserSession({
         <div data-slot="browser-session-browser" className="flex min-w-0 flex-col">
           <div
             data-slot="browser-session-chrome"
-            className="relative flex h-10 shrink-0 items-center gap-2.5 border-kura-border-subtle border-b px-2.5"
+            className="relative flex h-9 shrink-0 items-center gap-2.5 px-1.5 pb-1.5"
           >
             {title && (
               <span className="hidden max-w-[34%] min-w-0 items-center gap-2 pl-1 @lg:flex">
-                <span
+                <Globe
                   aria-hidden
-                  className="grid size-4 shrink-0 place-items-center rounded-[4px] bg-kura-fg font-semibold text-[9px] text-kura-fg-inverted"
-                >
-                  {host
-                    .replace(/^www\./, "")
-                    .charAt(0)
-                    .toUpperCase()}
-                </span>
+                  strokeWidth={1.75}
+                  className="size-3.5 shrink-0 text-kura-fg-subtle"
+                />
                 <span className="truncate font-medium text-[12.5px]">{title}</span>
               </span>
             )}
@@ -415,7 +402,7 @@ export function BrowserSession({
               data-slot="browser-session-address"
               role="group"
               aria-label="Address"
-              className="flex h-7 min-w-0 flex-1 items-center gap-1.5 rounded-kura-md bg-kura-surface-sunken px-2.5 shadow-[inset_0_0_0_1px_var(--kura-border-subtle)]"
+              className="flex h-[30px] min-w-0 flex-1 items-center gap-1.5 rounded-kura-lg bg-kura-surface-sunken px-2.5 shadow-kura-sunk"
             >
               {secure && (
                 <Lock
@@ -424,18 +411,16 @@ export function BrowserSession({
                   className="size-3 shrink-0 text-kura-fg-subtle"
                 />
               )}
-              <span className="min-w-0 truncate font-kura-mono text-[12px]">
+              <span className="min-w-0 flex-1 truncate font-kura-mono text-[12px]">
                 <span className="text-kura-fg">{host}</span>
                 <span className="text-kura-fg-subtle">{rest}</span>
               </span>
+              {isLoading && (
+                <span data-slot="browser-session-loading" aria-hidden className="flex shrink-0">
+                  <StatusGlyph status="running" size="sm" label={null} />
+                </span>
+              )}
             </div>
-            {isLoading && (
-              <span
-                data-slot="browser-session-loading"
-                aria-hidden
-                className="absolute inset-x-0 -bottom-px h-[2px] animate-kura-shimmer bg-[length:250%_100%] bg-[linear-gradient(90deg,transparent_30%,var(--kura-accent)_50%,transparent_70%)] motion-reduce:animate-none motion-reduce:bg-kura-accent/40"
-              />
-            )}
           </div>
 
           {/* Viewport */}
@@ -443,9 +428,9 @@ export function BrowserSession({
             ref={frameRef}
             data-slot="browser-session-viewport"
             className={cn(
-              "relative w-full overflow-hidden bg-kura-canvas",
+              "relative mx-1.5 mb-1.5 overflow-hidden rounded-kura-lg bg-kura-canvas shadow-[0_0_0_1px_var(--kura-border)]",
               status === "paused" &&
-                "after:pointer-events-none after:absolute after:inset-0 after:z-40 after:shadow-[inset_0_0_0_2px_var(--kura-warning)]",
+                "after:pointer-events-none after:absolute after:inset-0 after:z-40 after:rounded-[inherit] after:shadow-[inset_0_0_0_2px_var(--kura-ember)]",
             )}
             style={{ aspectRatio: ratio }}
           >
@@ -509,14 +494,7 @@ export function BrowserSession({
 
         {/* Step log */}
         {steps && (
-          <div
-            data-slot="browser-session-log"
-            className={cn(
-              "relative min-w-0 border-kura-border-subtle",
-              side ? "border-l" : "border-t",
-              auto && "@3xl:border-t-0 @3xl:border-l",
-            )}
-          >
+          <div data-slot="browser-session-log" className={cn("relative min-w-0")}>
             <div
               className={cn(
                 "overflow-y-auto overscroll-contain",
@@ -525,7 +503,7 @@ export function BrowserSession({
                 auto && "@3xl:absolute @3xl:inset-0 @3xl:max-h-none",
               )}
             >
-              <ol ref={logRef} aria-label="Browser actions" className="flex flex-col">
+              <ol ref={logRef} aria-label="Browser actions" className="flex flex-col pb-1.5">
                 {steps.map((step) => (
                   <StepRow key={step.id} step={step} active={step.id === active?.id} />
                 ))}

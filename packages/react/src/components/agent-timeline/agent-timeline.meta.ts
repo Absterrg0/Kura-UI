@@ -60,7 +60,7 @@ export default defineComponent({
       name: "Node",
       dataSlot: "agent-timeline-node",
       description:
-        "Status node: hollow ring (queued), blue pulse (active), check (done), cross (failed), dash (skipped).",
+        "The StatusGlyph for the step: hollow ring (queued), chasing ring (active), solid disc (done), cross (failed), dash (skipped).",
     },
     {
       name: "Connector",
@@ -71,7 +71,7 @@ export default defineComponent({
     {
       name: "Title",
       dataSlot: "agent-timeline-title",
-      description: "Shimmers while active; struck through when skipped.",
+      description: "Medium weight while active; struck through when skipped.",
     },
     {
       name: "Duration",
@@ -97,9 +97,9 @@ export default defineComponent({
       "Nodes and connectors are decorative (aria-hidden); status is never conveyed by colour alone.",
     ],
     reducedMotion:
-      "The active pulse and title shimmer stop; connectors fade in instead of growing; check/cross icons appear without scale.",
+      "The active glyph stops chasing and the dots between steps light without travel.",
   },
-  dependencies: { npm: [], kura: ["shimmer-text", "status-glyph"] },
+  dependencies: { npm: [], kura: ["status-glyph"] },
   related: ["tool-call", "reasoning", "approval-prompt", "shimmer-text"],
   tags: ["agent", "plan", "timeline", "steps", "progress", "todo", "stepper", "tasks"],
   examples: [
@@ -131,7 +131,7 @@ export default defineComponent({
   ],
   agentNotes: [
     "Keep `id`s stable across updates so timers and connector transitions animate instead of remounting.",
-    "Only one step should be `active` at a time per level; it carries the blue signal.",
+    "Only one step should be `active` at a time per level; it carries the chasing glyph.",
     "Pass `duration` (ms) for finished steps; omit it for the active step to get a live timer (or pass `startedAt` from your server).",
     "Map a model-maintained todo list: pending → queued, in_progress → active, completed → done.",
   ],

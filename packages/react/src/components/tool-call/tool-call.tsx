@@ -5,7 +5,6 @@ import * as React from "react";
 import { useControllableState } from "../../hooks/use-controllable-state";
 import { cn } from "../../lib/cn";
 import { CodeBlock } from "../code-block";
-import { ShimmerText } from "../shimmer-text";
 import { type AgentStatus, StatusGlyph } from "../status-glyph";
 
 export type ToolCallStatus = "pending" | "running" | "success" | "error" | "awaiting-approval";
@@ -146,7 +145,6 @@ export function ToolCall({
   const hasDetails = args !== undefined || result !== undefined || error != null;
   const line = summary === undefined ? deriveSummary(args) : summary;
   const inline = variant === "inline";
-  const running = status === "running";
 
   const label = title ?? <span className="font-kura-mono text-[0.93em]">{name}</span>;
 
@@ -162,7 +160,7 @@ export function ToolCall({
       </span>
       <span className="flex min-w-0 flex-1 items-baseline gap-2">
         <span data-slot="tool-call-title" className="shrink-0 font-medium text-kura-fg">
-          {running ? <ShimmerText>{label}</ShimmerText> : label}
+          {label}
         </span>
         {line != null && line !== "" && (
           <span data-slot="tool-call-summary" className="truncate text-kura-fg-subtle">
@@ -193,7 +191,7 @@ export function ToolCall({
 
   const headerClass = cn(
     "flex w-full min-w-0 items-center gap-2 text-left outline-none",
-    inline ? "h-7 rounded-kura-sm px-1.5 text-[13px]" : "h-11 px-3 text-sm",
+    inline ? "h-7 rounded-[8px] px-1.5 text-[13px]" : "h-11 px-4 text-[13px]",
   );
 
   return (
@@ -206,7 +204,7 @@ export function ToolCall({
         "flex min-w-0 flex-col font-kura-sans",
         inline
           ? "-mx-1.5 w-fit max-w-full"
-          : "overflow-hidden rounded-kura-lg bg-kura-surface shadow-kura-sm",
+          : "overflow-hidden rounded-kura-xl bg-kura-surface shadow-kura-surface",
         className,
       )}
       {...props}
@@ -248,17 +246,18 @@ export function ToolCall({
           <div className="min-h-0 overflow-hidden">
             <div
               className={cn(
-                "flex flex-col gap-3",
-                inline
-                  ? "mt-1 mb-2 ml-[18px] border-kura-border border-l pl-4"
-                  : "px-3 pt-1 pb-3 shadow-[inset_0_1px_0_var(--kura-border-subtle)] [&>:first-child]:mt-2",
+                "relative flex flex-col gap-3",
+                inline ? "mt-1 mb-2 ml-[10px] pl-4" : "px-1.5 pb-1.5",
               )}
             >
+              {inline && (
+                <span aria-hidden className="kura-leader absolute inset-y-0 left-0 w-[5px]" />
+              )}
               {args !== undefined && <Section label="Arguments" value={args} />}
               {error != null && (
                 <div
                   data-slot="tool-call-error"
-                  className="rounded-kura-md bg-kura-danger-subtle px-3 py-2 font-kura-mono text-kura-danger-text text-xs leading-relaxed"
+                  className="rounded-kura-lg bg-kura-surface-sunken px-3 py-2 font-kura-mono text-kura-danger-text text-xs leading-relaxed shadow-kura-sunk"
                 >
                   {error}
                 </div>
@@ -274,7 +273,7 @@ export function ToolCall({
           data-slot="tool-call-actions"
           className={cn(
             "flex items-center justify-end gap-2",
-            inline ? "py-1.5" : "px-3 py-2.5 shadow-[inset_0_1px_0_var(--kura-border-subtle)]",
+            inline ? "py-1.5" : "px-3 pt-1 pb-2.5",
           )}
         >
           {actions}
@@ -289,7 +288,7 @@ function Section({ label, value }: { label: string; value: unknown }) {
   const json = typeof value !== "string";
   return (
     <div data-slot="tool-call-section" className="flex flex-col gap-1.5">
-      <span className="font-medium text-kura-fg-muted text-xs">{label}</span>
+      <span className="px-2.5 text-kura-fg-subtle text-xs">{label}</span>
       <CodeBlock
         code={text}
         filename={label}
@@ -297,7 +296,7 @@ function Section({ label, value }: { label: string; value: unknown }) {
         header={false}
         wrap
         maxHeight={220}
-        className="rounded-kura-md text-xs shadow-[0_0_0_1px_var(--kura-border-subtle)] [&_[data-slot=code-block-line]]:px-3 [&_section]:py-2"
+        className="text-xs [&_[data-slot=code-block-line]]:px-3 [&_section]:py-2"
       />
     </div>
   );

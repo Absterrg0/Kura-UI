@@ -6,14 +6,14 @@ export default defineComponent({
   category: "agent",
   status: "beta",
   description:
-    "Collapsible thinking trace: a shimmering “Thinking… 12s” label while active that settles into “Thought for 14s”, revealing muted reasoning text.",
+    "Collapsible thinking trace: the chasing glyph and a “Thinking… 12s” label while active that settle into “Thought for 14s”, revealing muted reasoning text.",
   whenToUse: [
     "Show a reasoning model's chain of thought / thinking blocks (Claude extended thinking, o-series reasoning summaries) above the answer.",
     "Indicate that the model is thinking, with elapsed time, before the first answer token arrives.",
     "Keep a finished trace available but out of the way (collapsed to one line).",
   ],
   whenNotToUse: [
-    "A bare “Thinking…” label with no trace to reveal — use shimmer-text (or thinking-indicator).",
+    "A bare “Thinking…” label with no trace to reveal — use thinking-indicator (or shimmer-text).",
     "A sequence of discrete agent steps with states — use agent-timeline.",
     "A single tool invocation with arguments and results — use tool-call.",
   ],
@@ -23,7 +23,7 @@ export default defineComponent({
       type: "boolean",
       default: "false",
       description:
-        "The model is still thinking: the label shimmers and an elapsed timer ticks. Turning it false settles the label and (with autoCollapse) collapses the trace.",
+        "The model is still thinking: the running glyph shows and an elapsed timer ticks. Turning it false settles the label and (with autoCollapse) collapses the trace.",
     },
     {
       name: "duration",
@@ -73,7 +73,8 @@ export default defineComponent({
     {
       name: "Label",
       dataSlot: "reasoning-label",
-      description: "ShimmerText; shimmers while active, muted when done. Seconds are tabular.",
+      description:
+        "The label; preceded by the running StatusGlyph while active, muted when done. Seconds are tabular.",
     },
     {
       name: "Content",
@@ -90,9 +91,9 @@ export default defineComponent({
     ],
     keyboard: [{ keys: "Enter / Space", action: "Expand or collapse the trace" }],
     reducedMotion:
-      "The shimmer becomes static muted text, the chevron snaps, and the trace only fades (no height travel or blur).",
+      "The running glyph holds still, the chevron snaps, and the trace only fades (no height travel).",
   },
-  dependencies: { npm: ["lucide-react"], kura: ["shimmer-text"] },
+  dependencies: { npm: ["lucide-react"], kura: ["status-glyph"] },
   related: ["shimmer-text", "thinking-indicator", "message", "streaming-text", "agent-timeline"],
   tags: ["reasoning", "thinking", "chain-of-thought", "collapsible", "trace", "llm", "timer"],
   examples: [

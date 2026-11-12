@@ -34,11 +34,19 @@ describe("ApprovalPrompt", () => {
     expect(region).toHaveAttribute("data-risk", "high");
     expect(region).toHaveClass("custom");
     expect(region).toHaveAccessibleDescription("Clears output.");
-    expect(screen.getByText("rm -rf build")).toBeInTheDocument();
+    expect(region.querySelector("[data-slot=approval-prompt-code]")).toHaveTextContent(
+      "rm -rf build",
+    );
     expect(screen.getByText("High risk")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: /Run anyway/ })).toHaveAttribute(
+    // Waiting on a person: the ember glyph, label and halftone are all there.
+    expect(region.querySelector("[data-slot=status-glyph]")).toHaveAttribute(
+      "data-status",
+      "waiting",
+    );
+    expect(region.querySelector("[data-slot=halftone]")).toHaveAttribute("data-state", "visible");
+    expect(screen.getByRole("button", { name: "Approve" })).toHaveAttribute(
       "data-variant",
-      "danger",
+      "primary",
     );
   });
 
@@ -122,7 +130,7 @@ describe("ApprovalPrompt", () => {
     expect(entry?.actions).toEqual(["deny"]);
 
     // Approving is refused until the person says yes, and they are told exactly what runs.
-    const approve = { steps: [{ ref: "Run anyway", action: "press" }] };
+    const approve = { steps: [{ ref: "Approve", action: "press" }] };
     expect((await agent.act(approve)).ok).toBe(false);
     expect(asked.at(-1)).toBe("Runs pnpm db:migrate");
     expect(onDecisionChange).not.toHaveBeenCalled();
@@ -174,11 +182,42 @@ describe("ApprovalPrompt", () => {
     expect(onApprove).not.toHaveBeenCalled();
   });
 
-  it("drops blur and the waiting pulse under reduced motion", () => {
+  it("holds still under reduced motion: no blinking glyph, no fades or travel", () => {
     setReducedMotion(true);
     const { container } = render(<ApprovalPrompt title="Run?" />);
     expect(container.innerHTML).toContain("motion-reduce:animate-none");
-    expect(container.innerHTML).toContain("motion-reduce:blur-none");
+    expect(container.querySelector("[data-slot=halftone]")?.className).toContain(
+      "motion-reduce:transition-none",
+    );
+    expect(
+      container.querySelector("[data-slot=approval-prompt-actions]")?.parentElement?.innerHTML,
+    ).toContain("motion-reduce:translate-y-0");
+  });
+
+  it("shows who asked, the facts and how long it has waited; the ember leaves on a decision", async () => {
+    const user = userEvent.setup();
+    const { container } = render(
+      <ApprovalPrompt
+        title="Run the migration"
+        agent={{ name: "migrator", detail: "for step 4 of the plan" }}
+        requestedAt={Date.now() - 75_000}
+        facts={[{ label: "Rows affected", value: "48,210" }]}
+        shortcuts={false}
+      />,
+    );
+    expect(screen.getByText(/asks, for step 4 of the plan/)).toBeInTheDocument();
+    expect(container.querySelector("[data-slot=agent-sigil]")).not.toBeNull();
+    expect(screen.getByText("Rows affected")).toBeInTheDocument();
+    expect(screen.getByText("48,210")).toBeInTheDocument();
+    expect(screen.getByText("Needs you")).toBeInTheDocument();
+    expect(await screen.findByText(/^1:1\d$/)).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Deny" }));
+    expect(container.querySelector("[data-slot=halftone]")).toHaveAttribute("data-state", "hidden");
+    expect(container.querySelector("[data-slot=status-glyph]")).toHaveAttribute(
+      "data-status",
+      "failed",
+    );
+    expect(screen.getByRole("status")).toHaveTextContent("Denied by you. Nothing ran.");
   });
 
   it("examples render without a11y violations", async () => {

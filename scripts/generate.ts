@@ -121,7 +121,7 @@ items.push({
   type: "registry:theme",
   title: "Kura Theme",
   description:
-    "Kura design tokens: warm neutral OKLCH scale, jade signal accent, hairline shadows, radii, motion easings and keyframes (light + dark).",
+    "Kura design tokens for the dot language: monochrome ink, sheet and well surfaces, ember, the dot utilities, radii, motion easings and keyframes (light + dark).",
   cssVars: css.registry.cssVars,
   css: css.registry.css,
 });

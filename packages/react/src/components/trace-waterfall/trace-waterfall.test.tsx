@@ -65,12 +65,14 @@ describe("TraceWaterfall", () => {
     expect(items).toHaveLength(4);
     expect(items[0]).toHaveAttribute("aria-level", "1");
     expect(items[3]).toHaveAttribute("aria-level", "3");
-    expect(items[3]).toHaveAccessibleName("bash rg x, tool, 900ms, failed");
+    expect(items[3]).toHaveAccessibleName("bash rg x 900ms, tool, failed");
     const bar = items[1]!.querySelector<HTMLElement>("[data-slot=trace-waterfall-bar]")!;
-    expect(bar.style.left).toBe("0%");
-    // axis: 10s total → 2s ticks up to 12s
+    // A span is a run of lit dots, snapped to whole dots on the shared axis.
+    expect(bar.style.left).toBe("round(down, 0%, 6px)");
+    expect(bar).toHaveClass("kura-dots");
+    // axis: 10s total → 2s ticks up to 12s; with seven ticks every other one is labelled
     expect(container.querySelector("[data-slot=trace-waterfall-axis]")).toHaveTextContent(
-      "0" + "2s4s6s8s10s12s",
+      "0" + "4s8s12s",
     );
     expect(screen.getByText("4 spans")).toBeInTheDocument();
     expect(screen.getByRole("status")).toHaveTextContent("1 span failed");

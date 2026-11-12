@@ -42,7 +42,7 @@ describe("FileChanges", () => {
     ]);
     const types = container.querySelector("[data-slot=file-changes-file][data-state=editing]")!;
     expect(types).toHaveTextContent("editing");
-    expect(types.querySelector("[data-slot=shimmer-text]")).not.toBeNull();
+    expect(types.querySelector("[data-slot=status-glyph][data-status=running]")).not.toBeNull();
     expect(container.querySelector("[data-status=D]")).toHaveAccessibleName(/deleted/);
   });
 

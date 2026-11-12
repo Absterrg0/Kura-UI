@@ -23,17 +23,17 @@ const keyBase =
   "transition-[transform,background-color,box-shadow,color] duration-(--kura-duration-instant) ease-kura-out";
 
 const keyVariants = {
-  // A soft grey cap with a hairline and a 1px bottom edge: reads as a key without skeuomorphism.
+  // A keycap: the sheet colour with a hairline and a 1px bottom edge.
   raised:
-    "rounded-kura-xs bg-kura-gray-2 text-kura-fg-muted shadow-[inset_0_0_0_1px_var(--kura-border),inset_0_-1px_0_0_var(--kura-border)] " +
+    "rounded-[5px] bg-kura-surface text-kura-fg-subtle shadow-kura-key " +
     "data-[pressed=true]:translate-y-px data-[pressed=true]:bg-kura-gray-4 data-[pressed=true]:text-kura-fg data-[pressed=true]:shadow-[inset_0_0_0_1px_var(--kura-border-strong)] motion-reduce:data-[pressed=true]:translate-y-0",
   ghost:
-    "rounded-kura-xs bg-kura-hover text-current opacity-80 data-[pressed=true]:bg-kura-active data-[pressed=true]:opacity-100",
+    "rounded-[5px] bg-current/10 text-current opacity-75 shadow-[inset_0_0_0_1px_color-mix(in_oklab,currentColor_14%,transparent)] data-[pressed=true]:opacity-100",
 } as const;
 
 const keySizes = {
-  sm: "h-[18px] px-1 text-[11px]",
-  md: "h-[22px] px-1.5 text-xs",
+  sm: "h-[18px] min-w-[18px] px-1 text-[10.5px]",
+  md: "h-[22px] min-w-[22px] px-1.5 text-xs",
 } as const;
 
 /**

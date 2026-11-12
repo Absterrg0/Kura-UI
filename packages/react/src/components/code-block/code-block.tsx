@@ -71,19 +71,17 @@ const tokenClass: Record<CodeTokenType, string | undefined> = {
 };
 
 /*
- * A quiet, mostly-neutral palette. Structure is carried by grey value (keywords and attributes
- * recede to fg-muted, punctuation and comments to fg-subtle, names stay fg); only literals get
- * a low-chroma tint, derived from --kura-fg-muted so they keep its ≥ 4.5:1 contrast and flip with
- * the theme. Override any of them with --kura-syntax-* on a parent.
+ * Monochrome ink. Structure is carried by grey value alone: names, tags and literals stay ink;
+ * keywords, strings, types and attributes recede to fg-muted; punctuation and comments to
+ * fg-subtle. No hue, so code sits in the same three inks as the rest of the interface and flips
+ * with the theme. Override any of them with --kura-syntax-* on a parent.
  */
-const tint = (name: string, chroma: number, hue: number) =>
-  `var(--kura-syntax-${name}, oklch(from var(--kura-fg-muted) l ${chroma} ${hue}))`;
 const syntaxVars = {
   "--kura-code-keyword": "var(--kura-syntax-keyword, var(--kura-fg-muted))",
-  "--kura-code-string": tint("string", 0.075, 150),
-  "--kura-code-constant": tint("constant", 0.085, 55),
+  "--kura-code-string": "var(--kura-syntax-string, var(--kura-fg-muted))",
+  "--kura-code-constant": "var(--kura-syntax-constant, var(--kura-fg))",
   "--kura-code-function": "var(--kura-syntax-function, var(--kura-fg))",
-  "--kura-code-type": tint("type", 0.045, 240),
+  "--kura-code-type": "var(--kura-syntax-type, var(--kura-fg-muted))",
   "--kura-code-tag": "var(--kura-syntax-tag, var(--kura-fg))",
   "--kura-code-attr": "var(--kura-syntax-attr, var(--kura-fg-muted))",
   "--kura-code-property": "var(--kura-syntax-property, var(--kura-fg))",
@@ -235,7 +233,10 @@ export function CodeBlock({
       data-wrap={wrap}
       data-state={collapsible ? (expanded ? "expanded" : "collapsed") : undefined}
       className={cn(
-        "group/code relative flex flex-col overflow-hidden rounded-kura-xl bg-kura-surface-sunken font-kura-mono text-[13px] text-kura-fg shadow-kura-sm",
+        "group/code relative flex flex-col overflow-hidden font-kura-mono text-[13px] text-kura-fg",
+        header
+          ? "rounded-kura-xl bg-kura-surface shadow-kura-surface"
+          : "rounded-kura-lg bg-kura-surface-sunken shadow-kura-sunk",
         className,
       )}
       style={{ ...syntaxVars, ...style }}
@@ -244,7 +245,7 @@ export function CodeBlock({
       {header && (
         <div
           data-slot="code-block-header"
-          className="flex h-10 shrink-0 items-center gap-2 bg-kura-surface pr-1.5 pl-3.5 shadow-[inset_0_-1px_0_var(--kura-border-subtle)]"
+          className="flex h-11 shrink-0 items-center gap-2 pr-2 pl-4"
         >
           <span className="flex min-w-0 flex-1 items-center gap-2 font-kura-sans text-[13px] text-kura-fg-muted">
             {filename && (
@@ -318,6 +319,8 @@ export function CodeBlock({
         data-slot="code-block-body"
         className={cn(
           "relative",
+          header &&
+            "mx-1.5 mb-1.5 overflow-hidden rounded-kura-lg bg-kura-surface-sunken shadow-kura-sunk",
           maxHeight != null &&
             "overflow-hidden transition-[max-height] duration-(--kura-duration-slow) ease-kura-out motion-reduce:transition-none",
         )}
@@ -354,12 +357,9 @@ export function CodeBlock({
                   data-diff={diff ? line.kind : undefined}
                   className={cn(
                     "flex px-4",
-                    isHighlighted &&
-                      "bg-kura-hover shadow-[inset_2px_0_0_var(--kura-border-strong)]",
-                    line.kind === "add" &&
-                      "bg-kura-success/10 shadow-[inset_2px_0_0_var(--kura-success)]",
-                    line.kind === "remove" &&
-                      "bg-kura-danger/10 shadow-[inset_2px_0_0_var(--kura-danger)]",
+                    isHighlighted && "bg-kura-hover",
+                    line.kind === "add" && "bg-kura-success/10",
+                    line.kind === "remove" && "bg-kura-danger/10",
                   )}
                 >
                   {lineNumbers && (
@@ -406,7 +406,7 @@ export function CodeBlock({
                       <span
                         aria-hidden
                         data-slot="code-block-caret"
-                        className="ml-px inline-block h-[1.15em] w-[0.55em] translate-y-[0.2em] rounded-[2px] bg-kura-accent/70 animate-kura-pulse motion-reduce:animate-none"
+                        className="ml-px inline-block h-[1.15em] w-[0.55em] translate-y-[0.2em] rounded-[2px] bg-kura-fg/70 animate-kura-pulse motion-reduce:animate-none"
                       />
                     )}
                   </span>
@@ -419,15 +419,15 @@ export function CodeBlock({
         {collapsed && (
           <div
             data-slot="code-block-expand"
-            className="pointer-events-none absolute inset-x-0 bottom-0 flex h-20 items-end justify-center bg-linear-to-t from-kura-surface-sunken via-kura-surface-sunken/80 to-transparent pb-3"
+            className="absolute inset-x-0 bottom-0 flex justify-center bg-kura-surface-sunken py-2 shadow-[0_-1px_0_var(--kura-border-subtle)]"
           >
             <button
               type="button"
               aria-expanded={false}
               onClick={() => setExpanded(true)}
               className={cn(
-                "pointer-events-auto inline-flex h-7 cursor-pointer items-center gap-1.5 rounded-full bg-kura-surface-raised px-3 font-kura-sans text-kura-fg-muted text-xs shadow-kura-md outline-none",
-                "transition-[color,transform,box-shadow] duration-(--kura-duration-fast) ease-kura-out hover:text-kura-fg focus-visible:shadow-kura-focus active:scale-[0.97] motion-reduce:active:scale-100",
+                "inline-flex h-7 cursor-pointer items-center gap-1.5 rounded-[8px] bg-kura-raised px-2.5 font-kura-sans text-kura-fg-muted text-xs shadow-kura-raised outline-none",
+                "transition-[color,background-color,transform] duration-(--kura-duration-fast) ease-kura-snap hover:bg-kura-raised-hover hover:text-kura-fg focus-visible:outline-2 focus-visible:outline-kura-ring focus-visible:outline-offset-2 active:translate-y-px motion-reduce:active:translate-y-0",
               )}
             >
               <ChevronsUpDown aria-hidden className="size-3" />

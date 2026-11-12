@@ -36,21 +36,19 @@ describe("Reasoning", () => {
     expect(document.querySelector("[data-slot=reasoning-content]")).not.toHaveAttribute("inert");
   });
 
-  it("shows a ticking shimmer while active, then auto-collapses", () => {
+  it("shows the running glyph and a ticking clock while active, then auto-collapses", () => {
     vi.useFakeTimers();
     const { rerender, container } = render(<Reasoning active>trace</Reasoning>);
     const root = container.firstElementChild!;
     expect(root).toHaveAttribute("data-state", "open");
-    expect(container.querySelector("[data-slot=reasoning-label]")).toHaveAttribute(
-      "data-active",
-      "true",
-    );
+    expect(container.querySelector("[data-slot=status-glyph][data-status=running]")).not.toBeNull();
     act(() => vi.advanceTimersByTime(12_000));
     expect(screen.getByRole("button")).toHaveTextContent("Thinking… 12s");
     expect(screen.getByRole("status")).toHaveTextContent("Thinking");
     act(() => vi.advanceTimersByTime(2_000));
     rerender(<Reasoning active={false}>trace</Reasoning>);
     expect(root).toHaveAttribute("data-state", "closed");
+    expect(container.querySelector("[data-slot=status-glyph]")).toBeNull();
     expect(screen.getByRole("button")).toHaveTextContent("Thought for 14s");
   });
 

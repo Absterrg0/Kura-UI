@@ -7,85 +7,14 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 /*
- * Site palette. The library's tokens stay neutral; the docs site re-tunes the dark canvas to a
- * rich near-black and adds one brand colour, Ember, used only as light (hero, logo, CTA glow).
- * State colours (blue live, green done, red failed, amber waiting) are never re-tinted.
+ * The site speaks the library's language and uses the library's tokens: nothing here re-tunes a
+ * colour. It only adds names for the few surfaces a site needs.
  */
 @theme inline {
-  --color-ember: var(--ember);
-  --color-ember-hot: var(--ember-hot);
-  --color-ember-deep: var(--ember-deep);
-  --color-stage: var(--site-stage);
-}
-
-:root {
-  --ember: #ff6b2c;
-  --ember-hot: #ff8a3d;
-  --ember-deep: #e8431f;
-
-  --kura-canvas: oklch(1 0 0);
-  --kura-surface-sunken: oklch(0.975 0.001 260);
-  --site-stage: oklch(0.985 0.001 260);
-  --site-chrome: oklch(1 0 0 / 0.92);
-
-  /* Gloss: a hairline, a lit top edge and a soft deep shadow. */
-  --gloss-shadow:
-    inset 0 1px 0 oklch(1 0 0), 0 0 0 1px oklch(0.2 0.005 260 / 0.085),
-    0 1px 2px oklch(0.2 0.01 260 / 0.05), 0 18px 40px -18px oklch(0.2 0.01 260 / 0.16);
-  --gloss-shadow-hover:
-    inset 0 1px 0 oklch(1 0 0), 0 0 0 1px oklch(0.2 0.005 260 / 0.16),
-    0 2px 4px oklch(0.2 0.01 260 / 0.06), 0 24px 48px -18px oklch(0.2 0.01 260 / 0.22);
-  --gloss-bg: linear-gradient(180deg, oklch(1 0 0), oklch(0.992 0.001 260));
-  --raise-shadow:
-    0 0 0 1px oklch(0.2 0.005 260 / 0.06), 0 28px 60px -20px oklch(0.2 0.01 260 / 0.28);
-  --stage-shadow:
-    inset 0 1px 0 oklch(1 0 0), 0 0 0 1px oklch(0.2 0.005 260 / 0.09),
-    0 40px 90px -40px oklch(0.35 0.08 40 / 0.28);
-}
-
-/* Light-mode faint text at ≥ 4.5:1 on white. */
-:root:not(.dark) {
-  --kura-gray-10: oklch(0.52 0 0);
-  --kura-fg-subtle: oklch(0.52 0 0);
-}
-
-.dark {
-  --kura-gray-1: #0a0b0d;
-  --kura-gray-2: #0e0f12;
-  --kura-gray-3: #131418;
-  --kura-gray-4: #18191e;
-  --kura-gray-5: #1e2026;
-  --kura-gray-6: #25272e;
-  --kura-gray-7: #2f3139;
-  --kura-gray-8: #3e414a;
-
-  --kura-canvas: #07080a;
-  --kura-surface: #0e0f12;
-  --kura-surface-raised: #131418;
-  --kura-surface-sunken: #0a0b0d;
-  --kura-overlay: rgb(17 18 22 / 0.97);
-  --kura-hover: rgb(255 255 255 / 0.05);
-  --kura-active: rgb(255 255 255 / 0.09);
-  --kura-fg-inverted: #07080a;
-
-  --kura-border: rgb(255 255 255 / 0.09);
-  --kura-border-subtle: rgb(255 255 255 / 0.06);
-  --kura-border-strong: rgb(255 255 255 / 0.16);
-
-  --site-stage: #0b0c0f;
-  --site-chrome: rgb(12 13 16 / 0.92);
-
-  --gloss-shadow:
-    inset 0 1px 0 rgb(255 255 255 / 0.06), 0 0 0 1px rgb(255 255 255 / 0.08),
-    0 1px 2px rgb(0 0 0 / 0.5), 0 24px 48px -20px rgb(0 0 0 / 0.7);
-  --gloss-shadow-hover:
-    inset 0 1px 0 rgb(255 255 255 / 0.08), 0 0 0 1px rgb(255 255 255 / 0.16),
-    0 1px 2px rgb(0 0 0 / 0.5), 0 30px 60px -20px rgb(0 0 0 / 0.8);
-  --gloss-bg: linear-gradient(180deg, rgb(255 255 255 / 0.03), rgb(255 255 255 / 0) 42%);
-  --raise-shadow: 0 0 0 1px rgb(255 255 255 / 0.05), 0 36px 80px -24px rgb(0 0 0 / 0.95);
-  --stage-shadow:
-    inset 0 1px 0 rgb(255 255 255 / 0.08), 0 0 0 1px rgb(255 255 255 / 0.09),
-    0 50px 120px -40px rgb(0 0 0 / 0.9);
+  /* The canvas-coloured area a live component sits on inside a card or a page. */
+  --color-stage: var(--kura-canvas);
+  /* The floating nav: the sheet colour, nearly opaque. */
+  --color-chrome: color-mix(in oklab, var(--kura-surface) 94%, transparent);
 }
 
 @layer base {
@@ -94,13 +23,14 @@
     -moz-osx-font-smoothing: grayscale;
     text-rendering: optimizeLegibility;
     scrollbar-gutter: stable;
+    background: var(--kura-canvas);
   }
   body {
     @apply bg-kura-canvas font-kura-sans text-kura-fg;
     font-feature-settings: "ss01", "cv11";
   }
   ::selection {
-    background: color-mix(in oklch, var(--ember) 30%, transparent);
+    background: color-mix(in oklab, var(--kura-fg) 18%, transparent);
   }
   :focus-visible {
     outline: 2px solid var(--kura-ring);
@@ -112,145 +42,46 @@
 }
 
 /*
- * Unlayered on purpose: these win over the components' own `shadow-kura-*` / `bg-kura-*`
- * utilities, so a live component can be dressed as a glossy card without wrapping it in one.
+ * A sheet: the one way the site draws a card, the same recipe the library's panels use.
+ * Unlayered on purpose, so it wins over a component's own shadow utility.
  */
-.gloss {
-  box-shadow: var(--gloss-shadow);
-  background-image: var(--gloss-bg);
+.sheet {
+  background-color: var(--kura-surface);
+  box-shadow: var(--kura-elev-surface);
 }
-
-/* The focal card on a stage: same gloss, lifted further off the surface. */
-.gloss-raised {
-  box-shadow: var(--gloss-shadow), var(--raise-shadow);
+/* A card that is a link lifts its ring a little on hover; nothing moves. */
+.sheet-link {
+  transition: box-shadow 160ms cubic-bezier(0.2, 0.8, 0.2, 1);
 }
-
-.gloss-hover {
-  transition:
-    box-shadow 200ms var(--ease-kura-out),
-    translate 200ms var(--ease-kura-out);
+.sheet-link:hover {
+  box-shadow:
+    var(--kura-elev-surface),
+    0 0 0 1px var(--kura-border-strong);
 }
-.gloss-hover:hover {
-  box-shadow: var(--gloss-shadow-hover);
-  translate: 0 -2px;
-}
-@media (prefers-reduced-motion: reduce) {
-  .gloss-hover:hover {
-    translate: none;
-  }
+/* A well: sunk, for code and commands. */
+.well {
+  background-color: var(--kura-surface-sunken);
+  box-shadow: var(--kura-elev-sunk);
 }
 
 /*
- * Ember light: a few crisp spans of light, staggered like rows of a trace waterfall. Each has a
- * hot head with a sharp rounded edge and a tail that fades away; a blurred copy behind it is the
- * halo. The container fades out at its sides so nothing stops hard at the viewport edge.
+ * Code is monochrome: names stay ink, keywords and strings recede to ink-2, punctuation and
+ * comments to ink-3. The same rule the library's CodeBlock and DiffView follow.
  */
-.ember-light {
-  mask-image: linear-gradient(90deg, transparent, #000 4%, #000 96%, transparent);
-}
-.ember-span {
-  position: absolute;
-  border-radius: 999px;
-  opacity: var(--o, 1);
-  background: linear-gradient(
-    var(--dir, 90deg),
-    transparent,
-    color-mix(in oklch, var(--ember-deep) 50%, transparent) 30%,
-    var(--ember) 66%,
-    var(--ember-hot) 90%,
-    oklch(0.93 0.07 60) 100%
-  );
-}
-.ember-span[data-dir="c"] {
-  background: linear-gradient(
-    90deg,
-    transparent,
-    var(--ember) 25%,
-    oklch(0.93 0.07 60) 50%,
-    var(--ember) 75%,
-    transparent
-  );
-}
-.ember-span::after {
-  content: "";
-  position: absolute;
-  inset: -120% 0;
-  border-radius: inherit;
-  background: inherit;
-  filter: blur(14px);
-  opacity: 0.75;
-}
-.ember-glow {
-  position: absolute;
-  border-radius: 50%;
-  background: radial-gradient(
-    closest-side,
-    color-mix(in oklch, var(--ember) 55%, transparent),
-    color-mix(in oklch, var(--ember-deep) 22%, transparent) 45%,
-    color-mix(in oklch, var(--ember-deep) 6%, transparent) 75%,
-    transparent
-  );
-}
-.ember-glow-wide {
-  opacity: 0.7;
-}
-/*
- * On white the light can't glow, so it becomes ink: thin, saturated lines with a tight halo,
- * and only a narrow warm haze along the lit edge (no wash across the page).
- */
-:root:not(.dark) .ember-span {
-  scale: 1 0.55;
-}
-:root:not(.dark) .ember-span::after {
-  opacity: 0.3;
-  filter: blur(6px);
-}
-:root:not(.dark) .ember-glow {
-  opacity: 0.16;
-}
-:root:not(.dark) .ember-glow-wide {
-  display: none;
-}
-
-/* Shiki dual-theme code (light/dark via CSS variables). */
-.shiki,
-.shiki span {
-  color: var(--shiki-light);
+.shiki {
+  --shiki-foreground: var(--kura-fg);
+  --shiki-background: transparent;
+  --shiki-token-constant: var(--kura-fg);
+  --shiki-token-function: var(--kura-fg);
+  --shiki-token-parameter: var(--kura-fg);
+  --shiki-token-keyword: var(--kura-fg-muted);
+  --shiki-token-string: var(--kura-fg-muted);
+  --shiki-token-string-expression: var(--kura-fg-muted);
+  --shiki-token-link: var(--kura-fg-muted);
+  --shiki-token-punctuation: var(--kura-fg-subtle);
+  --shiki-token-comment: var(--kura-fg-subtle);
   background-color: transparent !important;
-}
-.dark .shiki,
-.dark .shiki span {
-  color: var(--shiki-dark);
 }
 .shiki code {
   display: grid;
-}
-
-/* Preview stage: a quiet dot grid. */
-.bg-dots {
-  background-image: radial-gradient(
-    circle at 1px 1px,
-    color-mix(in oklch, var(--kura-fg) 9%, transparent) 1px,
-    transparent 0
-  );
-  background-size: 18px 18px;
-}
-
-/* Crop a live component at the bottom edge of its card. */
-.fade-b {
-  mask-image: linear-gradient(to bottom, black 70%, transparent);
-}
-
-/* Live examples inside glossy frames: dress every component panel as a glossy card. */
-.live-gloss .rounded-kura-xl:is(.shadow-kura-sm, .shadow-kura-md) {
-  box-shadow: var(--gloss-shadow);
-  background-image: var(--gloss-bg);
-}
-
-/* Code panes are always dark; on the light canvas their shadow stays light too. */
-:root:not(.dark) [data-slot="code-block"].gloss {
-  box-shadow:
-    inset 0 1px 0 rgb(255 255 255 / 0.06),
-    0 0 0 1px rgb(0 0 0 / 0.1),
-    0 12px 28px -16px rgb(0 0 0 / 0.35);
 }

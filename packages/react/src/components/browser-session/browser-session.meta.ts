@@ -104,7 +104,7 @@ export default defineComponent({
       type: '"browsing" | "paused" | "done" | "failed"',
       default: '"browsing"',
       description:
-        "browsing = “Agent is browsing” (blue, shimmer); paused = “Paused for you” (amber, the viewport gets an amber edge); done; failed.",
+        "browsing = “Agent is browsing” (the chasing glyph); paused = “Paused for you” (ember: it needs you, and the viewport gets an ember edge); done; failed.",
     },
     {
       name: "statusText",
@@ -181,12 +181,13 @@ export default defineComponent({
     {
       name: "Loading",
       dataSlot: "browser-session-loading",
-      description: "2px accent sweep under the chrome while a page loads.",
+      description: "The chasing glyph at the end of the address field while a page loads.",
     },
     {
       name: "Viewport",
       dataSlot: "browser-session-viewport",
-      description: "Fixed-aspect frame (no layout shift); amber inner edge while paused.",
+      description:
+        "Fixed-aspect frame (no layout shift), inset in the sheet; ember inner edge while paused.",
     },
     {
       name: "Page",
@@ -202,17 +203,17 @@ export default defineComponent({
     {
       name: "Highlight",
       dataSlot: "browser-session-highlight",
-      description: "Accent box + mono tag around the target; eases between targets.",
+      description: "Ink box + mono tag around the target; eases between targets.",
     },
     {
       name: "Cursor",
       dataSlot: "browser-session-cursor",
-      description: "Pointer arrow with an optional accent name tag; glides between points.",
+      description: "Pointer arrow with an optional ink name tag; glides between points.",
     },
     {
       name: "Ripple",
       dataSlot: "browser-session-ripple",
-      description: "Accent ring that expands and fades after the cursor arrives.",
+      description: "Ink ring that expands and fades after the cursor arrives.",
     },
     {
       name: "Log",
@@ -232,7 +233,7 @@ export default defineComponent({
       'The step log is an <ol> labelled “Browser actions”; each step speaks its status after the label, and the active one has aria-current="step".',
       "A polite status region announces the active step's label (when it is a string), “Paused for you” / your statusText, “Session ended” or “Session failed” — never the ticking clock.",
       "The address bar is a labelled group; the lock icon is labelled “Secure connection”. With `src`, the image gets alt text (default “Screenshot of {url}”).",
-      "Take over / Resume agent are real buttons with visible focus. Paused state is signalled by text and glyph, not only the amber edge.",
+      "Take over / Resume agent are real buttons with visible focus. Paused state is signalled by text and glyph, not only the ember edge.",
     ],
     keyboard: [
       {
@@ -242,9 +243,9 @@ export default defineComponent({
       },
     ],
     reducedMotion:
-      "The cursor and highlight jump instead of gliding (the highlight still fades), the click ripple is skipped, page scroll is instant, the loading sweep becomes a static bar and the shimmer stops.",
+      "The cursor and highlight jump instead of gliding (the highlight still fades), the click ripple is skipped, page scroll is instant and the loading glyph holds still.",
   },
-  dependencies: { npm: ["lucide-react"], kura: ["button", "shimmer-text", "status-glyph"] },
+  dependencies: { npm: ["lucide-react"], kura: ["button", "status-glyph"] },
   related: ["terminal", "task-list", "run-header", "approval-prompt", "tool-call"],
   tags: [
     "agent",
@@ -274,7 +275,7 @@ export default defineComponent({
       name: "BrowserSessionPaused",
       kind: "state",
       title: "Paused for you",
-      description: "A 2FA prompt only the human can answer: amber edge, “Resume agent”.",
+      description: "A 2FA prompt only the human can answer: ember edge, “Resume agent”.",
     },
     {
       name: "BrowserSessionComposition",

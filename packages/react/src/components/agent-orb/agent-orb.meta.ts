@@ -6,7 +6,7 @@ export default defineComponent({
   category: "voice",
   status: "beta",
   description:
-    "Calm, softly glassy voice-agent sphere drawn in a shader: slow colour clouds that breathe when idle, swell with audio and turn while thinking.",
+    "The voice-agent orb: a sphere drawn as a halftone of dots in a shader. The dots breathe when idle, ripple with audio and carry a light round while thinking.",
   whenToUse: [
     "The central visual of a voice agent or call screen: idle, listening, thinking, speaking, error.",
     "Showing that an assistant is hearing the user (mic level) or talking back (TTS level).",
@@ -15,8 +15,8 @@ export default defineComponent({
   ],
   whenNotToUse: [
     "Precise audio feedback such as a recording meter or waveform — use audio-waveform or voice-dictation.",
-    "Text chat 'thinking' feedback inside a message list — use thinking-indicator or shimmer-text.",
-    "More than one per view: the orb is the accent element; repeat it and it stops meaning anything.",
+    "Text chat 'thinking' feedback inside a message list — use thinking-indicator or status-glyph.",
+    "A face for a named agent in a list — use agent-sigil. The orb is the one large presence on a voice screen.",
   ],
   props: [
     {
@@ -24,14 +24,21 @@ export default defineComponent({
       type: '"idle" | "listening" | "thinking" | "speaking" | "error"',
       default: '"idle"',
       description:
-        "What the agent is doing. idle breathes slowly, listening swells with the input level, thinking turns and twists the clouds, speaking lifts with the output level, error shifts to the danger colour and calms down.",
+        "What the agent is doing. idle breathes slowly, listening sends rings out from the centre with the input level, thinking carries one bright band round the ball (the running-glyph motion), speaking pulses with the output level, error shifts to the danger colour and calms down.",
     },
     {
-      name: "colors",
-      type: '"signal" | "pearl" | "graphite" | "ocean" | "amber" | readonly [string, string, string, string]',
-      default: '"signal"',
+      name: "color",
+      type: "string",
+      default: '"var(--kura-fg)"',
       description:
-        "A palette preset, or four CSS colours `[deep, mid, bright, glint]` = densest clouds, body, light between clouds, rim/sheen (OKLCH, hex, `var(--token)`, `color-mix()`…). `signal` follows the theme: pearl with blue clouds on light pages, graphite with blue clouds on dark. `pearl` and `graphite` are neutral, `ocean` is a deeper blue, `amber` a soft warm option.",
+        "Dot colour: any CSS colour (OKLCH, hex, `var(--token)`, `color-mix()`…). Default the ink, so it follows the theme. `error` always uses the danger colour.",
+    },
+    {
+      name: "dots",
+      type: "number",
+      default: "19",
+      description:
+        "Dots across the diameter (5–61). Fewer reads bolder, more reads finer; an odd count puts one dot on the centre.",
     },
     {
       name: "analyser",
@@ -75,13 +82,13 @@ export default defineComponent({
       name: "ShaderCanvas",
       dataSlot: "agent-orb-canvas",
       description:
-        "The WebGL sphere (aria-hidden). The sphere fills ~84% of the box; the rest holds a soft contact shadow on light pages and a faint halo on dark ones.",
+        "The WebGL halftone (aria-hidden), transparent between the dots. The ball fills ~94% of the box; there is no glow, shadow or background.",
     },
     {
       name: "Fallback",
       dataSlot: "agent-orb-fallback",
       description:
-        "CSS gradient sphere in the same palette, used when WebGL2 is unavailable; its clouds turn slowly while thinking.",
+        "The same ball as two rings of CSS dots (large in the middle, small toward the limb), used when WebGL2 is unavailable; it pulses gently while thinking.",
     },
   ],
   a11y: {
@@ -93,11 +100,22 @@ export default defineComponent({
     ],
     keyboard: [],
     reducedMotion:
-      "No breathing, swirl, flow or audio reaction: a still frame per state. State changes cross-fade colour and brightness over ~0.4s, then rendering stops.",
+      "No breathing, orbit, flow or audio reaction: a still frame per state. State changes ease dot size and colour over ~0.4s, then rendering stops.",
   },
   dependencies: { npm: [], kura: ["shader-canvas"] },
   related: ["voice-dictation", "audio-waveform", "thinking-indicator", "shader-canvas"],
-  tags: ["voice", "orb", "agent", "audio", "webgl", "shader", "assistant", "speaking", "listening"],
+  tags: [
+    "voice",
+    "orb",
+    "agent",
+    "audio",
+    "webgl",
+    "shader",
+    "halftone",
+    "dots",
+    "speaking",
+    "listening",
+  ],
   examples: [
     {
       name: "AgentOrbMinimal",
@@ -108,8 +126,8 @@ export default defineComponent({
     {
       name: "AgentOrbFull",
       kind: "full",
-      title: "States, palettes and audio",
-      description: "Every state and preset, driven by a simulated speech analyser.",
+      title: "States, density and audio",
+      description: "Every state at three dot densities, driven by a simulated speech analyser.",
     },
     {
       name: "AgentOrbStates",
@@ -121,13 +139,13 @@ export default defineComponent({
       name: "AgentOrbVoiceSession",
       kind: "composition",
       title: "Voice session card",
-      description:
-        "A scripted call with captions, ShimmerText while thinking and IconButton controls.",
+      description: "A scripted call with captions and IconButton controls.",
     },
   ],
   agentNotes: [
-    'Give it a width (`className="size-48"` or `w-full max-w-64`); it is square. The sphere fills ~84% so the shadow/halo has room — do not clip it with overflow-hidden.',
-    "Keep the default `signal` palette when the orb stands for your AI: it is the only blue on a neutral page. Use `pearl` or `graphite` for a quieter, brand-neutral orb.",
+    'Give it a width (`className="size-48"` or `w-full max-w-64`); it is square and transparent, so it sits on any surface.',
+    "Leave `color` alone: the orb is ink, like every other dot in Kura. Never make it ember; ember means a person is needed.",
+    "Pick `dots` for the size: about 13 below 96px, 19 around 200px, 27 above 300px.",
     'For real audio: `const mic = useAudioAnalyser({ source: micStream })` for listening and a second analyser on the TTS <audio> element for speaking; switch `analyser` with the state. For demos use `useAudioAnalyser({ simulate: "speech" })`.',
     "`inputLevel`/`outputLevel` are fine for levels you already have (e.g. from a WebRTC SDK) at ≤ 30 updates/s; the shader smooths them.",
     "Changing `state` never restarts the animation: uniforms ease toward the new state, so you can flip states as fast as your agent emits events.",

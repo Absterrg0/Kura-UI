@@ -121,9 +121,10 @@ describe("Message", () => {
     expect(container.querySelector("[data-slot=message-branch]")).toBeNull();
   });
 
-  it("avatar falls back to initials", () => {
-    render(<MessageAvatar name="Ada Lovelace" />);
-    expect(screen.getByText("AL")).toBeInTheDocument();
+  it("avatar falls back to the dot sigil of the name", () => {
+    const { container } = render(<MessageAvatar name="Ada Lovelace" />);
+    expect(container.querySelector("[data-slot=agent-sigil]")).not.toBeNull();
+    expect(screen.getByText("Ada Lovelace")).toBeInTheDocument();
   });
 });
 

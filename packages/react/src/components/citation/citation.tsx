@@ -1,7 +1,7 @@
 "use client";
 
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@ui-sdk/react/hover-card";
-import { ArrowUpRight } from "lucide-react";
+import { ArrowUpRight, Globe } from "lucide-react";
 import * as React from "react";
 import { useControllableState } from "../../hooks/use-controllable-state";
 import { cn } from "../../lib/cn";
@@ -31,13 +31,12 @@ export function sourceDomain(url: string): string {
 
 function Favicon({ source, className }: { source: CitationSource; className?: string }) {
   const [broken, setBroken] = React.useState(false);
-  const domain = sourceDomain(source.url);
   return (
     <span
       aria-hidden
       data-slot="citation-favicon"
       className={cn(
-        "grid size-4 shrink-0 place-items-center overflow-hidden rounded-kura-xs bg-kura-surface-raised font-semibold text-[9px] text-kura-fg-muted uppercase shadow-[0_0_0_1px_var(--kura-border-subtle)]",
+        "grid size-4 shrink-0 place-items-center overflow-hidden rounded-kura-xs text-kura-fg-subtle",
         className,
       )}
     >
@@ -49,7 +48,7 @@ function Favicon({ source, className }: { source: CitationSource; className?: st
           onError={() => setBroken(true)}
         />
       ) : (
-        (source.siteName ?? domain).charAt(0)
+        <Globe aria-hidden strokeWidth={1.75} className="size-3.5" />
       )}
     </span>
   );
@@ -109,11 +108,11 @@ export function CitationCard({ source, index, className, ...props }: CitationCar
 // ------------------------------------------------------------------------------------------------
 
 export interface CitationProps extends Omit<React.ComponentProps<"a">, "href" | "children"> {
-  /** 1-based citation number shown in the pill. */
+  /** 1-based citation number printed on the key. */
   index: number;
   /** The cited source. */
   source: CitationSource;
-  /** Pill label: the number (default) or the source's domain/site name. */
+  /** Key label: the number (default) or the source's domain/site name. */
   display?: "number" | "domain";
   /** Hover delay before the preview opens, in ms. Default 250. */
   openDelay?: number;
@@ -123,7 +122,7 @@ export interface CitationProps extends Omit<React.ComponentProps<"a">, "href" | 
 }
 
 /**
- * Inline numbered citation pill. It is a real link to the source; hovering or keyboard-focusing
+ * Inline numbered citation, drawn as a small keycap. It is a real link to the source; hovering or keyboard-focusing
  * it opens a preview card with favicon, title, domain and snippet.
  */
 export function Citation({
@@ -156,14 +155,15 @@ export function Citation({
         data-state={open ? "open" : "closed"}
         aria-label={`Source ${index}: ${source.title} (${domain})`}
         className={cn(
-          "relative -top-[0.1em] mr-px ml-1 inline-flex h-[1.3em] min-w-[1.3em] items-center justify-center gap-1 rounded-full bg-kura-hover px-[0.4em] align-middle font-kura-sans font-medium text-[0.72em] text-kura-fg-muted tabular-nums leading-none no-underline outline-none",
-          "transition-[background-color,color,box-shadow] duration-(--kura-duration-fast) ease-kura-out hover:bg-kura-active hover:text-kura-fg focus-visible:shadow-kura-focus data-open:bg-kura-active data-open:text-kura-fg",
+          // A citation is a small keycap with the source number printed on it.
+          "relative -top-[0.1em] mr-px ml-1 inline-flex h-[1.35em] min-w-[1.35em] items-center justify-center gap-1 rounded-[5px] bg-kura-raised px-[0.35em] align-middle font-kura-mono font-medium text-[0.7em] text-kura-fg-muted tabular-nums leading-none no-underline shadow-kura-key outline-none",
+          "transition-[background-color,color] duration-(--kura-duration-fast) ease-kura-snap hover:bg-kura-raised-hover hover:text-kura-fg focus-visible:outline-2 focus-visible:outline-kura-ring focus-visible:outline-offset-1 data-open:bg-kura-raised-hover data-open:text-kura-fg",
           className,
         )}
         {...props}
       >
         {display === "domain" && (
-          <Favicon source={source} className="-ml-0.5 size-[1.15em] rounded-full" />
+          <Favicon source={source} className="-ml-px size-[1.1em] rounded-[3px]" />
         )}
         {label}
       </HoverCardTrigger>
@@ -173,8 +173,8 @@ export function Citation({
         sideOffset={6}
         render={<div data-slot="citation-preview" />}
         className={cn(
-          "z-50 m-0 w-80 max-w-[calc(100vw-16px)] overflow-visible rounded-kura-xl border-0 bg-kura-surface-raised p-3 font-kura-sans text-kura-fg text-sm shadow-kura-lg outline-none",
-          "origin-(--transform-origin) transition-[opacity,scale] duration-(--kura-duration-base) ease-kura-out",
+          "z-50 m-0 w-80 max-w-[calc(100vw-16px)] overflow-visible rounded-kura-xl border-0 bg-kura-raised p-3 font-kura-sans text-[13px] text-kura-fg shadow-kura-popover outline-none",
+          "origin-(--transform-origin) transition-[opacity,scale] duration-(--kura-duration-base) ease-kura-snap",
           "data-starting-style:scale-95 data-starting-style:opacity-0 data-ending-style:scale-95 data-ending-style:opacity-0 motion-reduce:transition-none",
         )}
       >
@@ -224,7 +224,7 @@ export function Sources({
         aria-label={label == null ? "Sources" : undefined}
         className={cn(
           variant === "strip"
-            ? "-mx-1 -my-1 flex snap-x gap-2 overflow-x-auto px-1 py-1 [mask-image:linear-gradient(to_right,black_calc(100%-2rem),transparent)] [scrollbar-width:none]"
+            ? "-mx-1 -my-1 flex snap-x gap-2 overflow-x-auto px-1 py-1 [scrollbar-width:none]"
             : "flex flex-col gap-1",
         )}
       >
@@ -237,7 +237,7 @@ export function Sources({
                   href={source.url}
                   target="_blank"
                   rel="noreferrer"
-                  className="flex w-44 flex-col gap-1.5 rounded-kura-lg bg-kura-surface px-3 py-2.5 shadow-kura-xs outline-none transition-[background-color,box-shadow] duration-(--kura-duration-fast) ease-kura-out hover:bg-kura-surface-sunken focus-visible:shadow-kura-focus"
+                  className="flex w-44 flex-col gap-1.5 rounded-kura-lg bg-kura-raised px-3 py-2.5 shadow-kura-raised outline-none transition-colors duration-(--kura-duration-fast) ease-kura-snap hover:bg-kura-raised-hover focus-visible:outline-2 focus-visible:outline-kura-ring focus-visible:outline-offset-2"
                 >
                   <span className="flex items-center gap-1.5 text-kura-fg-subtle text-xs">
                     <Favicon source={source} className="size-3.5" />
@@ -253,7 +253,7 @@ export function Sources({
                   href={source.url}
                   target="_blank"
                   rel="noreferrer"
-                  className="-mx-2 flex gap-3 rounded-kura-md px-2 py-2 outline-none transition-colors duration-(--kura-duration-fast) ease-kura-out hover:bg-kura-hover focus-visible:shadow-kura-focus"
+                  className="-mx-2 flex gap-3 rounded-[9px] px-2 py-2 outline-none transition-colors duration-(--kura-duration-fast) ease-kura-snap hover:bg-kura-hover focus-visible:outline-2 focus-visible:outline-kura-ring"
                 >
                   <span className="w-4 shrink-0 pt-px text-right font-kura-mono text-kura-fg-subtle text-xs tabular-nums">
                     {i + 1}

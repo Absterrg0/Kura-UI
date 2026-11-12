@@ -56,11 +56,10 @@ export function PromptSuggestions({
   const item: Variants = reduced
     ? { hidden: { opacity: 0 }, shown: { opacity: 1, transition: { duration: 0.2 } } }
     : {
-        hidden: { opacity: 0, y: 6, filter: "blur(2px)" },
+        hidden: { opacity: 0, y: 4 },
         shown: (i: number) => ({
           opacity: 1,
           y: 0,
-          filter: "blur(0px)",
           transition: { ...springs.smooth, delay: Math.min(i, 8) * stagger },
         }),
       };
@@ -90,10 +89,7 @@ export function PromptSuggestions({
               initial="hidden"
               animate="shown"
               exit={{ opacity: 0, transition: { duration: 0.09 } }}
-              className={cn(
-                "flex",
-                variant === "list" && "not-last:shadow-[0_1px_0_var(--kura-border-subtle)]",
-              )}
+              className="flex"
             >
               <button
                 type="button"
@@ -102,14 +98,15 @@ export function PromptSuggestions({
                 onClick={() => onSelect?.(promptOf(s), s)}
                 className={cn(
                   "group/suggestion relative flex w-full min-w-0 cursor-pointer items-center text-left outline-none",
-                  "transition-[background-color,color,box-shadow,transform] duration-(--kura-duration-fast) ease-kura-out",
-                  "focus-visible:shadow-kura-focus disabled:cursor-not-allowed disabled:opacity-50 motion-reduce:transform-none",
+                  "transition-[background-color,color,transform] duration-(--kura-duration-fast) ease-kura-snap",
+                  "focus-visible:outline-2 focus-visible:outline-kura-ring focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:opacity-50 motion-reduce:transform-none",
+                  // Chips are keycaps; cards are sheets; the list is bare rows.
                   variant === "chips" &&
-                    "h-8 gap-1.5 rounded-full bg-kura-gray-3 px-3 font-medium text-[13px] text-kura-fg-muted hover:not-disabled:bg-kura-gray-4 hover:not-disabled:text-kura-fg active:not-disabled:scale-[0.97] [&_[data-slot=prompt-suggestions-icon]_svg]:size-3.5",
+                    "h-8 gap-1.5 rounded-[9px] bg-kura-raised px-[11px] font-medium text-[13px] text-kura-fg shadow-kura-raised hover:not-disabled:bg-kura-raised-hover active:not-disabled:translate-y-px [&_[data-slot=prompt-suggestions-icon]_svg]:size-3.5",
                   variant === "cards" &&
-                    "flex-col items-start gap-2.5 rounded-kura-xl bg-kura-surface p-3.5 shadow-kura-sm hover:not-disabled:bg-kura-gray-2 hover:not-disabled:shadow-kura-md active:not-disabled:scale-[0.985]",
+                    "flex-col items-start gap-2.5 rounded-kura-xl bg-kura-surface p-3.5 shadow-kura-surface hover:not-disabled:bg-kura-raised active:not-disabled:translate-y-px",
                   variant === "list" &&
-                    "gap-3 rounded-kura-md px-2 py-2.5 text-kura-fg-muted text-sm hover:not-disabled:bg-kura-hover hover:not-disabled:text-kura-fg",
+                    "gap-3 rounded-[9px] px-2 py-2.5 text-[13px] text-kura-fg-muted hover:not-disabled:bg-kura-hover hover:not-disabled:text-kura-fg",
                 )}
               >
                 {s.icon && (
@@ -119,7 +116,7 @@ export function PromptSuggestions({
                     className={cn(
                       "flex shrink-0 items-center justify-center text-kura-fg-subtle transition-colors duration-(--kura-duration-fast) group-hover/suggestion:text-kura-fg-muted",
                       variant === "cards" &&
-                        "size-7 rounded-kura-md bg-kura-hover shadow-[inset_0_0_0_1px_var(--kura-border-subtle)] [&_svg]:size-3.5",
+                        "size-[30px] rounded-[9px] bg-kura-raised shadow-kura-raised [&_svg]:size-3.5",
                       variant === "list" && "[&_svg]:size-4",
                     )}
                   >
@@ -133,7 +130,7 @@ export function PromptSuggestions({
                     <span
                       className={cn(
                         "truncate font-medium",
-                        variant === "cards" ? "text-kura-fg text-sm" : "text-inherit",
+                        variant === "cards" ? "text-[13px] text-kura-fg" : "text-inherit",
                       )}
                     >
                       {s.title}

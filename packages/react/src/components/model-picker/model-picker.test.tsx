@@ -109,7 +109,7 @@ describe("ModelPicker", () => {
   it("under reduced motion the chevron does not rotate", () => {
     setReducedMotion(true);
     render(<ModelPicker models={models} />);
-    const chevron = screen.getByRole("button").querySelector("svg")!;
+    const chevron = screen.getByRole("button").querySelector("svg.lucide")!;
     expect(chevron.getAttribute("class")).toContain("motion-reduce:transition-none");
   });
 

@@ -1,246 +1,179 @@
-# Kura Signal — the Kura UI design language
+# The dot language — the Kura UI design language
 
-> **Everything is still until the model speaks.**
-> Surfaces are quiet paper and ink. Motion and colour are a _signal_: they appear only where an
-> agent is thinking, listening, streaming or asking for something.
+> **Agents emit tokens. So in Kura, everything measured or stateful is drawn in dots.**
+> That one motif is the identity. The rest is a quiet, crisp frame for it.
 
-Kura (蔵) is a storehouse — a calm, well-made place where valuable things are kept. The
-components are instruments for working with models: precise, warm, legible, a little tactile,
-never loud. This document is the contract every component follows. It is distilled from the
-craft of people we admire (Emil Kowalski's work on Sonner/Vaul and animation, Rauno Freiberg's
-"Invisible Details of Interaction Design", Paco Coursey's cmdk, Jhey Tompkins' playful CSS,
-Vercel Geist, Linear, Raycast, Family) and from the AI-interface wave (AI Elements, ElevenLabs UI,
-prompt-kit, assistant-ui). We take principles, not looks.
+Kura (蔵) is a storehouse: a calm, well-made place where valuable things are kept. The components
+are instruments for supervising agents. This document is the contract every component follows.
+The source of truth for values is `packages/react/src/styles/kura.css`.
 
 ---
 
-## 1. Principles
+## 1. The seven rules
 
-1. **Quiet by default, alive on signal.** Neutral surfaces, one accent. The accent (blue
-   "signal") means _the machine is doing something_: streaming, listening, running a tool,
-   awaiting approval. If nothing is happening, nothing glows.
-2. **Responsive before decorative.** Every interaction acknowledges input within one frame
-   (press scale, hover tint, focus ring). Decoration is optional; feedback is not.
-3. **Motion explains, never performs.** Animate to show where something came from, what changed,
-   or that work is in progress. Never animate to fill time.
-4. **Interruptible everything.** A user can reverse any gesture or state mid-flight. Use springs
-   (they keep velocity) or CSS transitions (they retarget) — never keyframes for state toggles.
-5. **Text is the interface.** Model output is text. Typography, rhythm and contrast matter more
-   than chrome.
-6. **Agents read our components too.** Every component ships a manifest (`*.meta.ts`) so an agent
-   can choose it, configure it and compose it without guessing. Clear names, explicit states,
-   data attributes for every part (`data-slot`, `data-state`).
-
----
-
-## 2. Color
-
-All colors are OKLCH CSS variables defined in `packages/react/src/styles/kura.css` and exposed to
-Tailwind as `*-kura-*` utilities. **Components never hard-code colors and never use `dark:`** —
-tokens flip under `.dark` or `[data-theme="dark"]`.
-
-### Neutral scale — true greys (no tint), Geist-like steps
-
-| Step      | Use                       | Light              | Dark               |
-| --------- | ------------------------- | ------------------ | ------------------ |
-| `gray-1`  | app canvas                | `oklch(0.99 0 0)`  | `oklch(0.145 0 0)` |
-| `gray-2`  | subtle / sunken bg        | `oklch(0.975 0 0)` | `oklch(0.17 0 0)`  |
-| `gray-3`  | UI element bg             | `oklch(0.96 0 0)`  | `oklch(0.2 0 0)`   |
-| `gray-4`  | hovered element bg        | `oklch(0.94 0 0)`  | `oklch(0.225 0 0)` |
-| `gray-5`  | active element bg         | `oklch(0.92 0 0)`  | `oklch(0.25 0 0)`  |
-| `gray-6`  | subtle borders            | `oklch(0.895 0 0)` | `oklch(0.28 0 0)`  |
-| `gray-7`  | borders                   | `oklch(0.86 0 0)`  | `oklch(0.33 0 0)`  |
-| `gray-8`  | strong borders            | `oklch(0.79 0 0)`  | `oklch(0.41 0 0)`  |
-| `gray-9`  | solid                     | `oklch(0.64 0 0)`  | `oklch(0.55 0 0)`  |
-| `gray-10` | placeholder / subtle text | `oklch(0.58 0 0)`  | `oklch(0.62 0 0)`  |
-| `gray-11` | muted text (≥ 4.5:1)      | `oklch(0.46 0 0)`  | `oklch(0.74 0 0)`  |
-| `gray-12` | primary text, ink         | `oklch(0.16 0 0)`  | `oklch(0.97 0 0)`  |
-
-Cards are white on a near-white canvas in light, and one step lighter than a near-black canvas in dark.
-
-### Semantic tokens (use these, not the scale)
-
-| Utility                                                                                        | Meaning                                                   |
-| ---------------------------------------------------------------------------------------------- | --------------------------------------------------------- |
-| `bg-kura-canvas`                                                                               | page background                                           |
-| `bg-kura-surface` / `-raised` / `-sunken`                                                      | cards, raised panels, wells and inputs                    |
-| `bg-kura-overlay`                                                                              | translucent popovers/menus (pair with `backdrop-blur-xl`) |
-| `bg-kura-hover` / `bg-kura-active`                                                             | translucent hover/pressed tints (work on any surface)     |
-| `text-kura-fg` / `-fg-muted` / `-fg-subtle` / `-fg-inverted`                                   | text hierarchy                                            |
-| `border-kura-border` / `-border-subtle` / `-border-strong`                                     | translucent hairlines                                     |
-| `bg-kura-ink` / `-ink-hover`                                                                   | primary (ink) buttons                                     |
-| `bg-kura-accent` / `-accent-hover` / `-accent-fg` / `-accent-subtle` / `text-kura-accent-text` | the signal                                                |
-| `kura-danger*`, `kura-success*`, `kura-warning*`                                               | status only — never decoration                            |
-| `kura-ring`                                                                                    | focus ring color                                          |
-
-### The one accent — "signal" (blue, hue ~260)
-
-Light `oklch(0.56 0.2 260)`, dark `oklch(0.68 0.17 258)`. Rules:
-
-- At most **one** accent-filled element per view (e.g. the "Run agent" button or the live orb).
-- Use `accent-subtle` + `accent-text` for small live states (a running step, a listening pill).
-- The primary call-to-action is **ink**, not accent. Accent is for AI-specific actions and states.
-- No purple-to-pink "AI gradients", no sparkles as decoration (see Anti-patterns).
-- No ornaments: no textures, glows, glassmorphism on chrome, serif/italic display type or brush marks.
-  Taste comes from typography, spacing, contrast and motion, not decoration.
+1. **Status is a 5×5 dot glyph**, never an icon or a coloured pill (`StatusGlyph`).
+   queued = hollow ring · running = a light chasing round the ring · waiting on a person = ember
+   ring with a blinking centre · done = solid disc · failed = a cross · skipped = a dash ·
+   paused = two bars.
+2. **Every agent has a face**: a symmetric 5×5 dot sigil generated from its name, in a small
+   raised tile (`AgentSigil`). Same name, same face. No letter avatars, no robot icons.
+3. **Anything measured is a row of dots** (`DotRail`): run progress, subagent progress, trace
+   spans (a run of lit dots on a shared time axis), meters, waveforms (a dot matrix). Context is
+   one hundred dots, one per percent. Property lists and tree guides use dotted leaders
+   (`kura-leader`). No solid progress bars.
+4. **Ember means "this needs you" and nothing else.** It appears as a halftone (`Halftone`: dots
+   that shrink as they fade) in the top-right corner of the thing that needs a person, on its
+   glyph and on its label. When the person decides, ember leaves the screen. Never ember for
+   decoration, hover, links, warnings or brand chrome inside components.
+5. **One way to draw an edge.** A _sheet_ is a flat fill with one crisp 1px ring, a faint 1px
+   halo outside it and an etched top edge; radius 14px. A _well_ (code, commands, terminals,
+   inputs) is sunk: darker fill, inner shadow, radius 10px. Nothing else has a border. No glows,
+   no blur, no grain, no gradients on surfaces, no boxes inside boxes beyond sheet → well.
+6. **Buttons are keycaps**: raised, radius 9px, 32px tall, with the shortcut printed on the key
+   in a small keycap (`Kbd`). Primary is the ink fill (light on dark, dark on light). No pill
+   buttons, no accent-colour buttons.
+7. **Monochrome ink.** Text is ink in three steps. Green and red appear only for test results,
+   diffs and failures; ember only per rule 4. There is no blue. Code is monochrome too.
 
 ---
 
-## 3. Typography
+## 2. Colour
 
-- **Sans:** Geist (via `geist`/`next/font` or `@fontsource-variable/geist`), falling back to
-  Inter, `ui-sans-serif`, `system-ui`. Token: `font-kura-sans`.
-- **Mono:** Geist Mono → `ui-monospace`, SF Mono, JetBrains Mono, Menlo. Token: `font-kura-mono`.
-  Use mono for code, token counts, IDs, timings, keyboard-like data.
-- Kura reads `--font-geist-sans` / `--font-geist-mono` if your app defines them (next/font does).
-- Scale (px): 11 · 12 · 13 · 14 (UI default) · 15 · 16 (reading) · 20 · 24 · 32 · 48.
-- Use `tabular-nums` for anything that counts or ticks (timers, tokens, costs).
-- Body copy line-height 1.6; UI labels 1.25–1.4; display tight (`tracking-tight`, 1.05–1.15).
-- Headings use weight 500–600, never 700+ in UI. Contrast comes from size and color, not weight.
-- Streaming text never reflows previous lines; reserve height or append only.
+All colours are CSS variables exposed to Tailwind as `*-kura-*` utilities. **Components never
+hard-code colours and never use `dark:`**; tokens flip under `.dark` or `[data-theme="dark"]`.
 
----
+| Token (utility)                              | Dark                              | Light                             | Use                               |
+| -------------------------------------------- | --------------------------------- | --------------------------------- | --------------------------------- |
+| `canvas` (`bg-kura-canvas`)                  | `#0c0d0f`                         | `#e9ebee`                         | the page                          |
+| `surface` (`bg-kura-surface`)                | `#141518`                         | `#ffffff`                         | sheets                            |
+| `surface-sunken` (`bg-kura-surface-sunken`)  | `#0a0b0d`                         | `#f2f3f5`                         | wells                             |
+| `raised` (`bg-kura-raised`)                  | `#1e2024`                         | `#ffffff`                         | keys, tiles, popovers             |
+| `fg` / `fg-muted` / `fg-subtle`              | `#f2f3f4` / `#a4a7ad` / `#878b92` | `#111214` / `#53565c` / `#62666d` | ink, ink-2, ink-3 (all text-safe) |
+| `faint` (`text-kura-faint`)                  | `#3a3d43`                         | `#c4c7cc`                         | decoration only: leaders, spines  |
+| `dot-off` (`bg-kura-dot-off`)                | `rgb(255 255 255 / .13)`          | `rgb(17 18 20 / .15)`             | unlit dots                        |
+| `border` / `border-subtle` / `border-strong` | white at 6–14%                    | ink at 6.5–16%                    | hairlines inside a sheet          |
+| `ember` / `ember-text`                       | `#ff6b2c` / `#ff9864`             | `#f2591a` / `#b83f0c`             | needs a person (rule 4)           |
+| `success` / `success-text`                   | `#5fc27a`                         | `#2c9a58` / `#1f7a44`             | passes, additions                 |
+| `danger` / `danger-text`                     | `#f26b60`                         | `#c93a2f`                         | failures, deletions, destructive  |
+| `ink-fill` (`bg-kura-ink-fill`)              | near-white, 2-stop                | near-black, 2-stop                | the primary key                   |
+| `ring` (`outline-kura-ring`)                 | ink-2 at 70%                      | ink at 50%                        | focus                             |
 
-## 4. Shape: radii, borders, shadows
+There is **no accent colour**. The old `accent` tokens resolve to ink so existing markup stays
+monochrome; do not use them in new code. `warning` resolves to ember, so do not use it for
+anything that is not "a person is needed".
 
-**Radii:** `rounded-kura-xs` 4 · `sm` 6 · `md` 8 · `lg` 12 · `xl` 16 · `2xl` 20 · full for pills.
-Nested corners are concentric: `inner = outer − padding` (a 16px card with 4px padding holds
-12px children).
-
-**Hairline borders.** Borders are translucent (`oklch(ink / 0.07–0.2)`) so they work on any
-surface. We prefer **shadow-rings** (`0 0 0 1px var(--kura-border)`) over `border` so elements do
-not shift by a pixel when the border appears, and so rings composite with elevation.
-
-**Layered shadows** — a ring plus tight, low-opacity ambient layers:
-
-| Token               | Use                              |
-| ------------------- | -------------------------------- |
-| `shadow-kura-xs`    | buttons, keycaps, chips          |
-| `shadow-kura-sm`    | cards, inputs, composers at rest |
-| `shadow-kura-md`    | raised cards, tooltips, toasts   |
-| `shadow-kura-lg`    | popovers, menus, dialogs         |
-| `shadow-kura-focus` | the focus ring (see §7)          |
-
-In dark mode shadows carry less meaning; elevation comes from a lighter surface plus a 1px inner
-top highlight (`inset 0 1px 0 oklch(1 0 0 / 0.04)`), built into the dark tokens.
+Contrast: text ≥ 4.5:1 on its surface in both themes; state marks and control edges ≥ 3:1.
+`faint` and `dot-off` are below 3:1 on purpose and must never carry text or the only signal.
 
 ---
 
-## 5. Motion
+## 3. Elevation and shape
 
-### Durations (CSS `--kura-duration-*`, JS `durations.*` in seconds)
+| Recipe (utility)      | What it is                                               |
+| --------------------- | -------------------------------------------------------- |
+| `shadow-kura-surface` | a sheet: ring + halo + etched top edge + one soft drop   |
+| `shadow-kura-sunk`    | a well: inner shadow + inner hairline                    |
+| `shadow-kura-raised`  | a key or tile: top highlight + ring + 1px drop           |
+| `shadow-kura-ink`     | the primary key's edge                                   |
+| `shadow-kura-key`     | a small printed keycap (`Kbd`, citations)                |
+| `shadow-kura-popover` | floating things: popovers, palettes, menus, dragged rows |
 
-| Token     | ms  | Use                                      |
-| --------- | --- | ---------------------------------------- |
-| `instant` | 90  | exits, hover tints, key presses          |
-| `fast`    | 150 | tooltips, small popovers, press feedback |
-| `base`    | 220 | dropdowns, toggles, list insertions      |
-| `slow`    | 320 | panels, larger reveals                   |
-| `slower`  | 480 | page-level, hero, drawers                |
+Radii: sheet 14 (`rounded-kura-xl`), well 10 (`rounded-kura-lg`), key 9, small key 7, keycap 5,
+hover rows 9. Nothing is a pill; the only circles are dots.
 
-UI motion stays under 300ms. Anything triggered dozens of times a day (menus, command palette)
-should be _fast_ or not animate at all.
-
-### Easing (CSS `ease-kura-*`, JS `easings.*`)
-
-- **`out` — `cubic-bezier(0.23, 1, 0.32, 1)`**: the default. Enters and anything the user
-  triggers. Fast start = feels responsive.
-- **`in-out` — `cubic-bezier(0.77, 0, 0.175, 1)`**: on-screen movement from A to B.
-- **`in` — `cubic-bezier(0.55, 0, 1, 0.45)`**: exits only, and short.
-- **`spring` — a CSS `linear()` spring** with ~0.6% overshoot for CSS-only "settle".
-- Never `linear` except for continuous loops (spinners, shimmer, marquee). Never `ease-in` on enter.
-
-### Springs (motion/react — `import { springs } from "@kura-ui/react/utils"`)
-
-| Preset   | Config                                                 | Use                                              |
-| -------- | ------------------------------------------------------ | ------------------------------------------------ |
-| `snappy` | `{ type: "spring", visualDuration: 0.2, bounce: 0.1 }` | presses, toggles, small flips                    |
-| `smooth` | `{ visualDuration: 0.35, bounce: 0 }`                  | layout, panels, popovers (default)               |
-| `gentle` | `{ visualDuration: 0.5, bounce: 0.05 }`                | sheets, drawers, hero                            |
-| `bouncy` | `{ visualDuration: 0.4, bounce: 0.25 }`                | delight moments, orbs, success ticks — sparingly |
-
-### Rules
-
-- **Origin-aware.** Popovers and tooltips scale from their trigger
-  (`origin-(--radix-popover-content-transform-origin)`), from `0.96`, never from `0`.
-- **Enter slower than exit.** Exits are ~60% of the enter duration.
-- **Interruptible.** Use transitions/springs for state; keyframes only for one-shot enters and loops.
-- **Skip repeat animations.** Moving between tooltips is instant (`data-[state=instant-open]:animate-none`).
-- **Press feedback:** `active:scale-[0.97]` on buttons; keys travel 1px.
-- **Blur for state swaps.** When swapping text/icons in place, cross-fade with 2px blur rather
-  than sliding.
-- **Animate `transform`, `opacity`, `filter`, `clip-path`.** Never width/height/top/left for
-  continuous motion. Use `layout` animations from motion for size changes.
-- **Stagger** list reveals 30–50ms per item, capped at ~8 items.
-- **Streaming:** append tokens without animating each one; animate the _caret_ and the end-of-stream
-  settle instead.
-
-### Reduced motion (`prefers-reduced-motion: reduce`)
-
-Not "no motion" — _no travel_. Keep opacity fades (they carry meaning), remove translation,
-scale, blur, parallax, and continuous loops.
-
-- CSS tokens do it automatically: `--kura-pop-scale: 1`, `--kura-pop-y: 0`, `--kura-rise-*: 0`.
-- Tailwind: `motion-reduce:animate-none`, `motion-reduce:scale-100`, etc.
-- JS: `useReducedMotion()` from `@kura-ui/react/hooks`; pass `reducedTransition` or a fade.
-- Shaders render one still frame; audio visualisers show a static level meter.
-- Every component test covers reduced motion.
+Layout inside a sheet: an 11-unit header (44px, title 13px/600, no rule under it), rows of 32–36px
+with a 9px-radius hover fill inset 6px from the sheet's edge, wells inset 6px. Lists have no
+dividers. A hairline is allowed only to separate a footer of actions from content.
 
 ---
 
-## 6. Density & layout
+## 4. Dots
 
-- Base unit 4px. Control heights: 24 (xs) · 28 (sm) · 32 (md, default) · 40 (lg).
-- Hit targets ≥ 24×24 on desktop; ≥ 44×44 on touch (`pointer-coarse:` variants).
-- Default UI font 14px, 13px in dense toolbars, 15–16px for conversation text.
-- Content measure for model output: 60–75ch.
-- Use `gap`, not margins, inside components. Components never set outer margins.
+| Utility / component | Use                                                                          |
+| ------------------- | ---------------------------------------------------------------------------- |
+| `kura-dots`         | the one background that draws dots; tune `--kura-dots-color`, `-r`, `-pitch` |
+| `kura-leader`       | a faint line of fine dots, 5px thick: leaders, tree guides, spines, rules    |
+| `DotRail`           | progress or a span: lit dots from `start` for `value`, optional live head    |
+| `StatusGlyph`       | the seven states                                                             |
+| `AgentSigil`        | a face from a name                                                           |
+| `Halftone`          | the ember corner; the parent must be `relative isolate`                      |
+| `Spinner`           | the chasing ring, for loading that is not an agent state                     |
 
----
-
-## 7. Focus & states
-
-- Focus ring: `focus-visible:shadow-kura-focus` = 1px canvas gap + 2px signal ring at 55%.
-  Only on `:focus-visible`, never on mouse click. Never `outline-none` without a replacement.
-- States are exposed as data attributes for styling and for agents: `data-state="open|closed"`,
-  `data-active`, `data-pressed`, `data-status="idle|running|done|error"`.
-- Disabled = 50% opacity + `cursor-not-allowed` + the native `disabled` attribute.
-- Loading keeps the element's size (no layout shift) and sets `aria-busy`.
+Dots sit on a 3-unit grid inside a 15-unit glyph (r 1.1); rails use a 6px pitch (r 1.1); leaders
+a 5px pitch (r 0.8). Rails snap to whole dots: a dot is never cut in half.
 
 ---
 
-## 8. Sound & haptics
+## 5. Type
 
-- **Off by default.** Sound is opt-in per app (`sound` prop or context), never per component.
-- When enabled: very short (< 120ms), soft, low-volume cues only for *events the user did not
-  directly cause*: an agent finished, approval needed, recording started/stopped.
-- Haptics (`navigator.vibrate(8)`) only on touch devices, only for confirmations and
-  start/stop of recording. Never on hover, never repeated.
-- Respect `prefers-reduced-motion` as a proxy for "reduce sensory load" — no sounds/haptics then.
-
----
-
-## 9. Accessibility baseline
-
-- WCAG 2.2 AA contrast for text (`fg-muted` ≥ 4.5:1 on canvas in both themes).
-- Every interactive element is keyboard reachable, has a visible focus ring and an accessible
-  name. Icon-only buttons require `label`.
-- Live AI output: use `role="status"`/`aria-live="polite"` for progress; `role="log"` for
-  conversation; never announce every streamed token — announce the completed message.
-- Decorative visuals (`ShaderCanvas`, orbs, gradients) are `aria-hidden`.
-- Audio/voice components expose a text equivalent of their state ("Listening", "Muted").
+- **Geist** for words, **Geist Mono** (tabular) for every number, path, command and duration.
+- 13px/20px body; 12–12.5px meta; panel titles 13px/600; the one headline in a panel up to
+  19px/600 at −0.022em. Conversation text 15px.
+- Sentence case everywhere. No uppercase labels, no letter-spaced mono eyebrows.
+- Icons: Lucide only, 1.75–2px stroke, used sparingly. Dots carry state, so most rows need no icon.
 
 ---
 
-## 10. Anti-patterns (we do not ship these)
+## 6. Motion
 
-- Purple→pink "AI" gradients, sparkle ✨ icons as decoration, glowing everything.
-- Animating on every keystroke or token; bouncing UI that the user triggers 100× a day.
-- `ease-in` enters, `linear` UI transitions, durations over 400ms for UI state.
-- Scale from 0, transform-origin center on anchored popovers.
-- Hard-coded hex colors, `dark:` overrides in components, opaque borders that double up.
-- Spinners for model "thinking" (use shimmer-text / thinking-indicator — it's thought, not network).
-- Layout shift when content streams in or a button enters a loading state.
-- Tooltips with essential info or interactive content; icon buttons without labels.
-- Fake progress bars, fake typing delays, dark patterns around approval/consent.
-- Components that set outer margins, fixed widths, or global styles.
+- **One curve** for UI: `ease-kura-snap` = `cubic-bezier(.2, .8, .2, 1)`, 120–220ms
+  (`--kura-duration-fast` 140ms, `-base` 200ms). Enters may use `ease-kura-out`.
+- **Three loops**, all dots: the chase (`animate-kura-chase`, 1.2s linear, 12 dots 100ms apart),
+  the blink of a waiting glyph's centre (`animate-kura-blink`, 1.1s), the pulse of a live leading
+  dot (`animate-kura-dot-pulse`, 1.1s).
+- When a decision is made the whole view reacts together: the halftone fades, glyphs change,
+  rails advance.
+- Keys travel 1px on press (`active:translate-y-px`). Nothing scales from 0; nothing blurs.
+- Streaming: append tokens without animating each one; one pulsing dot marks the live edge.
+- Springs (`springs.*` from `lib/motion`) are for layout changes only (reorder, expand).
+
+### Reduced motion
+
+Glyphs and rails hold still; only opacity fades remain. `motion-reduce:animate-none` on every
+loop, `motion-reduce:transition-none` on every travel, `useReducedMotion()` in JS. The running
+glyph rests with a quarter of its ring lit. Shaders render one still frame. Every component test
+covers it.
+
+---
+
+## 7. Focus, states, density
+
+- Focus: `focus-visible:outline-2 outline-kura-ring` with a 2px offset (inset on rows). Only on
+  `:focus-visible`. Never remove an outline without a replacement.
+- States are data attributes, for styling and for agents: `data-state`, `data-status`,
+  `data-decision`, `data-selected`.
+- Disabled = 50% opacity + `cursor-not-allowed`. Loading keeps the element's size and sets
+  `aria-busy`.
+- Base unit 4px. Control heights 24 · 28 · 32 (default) · 40. Hit targets ≥ 24px on desktop,
+  ≥ 44px on touch. Printed shortcuts hide on touch (`pointer-coarse:hidden`).
+- Components use `gap`, never outer margins, and never a fixed width on the root.
+
+---
+
+## 8. Accessibility baseline
+
+- WCAG 2.2 AA. A glyph is never the only signal: every state is also a word, spoken or shown.
+- Every control is keyboard reachable with an accessible name; icon-only buttons require `label`.
+- Live output: `role="status"` for progress, `role="log"` for conversation. Never announce every
+  streamed token.
+- Decorative dots (halftones, sigils without a label, rails without a label) are `aria-hidden`;
+  a `DotRail` with a `label` is a `progressbar`.
+- Agent-ready: every control is a ui-sdk part, every agent-facing root is an `agentSurface`, and
+  anything a person must decide carries `data-agent-confirm`.
+
+---
+
+## 9. Never
+
+- Copying a reference (Midday, Raycast, Linear). They are examples of taste only.
+- Blurry glows, LED bloom, chrome or metal, grain, paper textures, washes and tints on chrome.
+- Solid progress bars, status pills and badges, letter avatars, spinner icons, shimmer on labels
+  that already have a glyph.
+- Blue or purple accents, "AI" gradients, sparkles, mascots, coloured syntax highlighting.
+- Wide or serif display type; uppercase mono label soup.
+- Pill buttons, pastel state fills, boxes inside boxes, dashboard clutter (toolbars, legends,
+  eyebrow pills, stat chips).
+- Ember for anything but "a person is needed".
+- Hard-coded colours, `dark:` overrides, outer margins, fixed root widths, layout shift.
+- Fake progress, fake typing delays, dark patterns around approval or consent.
+- Accumulating: a change should remove more than it adds.

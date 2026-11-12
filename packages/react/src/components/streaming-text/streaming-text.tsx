@@ -7,7 +7,7 @@ import { type UseStreamingTextOptions, useStreamingText } from "./use-streaming-
 export interface StreamingTextProps
   extends Omit<React.ComponentProps<"div">, "children">,
     UseStreamingTextOptions {
-  /** How each newly revealed word group enters. `blur` = fade + 2px blur (default). */
+  /** How each newly revealed word group enters. `fade` (default), or `blur` = fade + 3px blur. */
   animation?: "blur" | "fade" | "none";
   /** Show the caret while streaming. It fades out when the stream completes. Default true. */
   caret?: boolean;
@@ -21,7 +21,7 @@ const enter = {
 
 /**
  * Renders model output that arrives token by token. Bursty input is buffered into an even
- * cadence, new word groups fade (and un-blur) in, and a soft caret marks the live edge. Accepts a
+ * cadence, new word groups fade in, and one pulsing dot marks the live edge. Accepts a
  * growing string (`text`) or an async iterable (`stream`). Never reflows earlier text.
  */
 export function StreamingText({
@@ -30,7 +30,7 @@ export function StreamingText({
   speed,
   streaming,
   onComplete,
-  animation = "blur",
+  animation = "fade",
   caret = true,
   className,
   ...props
@@ -65,9 +65,9 @@ export function StreamingText({
           data-slot="streaming-text-caret"
           data-visible={isStreaming}
           className={cn(
-            "ml-0.5 inline-block h-[1.05em] w-[2px] translate-y-[0.17em] rounded-full bg-kura-accent",
-            "transition-opacity duration-(--kura-duration-slow) ease-kura-out",
-            "data-[visible=true]:animate-kura-pulse data-[visible=false]:opacity-0 motion-reduce:animate-none",
+            "ml-[0.3em] inline-block size-[0.44em] -translate-y-[0.06em] rounded-full bg-kura-fg",
+            "transition-opacity duration-(--kura-duration-slow) ease-kura-snap",
+            "data-[visible=true]:animate-kura-dot-pulse data-[visible=false]:opacity-0 motion-reduce:animate-none",
           )}
         />
       )}

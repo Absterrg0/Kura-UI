@@ -369,7 +369,7 @@ export function SlashCommandMenu({
       onMouseDown={(e) => e.preventDefault()}
       style={{ ...positioned, width: MENU_WIDTH, ...style }}
       className={cn(
-        "fixed z-50 flex max-h-[min(18rem,50vh)] max-w-[calc(100vw-16px)] flex-col overflow-hidden rounded-kura-xl bg-kura-surface-raised font-kura-sans text-kura-fg shadow-kura-lg",
+        "fixed z-50 flex max-h-[min(18rem,50vh)] max-w-[calc(100vw-16px)] flex-col overflow-hidden rounded-kura-xl bg-kura-raised font-kura-sans text-kura-fg shadow-kura-popover",
         "animate-kura-pop-in data-[side=bottom]:origin-top-left data-[side=top]:origin-bottom-left",
         className,
       )}
@@ -399,7 +399,7 @@ export function SlashCommandMenu({
               {group && (
                 <div
                   id={headingId}
-                  className="select-none px-2 pt-1.5 pb-1 font-medium text-[11px] text-kura-fg-subtle"
+                  className="select-none px-2 pt-1.5 pb-1 text-[12px] text-kura-fg-subtle"
                 >
                   {group}
                 </div>
@@ -426,11 +426,11 @@ export function SlashCommandMenu({
                       if (!cmd.disabled && !isActive) setActive(cmd.id);
                     }}
                     onClick={() => choose(cmd)}
-                    className="flex cursor-pointer select-none items-center gap-2.5 rounded-kura-md px-1.5 py-1.5 data-active:bg-kura-hover data-disabled:cursor-not-allowed data-disabled:opacity-45"
+                    className="flex cursor-pointer select-none items-center gap-2.5 rounded-[9px] px-1.5 py-1.5 data-active:bg-kura-hover data-disabled:cursor-not-allowed data-disabled:opacity-45"
                   >
                     <span
                       aria-hidden
-                      className="flex size-7 shrink-0 items-center justify-center rounded-kura-md bg-kura-surface-raised text-kura-fg-muted shadow-kura-xs [&_svg]:size-3.5"
+                      className="flex size-7 shrink-0 items-center justify-center text-kura-fg-muted [&_svg]:size-4"
                     >
                       {cmd.icon ?? (
                         <span className="font-kura-mono text-[11px] leading-none">{trigger}</span>
@@ -446,9 +446,7 @@ export function SlashCommandMenu({
                         </span>
                       )}
                     </span>
-                    {cmd.shortcut && (
-                      <Kbd keys={cmd.shortcut} variant="ghost" size="sm" className="shrink-0" />
-                    )}
+                    {cmd.shortcut && <Kbd keys={cmd.shortcut} size="sm" className="shrink-0" />}
                   </div>
                 );
               })}
@@ -459,19 +457,19 @@ export function SlashCommandMenu({
       <div
         data-slot="slash-command-menu-footer"
         aria-hidden
-        className="flex h-8 shrink-0 items-center gap-3 px-3 text-[11px] text-kura-fg-subtle shadow-[inset_0_1px_0_var(--kura-border-subtle)]"
+        className="flex h-9 shrink-0 items-center gap-3 px-3 text-[12px] text-kura-fg-subtle shadow-[inset_0_1px_0_var(--kura-border-subtle)]"
       >
         <span className="inline-flex items-center gap-1">
-          <Kbd keys={["up"]} variant="ghost" size="sm" />
-          <Kbd keys={["down"]} variant="ghost" size="sm" />
+          <Kbd keys={["up"]} size="sm" />
+          <Kbd keys={["down"]} size="sm" />
           navigate
         </span>
         <span className="inline-flex items-center gap-1">
-          <Kbd keys={["enter"]} variant="ghost" size="sm" />
+          <Kbd keys={["enter"]} size="sm" />
           insert
         </span>
         <span className="inline-flex items-center gap-1">
-          <Kbd keys={["esc"]} variant="ghost" size="sm" />
+          <Kbd keys={["esc"]} size="sm" />
           dismiss
         </span>
       </div>

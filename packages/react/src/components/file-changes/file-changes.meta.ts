@@ -105,22 +105,23 @@ export default defineComponent({
       name: "File",
       dataSlot: "file-changes-file",
       description:
-        'treeitem/option with aria-selected, `data-status="A" | "M" | "D" | "R"`, `data-state="reading" | "editing"`, `data-selected`. Selected rows get bg-kura-active and a 2px accent bar.',
+        'treeitem/option with aria-selected, `data-status="A" | "M" | "D" | "R"`, `data-state="reading" | "editing"`, `data-selected`. Selected rows get bg-kura-active.',
     },
     {
       name: "Name",
       dataSlot: "file-changes-name",
-      description: "Mono file name; shimmers while editing, struck through when deleted.",
+      description: "Mono file name; struck through when deleted.",
     },
     {
       name: "Counts",
       dataSlot: "file-changes-counts",
-      description: "+N −M in mono, or “editing” (accent, pulsing dot) / “reading”.",
+      description: "+N −M in mono, or “editing” (with the running glyph) / “reading”.",
     },
     {
       name: "Status",
       dataSlot: "file-changes-status",
-      description: "Status letter: A green, M amber, D red, R muted; sr-only word (“, modified”).",
+      description:
+        "Status letter: A green, M subtle ink, D red, R muted; sr-only word (“, modified”).",
     },
     {
       name: "Guide",
@@ -143,10 +144,9 @@ export default defineComponent({
       { keys: "Home / End", action: "First / last row" },
       { keys: "Enter / Space", action: "Select a file, or toggle a folder" },
     ],
-    reducedMotion:
-      "The editing pulse and name shimmer stop; row fade-in and chevron rotation are instant.",
+    reducedMotion: "The editing glyph stops chasing; row fade-in and chevron rotation are instant.",
   },
-  dependencies: { npm: ["lucide-react"], kura: ["icon-button", "shimmer-text"] },
+  dependencies: { npm: ["lucide-react"], kura: ["icon-button", "status-glyph"] },
   related: ["diff-view", "terminal", "agent-timeline", "task-list", "run-header"],
   tags: ["files", "changes", "git", "tree", "agent", "status", "sidebar", "workspace"],
   examples: [
@@ -161,7 +161,7 @@ export default defineComponent({
       kind: "full",
       title: "Live run",
       description:
-        "Files appear as the agent reads and edits them — the active one shimmers with an “editing” marker — then the run settles. Controlled selection.",
+        "Files appear as the agent reads and edits them — the active one carries the running glyph and an “editing” marker — then the run settles. Controlled selection.",
     },
     {
       name: "FileChangesList",
@@ -179,7 +179,7 @@ export default defineComponent({
   ],
   agentNotes: [
     "Map git porcelain codes directly: A/M/D/R (treat C copies as A, T type changes as M).",
-    'Set `state: "editing"` on the file the agent is writing and clear it when done — the row shimmers and collapsed ancestor folders show a live dot.',
+    'Set `state: "editing"` on the file the agent is writing and clear it when done — the row shows the running glyph, and so do collapsed ancestor folders.',
     "Selection is single and files-only; folders toggle. Use onSelect to drive a DiffView or editor beside it.",
     "Counts are optional; omit additions/deletions when unknown rather than passing 0.",
   ],

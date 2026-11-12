@@ -63,10 +63,11 @@ const COLOR_VAR: Record<AnsiColor, string> = {
   black: "var(--kura-terminal-black, var(--kura-fg-subtle))",
   red: "var(--kura-terminal-red, var(--kura-danger-text))",
   green: "var(--kura-terminal-green, var(--kura-success-text))",
-  yellow: "var(--kura-terminal-yellow, var(--kura-warning-text))",
-  blue: "var(--kura-terminal-blue, var(--kura-accent-text))",
-  magenta: "var(--kura-terminal-magenta, oklch(from var(--kura-fg-muted) l 0.15 330))",
-  cyan: "var(--kura-terminal-cyan, oklch(from var(--kura-fg-muted) l 0.1 205))",
+  // Monochrome ink: only red and green keep a hue (failures and passes). Ember is never output.
+  yellow: "var(--kura-terminal-yellow, var(--kura-fg))",
+  blue: "var(--kura-terminal-blue, var(--kura-fg-muted))",
+  magenta: "var(--kura-terminal-magenta, var(--kura-fg-muted))",
+  cyan: "var(--kura-terminal-cyan, var(--kura-fg-muted))",
   white: "var(--kura-terminal-white, var(--kura-fg))",
   gray: "var(--kura-terminal-gray, var(--kura-fg-subtle))",
 };
@@ -80,6 +81,8 @@ function spanStyle(s: AnsiStyle): { className?: string; style?: React.CSSPropert
     style.color = bg ?? "var(--kura-surface-sunken)";
   } else {
     if (fg) style.color = fg;
+    // Dim is a colour (ink-3), never an opacity: it has to stay readable in both themes.
+    else if (s.dim) style.color = "var(--kura-fg-subtle)";
     if (bg) {
       style.backgroundColor = bg;
       if (!fg) style.color = "var(--kura-surface-sunken)";
@@ -87,7 +90,6 @@ function spanStyle(s: AnsiStyle): { className?: string; style?: React.CSSPropert
   }
   const className = cn(
     s.bold && "font-semibold",
-    s.dim && "opacity-60",
     s.italic && "italic",
     s.underline && "underline underline-offset-2",
     s.strike && "line-through",
@@ -343,7 +345,7 @@ export function Terminal({
       {header && (
         <div
           data-slot="terminal-header"
-          className="flex h-10 shrink-0 items-center gap-2.5 border-kura-border-subtle border-b pr-1.5 pl-3.5"
+          className="flex h-11 shrink-0 items-center gap-2.5 pr-1.5 pl-4"
         >
           {status !== "idle" && (
             <StatusGlyph
@@ -354,7 +356,7 @@ export function Terminal({
           )}
           <span
             data-slot="terminal-title"
-            className="min-w-0 truncate font-medium text-[13px] tracking-[-0.006em]"
+            className="min-w-0 truncate font-semibold text-[13px] tracking-[-0.01em]"
           >
             {heading}
           </span>
@@ -380,10 +382,8 @@ export function Terminal({
               <span
                 data-slot="terminal-exit-code"
                 className={cn(
-                  "inline-flex h-5 items-center rounded-kura-xs px-1.5 animate-kura-fade-in",
-                  exitCode === 0
-                    ? "bg-kura-hover text-kura-fg-muted"
-                    : "bg-kura-danger/10 text-kura-danger-text",
+                  "animate-kura-fade-in",
+                  exitCode === 0 ? "text-kura-fg-subtle" : "text-kura-danger-text",
                 )}
               >
                 exit {exitCode}
@@ -422,7 +422,12 @@ export function Terminal({
         </div>
       )}
 
-      <div className="relative min-h-0 flex-1 bg-kura-surface-sunken">
+      <div
+        className={cn(
+          "relative mx-1.5 mb-1.5 min-h-0 flex-1 overflow-hidden rounded-kura-lg bg-kura-surface-sunken shadow-kura-sunk",
+          !header && "mt-1.5",
+        )}
+      >
         <div
           ref={viewport}
           data-slot="terminal-output"
@@ -494,7 +499,7 @@ export function Terminal({
             data-slot="terminal-jump"
             onClick={jumpToLatest}
             className={cn(
-              "absolute bottom-3 left-1/2 inline-flex h-7 -translate-x-1/2 cursor-pointer items-center gap-1.5 rounded-full bg-kura-surface-raised px-3 text-[12px] text-kura-fg-muted shadow-kura-md outline-none animate-kura-pop-in",
+              "absolute bottom-3 left-1/2 inline-flex h-7 -translate-x-1/2 cursor-pointer items-center gap-1.5 rounded-[9px] bg-kura-raised px-2.5 text-[12px] text-kura-fg-muted shadow-kura-popover outline-none animate-kura-pop-in",
               "transition-colors duration-(--kura-duration-fast) ease-kura-out hover:text-kura-fg focus-visible:shadow-kura-focus motion-reduce:transition-none",
             )}
           >

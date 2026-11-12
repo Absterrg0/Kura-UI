@@ -80,7 +80,7 @@ export default defineComponent({
       name: "maxHeight",
       type: "number",
       description:
-        "Collapse code taller than this many px, with a bottom fade and a “Show N more lines” pill; the header gets an expand/collapse button.",
+        "Collapse code taller than this many px, cut by a hairline with a “Show N more lines” key; the header gets an expand/collapse button.",
     },
     { name: "expanded", type: "boolean", description: "Expanded past `maxHeight` (controlled)." },
     {
@@ -166,7 +166,7 @@ export default defineComponent({
     {
       name: "Expand",
       dataSlot: "code-block-expand",
-      description: "Bottom fade + “Show N more lines” pill while collapsed.",
+      description: "The “Show N more lines” key on a strip at the bottom while collapsed.",
     },
   ],
   a11y: {
@@ -184,7 +184,7 @@ export default defineComponent({
       { keys: "Enter / Space", action: "Activates copy, wrap or expand" },
     ],
     reducedMotion:
-      "The copy icon swap becomes a pure cross-fade (no scale/blur), the streaming caret stops pulsing and expanding is instant.",
+      "The copy icon swap becomes a pure cross-fade (no scale), the streaming caret stops pulsing and expanding is instant.",
   },
   dependencies: { npm: ["lucide-react"], kura: ["icon-button"] },
   related: ["tool-call", "message", "streaming-text", "approval-prompt"],

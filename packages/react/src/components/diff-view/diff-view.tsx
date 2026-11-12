@@ -91,15 +91,13 @@ const tokenClass: Record<CodeTokenType, string | undefined> = {
   operator: "text-(--kura-code-punctuation)",
 };
 
-// Same quiet palette as CodeBlock (override with --kura-syntax-* on a parent).
-const tint = (name: string, chroma: number, hue: number) =>
-  `var(--kura-syntax-${name}, oklch(from var(--kura-fg-muted) l ${chroma} ${hue}))`;
+// Same monochrome palette as CodeBlock (override with --kura-syntax-* on a parent).
 const syntaxVars = {
   "--kura-code-keyword": "var(--kura-syntax-keyword, var(--kura-fg-muted))",
-  "--kura-code-string": tint("string", 0.075, 150),
-  "--kura-code-constant": tint("constant", 0.085, 55),
+  "--kura-code-string": "var(--kura-syntax-string, var(--kura-fg-muted))",
+  "--kura-code-constant": "var(--kura-syntax-constant, var(--kura-fg))",
   "--kura-code-function": "var(--kura-syntax-function, var(--kura-fg))",
-  "--kura-code-type": tint("type", 0.045, 240),
+  "--kura-code-type": "var(--kura-syntax-type, var(--kura-fg-muted))",
   "--kura-code-tag": "var(--kura-syntax-tag, var(--kura-fg))",
   "--kura-code-attr": "var(--kura-syntax-attr, var(--kura-fg-muted))",
   "--kura-code-property": "var(--kura-syntax-property, var(--kura-fg))",
@@ -190,7 +188,7 @@ const STATUS_LABEL: Record<DiffFileStatus, string> = {
   renamed: "Renamed",
 };
 
-/** GitHub-style 5-block bar: green for additions, red for deletions, grey for the rest. */
+/** Five dots: green for additions, red for deletions, unlit for the rest. */
 function RatioBar({ additions, deletions }: { additions: number; deletions: number }) {
   const total = additions + deletions;
   let add = total ? Math.round((additions / total) * 5) : 0;
@@ -199,13 +197,13 @@ function RatioBar({ additions, deletions }: { additions: number; deletions: numb
   if (deletions > 0 && del === 0) del = 1;
   while (add + del > 5) add > del ? add-- : del--;
   return (
-    <span aria-hidden data-slot="diff-view-ratio" className="flex shrink-0 gap-[2px]">
+    <span aria-hidden data-slot="diff-view-ratio" className="flex shrink-0 gap-[3px]">
       {Array.from({ length: 5 }, (_, i) => (
         <span
           key={i}
           className={cn(
-            "size-[7px] rounded-[2px]",
-            i < add ? "bg-kura-success" : i < add + del ? "bg-kura-danger" : "bg-kura-gray-5",
+            "size-1 rounded-full",
+            i < add ? "bg-kura-success" : i < add + del ? "bg-kura-danger" : "bg-kura-dot-off",
           )}
         />
       ))}
@@ -494,10 +492,7 @@ export function DiffView({
       onKeyDown={handleKeyDown}
       {...props}
     >
-      <div
-        data-slot="diff-view-header"
-        className="flex h-10 shrink-0 items-center gap-3 border-kura-border-subtle border-b pr-2 pl-3.5"
-      >
+      <div data-slot="diff-view-header" className="flex h-11 shrink-0 items-center gap-3 pr-2 pl-4">
         <span className="flex min-w-0 items-baseline gap-2.5">
           <span id={titleId} className="min-w-[3rem] truncate font-medium tracking-[-0.006em]">
             {title}
@@ -523,17 +518,18 @@ export function DiffView({
             <span className="font-kura-mono text-[12px] text-kura-fg-subtle tabular-nums">
               {reviewed} of {allHunks.length} reviewed
             </span>
-            <span aria-hidden className="flex w-20 gap-[2px]">
+            {/* One dot per hunk. */}
+            <span aria-hidden className="flex max-w-24 flex-wrap gap-[3px]">
               {allHunks.map((h) => (
                 <span
                   key={h.id}
                   className={cn(
-                    "h-1 min-w-0 flex-1 rounded-full transition-colors duration-(--kura-duration-base) ease-kura-out motion-reduce:transition-none",
+                    "size-1 shrink-0 rounded-full transition-colors duration-(--kura-duration-base) ease-kura-snap motion-reduce:transition-none",
                     review[h.id] === "accepted"
                       ? "bg-kura-success"
                       : review[h.id] === "rejected"
                         ? "bg-kura-danger"
-                        : "bg-kura-gray-5",
+                        : "bg-kura-dot-off",
                   )}
                 />
               ))}
@@ -668,10 +664,10 @@ export function DiffView({
                     <span
                       data-slot="diff-view-file-status"
                       className={cn(
-                        "inline-flex h-[18px] shrink-0 items-center rounded-kura-xs px-1.5 font-medium text-[11px]",
-                        file.status === "added" && "bg-kura-success/12 text-kura-success-text",
-                        file.status === "deleted" && "bg-kura-danger/10 text-kura-danger-text",
-                        file.status === "renamed" && "bg-kura-hover text-kura-fg-muted",
+                        "shrink-0 text-[12px]",
+                        file.status === "added" && "text-kura-success-text",
+                        file.status === "deleted" && "text-kura-danger-text",
+                        file.status === "renamed" && "text-kura-fg-subtle",
                       )}
                     >
                       {STATUS_LABEL[file.status]}
@@ -700,7 +696,7 @@ export function DiffView({
                         size="xs"
                         variant="outline"
                         onClick={() => decideFile(file.path, "accepted")}
-                        aria-label={`Accept all changes in ${file.path}`}
+                        aria-label={`Accept file ${file.path}`}
                       >
                         <Check aria-hidden strokeWidth={2} />
                         <span className="hidden @[30rem]/diff:inline">Accept file</span>
@@ -911,14 +907,7 @@ function FileBody({
                 </span>
               )}
             </div>
-            <div
-              data-slot="diff-view-lines"
-              className={cn(
-                "overflow-x-auto transition-opacity duration-(--kura-duration-base) ease-kura-out [scrollbar-width:thin] motion-reduce:transition-none",
-                decision === "accepted" && "opacity-55",
-                decision === "rejected" && "opacity-45",
-              )}
-            >
+            <HunkLines label={`Code of change ${ordinal(h.id)}`}>
               <div className={wrap ? "w-full" : "w-max min-w-full"}>
                 {h.hunk.lines.map((line, i) => (
                   <Line
@@ -929,13 +918,46 @@ function FileBody({
                     gutter={gutter}
                     wrap={wrap}
                     struck={decision === "rejected" && line.kind === "add"}
+                    settled={decision != null}
                   />
                 ))}
               </div>
-            </div>
+            </HunkLines>
           </div>
         );
       })}
+    </div>
+  );
+}
+
+/**
+ * The lines of one hunk. Long lines scroll sideways, so when they overflow the region joins the
+ * tab order and can be scrolled with the arrow keys.
+ */
+function HunkLines({ label, children }: { label: string; children: React.ReactNode }) {
+  const ref = React.useRef<HTMLDivElement>(null);
+  const [overflows, setOverflows] = React.useState(false);
+  React.useEffect(() => {
+    const el = ref.current;
+    if (!el || typeof ResizeObserver === "undefined") return;
+    const check = () => setOverflows(el.scrollWidth > el.clientWidth + 1);
+    check();
+    const ro = new ResizeObserver(check);
+    ro.observe(el);
+    if (el.firstElementChild) ro.observe(el.firstElementChild);
+    return () => ro.disconnect();
+  }, []);
+  return (
+    // biome-ignore lint/a11y/useSemanticElements: a fieldset would add form semantics to code
+    <div
+      ref={ref}
+      data-slot="diff-view-lines"
+      role="group"
+      aria-label={label}
+      tabIndex={overflows ? 0 : undefined}
+      className="overflow-x-auto outline-none [scrollbar-width:thin] focus-visible:shadow-[inset_0_0_0_2px_var(--kura-ring)]"
+    >
+      {children}
     </div>
   );
 }
@@ -947,6 +969,7 @@ const Line = React.memo(function Line({
   gutter,
   wrap,
   struck,
+  settled,
 }: {
   line: DiffLine;
   tokens: CodeToken[];
@@ -954,6 +977,8 @@ const Line = React.memo(function Line({
   gutter: string;
   wrap: boolean;
   struck: boolean;
+  /** The hunk has been decided: its lines go quiet (no tints), so pending hunks stand out. */
+  settled: boolean;
 }) {
   const add = line.kind === "add";
   const remove = line.kind === "remove";
@@ -962,14 +987,19 @@ const Line = React.memo(function Line({
     <div
       data-slot="diff-view-line"
       data-kind={line.kind}
-      className={cn("flex", add && "bg-kura-success/[0.08]", remove && "bg-kura-danger/[0.07]")}
+      data-settled={settled || undefined}
+      className={cn(
+        "flex transition-colors duration-(--kura-duration-base) ease-kura-snap motion-reduce:transition-none",
+        !settled && add && "bg-kura-success/[0.08]",
+        !settled && remove && "bg-kura-danger/[0.07]",
+      )}
     >
       <span
         aria-hidden
         className={cn(
-          "shrink-0 select-none pr-2 text-right text-kura-fg-subtle/70 tabular-nums",
-          add && "bg-kura-success/[0.1] text-kura-success-text/70",
-          remove && "bg-kura-danger/[0.09] text-kura-danger-text/70",
+          "shrink-0 select-none pr-2 text-right text-kura-fg-muted tabular-nums",
+          !settled && add && "bg-kura-success/[0.1]",
+          !settled && remove && "bg-kura-danger/[0.09]",
         )}
         style={{ width: gutter }}
       >
@@ -978,9 +1008,9 @@ const Line = React.memo(function Line({
       <span
         aria-hidden
         className={cn(
-          "shrink-0 select-none pr-2 text-right text-kura-fg-subtle/70 tabular-nums",
-          add && "bg-kura-success/[0.1] text-kura-success-text/70",
-          remove && "bg-kura-danger/[0.09] text-kura-danger-text/70",
+          "shrink-0 select-none pr-2 text-right text-kura-fg-muted tabular-nums",
+          !settled && add && "bg-kura-success/[0.1]",
+          !settled && remove && "bg-kura-danger/[0.09]",
         )}
         style={{ width: gutter }}
       >
@@ -1010,11 +1040,12 @@ const Line = React.memo(function Line({
               <span
                 key={i}
                 className={cn(
-                  tokenClass[t.type],
+                  // A changed word is full ink on its tint, whatever its token colour.
+                  !settled && t.changed ? "text-kura-fg" : tokenClass[t.type],
                   t.first && "rounded-l-[3px]",
                   t.last && "rounded-r-[3px]",
-                  t.changed && add && "bg-kura-success/25",
-                  t.changed && remove && "bg-kura-danger/20",
+                  !settled && t.changed && add && "bg-kura-success/25",
+                  !settled && t.changed && remove && "bg-kura-danger/20",
                 )}
               >
                 {t.text}

@@ -15,7 +15,7 @@ export default defineComponent({
   ],
   whenNotToUse: [
     "Indeterminate progress or “thinking” — use shimmer-text or reasoning.",
-    "Upload or task progress — use a progress bar (or agent-timeline for multi-step work).",
+    "Upload or task progress — use dot-rail (or agent-timeline for multi-step work).",
     "Billing/cost dashboards with history — use a chart.",
   ],
   props: [
@@ -30,7 +30,7 @@ export default defineComponent({
       name: "segments",
       type: "readonly ContextSegment[]",
       description:
-        "Breakdown: { id, label, tokens, color? }[], e.g. system / tools / files / history. Enables the hover card and the segmented bar. Colors default to ink tints.",
+        "Breakdown: { id, label, tokens, color? }[], e.g. system / tools / files / history. Enables the hover card and shades the hundred-dot matrix. Colors default to ink tints.",
     },
     {
       name: "variant",
@@ -43,7 +43,7 @@ export default defineComponent({
       name: "warningAt",
       type: "number",
       default: "0.7",
-      description: "Fraction (0–1) from which the meter is amber.",
+      description: "Fraction (0–1) from which the meter turns from muted to full ink.",
     },
     {
       name: "dangerAt",
@@ -87,7 +87,7 @@ export default defineComponent({
       name: "Bar",
       dataSlot: "context-meter-bar",
       description:
-        "Track + fill; segmented by `segments` while level is ok, a single amber/red fill above the thresholds.",
+        "A DotRail of the window; muted ink while ok, full ink above the warning threshold, red above the danger threshold.",
     },
     {
       name: "Value",
@@ -98,7 +98,7 @@ export default defineComponent({
       name: "Card",
       dataSlot: "context-meter-card",
       description:
-        "Hover/click card: totals, segmented bar, legend with tokens and % of the window, free space, footer.",
+        "Hover/click card: totals, the window as one hundred dots (one per percent, shaded by segment), legend with tokens and % of the window, free space, footer.",
     },
     { name: "Segment", dataSlot: "context-meter-segment", description: "One legend row." },
   ],
@@ -115,7 +115,7 @@ export default defineComponent({
     reducedMotion:
       "Numbers, ring and bar jump to the new value instead of rolling/growing; the card only fades.",
   },
-  dependencies: { npm: [], kura: ["popover"] },
+  dependencies: { npm: [], kura: ["dot-rail", "popover"] },
   related: ["composer", "model-picker", "message", "tool-call"],
   tags: ["tokens", "context-window", "usage", "meter", "budget", "progress", "llm", "limits"],
   examples: [

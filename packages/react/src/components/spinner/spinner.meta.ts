@@ -6,14 +6,14 @@ export default defineComponent({
   category: "primitives",
   status: "stable",
   description:
-    "Quiet ring spinner (faint track, turning quarter arc) for indeterminate loading; inherits the current text color.",
+    "The Kura spinner: a ring of dots with a light chasing round it, for indeterminate loading; inherits the current text color.",
   whenToUse: [
     "Indeterminate waits on a control: a loading button, a pending row, a fetching list.",
     "Small inline busy indicators next to text.",
   ],
   whenNotToUse: [
-    "AI ‘thinking’ states — use shimmer-text or thinking-indicator; they read as the model working, not the network.",
-    "Known progress — use a progress bar or context-meter.",
+    "An agent's state — use status-glyph (running is the same chasing ring, with the other states beside it).",
+    "Known progress — use dot-rail or context-meter.",
     "Inside a Button — pass `loading` to button instead.",
   ],
   props: [
@@ -36,7 +36,8 @@ export default defineComponent({
     notes: [
       'With a label it renders role="status" containing visually hidden label text; with label={null} it is aria-hidden.',
     ],
-    reducedMotion: "The arc stops rotating and the whole ring gently pulses in opacity instead.",
+    reducedMotion:
+      "The light rests on a quarter of the ring and the whole ring gently pulses in opacity instead.",
   },
   dependencies: { npm: [], kura: [] },
   related: ["button", "shimmer-text", "thinking-indicator"],

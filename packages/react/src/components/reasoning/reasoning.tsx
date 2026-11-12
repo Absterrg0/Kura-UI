@@ -4,7 +4,7 @@ import { ChevronRight } from "lucide-react";
 import * as React from "react";
 import { useControllableState } from "../../hooks/use-controllable-state";
 import { cn } from "../../lib/cn";
-import { ShimmerText } from "../shimmer-text";
+import { StatusGlyph } from "../status-glyph";
 
 export interface ReasoningProps extends React.ComponentProps<"div"> {
   /** The model is still thinking: the label shimmers and an elapsed timer ticks. Default false. */
@@ -114,13 +114,12 @@ export function Reasoning({
           setOpen(!open);
         }}
         className={cn(
-          "group/trigger -mx-1.5 inline-flex h-7 w-fit cursor-pointer items-center gap-1 rounded-kura-sm px-1.5 text-kura-fg-muted text-sm outline-none",
-          "transition-[color,background-color,box-shadow] duration-(--kura-duration-fast) ease-kura-out hover:text-kura-fg focus-visible:shadow-kura-focus",
+          "group/trigger -mx-1.5 inline-flex h-7 w-fit cursor-pointer items-center gap-1 rounded-[8px] px-1.5 text-[13px] text-kura-fg-muted outline-none",
+          "transition-colors duration-(--kura-duration-fast) ease-kura-snap hover:text-kura-fg focus-visible:outline-2 focus-visible:outline-kura-ring",
         )}
       >
-        <ShimmerText active={active} data-slot="reasoning-label">
-          {label}
-        </ShimmerText>
+        {active && <StatusGlyph status="running" size="sm" label={null} className="mr-0.5" />}
+        <span data-slot="reasoning-label">{label}</span>
         <ChevronRight
           aria-hidden
           className={cn(
@@ -137,14 +136,13 @@ export function Reasoning({
         data-slot="reasoning-content"
         inert={!open || undefined}
         className={cn(
-          "grid transition-[grid-template-rows,opacity,filter] duration-(--kura-duration-slow) ease-kura-out motion-reduce:transition-opacity",
-          open
-            ? "grid-rows-[1fr] opacity-100"
-            : "grid-rows-[0fr] opacity-0 blur-[2px] motion-reduce:blur-none",
+          "grid transition-[grid-template-rows,opacity] duration-(--kura-duration-slow) ease-kura-snap motion-reduce:transition-opacity",
+          open ? "grid-rows-[1fr] opacity-100" : "grid-rows-[0fr] opacity-0",
         )}
       >
         <div className="min-h-0 overflow-hidden">
-          <div className="mt-1 ml-[3px] whitespace-pre-wrap border-kura-border border-l py-0.5 pl-3.5 text-kura-fg-muted text-sm leading-relaxed [&_[data-slot=streaming-text]]:text-kura-fg-muted [&_[data-slot=streaming-text]]:text-sm">
+          <div className="relative mt-1 whitespace-pre-wrap py-0.5 pl-[18px] text-[13px] text-kura-fg-muted leading-relaxed [&_[data-slot=streaming-text]]:text-[13px] [&_[data-slot=streaming-text]]:text-kura-fg-muted">
+            <span aria-hidden className="kura-leader absolute inset-y-1 left-[1.5px] w-[5px]" />
             {children}
           </div>
         </div>

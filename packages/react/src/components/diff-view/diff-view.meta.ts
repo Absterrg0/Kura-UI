@@ -133,13 +133,13 @@ export default defineComponent({
       name: "FileHeader",
       dataSlot: "diff-view-file-header",
       description:
-        "Sticky row: collapse toggle (button, aria-expanded), path (`diff-view-path`: dim directory + bold name, old → new for renames), status chip, +N −M, 5-block ratio bar (`diff-view-ratio`), Accept file / review state (`diff-view-file-review`).",
+        "Sticky row: collapse toggle (button, aria-expanded), path (`diff-view-path`: dim directory + bold name, old → new for renames), status word, +N −M, five ratio dots (`diff-view-ratio`), Accept file / review state (`diff-view-file-review`).",
     },
     {
       name: "Hunk",
       dataSlot: "diff-view-hunk",
       description:
-        '`role="group"`, roving tabindex, `data-hunk-id`, `data-review="pending" | "accepted" | "rejected"`. Accent bar on the left when focused.',
+        '`role="group"`, roving tabindex, `data-hunk-id`, `data-review="pending" | "accepted" | "rejected"`. Ink bar on the left when focused.',
     },
     {
       name: "HunkHeader",
@@ -158,7 +158,7 @@ export default defineComponent({
     notes: [
       "Each file is a labelled section; its header toggle is a button with aria-expanded/aria-controls.",
       "Hunks are focusable groups named “Change 2 of 9, src/auth/client.ts lines 10–19, pending review”; only the current hunk (and its buttons) is in the Tab order.",
-      "Added/removed lines carry sr-only “added:” / “removed:” prefixes; colour is never the only signal (+/− signs, status chips, labels).",
+      "Added/removed lines carry sr-only “added:” / “removed:” prefixes; colour is never the only signal (+/− signs, status words, labels).",
       "Decisions are announced in a polite status region (“Accepted hunk in src/middleware.ts. 3 of 9 reviewed.”) — once per action, never per render.",
       "Accept / Reject tooltips show their single-key shortcuts.",
     ],
@@ -171,7 +171,7 @@ export default defineComponent({
       { keys: "Tab", action: "Through file headers and the focused hunk's buttons" },
     ],
     reducedMotion:
-      "Chevron rotation, the review-dimming fade and the progress colour change apply instantly; no motion is essential.",
+      "Chevron rotation, the settling of a reviewed hunk (its line tints clear) and the progress colour change apply instantly; no motion is essential.",
   },
   dependencies: {
     npm: ["@ui-sdk/react", "lucide-react"],

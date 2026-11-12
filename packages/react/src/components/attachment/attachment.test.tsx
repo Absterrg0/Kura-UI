@@ -98,11 +98,11 @@ describe("Attachment", () => {
     expect(acceptsFile({ name: "a.txt", type: "text/plain" }, "image/*")).toBe(false);
   });
 
-  it("under reduced motion the indeterminate ring pulses instead of spinning", () => {
+  it("under reduced motion the indeterminate ring holds still", () => {
     setReducedMotion(true);
     render(<Attachment name="a.csv" status="uploading" />);
-    const ring = document.querySelector("[data-slot=attachment-progress]")!;
-    expect(ring.getAttribute("class")).toContain("motion-reduce:animate-kura-pulse");
+    const dot = document.querySelector("[data-slot=attachment-progress] circle")!;
+    expect(dot.getAttribute("class")).toContain("motion-reduce:animate-none");
     render(<AttachmentList items={items} />);
     expect(screen.getAllByRole("listitem").length).toBeGreaterThan(0);
   });

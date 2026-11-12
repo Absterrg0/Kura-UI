@@ -46,7 +46,7 @@ export function TooltipContent({
     <TooltipPrimitiveContent
       sideOffset={sideOffset}
       className={cn(
-        "z-50 m-0 inline-flex min-h-6 max-w-xs select-none items-center gap-2 overflow-visible rounded-kura-md border-0 bg-kura-ink px-2 py-1 font-kura-sans font-medium text-kura-fg-inverted text-xs leading-4 shadow-kura-md",
+        "z-50 m-0 inline-flex min-h-6 max-w-xs select-none items-center gap-2 overflow-visible rounded-kura-md border-0 bg-kura-ink px-2 py-1 font-kura-sans font-medium text-kura-fg-inverted text-xs leading-4 shadow-kura-popover",
         "origin-(--transform-origin) transition-[opacity,scale] duration-(--kura-duration-fast) ease-kura-out",
         "data-starting-style:scale-95 data-starting-style:opacity-0 data-ending-style:scale-95 data-ending-style:opacity-0",
         "data-instant:transition-none motion-reduce:transition-none",

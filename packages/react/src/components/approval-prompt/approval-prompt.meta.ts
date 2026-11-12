@@ -6,7 +6,7 @@ export default defineComponent({
   category: "agent",
   status: "beta",
   description:
-    "Permission card (“Kura wants to run `rm -rf build`”) with risk, details, Approve/Deny/Always allow and ⌘↵/Esc. Agents can read and deny it; approving always waits for a person.",
+    "The moment an agent needs a person: what it asks, the exact command, what it touches and the risk, with Approve (⌘↵) and Deny (Esc) keys.",
   whenToUse: [
     "An agent needs explicit permission before a side effect: running a shell command, editing files, sending email, spending money, calling a destructive API.",
     "Show exactly what will run (verbatim command) and how risky it is before the user decides.",
@@ -23,7 +23,8 @@ export default defineComponent({
       name: "title",
       type: "React.ReactNode",
       required: true,
-      description: 'What the agent wants, e.g. "Kura wants to run a command". Labels the region.',
+      description:
+        'What is being asked, as the headline, e.g. "Run the sessions migration on production". Labels the region.',
     },
     {
       name: "command",
@@ -41,7 +42,25 @@ export default defineComponent({
       type: '"low" | "medium" | "high"',
       default: '"medium"',
       description:
-        "Badge (green/amber/red dot). high also turns Approve into a red “Run anyway” button.",
+        "Drawn as three dots (one, two or three lit) with the words “Low risk” / “Medium risk” / “High risk”; high is red.",
+    },
+    {
+      name: "facts",
+      type: "readonly ApprovalFact[]",
+      description:
+        "What the action touches, as a property list with dotted leaders: { label, value }[], e.g. Target / Rows affected / Rollback. Keep it to two to four lines.",
+    },
+    {
+      name: "agent",
+      type: "ApprovalAgent",
+      description:
+        'Who is asking: { name, detail? }. Renders the agent\'s dot sigil and “<name> asks, <detail>”, e.g. { name: "migrator", detail: "for step 4 of the plan" }.',
+    },
+    {
+      name: "requestedAt",
+      type: "number | Date",
+      description:
+        "When the agent asked. Shows a ticking “0:18” waited clock beside “Needs you” while pending.",
     },
     {
       name: "details",
@@ -87,7 +106,8 @@ export default defineComponent({
     {
       name: "approveLabel",
       type: "string",
-      description: "Approve label. Default “Approve”, or “Run anyway” for high risk.",
+      default: '"Approve"',
+      description: "Label on the approve key. Name the action when you can, e.g. “Run migration”.",
     },
     { name: "denyLabel", type: "string", default: '"Deny"', description: "Deny label." },
     {
@@ -95,11 +115,6 @@ export default defineComponent({
       type: "string",
       default: '"Always allow"',
       description: "Always-allow label.",
-    },
-    {
-      name: "icon",
-      type: "React.ReactNode",
-      description: "Icon in the header tile. Default a terminal.",
     },
     {
       name: "agentConfirm",
@@ -113,22 +128,33 @@ export default defineComponent({
       name: "ApprovalPrompt",
       dataSlot: "approval-prompt",
       description:
-        '<section> labelled by the title and the command (so stacked prompts have distinct names). `data-decision="pending" | "approved" | "denied" | "always"`, `data-risk`.',
+        '<section> labelled by the title and the command (so stacked prompts have distinct names). `data-decision="pending" | "approved" | "denied" | "always"`, `data-risk`. While pending an ember Halftone sits in its top-right corner; it fades out when decided.',
     },
     {
       name: "Title",
       dataSlot: "approval-prompt-title",
-      description: "Heading; mutes once resolved.",
+      description: "The headline (h3, 19px); mutes once resolved.",
     },
     {
       name: "Risk",
       dataSlot: "approval-prompt-risk",
-      description: "Risk badge with a coloured dot and text.",
+      description: "Three dots and the risk in words, on the left of the footer. `data-risk`.",
     },
     {
       name: "Command",
       dataSlot: "approval-prompt-command",
-      description: "Mono command well; the <code> is `approval-prompt-code`.",
+      description:
+        "Sunk mono command well with a copy button on hover; the <code> is `approval-prompt-code`.",
+    },
+    {
+      name: "Agent",
+      dataSlot: "approval-prompt-agent",
+      description: "The asking agent's sigil and “<name> asks, <detail>”.",
+    },
+    {
+      name: "Facts",
+      dataSlot: "approval-prompt-facts",
+      description: "<dl> of label · dotted leader · value.",
     },
     {
       name: "Details",
@@ -144,17 +170,20 @@ export default defineComponent({
     {
       name: "Waiting",
       dataSlot: "approval-prompt-waiting",
-      description: "Blue “Needs approval” pill — the view's one accent while pending.",
+      description:
+        "Status line at the top: the waiting StatusGlyph, “Needs you” in ember and the waited clock; becomes Approved / Denied / Always allowed with the matching glyph.",
     },
     {
       name: "Actions",
       dataSlot: "approval-prompt-actions",
-      description: "Always allow / Deny (Esc) / Approve (⌘↵); inert once resolved.",
+      description:
+        "Keycaps with their shortcuts printed on them: Always allow / Deny (Esc) / Approve (⌘↵, the ink fill); inert once resolved.",
     },
     {
       name: "Resolution",
       dataSlot: "approval-prompt-resolution",
-      description: 'role="status" line that cross-fades in: Approved / Denied / Always allowed.',
+      description:
+        'role="status" line that cross-fades in: “Approved by you.” / “Denied by you. Nothing ran.” / “Always allowed.”',
     },
   ],
   a11y: {
@@ -175,10 +204,13 @@ export default defineComponent({
       { keys: "Tab", action: "Details, Always allow, Deny, Approve" },
     ],
     reducedMotion:
-      "The waiting pulse stops and resolved states cross-fade without blur; details open without height travel.",
+      "The waiting glyph stops blinking, the halftone and resolved states only cross-fade, and details open without height travel.",
   },
-  dependencies: { npm: ["@ui-sdk/core", "@ui-sdk/react", "lucide-react"], kura: ["button", "kbd"] },
-  related: ["tool-call", "agent-timeline", "code-block", "kbd-shortcut"],
+  dependencies: {
+    npm: ["@ui-sdk/core", "@ui-sdk/react", "lucide-react"],
+    kura: ["agent-sigil", "button", "halftone", "kbd", "status-glyph"],
+  },
+  related: ["tool-call", "halftone", "status-glyph", "agent-sigil", "run-header"],
   tags: [
     "approval",
     "permission",
@@ -194,14 +226,14 @@ export default defineComponent({
       name: "ApprovalPromptMinimal",
       kind: "minimal",
       title: "Low-risk command",
-      description: "Title, command and risk.",
+      description: "Headline, command and risk.",
     },
     {
       name: "ApprovalPromptFull",
       kind: "full",
       title: "High-risk, every option",
       description:
-        "Description, details, controlled decision, Always allow, custom labels and ⌘↵ / Esc; “Ask again” resets it.",
+        "The asking agent, facts with dotted leaders, a waited clock, details, controlled decision, Always allow and ⌘↵ / Esc; “Ask again” resets it.",
     },
     {
       name: "ApprovalPromptResolved",
@@ -218,6 +250,7 @@ export default defineComponent({
   ],
   agentNotes: [
     "Show the command verbatim — never paraphrase what will run.",
+    "Ember belongs to this component: the halftone, the glyph and “Needs you” are the only ember on a Kura screen, and they leave when the person decides. Do not add ember elsewhere to match it.",
     "The decision is only UI state: actually gate the side effect on onApprove / onDecisionChange in your agent loop.",
     "Render past prompts with `defaultDecision` (or controlled `decision`) set to the stored outcome and `shortcuts={false}`.",
     "When several prompts are visible, enable `shortcuts` on the newest pending one only.",

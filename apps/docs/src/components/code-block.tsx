@@ -2,10 +2,7 @@ import { cn } from "@/lib/cn";
 import { highlight } from "@/lib/highlight";
 import { CopyButton } from "./copy-button";
 
-/**
- * A code pane. Always dark (the `dark` class scopes Kura's dark tokens and Shiki's dark theme to
- * the pane), with the site's gloss.
- */
+/** A code pane: a sunk well in the page's theme, with monochrome ink syntax. */
 export async function CodeBlock({
   code,
   lang = "tsx",
@@ -23,13 +20,10 @@ export async function CodeBlock({
   return (
     <div
       data-slot="code-block"
-      className={cn(
-        "dark gloss group relative overflow-hidden rounded-[14px] bg-kura-surface text-kura-fg",
-        className,
-      )}
+      className={cn("well group relative overflow-hidden rounded-kura-lg text-kura-fg", className)}
     >
       {title && (
-        <div className="flex h-10 items-center border-kura-border-subtle border-b px-4 font-kura-mono text-[12px] text-kura-fg-subtle">
+        <div className="flex h-10 items-center px-4 font-kura-mono text-[12px] text-kura-fg-subtle">
           {title}
         </div>
       )}

@@ -6,7 +6,7 @@ export default defineComponent({
   category: "voice",
   status: "experimental",
   description:
-    "Mic button that expands into a live waveform pill with a timer and live transcript; speech-to-text with recording fallback, toggle or hold-to-talk.",
+    "Mic button that expands into a raised key with a live dot-matrix waveform, timer and transcript; speech-to-text with recording fallback, toggle or hold.",
   whenToUse: [
     "Let users dictate a prompt instead of typing — standalone or in a composer toolbar.",
     'Push-to-talk input (mode="hold") for voice notes or quick commands.',
@@ -88,7 +88,7 @@ export default defineComponent({
       name: "VoiceDictationControl",
       dataSlot: "voice-dictation-control",
       description:
-        "The mic button; while live it grows (layout spring) into a signal-tinted pill with waveform, timer and cancel.",
+        "The mic button; while live it grows (layout spring) into a raised key holding the stop key, waveform, timer and cancel.",
     },
     {
       name: "VoiceDictationButton",
@@ -126,11 +126,11 @@ export default defineComponent({
       { keys: "Escape", action: "Cancel and discard while listening" },
     ],
     reducedMotion:
-      "The pill appears without the layout spring, icon swaps fade without scale or blur, the waveform becomes a slow level meter and the caret stops blinking.",
+      "The key appears without the layout spring, icon swaps fade without scale, the waveform becomes a slow level meter and the live dot stops pulsing.",
   },
   dependencies: {
     npm: ["lucide-react", "motion"],
-    kura: ["audio-waveform", "shimmer-text", "spinner", "tooltip"],
+    kura: ["audio-waveform", "spinner", "tooltip"],
   },
   related: ["composer", "audio-waveform", "agent-orb"],
   tags: [
@@ -163,6 +163,6 @@ export default defineComponent({
     "Feed a Composer by controlling its value: onTranscript={(t) => setValue((v) => (v ? v + ' ' + t : t))}; pass showTranscript={false}.",
     "Provide `transcribe` for Firefox/other browsers without SpeechRecognition; without it those browsers record but emit nothing.",
     "Only one mounted instance should own a given hotkey; pass hotkey={null} on the others.",
-    "The listening pill uses the blue accent signal — avoid another accent-filled element in the same view while dictating.",
+    "While listening the stop key is the ink fill; nothing on the control uses ember, which is reserved for approvals.",
   ],
 });

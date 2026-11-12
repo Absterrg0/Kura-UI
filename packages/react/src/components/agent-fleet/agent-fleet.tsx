@@ -7,7 +7,8 @@ import { useElapsed } from "../../hooks/use-elapsed";
 import { agentSurface } from "../../lib/agent-surface";
 import { cn } from "../../lib/cn";
 import { formatClock, formatCost, formatTokens } from "../../lib/format";
-import { ShimmerText } from "../shimmer-text";
+import { AgentSigil } from "../agent-sigil";
+import { DotRail } from "../dot-rail";
 import { type AgentStatus, StatusGlyph } from "../status-glyph";
 
 export interface FleetAgent {
@@ -53,7 +54,7 @@ const LIVE: AgentStatus[] = ["running", "waiting", "paused"];
 
 const SUMMARY_ORDER: { status: AgentStatus; word: string; tone?: string }[] = [
   { status: "running", word: "running" },
-  { status: "waiting", word: "waiting", tone: "text-kura-warning-text" },
+  { status: "waiting", word: "waiting", tone: "text-kura-ember-text" },
   { status: "paused", word: "paused" },
   { status: "failed", word: "failed", tone: "text-kura-danger-text" },
   { status: "done", word: "done" },
@@ -168,11 +169,8 @@ export function AgentFleet({
       )}
       {...props}
     >
-      <div
-        data-slot="agent-fleet-header"
-        className="flex h-10 shrink-0 items-center gap-3 border-kura-border-subtle border-b px-3.5"
-      >
-        <h3 className="flex items-baseline gap-2 font-medium text-[13px]">
+      <div data-slot="agent-fleet-header" className="flex h-11 shrink-0 items-center gap-3 px-4">
+        <h3 className="flex items-baseline gap-2 font-semibold text-[13px] tracking-[-0.01em]">
           <span id={`${id}-title`}>{title}</span>
           <span className="font-kura-mono font-normal text-[12px] text-kura-fg-subtle tabular-nums">
             {agents.length}
@@ -215,7 +213,7 @@ export function AgentFleet({
           role={selectable ? "listbox" : "list"}
           aria-labelledby={`${id}-title`}
           onKeyDown={selectable ? onKeyDown : undefined}
-          className="flex flex-col divide-y divide-kura-border-subtle"
+          className="flex flex-col px-1.5 pb-1.5"
         >
           {agents.map((agent) => (
             <AgentRow
@@ -269,7 +267,6 @@ function AgentRow({
       : agent.startedAt != null
         ? ticking
         : null;
-  const running = agent.status === "running";
   const compact = density === "compact";
   const showProgress = agent.progress != null && live;
 
@@ -277,47 +274,26 @@ function AgentRow({
     <span
       data-slot="agent-fleet-activity"
       className={cn(
-        "block min-w-0 truncate",
-        agent.status === "waiting" && "text-kura-warning-text",
+        "block min-w-0 truncate text-kura-fg-subtle",
+        agent.status === "waiting" && "text-kura-ember-text",
         agent.status === "failed" && "text-kura-danger-text",
-        (agent.status === "done" ||
-          agent.status === "queued" ||
-          agent.status === "skipped" ||
-          agent.status === "paused") &&
-          "text-kura-fg-subtle",
       )}
     >
-      {running ? (
-        <ShimmerText className="block max-w-full truncate">{agent.activity}</ShimmerText>
-      ) : (
-        agent.activity
-      )}
+      {agent.activity}
     </span>
   ) : null;
 
   const progress = showProgress ? (
-    <span
+    <DotRail
       data-slot="agent-fleet-progress"
-      aria-hidden
-      className={cn(
-        "flex h-[3px] shrink-0 overflow-hidden rounded-full bg-kura-hover",
-        compact ? "w-12" : "w-20",
-      )}
-    >
-      <span
-        className={cn(
-          "h-full rounded-full transition-[width] duration-(--kura-duration-slow) ease-kura-out motion-reduce:transition-none",
-          agent.status === "running" && "bg-kura-accent",
-          agent.status === "waiting" && "bg-kura-warning",
-          agent.status === "paused" && "bg-kura-fg-subtle",
-        )}
-        style={{ width: `${Math.min(1, Math.max(0, agent.progress ?? 0)) * 100}%` }}
-      />
-    </span>
+      value={agent.progress ?? 0}
+      live={agent.status !== "paused"}
+      tone={agent.status === "waiting" ? "ember" : agent.status === "paused" ? "muted" : "ink"}
+    />
   ) : null;
 
   const numbers = (
-    <span className="flex items-center gap-3 font-kura-mono text-[12px] text-kura-fg-subtle tabular-nums">
+    <span className="flex items-center gap-2.5 font-kura-mono text-[12px] text-kura-fg-subtle tabular-nums">
       {agent.tokens != null && (
         <span
           data-slot="agent-fleet-tokens"
@@ -337,12 +313,10 @@ function AgentRow({
           {formatCost(agent.cost)}
         </span>
       )}
-      <span
-        data-slot="agent-fleet-elapsed"
-        className={cn("inline-block min-w-[4ch] text-right", live && "text-kura-fg-muted")}
-      >
-        {elapsed != null ? formatClock(elapsed) : "–"}
+      <span data-slot="agent-fleet-elapsed" className="inline-block text-right">
+        {elapsed != null ? formatClock(elapsed) : ""}
       </span>
+      <StatusGlyph status={agent.status} />
     </span>
   );
 
@@ -378,52 +352,46 @@ function AgentRow({
       onClick={selectable ? onChoose : undefined}
       onFocus={selectable ? onFocus : undefined}
       className={cn(
-        "relative min-w-0 px-3.5 outline-none",
-        "animate-[kura-rise-in_var(--kura-duration-base)_var(--ease-kura-out)_both] [--kura-rise-blur:0px] [--kura-rise-y:2px] motion-reduce:[--kura-rise-y:0px]",
-        selectable &&
-          "cursor-pointer transition-colors duration-(--kura-duration-instant) ease-kura-out hover:bg-kura-hover focus-visible:shadow-[inset_0_0_0_2px_var(--kura-ring)]",
-        selected &&
-          "bg-kura-active before:absolute before:inset-y-0 before:left-0 before:w-0.5 before:bg-kura-accent hover:bg-kura-active",
+        "relative min-w-0 rounded-[9px] px-2.5 outline-none transition-colors duration-(--kura-duration-fast) ease-kura-snap hover:bg-kura-hover motion-reduce:transition-none",
+        selectable && "cursor-pointer focus-visible:shadow-[inset_0_0_0_2px_var(--kura-ring)]",
+        selected && "bg-kura-active hover:bg-kura-active",
         compact
-          ? "grid h-9 grid-cols-[16px_auto_minmax(0,1fr)_auto] items-center gap-x-2.5"
-          : "grid grid-cols-[16px_minmax(0,1fr)_auto] gap-x-3 py-2.5",
+          ? "grid h-9 grid-cols-[22px_auto_minmax(0,1fr)_auto] items-center gap-x-2.5"
+          : "grid grid-cols-[30px_minmax(0,1fr)_auto] items-center gap-x-3 gap-y-0.5 py-[9px]",
       )}
     >
-      <StatusGlyph status={agent.status} className={cn(!compact && "mt-0.5")} />
+      <AgentSigil
+        name={agent.name}
+        size={compact ? "sm" : "md"}
+        className={cn(!compact && "row-span-2 self-start")}
+      />
       <span className="sr-only">{progressText}</span>
       {compact ? (
         <>
           {name}
-          <span className="min-w-0 text-[12.5px] text-kura-fg-muted">{activity}</span>
-          <span className="flex items-center gap-3">
-            {progress && <span className="hidden @sm:flex">{progress}</span>}
-            {numbers}
-          </span>
+          <span className="min-w-0 text-[12.5px]">{activity}</span>
+          {numbers}
         </>
       ) : (
         <>
-          <span className="flex min-w-0 flex-col gap-0.5">
-            <span className="flex min-w-0 items-baseline gap-2 leading-5">
-              {name}
-              {agent.role && (
-                <span
-                  data-slot="agent-fleet-role"
-                  className="hidden min-w-0 truncate text-[12px] text-kura-fg-subtle @md:block"
-                >
-                  {agent.role}
-                </span>
-              )}
-            </span>
-            {activity && (
-              <span className="min-w-0 text-[12.5px] text-kura-fg-muted leading-[18px]">
-                {activity}
+          <span className="flex min-w-0 items-baseline gap-2 leading-5">
+            {name}
+            {agent.role && (
+              <span
+                data-slot="agent-fleet-role"
+                className="hidden min-w-0 truncate text-[12px] text-kura-fg-subtle @md:block"
+              >
+                {agent.role}
               </span>
             )}
           </span>
-          <span className="flex flex-col items-end justify-between gap-1.5 self-stretch py-0.5">
-            {numbers}
-            {progress}
-          </span>
+          {numbers}
+          {activity && (
+            <span className="col-span-2 col-start-2 min-w-0 text-[12.5px] leading-[18px]">
+              {activity}
+            </span>
+          )}
+          {progress && <span className="col-span-2 col-start-2 mt-[5px] mb-0.5">{progress}</span>}
         </>
       )}
     </li>

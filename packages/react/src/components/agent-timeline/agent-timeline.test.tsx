@@ -88,7 +88,7 @@ describe("AgentTimeline", () => {
     setReducedMotion(true);
     const { container } = render(<AgentTimeline steps={steps} />);
     expect(container.innerHTML).toContain("motion-reduce:animate-none");
-    expect(container.innerHTML).toContain("motion-reduce:transition-opacity");
+    expect(container.innerHTML).toContain("motion-reduce:transition-none");
   });
 
   it("examples render without a11y violations", async () => {

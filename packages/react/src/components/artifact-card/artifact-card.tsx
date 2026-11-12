@@ -15,8 +15,9 @@ import {
 import type * as React from "react";
 import { useControllableState } from "../../hooks/use-controllable-state";
 import { cn } from "../../lib/cn";
+import { DotRail } from "../dot-rail";
 import { IconButton } from "../icon-button";
-import { ShimmerText } from "../shimmer-text";
+import { StatusGlyph } from "../status-glyph";
 
 export type ArtifactKind = "document" | "code" | "web" | "image" | "data" | "diagram" | "file";
 export type ArtifactStatus = "generating" | "updating" | "ready" | "error";
@@ -177,34 +178,18 @@ export function ArtifactCard({
     );
   }
 
+  // Known progress is a rail of dots; unknown progress is the chasing glyph in the icon tile.
   const progressBar = busy && (
-    <div
+    <DotRail
       data-slot="artifact-card-progress"
-      role="progressbar"
-      aria-label={`${status === "generating" ? "Generating" : "Updating"} ${title}`}
+      label={`${status === "generating" ? "Generating" : "Updating"} ${title}`}
       aria-valuemin={pct == null ? undefined : 0}
       aria-valuemax={pct == null ? undefined : 100}
       aria-valuenow={pct ?? undefined}
-      className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-0.5 overflow-hidden bg-kura-accent-subtle"
-    >
-      {pct == null ? (
-        <div
-          className="h-full animate-kura-shimmer [background-size:250%_100%] motion-reduce:animate-none motion-reduce:bg-none"
-          style={
-            {
-              "--kura-shimmer-duration": "1.4s",
-              backgroundImage:
-                "linear-gradient(90deg, transparent 30%, var(--kura-accent) 50%, transparent 70%)",
-            } as React.CSSProperties
-          }
-        />
-      ) : (
-        <div
-          className="h-full origin-left bg-kura-accent transition-transform duration-(--kura-duration-slow) ease-kura-out motion-reduce:transition-none"
-          style={{ transform: `scaleX(${pct / 100})` }}
-        />
-      )}
-    </div>
+      value={(pct ?? 0) / 100}
+      live
+      className={cn("pointer-events-none mx-3 mb-2.5 w-auto", pct == null && "sr-only")}
+    />
   );
 
   return (
@@ -216,39 +201,32 @@ export function ArtifactCard({
       data-selected={selected || undefined}
       aria-busy={busy || undefined}
       className={cn(
-        "group/artifact relative isolate flex min-w-0 flex-col overflow-hidden rounded-kura-xl bg-kura-surface font-kura-sans shadow-kura-sm",
-        "transition-[box-shadow,transform] duration-(--kura-duration-fast) ease-kura-out motion-reduce:transition-none",
+        "group/artifact relative isolate flex min-w-0 flex-col overflow-hidden rounded-kura-xl bg-kura-surface font-kura-sans shadow-kura-surface",
+        "transition-[background-color,transform] duration-(--kura-duration-fast) ease-kura-snap motion-reduce:transition-none",
         compact ? "w-fit max-w-full" : "w-full",
         openable &&
-          "hover:shadow-kura-md has-[[data-slot=artifact-card-open]:active]:scale-[0.99] motion-reduce:has-[[data-slot=artifact-card-open]:active]:scale-100",
-        selected &&
-          "shadow-[0_0_0_1px_var(--kura-border-strong),0_0_0_4px_var(--kura-hover)] hover:shadow-[0_0_0_1px_var(--kura-border-strong),0_0_0_4px_var(--kura-hover)]",
-        "has-[[data-slot=artifact-card-open]:focus-visible]:shadow-kura-focus",
+          "hover:bg-kura-raised has-[[data-slot=artifact-card-open]:active]:translate-y-px motion-reduce:has-[[data-slot=artifact-card-open]:active]:translate-y-0",
+        selected && "bg-kura-raised outline-2 outline-kura-border-strong -outline-offset-1",
+        "has-[[data-slot=artifact-card-open]:focus-visible]:outline-2 has-[[data-slot=artifact-card-open]:focus-visible]:outline-kura-ring has-[[data-slot=artifact-card-open]:focus-visible]:outline-offset-2",
         className,
       )}
       {...props}
     >
       {!compact && (
-        <div className="relative">
+        <div
+          data-slot="artifact-card-preview"
+          aria-hidden
+          inert
+          className="relative mx-1.5 mt-1.5 h-36 overflow-hidden rounded-kura-lg bg-kura-surface-sunken shadow-kura-sunk"
+        >
           <div
-            data-slot="artifact-card-preview"
-            aria-hidden
-            inert
-            className="relative h-36 overflow-hidden bg-kura-surface-sunken shadow-[inset_0_-1px_0_var(--kura-border-subtle)]"
+            className={cn(
+              "absolute inset-0 transition-opacity duration-(--kura-duration-slow) ease-kura-snap",
+              status === "updating" && "opacity-60",
+            )}
           >
-            <div
-              className={cn(
-                "absolute inset-0 origin-top [mask-image:linear-gradient(to_bottom,black_62%,transparent)]",
-                "transition-[transform,opacity] duration-(--kura-duration-slow) ease-kura-out motion-reduce:transition-opacity",
-                openable &&
-                  "group-hover/artifact:scale-[1.015] motion-reduce:group-hover/artifact:scale-100",
-                status === "updating" && "opacity-60",
-              )}
-            >
-              {preview ?? <PreviewPlaceholder kind={kind} busy={busy} />}
-            </div>
+            {preview ?? <PreviewPlaceholder kind={kind} busy={busy} />}
           </div>
-          {progressBar}
         </div>
       )}
 
@@ -260,13 +238,16 @@ export function ArtifactCard({
           aria-hidden
           data-slot="artifact-card-icon"
           className={cn(
-            "relative grid size-9 shrink-0 place-items-center rounded-kura-md bg-kura-gray-3 text-kura-fg-muted shadow-[inset_0_0_0_1px_var(--kura-border-subtle)] [&_svg]:size-4",
-            "transition-colors duration-(--kura-duration-base) ease-kura-out",
-            busy && "bg-kura-accent-subtle text-kura-accent-text",
-            status === "error" && "bg-kura-danger-subtle text-kura-danger-text",
+            "relative grid size-[30px] shrink-0 place-items-center rounded-[9px] bg-kura-raised text-kura-fg-muted shadow-kura-raised [&_svg]:size-4",
           )}
         >
-          {icon ?? k.icon}
+          {busy ? (
+            <StatusGlyph status="running" label={null} />
+          ) : status === "error" ? (
+            <StatusGlyph status="failed" label={null} />
+          ) : (
+            (icon ?? k.icon)
+          )}
         </span>
 
         <div className="flex min-w-0 flex-1 flex-col">
@@ -277,9 +258,9 @@ export function ArtifactCard({
           >
             {busy ? (
               <>
-                <ShimmerText className="truncate">
+                <span className="truncate">
                   {statusText ?? (status === "generating" ? "Generating…" : "Updating…")}
-                </ShimmerText>
+                </span>
                 {pct != null && (
                   <span className="shrink-0 font-kura-mono text-[11px] text-kura-fg-subtle tabular-nums">
                     {pct}%
@@ -344,7 +325,7 @@ export function ArtifactCard({
         )}
       </div>
 
-      {compact && progressBar}
+      {progressBar}
 
       <span className="sr-only" role="status">
         {announcement}
@@ -363,33 +344,19 @@ const LINES: Record<ArtifactKind, number[]> = {
   file: [72, 88, 64, 80, 56],
 };
 
-/** Drawn when no `preview` is given: a quiet sketch of the kind (and a shimmer while it is written). */
+/** Drawn when no `preview` is given: the kind sketched in rows of dots. They pulse while it is written. */
 function PreviewPlaceholder({ kind, busy }: { kind: ArtifactKind; busy: boolean }) {
-  const bar = cn(
-    "h-1.5 rounded-full bg-kura-gray-5",
-    busy &&
-      "animate-kura-shimmer [background-size:250%_100%] motion-reduce:animate-none motion-reduce:bg-none",
-  );
-  const shimmer: React.CSSProperties | undefined = busy
-    ? {
-        backgroundImage:
-          "linear-gradient(90deg, var(--kura-gray-5) 35%, var(--kura-gray-7) 50%, var(--kura-gray-5) 65%)",
-      }
-    : undefined;
+  const pulse = busy && "animate-kura-pulse motion-reduce:animate-none";
+  const lit = { "--kura-dots-color": "var(--kura-faint)" } as React.CSSProperties;
 
   if (kind === "web") {
     return (
-      <div className="flex h-full flex-col gap-3 p-4">
-        <div className="flex items-center gap-1">
+      <div className={cn("flex h-full flex-col gap-3 p-4", pulse)}>
+        <div className="kura-dots h-1.5 w-[18px]" style={lit} />
+        <div className="kura-dots h-3 w-1/2" style={lit} />
+        <div className="grid flex-1 grid-cols-3 gap-3">
           {[0, 1, 2].map((i) => (
-            <span key={i} className="size-1.5 rounded-full bg-kura-gray-6" />
-          ))}
-          <span className="ml-2 h-1.5 w-24 rounded-full bg-kura-gray-5" />
-        </div>
-        <div className={cn(bar, "h-3 w-1/2")} style={shimmer} />
-        <div className="grid flex-1 grid-cols-3 gap-2">
-          {[0, 1, 2].map((i) => (
-            <div key={i} className="rounded-kura-sm bg-kura-gray-4" />
+            <div key={i} className="kura-dots" />
           ))}
         </div>
       </div>
@@ -397,33 +364,37 @@ function PreviewPlaceholder({ kind, busy }: { kind: ArtifactKind; busy: boolean 
   }
   if (kind === "data") {
     return (
-      <div className="grid grid-cols-4 gap-px p-4 opacity-80">
-        {Array.from({ length: 20 }, (_, i) => (
-          <span key={i} className={cn("h-4 bg-kura-gray-4", i < 4 && "bg-kura-gray-6")} />
-        ))}
+      <div className={cn("flex h-full flex-col gap-1.5 p-4", pulse)}>
+        <div className="kura-dots h-1.5 w-full" style={lit} />
+        <div className="kura-dots w-full flex-1 [--kura-dots-pitch-y:12px]" />
       </div>
     );
   }
   if (kind === "image" || kind === "diagram") {
     return (
-      <div className="grid h-full place-items-center text-kura-fg-subtle/60 [&_svg]:size-10 [&_svg]:stroke-[1.25]">
+      <div
+        className={cn(
+          "grid h-full place-items-center text-kura-faint [&_svg]:size-10 [&_svg]:stroke-[1.25]",
+          pulse,
+        )}
+      >
         {KINDS[kind].icon}
       </div>
     );
   }
   return (
-    <div className="flex flex-col gap-2 p-5">
+    <div className={cn("flex flex-col gap-1.5 p-5", pulse)}>
       {LINES[kind].map((w, i) =>
         w === 0 ? (
           <span key={i} className="h-1" />
         ) : (
           <span
             key={i}
-            className={cn(bar, i === 0 && kind === "document" && "h-2.5 bg-kura-gray-6")}
+            className="kura-dots h-1.5"
             style={{
-              ...shimmer,
+              ...(i === 0 && kind === "document" ? lit : null),
               width: `${w}%`,
-              marginLeft: kind === "code" && i % 3 === 1 ? "1rem" : undefined,
+              marginLeft: kind === "code" && i % 3 === 1 ? "18px" : undefined,
             }}
           />
         ),

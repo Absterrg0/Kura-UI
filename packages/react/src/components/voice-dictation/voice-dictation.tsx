@@ -12,7 +12,6 @@ import { cn } from "../../lib/cn";
 import type { KeyName } from "../../lib/keys";
 import { springs } from "../../lib/motion";
 import { AudioWaveform } from "../audio-waveform";
-import { ShimmerText } from "../shimmer-text";
 import { Spinner } from "../spinner";
 import { Tooltip } from "../tooltip";
 
@@ -397,9 +396,9 @@ export function VoiceDictation({
   const swap = reduced
     ? { initial: { opacity: 0 }, animate: { opacity: 1 }, exit: { opacity: 0 } }
     : {
-        initial: { opacity: 0, filter: "blur(2px)", scale: 0.9 },
-        animate: { opacity: 1, filter: "blur(0px)", scale: 1 },
-        exit: { opacity: 0, filter: "blur(2px)", scale: 0.9 },
+        initial: { opacity: 0, scale: 0.9 },
+        animate: { opacity: 1, scale: 1 },
+        exit: { opacity: 0, scale: 0.9 },
       };
 
   return (
@@ -414,10 +413,11 @@ export function VoiceDictation({
         layout
         transition={layoutTransition}
         data-slot="voice-dictation-control"
-        style={{ borderRadius: 999 }}
+        style={{ borderRadius: 9 }}
         className={cn(
           "relative flex h-8 items-center",
-          live && "gap-1 bg-kura-accent-subtle p-0.5 pr-3 text-kura-accent-text",
+          // Live, the control becomes one raised key holding the stop key, the level and the clock.
+          live && "gap-1.5 bg-kura-raised p-0.5 pr-2.5 text-kura-fg shadow-kura-raised",
         )}
       >
         <Tooltip content={tooltipText} shortcut={hotkey ?? undefined}>
@@ -432,11 +432,11 @@ export function VoiceDictation({
             disabled={disabled || effective === "unsupported" || status === "processing"}
             {...holdHandlers}
             className={cn(
-              "relative flex size-7 shrink-0 cursor-pointer items-center justify-center rounded-full outline-none",
-              "transition-[background-color,color,box-shadow] duration-(--kura-duration-fast) ease-kura-out",
-              "focus-visible:shadow-kura-focus disabled:cursor-not-allowed disabled:opacity-50",
+              "relative flex size-7 shrink-0 cursor-pointer items-center justify-center rounded-[7px] outline-none",
+              "transition-[background-color,color] duration-(--kura-duration-fast) ease-kura-snap",
+              "focus-visible:outline-2 focus-visible:outline-kura-ring focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
               live
-                ? "bg-kura-accent text-kura-accent-fg hover:bg-kura-accent-hover"
+                ? "bg-kura-ink-fill text-kura-fg-inverted shadow-kura-ink hover:bg-kura-ink-fill-hover"
                 : blocked
                   ? "text-kura-danger-text hover:bg-kura-hover"
                   : "text-kura-fg-muted hover:bg-kura-hover hover:text-kura-fg",
@@ -451,7 +451,7 @@ export function VoiceDictation({
                 transition={springs.snappy}
                 {...swap}
               >
-                {status === "requesting" ? (
+                {status === "requesting" || status === "processing" ? (
                   <Spinner size="sm" label={null} />
                 ) : live && mode === "toggle" ? (
                   <span aria-hidden className="size-2.5 rounded-[2.5px] bg-current" />
@@ -474,13 +474,12 @@ export function VoiceDictation({
               className="flex items-center gap-2"
             >
               {status === "processing" ? (
-                <ShimmerText className="px-1 text-[13px]">Transcribing…</ShimmerText>
+                <span className="px-1 text-[13px] text-kura-fg-muted">Transcribing…</span>
               ) : (
                 <>
                   <AudioWaveform
                     analyser={analyser}
                     variant="mirrored"
-                    tone="accent"
                     barWidth={2}
                     barGap={2}
                     active={status === "listening"}
@@ -495,7 +494,7 @@ export function VoiceDictation({
                     data-slot="voice-dictation-cancel"
                     aria-label="Cancel dictation"
                     onClick={cancel}
-                    className="-mr-1.5 flex size-6 cursor-pointer items-center justify-center rounded-full opacity-70 outline-none transition-[opacity,background-color] duration-(--kura-duration-fast) hover:bg-kura-hover hover:opacity-100 focus-visible:shadow-kura-focus"
+                    className="-mr-1.5 flex size-6 cursor-pointer items-center justify-center rounded-[6px] text-kura-fg-muted outline-none transition-colors duration-(--kura-duration-fast) hover:bg-kura-hover hover:text-kura-fg focus-visible:outline-2 focus-visible:outline-kura-ring"
                   >
                     <X aria-hidden className="size-3.5" />
                   </button>
@@ -527,7 +526,7 @@ export function VoiceDictation({
         <div
           data-slot="voice-dictation-transcript"
           className={cn(
-            "w-full min-w-0 animate-kura-fade-in rounded-kura-lg bg-kura-surface px-3.5 py-3 text-[15px] leading-6 shadow-kura-sm",
+            "w-full min-w-0 animate-kura-fade-in rounded-kura-xl bg-kura-surface px-4 py-3 text-[14px] leading-6 shadow-kura-surface",
           )}
         >
           {transcript ? (
@@ -537,7 +536,7 @@ export function VoiceDictation({
               {status === "listening" && (
                 <span
                   aria-hidden
-                  className="ml-0.5 inline-block h-[1.1em] w-[2px] translate-y-[3px] animate-kura-pulse rounded-full bg-kura-accent motion-reduce:animate-none"
+                  className="ml-[0.3em] inline-block size-[0.44em] -translate-y-[0.06em] animate-kura-dot-pulse rounded-full bg-kura-fg motion-reduce:animate-none"
                 />
               )}
             </p>

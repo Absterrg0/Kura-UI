@@ -2,12 +2,14 @@
 
 import { type Checkpoint, Checkpoints } from "@kura-ui/react/checkpoints";
 import { PromptQueue, type QueuedPrompt } from "@kura-ui/react/prompt-queue";
+import { TaskList, type TaskListItem } from "@kura-ui/react/task-list";
 import { Terminal } from "@kura-ui/react/terminal";
+import { type TraceSpan, TraceWaterfall } from "@kura-ui/react/trace-waterfall";
 import * as React from "react";
 
 /**
- * Small, composed demos for the short bento cards: each is sized to fill its card exactly, so the
- * row reads as three equal panels with no dead space and nothing cropped.
+ * Small, composed demos for the "Every part of the run" grid: each shows one component whole, at
+ * a height that sits level with its neighbour, so nothing is cropped or faded.
  */
 
 const ESC = "\u001b[";
@@ -73,4 +75,97 @@ export function CheckpointsDemo() {
     ];
   });
   return <Checkpoints checkpoints={checkpoints} onRestore={() => {}} />;
+}
+
+export function PlanDemo() {
+  const [t0] = React.useState(() => Date.now() - 29_000);
+  const items: TaskListItem[] = [
+    { id: "read", title: "Read the auth module", status: "done", durationMs: 21_400 },
+    { id: "map", title: "Map call sites of fetchUser()", status: "done", durationMs: 96_000 },
+    { id: "patch", title: "Patch src/middleware.ts", status: "done", durationMs: 74_000 },
+    {
+      id: "tests",
+      title: "Update the tests",
+      status: "running",
+      startedAt: t0,
+      children: [
+        { id: "login", title: "login.test.ts", status: "done" },
+        { id: "session", title: "session.test.ts", status: "running" },
+      ],
+    },
+    { id: "run", title: "Run pnpm test", status: "queued" },
+    { id: "pr", title: "Open a pull request", status: "queued" },
+  ];
+  return <TaskList title="Plan" items={items} collapseCompleted={false} />;
+}
+
+const TRACE: TraceSpan[] = [
+  {
+    id: "run",
+    name: "Kura",
+    kind: "agent",
+    meta: "acme/web",
+    start: 0,
+    status: "running",
+    children: [
+      { id: "plan", name: "Plan the migration", kind: "llm", start: 0, end: 9_800, status: "done" },
+      {
+        id: "search",
+        name: "search_code",
+        kind: "tool",
+        meta: "fetchUser(",
+        start: 11_000,
+        end: 12_700,
+        status: "done",
+      },
+      {
+        id: "explorer",
+        name: "explorer",
+        kind: "agent",
+        meta: "subagent",
+        start: 14_000,
+        end: 63_500,
+        status: "done",
+      },
+      {
+        id: "draft",
+        name: "Draft the patch",
+        kind: "llm",
+        start: 66_000,
+        end: 103_000,
+        status: "done",
+      },
+      {
+        id: "edit",
+        name: "edit_file",
+        kind: "tool",
+        meta: "src/middleware.ts",
+        start: 104_000,
+        end: 104_700,
+        status: "done",
+      },
+      {
+        id: "test",
+        name: "pnpm test",
+        kind: "tool",
+        meta: "src/auth",
+        start: 108_000,
+        end: 126_000,
+        status: "done",
+      },
+      {
+        id: "writer",
+        name: "test-writer",
+        kind: "agent",
+        meta: "subagent",
+        start: 130_000,
+        status: "running",
+      },
+    ],
+  },
+];
+
+export function TraceDemo() {
+  const [t0] = React.useState(() => Date.now() - 171_000);
+  return <TraceWaterfall spans={TRACE} startedAt={t0} />;
 }

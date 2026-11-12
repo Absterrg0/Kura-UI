@@ -6,7 +6,7 @@ export default defineComponent({
   category: "agent",
   status: "beta",
   description:
-    "The agent's plan as a todo list: segmented progress, shimmering current task, live and final durations, failure details, sub-tasks and a folded Completed group.",
+    "The agent's plan as a todo list: a dot rail of progress, a status glyph per task, durations, failure details, sub-tasks and a folded Completed group.",
   whenToUse: [
     "Show the todo list a coding agent maintains while it works (Claude Code TodoWrite, Codex plan, Cursor tasks) in a run sidebar or panel.",
     "Give a dense, scannable answer to 'what is the agent doing and what is left?' — '3 of 7' plus one row per task.",
@@ -37,7 +37,7 @@ export default defineComponent({
       name: "actions",
       type: "React.ReactNode",
       description:
-        "Controls on the right of the header, after the progress bar (e.g. an IconButton).",
+        "Controls on the right of the header, after the progress rail (e.g. an IconButton).",
     },
     {
       name: "variant",
@@ -72,8 +72,7 @@ export default defineComponent({
     {
       name: "selectedId",
       type: "string | null",
-      description:
-        "Highlighted item (bg-kura-active plus a 2px accent bar). Purely visual; pair with onSelect.",
+      description: "Highlighted item (bg-kura-active). Purely visual; pair with onSelect.",
     },
     {
       name: "onSelect",
@@ -109,7 +108,7 @@ export default defineComponent({
       name: "Progress",
       dataSlot: "task-list-progress",
       description:
-        "One 4px segment per top-level item, coloured by status (neutral done, blue running, amber waiting, red failed).",
+        "A DotRail of the top-level items: lit for done, a pulsing leading dot while one is running.",
     },
     {
       name: "Completed",
@@ -133,12 +132,12 @@ export default defineComponent({
       name: "Title",
       dataSlot: "task-list-title",
       description:
-        "Shimmers while running; muted when done; struck through when skipped. Status is spoken after it.",
+        "Ink while running or queued; muted when done; struck through when skipped. Status is spoken after it.",
     },
     {
       name: "Detail",
       dataSlot: "task-list-detail",
-      description: "Second line. Red for failed, amber for waiting, subtle otherwise.",
+      description: "Second line. Red for failed, ember for waiting on a person, subtle otherwise.",
     },
     {
       name: "Duration",
@@ -175,9 +174,9 @@ export default defineComponent({
       },
     ],
     reducedMotion:
-      "Rows fade in without rising, the title shimmer and running segment pulse stop, and the chevron turns without animating.",
+      "The running glyph and the rail's leading dot hold still, and the chevron turns without animating.",
   },
-  dependencies: { npm: ["@ui-sdk/react", "lucide-react"], kura: ["shimmer-text", "status-glyph"] },
+  dependencies: { npm: ["@ui-sdk/react", "lucide-react"], kura: ["dot-rail", "status-glyph"] },
   related: ["agent-timeline", "agent-fleet", "run-header", "trace-waterfall", "status-glyph"],
   tags: ["agent", "plan", "todo", "tasks", "checklist", "progress", "claude-code", "run"],
   examples: [
@@ -212,8 +211,8 @@ export default defineComponent({
     `Agent-ready (ui-sdk): createAgent lists the plan by its label with "n of m done" as its value and each task with its status as an item, so an assistant can answer what the agent is doing. It has no actions.`,
     "Map a model-maintained todo list directly: pending → queued, in_progress → running, completed → done. Keep ids stable so rows don't remount.",
     "Pass `startedAt` for the running item (from your server) so the live timer survives reloads; pass `durationMs` once it finishes.",
-    "Only one top-level item should be `running`; it carries the blue signal and the shimmer.",
-    "Use `waiting` (amber) only when the agent is blocked on the human, and put the ask in `detail`.",
+    "Only one top-level item should be `running`; it carries the chasing glyph.",
+    "Use `waiting` (ember) only when the agent is blocked on the human, and put the ask in `detail`.",
     "The Completed fold only collapses the *leading* finished items, so a failed task in the middle is never hidden.",
   ],
 });

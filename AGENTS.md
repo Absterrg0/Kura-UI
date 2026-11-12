@@ -19,7 +19,7 @@ packages/cli/                  @kura-ui/cli — `kura list|search|info|add|init|
 apps/docs/                     Next.js 16 docs; pages generated from the catalog
 scripts/                       generate.ts, validate-meta.ts, new-component.ts, dev.ts, lib/
 skills/kura-ui/SKILL.md        skill for agents that *use* Kura in other projects
-DESIGN.md                      the Kura Signal design language (tokens, motion, anti-patterns)
+DESIGN.md                      the dot language (the seven rules, tokens, motion, never-list)
 ```
 
 Generated (gitignored, never edit, never commit): `registry.json`, `apps/docs/public/{r,registry,components,llms*.txt}`,
@@ -65,7 +65,13 @@ exports, no docs pages, no registry). Everything is discovered from the folder.
    - Imports: relative only. `../../lib/cn`, `../../lib/motion`, `../../hooks/use-x` (a specific file, never the hooks barrel), `../button` for other components. Never import `@kura-ui/react` inside the library.
    - Controlled + uncontrolled via `useControllableState` (`value`/`defaultValue`/`onValueChange`, `open`/`defaultOpen`/`onOpenChange`).
    - Style only with Kura tokens: `bg-kura-*`, `text-kura-*`, `border-kura-*`, `shadow-kura-*`, `rounded-kura-*`, `font-kura-*`, `ease-kura-*`, `duration-(--kura-duration-*)`, `animate-kura-*`. **No hex/rgb colors, no `dark:` variants**, no outer margins, no fixed widths on the root.
-   - Motion: CSS transitions or `motion/react` with `springs.*` from `../../lib/motion`. Respect reduced motion (`motion-reduce:*` classes, or `useReducedMotion()`).
+   - Draw with the dot language (DESIGN.md §1): state is a `StatusGlyph`, an agent is an `AgentSigil`,
+     anything measured is a `DotRail` (or `kura-dots`), property lists and guides use `kura-leader`.
+     A panel is a sheet (`rounded-kura-xl bg-kura-surface shadow-kura-surface`); code, commands and
+     inputs sit in wells (`rounded-kura-lg bg-kura-surface-sunken shadow-kura-sunk`); buttons are
+     keycaps (`Button`). No progress bars, pills, letter avatars, blur, gradients or accent colour.
+     Ember (`text-kura-ember-text`, `Halftone`) only where a person is needed.
+   - Motion: CSS transitions with `ease-kura-snap`, or `motion/react` with `springs.*` from `../../lib/motion` for layout. Respect reduced motion (`motion-reduce:*` classes, or `useReducedMotion()`).
    - Icons: `lucide-react`. Behaviour comes from **ui-sdk** (`@ui-sdk/core` + `@ui-sdk/react`, Vercel's
      library of UI behaviors): reuse Kura `Button`/`Popover`/`Tooltip`, or import a ui-sdk part from its
      own entry (`@ui-sdk/react/dialog`, `/hover-card`, `/select`, `/tree`…). Never hand-roll a

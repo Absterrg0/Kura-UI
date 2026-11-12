@@ -59,7 +59,7 @@ export default function Home() {
       {/* Hero */}
       <section
         aria-labelledby="hero-title"
-        className="relative px-4 pt-14 md:px-6 md:pt-16 lg:pt-[72px]"
+        className="relative px-4 pt-14 md:px-6 md:pt-14 lg:pt-12"
       >
         <div className="relative z-10 mx-auto flex max-w-3xl flex-col items-center text-center">
           <h1
@@ -86,15 +86,15 @@ export default function Home() {
           <InstallChip command={install} className="mt-5" />
         </div>
 
-        <div className="relative isolate mx-auto mt-14 max-w-[1240px] md:mt-16">
-          <EmberLight className="-top-[120px] -z-10 max-md:-top-[56px] max-md:origin-top max-md:scale-[0.55]" />
+        <div className="relative isolate mx-auto mt-20 max-w-[1180px] md:mt-24">
+          <EmberLight className="-top-[150px] -z-10" />
           <HeroStage />
         </div>
       </section>
 
       {/* Works with */}
       <section aria-label="Works with" className="px-4 pt-20 md:px-6 md:pt-24">
-        <div className="mx-auto flex max-w-[1200px] flex-col items-center gap-5">
+        <div className="mx-auto flex max-w-[1180px] flex-col items-center gap-5">
           <p className="text-center text-[13.5px] text-kura-fg-subtle">
             Plain props and callbacks. Wire them to any agent loop.
           </p>
@@ -113,7 +113,7 @@ export default function Home() {
 
       {/* Every part of the run */}
       <section aria-labelledby="parts" className="px-4 pt-36 md:px-6 md:pt-44">
-        <div className="mx-auto max-w-[1200px]">
+        <div className="mx-auto max-w-[1180px]">
           <SectionHead id="parts" title="Every part of the run.">
             Plans, diffs, terminals, traces and approvals as composable React components. Each one
             is keyboard-complete, themeable and driven by plain props.
@@ -133,7 +133,7 @@ export default function Home() {
 
       {/* Your agent can use it */}
       <section aria-labelledby="use" className="px-4 pt-36 md:px-6 md:pt-44">
-        <div className="mx-auto max-w-[1200px]">
+        <div className="mx-auto max-w-[1180px]">
           <SectionHead id="use" title="Your agent can use it, too.">
             Kura is built on Vercel's UI SDK. Every component tells an agent what it shows and what
             it can do, so an in-app assistant works through the same UI your users see. Approvals
@@ -145,7 +145,7 @@ export default function Home() {
 
       {/* Your agent can install it */}
       <section aria-labelledby="agents" className="px-4 pt-36 md:px-6 md:pt-44">
-        <div className="mx-auto grid max-w-[1200px] gap-12 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:gap-16">
+        <div className="mx-auto grid max-w-[1180px] gap-12 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:gap-16">
           <div>
             <h2
               id="agents"
@@ -158,17 +158,18 @@ export default function Home() {
               generated from it, so your coding agent picks the right part and installs it
               correctly.
             </p>
-            <dl className="mt-9 flex flex-col border-kura-border-subtle border-t">
+            <dl className="mt-9 flex flex-col">
               {AGENT_SURFACES.map(([name, desc]) => (
                 <div
                   key={name}
-                  className="grid gap-1 border-kura-border-subtle border-b py-3.5 sm:grid-cols-[8.5rem_1fr] sm:gap-4"
+                  className="relative grid gap-1 pt-[19px] pb-3.5 before:absolute before:inset-x-0 before:top-0 before:h-[5px] before:kura-leader sm:grid-cols-[8.5rem_1fr] sm:gap-4"
                 >
                   <dt className="font-medium text-[14.5px]">{name}</dt>
                   <dd className="text-[14.5px] text-kura-fg-muted">{desc}</dd>
                 </div>
               ))}
             </dl>
+            <span aria-hidden className="kura-leader block h-[5px]" />
             <Link
               href="/agents"
               className="group mt-7 inline-flex items-center gap-1.5 rounded-lg py-1 text-[15px] text-kura-fg outline-none focus-visible:shadow-kura-focus"
@@ -183,7 +184,7 @@ export default function Home() {
 
       {/* Built right */}
       <section aria-labelledby="built" className="px-4 pt-36 md:px-6 md:pt-44">
-        <div className="mx-auto max-w-[1200px]">
+        <div className="mx-auto max-w-[1180px]">
           <SectionHead id="built" title="Built right.">
             The parts that usually get skipped are done for you, and checked in CI for every
             component.

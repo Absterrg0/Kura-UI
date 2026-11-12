@@ -9,7 +9,7 @@ import { NavLinks } from "./nav-links";
 import { siteButton } from "./site-button";
 import { ThemeToggle } from "./theme-toggle";
 
-/** The floating pill nav: logo, links, ⌘K, theme and one primary action. Sticky on every page. */
+/** The floating nav: a sheet on the page grid with logo, links, ⌘K, theme and one primary key. */
 export function SiteHeader() {
   const items = components.map((c) => ({
     slug: c.slug,
@@ -26,8 +26,8 @@ export function SiteHeader() {
     })),
   ];
   return (
-    <header className="sticky top-0 z-40 bg-[linear-gradient(to_bottom,var(--kura-canvas)_30%,transparent)] px-2 pt-2 pb-1 md:px-4 md:pt-3">
-      <div className="mx-auto flex h-14 max-w-[1240px] items-center gap-2 rounded-2xl bg-(--site-chrome) pr-2 pl-4 shadow-[inset_0_1px_0_rgb(255_255_255/0.05),0_0_0_1px_var(--kura-border),0_8px_32px_-12px_rgb(0_0_0/0.35)] backdrop-blur-xl backdrop-saturate-150 md:gap-4 md:pr-2.5 md:pl-5">
+    <header className="sticky top-0 z-40 px-2 pt-2 md:px-6 md:pt-3">
+      <div className="sheet mx-auto flex h-14 max-w-[1180px] items-center gap-2 rounded-kura-xl pr-2 pl-4 md:gap-4 md:pr-3 md:pl-4">
         <Link
           href="/"
           aria-label="Kura UI home"

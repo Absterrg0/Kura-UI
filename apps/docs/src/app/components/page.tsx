@@ -13,11 +13,14 @@ export const metadata: Metadata = {
 /** Small components read best centred; everything else is a panel, cropped by the card. */
 const CENTERED = new Set([
   "agent-orb",
+  "agent-sigil",
+  "dot-rail",
+  "reasoning",
+  "tool-call",
   "audio-waveform",
   "citation",
   "model-picker",
   "shimmer-text",
-  "thinking-indicator",
   "voice-dictation",
   "attachment",
   "prompt-suggestions",
@@ -26,6 +29,8 @@ const CENTERED = new Set([
 
 /** A richer example where the minimal one is too small to read on a card. */
 const PREVIEW: Record<string, string> = {
+  "agent-sigil": "AgentSigilFull",
+  "status-glyph": "StatusGlyphFull",
   "context-meter": "ContextMeterFull",
   "thinking-indicator": "ThinkingIndicatorFull",
   "voice-dictation": "VoiceDictationFull",
@@ -56,7 +61,7 @@ export default function ComponentsPage() {
     .map((cat) => ({ id: cat.id, title: cat.title }));
   return (
     <div className="px-5 pt-14 pb-28 md:px-6 md:pt-20">
-      <div className="mx-auto max-w-[1200px]">
+      <div className="mx-auto max-w-[1180px]">
         <PageHeader
           title="Components"
           description={`${components.length} React components for agent interfaces, each with a manifest your coding agent can read. Supervision components first.`}

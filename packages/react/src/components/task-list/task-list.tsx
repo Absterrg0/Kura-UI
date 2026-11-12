@@ -8,7 +8,7 @@ import { useElapsed } from "../../hooks/use-elapsed";
 import { agentSurface } from "../../lib/agent-surface";
 import { cn } from "../../lib/cn";
 import { formatClock, formatDuration } from "../../lib/format";
-import { ShimmerText } from "../shimmer-text";
+import { DotRail } from "../dot-rail";
 import { type AgentStatus, StatusGlyph } from "../status-glyph";
 
 export interface TaskListItem {
@@ -65,27 +65,17 @@ const SPOKEN: Record<AgentStatus, string> = {
   paused: "paused",
 };
 
-const SEGMENT: Record<AgentStatus, string> = {
-  queued: "bg-kura-hover",
-  running: "bg-kura-accent",
-  waiting: "bg-kura-warning",
-  done: "bg-kura-fg-muted",
-  failed: "bg-kura-danger",
-  skipped: "bg-kura-border-strong",
-  paused: "bg-kura-border-strong",
-};
-
 const rowEnter =
   "transition-[opacity,translate,background-color] duration-(--kura-duration-base) ease-kura-out starting:translate-y-[2px] starting:opacity-0 motion-reduce:transition-[opacity,background-color] motion-reduce:starting:translate-y-0";
 
 function textColor(status: AgentStatus): string {
   switch (status) {
     case "done":
-    case "skipped":
-      return "text-kura-fg-subtle";
-    case "queued":
     case "paused":
       return "text-kura-fg-muted";
+    case "queued":
+    case "skipped":
+      return "text-kura-fg-subtle";
     default:
       return "text-kura-fg";
   }
@@ -125,17 +115,12 @@ function Row({ item, depth, selectedId, onSelect }: RowProps) {
   const showDetail =
     item.detail != null &&
     (status === "failed" || status === "waiting" || status === "running" || depth === 0);
-  const titleNode =
-    status === "running" ? (
-      <ShimmerText duration={2.4}>{item.title}</ShimmerText>
-    ) : (
-      <span>{item.title}</span>
-    );
+  const titleNode = <span>{item.title}</span>;
 
   const inner = (
     <>
       <span className="flex h-5 shrink-0 items-center">
-        <StatusGlyph status={status} size="sm" label={null} />
+        <StatusGlyph status={status} label={null} />
       </span>
       <span className="flex min-w-0 flex-1 flex-col gap-0.5">
         <span className="flex min-h-5 items-center gap-2">
@@ -144,7 +129,6 @@ function Row({ item, depth, selectedId, onSelect }: RowProps) {
             className={cn(
               "min-w-0 truncate text-[13px] leading-5 transition-colors duration-(--kura-duration-base)",
               textColor(status),
-              status === "running" && "font-medium",
               status === "skipped" && "line-through decoration-kura-border-strong",
               depth > 0 && "text-[12.5px]",
             )}
@@ -166,7 +150,7 @@ function Row({ item, depth, selectedId, onSelect }: RowProps) {
               status === "failed"
                 ? "text-kura-danger-text"
                 : status === "waiting"
-                  ? "text-kura-warning-text"
+                  ? "font-medium text-kura-ember-text"
                   : "text-kura-fg-subtle",
             )}
           >
@@ -181,10 +165,9 @@ function Row({ item, depth, selectedId, onSelect }: RowProps) {
   );
 
   const rowClass = cn(
-    "relative flex w-full items-start gap-2.5 py-1.5 pr-3.5 text-left",
-    depth === 0 ? "pl-3.5" : "pl-[calc(0.875rem+24px)]",
-    selected &&
-      "bg-kura-active before:absolute before:inset-y-0 before:left-0 before:w-[2px] before:bg-kura-accent",
+    "relative flex w-full items-start gap-[11px] rounded-[9px] py-2 pr-2.5 text-left transition-colors duration-(--kura-duration-fast) ease-kura-snap",
+    depth === 0 ? "pl-2.5" : "pl-[calc(0.625rem+26px)]",
+    selected && "bg-kura-active",
   );
 
   return (
@@ -193,7 +176,7 @@ function Row({ item, depth, selectedId, onSelect }: RowProps) {
       data-status={status}
       data-selected={selected || undefined}
       aria-current={status === "running" ? "step" : undefined}
-      className={cn(rowEnter, depth === 0 && "border-kura-border-subtle border-t first:border-t-0")}
+      className={rowEnter}
     >
       {interactive ? (
         <button
@@ -204,14 +187,14 @@ function Row({ item, depth, selectedId, onSelect }: RowProps) {
           onClick={() => onSelect(item.id, item)}
           className={cn(
             rowClass,
-            "cursor-default outline-none transition-colors duration-(--kura-duration-instant) hover:bg-kura-hover focus-visible:shadow-[inset_0_0_0_2px_var(--kura-ring)]",
+            "cursor-default outline-none hover:bg-kura-hover focus-visible:shadow-[inset_0_0_0_2px_var(--kura-ring)]",
             selected && "hover:bg-kura-active",
           )}
         >
           {inner}
         </button>
       ) : (
-        <div data-slot="task-list-row" className={rowClass}>
+        <div data-slot="task-list-row" className={cn(rowClass, "hover:bg-kura-hover")}>
           {inner}
         </div>
       )}
@@ -219,7 +202,7 @@ function Row({ item, depth, selectedId, onSelect }: RowProps) {
         <ul data-slot="task-list-children" className="relative pb-1">
           <span
             aria-hidden
-            className="absolute top-0 bottom-2.5 left-[calc(0.875rem+6.5px)] w-px bg-kura-border-subtle"
+            className="kura-leader absolute top-0 bottom-3 left-[calc(0.625rem+5px)] w-[5px]"
           />
           {item.children.map((child) => (
             <Row
@@ -337,7 +320,11 @@ export function TaskList({
         )}
       </div>
     ) : (
-      <ul aria-label={listLabel} data-slot="task-list-list" className="flex flex-col py-1">
+      <ul
+        aria-label={listLabel}
+        data-slot="task-list-list"
+        className={cn("flex flex-col", variant === "panel" ? "px-1.5 pb-1.5" : "")}
+      >
         {fold && (
           <li data-slot="task-list-completed" data-state={completedOpen ? "open" : "closed"}>
             <button
@@ -346,9 +333,9 @@ export function TaskList({
               aria-expanded={completedOpen}
               aria-controls={groupId}
               onClick={() => setCompletedOpen((o) => !o)}
-              className="flex h-8 w-full cursor-default items-center gap-2.5 px-3.5 text-left text-[13px] text-kura-fg-subtle outline-none transition-colors duration-(--kura-duration-instant) hover:bg-kura-hover hover:text-kura-fg-muted focus-visible:shadow-[inset_0_0_0_2px_var(--kura-ring)]"
+              className="flex h-9 w-full cursor-default items-center gap-[11px] rounded-[9px] px-2.5 text-left text-[13px] text-kura-fg-subtle outline-none transition-colors duration-(--kura-duration-fast) ease-kura-snap hover:bg-kura-hover hover:text-kura-fg-muted focus-visible:shadow-[inset_0_0_0_2px_var(--kura-ring)]"
             >
-              <span className="grid size-3.5 place-items-center">
+              <span className="grid size-[15px] place-items-center">
                 <ChevronRight
                   aria-hidden
                   strokeWidth={2}
@@ -400,11 +387,8 @@ export function TaskList({
       {...props}
     >
       {variant === "panel" && (
-        <div
-          data-slot="task-list-header"
-          className="flex h-10 shrink-0 items-center gap-3 border-kura-border-subtle border-b px-3.5"
-        >
-          <span className="font-medium text-[13px] tracking-[-0.005em]">{title}</span>
+        <div data-slot="task-list-header" className="flex h-11 shrink-0 items-center gap-3 px-4">
+          <span className="font-semibold text-[13px] tracking-[-0.01em]">{title}</span>
           {total > 0 && (
             <span className="font-kura-mono text-[12px] text-kura-fg-subtle tabular-nums">
               {doneCount} of {total}
@@ -412,23 +396,13 @@ export function TaskList({
           )}
           <span className="flex-1" />
           {total > 0 && (
-            <span
+            <DotRail
               data-slot="task-list-progress"
-              aria-hidden
-              className="flex w-[clamp(64px,28%,140px)] items-center gap-[3px]"
-            >
-              {items.map((item) => (
-                <span
-                  key={item.id}
-                  data-status={item.status}
-                  className={cn(
-                    "h-1 min-w-0 flex-1 rounded-full transition-colors duration-(--kura-duration-slow) ease-kura-out",
-                    SEGMENT[item.status],
-                    item.status === "running" && "animate-kura-pulse motion-reduce:animate-none",
-                  )}
-                />
-              ))}
-            </span>
+              value={(doneCount + (runningIndex >= 0 || waitingItem ? 0.5 : 0)) / total}
+              live={runningIndex >= 0 || waitingItem != null}
+              tone={waitingItem ? "ember" : failedItem ? "danger" : "ink"}
+              className="w-[clamp(60px,26%,120px)]"
+            />
           )}
           {actions}
         </div>

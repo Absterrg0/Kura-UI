@@ -13,6 +13,7 @@ import {
 import * as React from "react";
 import { useControllableState } from "../../hooks/use-controllable-state";
 import { cn } from "../../lib/cn";
+import { AgentSigil } from "../agent-sigil";
 import { Button } from "../button";
 import { IconButton, type IconButtonProps } from "../icon-button";
 
@@ -99,9 +100,8 @@ export function Message({
             "[&_blockquote]:border-kura-border-strong [&_blockquote]:border-l-2 [&_blockquote]:pl-3 [&_blockquote]:text-kura-fg-muted",
             "[&_h1]:font-semibold [&_h1]:text-xl [&_h2]:font-semibold [&_h2]:text-lg [&_h3]:font-semibold [&_h3]:text-base",
             user
-              ? // A translucent fg tint (not a grey step) so the bubble separates from canvas, surface
-                // and surface-raised alike, in both themes.
-                "w-fit max-w-[min(80%,36rem)] whitespace-pre-wrap break-words rounded-kura-2xl bg-[color-mix(in_oklab,var(--kura-fg)_7%,transparent)] px-4 py-2.5"
+              ? // What a person typed sits on a raised tile, like a key; the agent's words are bare.
+                "w-fit max-w-[min(80%,36rem)] whitespace-pre-wrap break-words rounded-kura-xl bg-kura-raised px-3.5 py-2 shadow-kura-raised"
               : "w-full",
             status === "error" && "text-kura-fg-muted",
           )}
@@ -160,28 +160,22 @@ function MessageTime({ value }: { value: Date | number | string }) {
 // ------------------------------------------------------------------------------------------------
 
 export interface MessageAvatarProps extends React.ComponentProps<"span"> {
-  /** Image URL. Falls back to `fallback` (or initials of `name`) if missing or broken. */
+  /** Image URL. Falls back to `fallback` (or the dot sigil of `name`) if missing or broken. */
   src?: string;
-  /** Used for the image alt text and the initials fallback. */
+  /** Used for the image alt text and to generate the sigil fallback. */
   name: string;
   /** Custom fallback, e.g. a logo or lucide icon. */
   fallback?: React.ReactNode;
 }
 
-/** 28px round avatar with an image, an icon fallback or initials. */
+/** A 30px raised tile with an image, an icon fallback, or the dot sigil generated from `name`. */
 export function MessageAvatar({ src, name, fallback, className, ...props }: MessageAvatarProps) {
   const [broken, setBroken] = React.useState(false);
-  const initials = name
-    .split(/\s+/)
-    .map((w) => w[0])
-    .join("")
-    .slice(0, 2)
-    .toUpperCase();
   return (
     <span
       data-slot="message-avatar"
       className={cn(
-        "relative flex size-7 shrink-0 select-none items-center justify-center overflow-hidden rounded-full bg-kura-surface-raised font-medium text-[11px] text-kura-fg-muted shadow-kura-xs [&_svg]:size-3.5",
+        "relative flex size-[30px] shrink-0 select-none items-center justify-center overflow-hidden rounded-[9px] bg-kura-raised text-kura-fg-muted shadow-kura-raised [&_svg:not([viewBox='0_0_15_15'])]:size-3.5",
         className,
       )}
       {...props}
@@ -196,7 +190,7 @@ export function MessageAvatar({ src, name, fallback, className, ...props }: Mess
       ) : (
         (fallback ?? (
           <>
-            <span aria-hidden>{initials}</span>
+            <AgentSigil name={name} bare />
             <span className="sr-only">{name}</span>
           </>
         ))
@@ -255,14 +249,14 @@ export interface MessageCopyButtonProps extends Omit<MessageActionProps, "label"
   onCopied?: () => void;
 }
 
-/** Copy action that swaps to a check (cross-fade + 2px blur) for 1.6s after copying. */
+/** Copy action that swaps to a check (cross-fade) for 1.6s after copying. */
 export function MessageCopyButton({ text, onCopied, onClick, ...props }: MessageCopyButtonProps) {
   const [copied, setCopied] = React.useState(false);
   const timer = React.useRef<ReturnType<typeof setTimeout>>(undefined);
   React.useEffect(() => () => clearTimeout(timer.current), []);
   const swap =
     "col-start-1 row-start-1 size-3.5 transition-[opacity,scale,filter] duration-(--kura-duration-fast) ease-kura-out motion-reduce:transition-opacity";
-  const hidden = "scale-75 opacity-0 blur-[2px] motion-reduce:scale-100 motion-reduce:blur-none";
+  const hidden = "scale-75 opacity-0 motion-reduce:scale-100";
   return (
     <>
       <MessageAction

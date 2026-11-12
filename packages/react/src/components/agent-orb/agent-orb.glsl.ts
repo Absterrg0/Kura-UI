@@ -1,30 +1,25 @@
 import { GLSL_COLOR } from "../../lib/shader-color";
 
 /**
- * The agent orb: an analytic sphere (no geometry) holding slow, soft clouds of colour. Per pixel we
- *   1. find the (breathing, audio-swollen) silhouette and the sphere normal,
- *   2. sample two octaves of domain-warped 3D simplex noise *on the sphere surface*, turning
- *      slowly like a globe and twisting around the view axis while thinking — so the clouds wrap
- *      around the curvature instead of sliding across a disc,
- *   3. blend the palette in OKLab (pearl → mid → signal tone), no muddy midpoints,
- *   4. light it quietly: a little wrap diffuse, a pearly fresnel rim, one broad window sheen,
- *   5. outside the sphere: a soft contact shadow on light backgrounds, a faint halo on dark ones,
- *      written as premultiplied alpha so it sits on any surface.
- * One sRGB encode + IGN dither at the end.
+ * The agent orb: a sphere drawn as a halftone. There is no surface and no light bloom, only dots
+ * on a square grid whose size says how bright that part of the ball is. Per pixel we
+ *   1. find the grid cell and the sphere normal at the cell's centre,
+ *   2. sample one slow field of 3D simplex noise on the sphere surface (so it turns like a globe)
+ *      and a soft light from the top left (so it has volume),
+ *   3. add what the agent is doing: a bright band orbiting while it thinks, rings travelling out
+ *      from the centre with the voice, a slow breath when idle,
+ *   4. turn that into a dot radius and draw the dot, antialiased, in one ink.
+ * Written as premultiplied alpha, so it sits on any surface.
  */
 export const AGENT_ORB_FRAG = /* glsl */ `
-uniform vec3 u_deep;    // OKLab: the signal tone (densest clouds)
-uniform vec3 u_mid;     // OKLab: body
-uniform vec3 u_bright;  // OKLab: the light between clouds
-uniform vec3 u_glint;   // OKLab: rim and sheen
-uniform float u_energy;  // 0–1 inner brightness and turbulence
-uniform float u_swirl;   // 0–1 vortex strength
-uniform float u_spin;    // integrated vortex angle
+uniform vec3 u_ink;      // linear RGB of the dots
+uniform float u_cells;   // dots across the diameter
+uniform float u_energy;  // 0–1 how full the dots run
+uniform float u_swirl;   // 0–1 strength of the orbiting band (thinking)
+uniform float u_spin;    // integrated orbit angle
 uniform float u_phase;   // integrated flow time
 uniform float u_level;   // smoothed audio level 0–1
 uniform float u_breath;  // 0–1 idle breathing amplitude
-uniform float u_halo;    // 0–1 outer halo
-uniform float u_light;   // 1 on light backgrounds, 0 on dark
 
 ${GLSL_COLOR}
 
@@ -75,70 +70,42 @@ mat2 rot(float a) { float c = cos(a), s = sin(a); return mat2(c, -s, s, c); }
 
 void main() {
   float s = min(u_resolution.x, u_resolution.y);
-  float px = 2.0 / s;
-  vec2 p = (gl_FragCoord.xy - 0.5 * u_resolution) * px;
-  float t = u_phase;
+  vec2 p = (gl_FragCoord.xy - 0.5 * u_resolution) * (2.0 / s);
+  const float R = 0.94;
+  float pitch = 2.0 * R / u_cells;
+  // An odd count puts a dot on the centre; an even count puts the centre between four.
+  float odd = 0.5 * mod(u_cells, 2.0);
+  vec2 g = p / pitch + odd;
+  vec2 cell = floor(g) + 0.5;
+  vec2 c = (cell - odd) * pitch;
+  float rc = length(c) / R;
+  float a = 0.0;
+  if (rc < 1.0) {
+    float z = sqrt(1.0 - rc * rc);
+    vec3 n = vec3(c / R, z);
 
-  // Silhouette: a slow breath when idle, a gentle swell with the voice.
-  float R = 0.84 * (1.0 + 0.012 * u_breath * sin(u_time * 1.3) + 0.04 * u_level);
-  float r = length(p);
-  vec2 dir = r > 0.0 ? p / r : vec2(0.0, 1.0);
-  float edge = R * (1.0 + snoise(vec3(dir * 1.1, t * 0.6)) * 0.012 * u_level);
-  float mask = smoothstep(edge + px, edge - px, r);
-
-  vec3 lab = u_mid;
-  if (mask > 0.0) {
-    vec2 q = p / edge;
-    float rq = min(length(q), 1.0);
-    float z = sqrt(max(0.0, 1.0 - rq * rq));
-    vec3 n = normalize(vec3(q, z));
-
-    // Clouds live on the surface: turn the sphere slowly, twist it while thinking.
+    // The field lives on the surface and turns with the ball.
     vec3 P = n;
-    P.xy = rot(u_spin + u_swirl * 1.8 * (1.0 - rq)) * P.xy;
-    P.xz = rot(t * 0.16) * P.xz;
-    vec3 w = P * 0.72;
-    float n1 = snoise(w + vec3(0.0, t * 0.17, t * 0.1));
-    float n2 = snoise(w * 1.45 + n1 * (0.45 + 0.6 * u_energy) + vec3(t * 0.12, 3.1, -t * 0.08));
-    float clouds = smoothstep(-0.75, 0.85, n1 * 0.7 + n2 * 0.38);
-    float gaps = smoothstep(0.05, 0.95, snoise(w * 0.8 - vec3(2.7, t * 0.15, 1.3) + n2 * 0.25));
+    P.xz = rot(u_phase * 0.2) * P.xz;
+    float field = snoise(P * 1.2 + vec3(0.0, u_phase * 0.11, 0.0)) * 0.5 + 0.5;
+    float lit = dot(n, normalize(vec3(-0.5, 0.55, 0.67))) * 0.5 + 0.5;
 
-    vec3 body = mix(u_bright, u_mid, clouds);
-    body = mix(body, u_deep, smoothstep(0.5, 1.0, clouds) * (0.62 + 0.3 * u_energy));
-    body = mix(body, u_bright, gaps * (0.22 + 0.3 * u_level));
+    // Thinking: one bright band orbits, the same motion as a running status glyph.
+    float band = pow(0.5 + 0.5 * cos(atan(c.y, c.x) - u_spin), 3.0) * smoothstep(0.1, 0.85, rc);
+    // Voice: rings travel outward from the centre.
+    float wave = 0.5 + 0.5 * sin(rc * 8.0 - u_phase * 5.0);
 
-    // Volume: soft wrap diffuse from the top left, slightly deeper toward the limb.
-    vec3 L = normalize(vec3(-0.45, 0.6, 0.66));
-    float diff = dot(n, L) * 0.5 + 0.5;
-    body.x *= mix(0.86, 1.03, diff) * (1.0 - 0.08 * pow(1.0 - z, 1.5));
-    // The voice lifts the core a touch.
-    body.x += exp(-dot(q, q) * 2.4) * 0.05 * u_level;
+    float v = mix(lit, field, 0.55) * (0.42 + 0.58 * u_energy);
+    v += u_swirl * band * 0.6;
+    v += u_level * (0.2 + 0.5 * wave);
+    v *= 1.0 + 0.1 * u_breath * sin(u_time * 1.3);
+    // Dots shrink toward the limb, the way a halftone fades out.
+    v *= 0.4 + 0.6 * smoothstep(1.0, 0.6, rc);
 
-    // Glass: a pearly fresnel rim, one broad window sheen, a small soft highlight.
-    float fres = pow(1.0 - z, 3.0);
-    body = mix(body, u_glint, fres * mix(0.35, 0.55, u_light));
-    vec3 H = normalize(vec3(-0.5, 0.62, 0.6));
-    float nh = max(dot(n, H), 0.0);
-    body = mix(body, u_glint, smoothstep(0.84, 0.99, nh) * 0.2 + pow(nh, 80.0) * 0.3);
-
-    // A hairline just inside the edge keeps a pale orb crisp on a pale page.
-    body.x -= 0.045 * u_light * smoothstep(edge - px * 2.5, edge - px * 0.5, r);
-    lab = body;
+    float rad = mix(0.06, 0.45, clamp(v, 0.0, 1.0));
+    float aa = (2.0 / s) / pitch;
+    a = smoothstep(rad + aa, rad - aa, length(g - cell));
   }
-
-  // Outside: contact shadow on light backgrounds, a faint halo on dark ones.
-  float outside = max(r - edge, 0.0);
-  float sd = max(length(p - vec2(0.0, -0.04)) - edge, 0.0);
-  // Both fade to zero well inside the square box, so no edge ever shows.
-  float room = 1.0 - edge;
-  float shadowA = u_light * exp(-sd * 18.0) * 0.1 * smoothstep(room, room * 0.3, sd) * (1.0 - mask);
-  float haloA = (1.0 - u_light) * u_halo * exp(-outside * 14.0) * 0.22
-              * smoothstep(room, room * 0.2, outside) * (1.0 - mask);
-  vec3 orb = linearToSrgb(oklabToLinear(lab));
-  vec3 haloC = linearToSrgb(oklabToLinear(u_deep));
-  float a = mask + haloA + shadowA;
-  vec3 premul = orb * mask + haloC * haloA;
-  premul += (ign(gl_FragCoord.xy) - 0.5) / 255.0 * a;
-  fragColor = vec4(premul, a);
+  fragColor = vec4(linearToSrgb(u_ink) * a, a);
 }
 `;

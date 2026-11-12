@@ -72,26 +72,25 @@ export default defineComponent({
       name: "Header",
       dataSlot: "agent-fleet-header",
       description:
-        "Title, count and agent-fleet-summary ('3 running · 1 waiting · 2 done'; waiting in amber, failed in red).",
+        "Title, count and agent-fleet-summary ('3 running · 1 waiting · 2 done'; waiting in ember, failed in red).",
     },
     {
       name: "Agent",
       dataSlot: "agent-fleet-agent",
       description:
-        "One row (<li>, role=option when selectable) with `data-status`, `data-selected`. Selected = active fill + 2px blue bar on the left.",
+        "One row (<li>, role=option when selectable) with `data-status`, `data-selected`: the agent's sigil, name, numbers and status glyph. Selected = the active fill.",
     },
     { name: "Name", dataSlot: "agent-fleet-name", description: "Agent name." },
     { name: "Role", dataSlot: "agent-fleet-role", description: "Role (comfortable only)." },
     {
       name: "Activity",
       dataSlot: "agent-fleet-activity",
-      description:
-        "One truncated line; shimmers while running, amber when waiting, red when failed.",
+      description: "One truncated line; ember when waiting on a person, red when failed.",
     },
     {
       name: "Progress",
       dataSlot: "agent-fleet-progress",
-      description: "3px bar while live: blue running, amber waiting, grey paused.",
+      description: "A DotRail while live: ink running, ember waiting, muted paused.",
     },
     {
       name: "Tokens",
@@ -122,10 +121,9 @@ export default defineComponent({
       { keys: "Home / End", action: "First / last agent" },
       { keys: "Enter / Space", action: "Select the focused agent" },
     ],
-    reducedMotion:
-      "New rows fade in without rising; running glyphs, activity shimmer and progress width transitions stop.",
+    reducedMotion: "Running glyphs stop chasing and the dot rails change without transition.",
   },
-  dependencies: { npm: ["@ui-sdk/react"], kura: ["shimmer-text", "status-glyph"] },
+  dependencies: { npm: ["@ui-sdk/react"], kura: ["agent-sigil", "dot-rail", "status-glyph"] },
   related: ["run-header", "task-list", "trace-waterfall", "tool-call", "agent-timeline"],
   tags: [
     "agent",

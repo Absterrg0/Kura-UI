@@ -1,7 +1,6 @@
 "use client";
 
 import { Terminal } from "@kura-ui/react/terminal";
-import { cn } from "@/lib/cn";
 
 const ESC = "\u001b[";
 const c = (code: string, s: string) => `${ESC}${code}m${s}${ESC}0m`;
@@ -34,7 +33,7 @@ export function AgentTerminal({ className }: { className?: string }) {
   ];
   return (
     <Terminal
-      className={cn("gloss", className)}
+      className={className}
       title="~/acme-web"
       command="claude mcp add kura -- npx -y @kura-ui/mcp"
       lines={lines}

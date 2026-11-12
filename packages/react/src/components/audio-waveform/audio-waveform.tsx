@@ -40,13 +40,13 @@ export interface AudioWaveformProps
    * (voice memo), `spectrum` shows frequency bands. Default: history for mirrored, spectrum for bars.
    */
   display?: "history" | "spectrum";
-  /** Bar width in CSS px. Default 3. */
+  /** Dot diameter (the width of one column) in CSS px. Default 3. */
   barWidth?: number;
-  /** Gap between bars in CSS px. Default 2. */
+  /** Gap between dots, across and down, in CSS px. Default 2. */
   barGap?: number;
-  /** Minimum bar height in CSS px so silence still reads as a line of dots. Default 2. */
+  /** Above 0, silence still lights one dot per column, so it reads as a line of dots. Default 2. */
   minBarHeight?: number;
-  /** `default` = ink, `muted` = subtle ink, `accent` = the signal colour (only for live AI listening). Default "default". */
+  /** `default` = ink, `muted` = subtle ink, `accent` = the theme accent (ink unless you retheme it). Default "default". */
   tone?: "default" | "muted" | "accent";
   /** Pause the live animation (the last frame stays). Default true. */
   active?: boolean;
@@ -103,8 +103,9 @@ const TONES = {
 const HISTORY_INTERVAL = 50; // ms per history sample
 
 /**
- * Canvas waveform for live audio (mic, playback, simulated) or recorded peaks, crisp at any
- * device pixel ratio. Static mode can be a seek slider with a played/unplayed split.
+ * A waveform drawn as a dot matrix: each column lights more dots as it gets louder. Canvas, so it
+ * is crisp at any device pixel ratio; for live audio (mic, playback, simulated) or recorded peaks.
+ * Static mode can be a seek slider with a played/unplayed split.
  */
 export function AudioWaveform({
   analyser: analyserProp,
@@ -167,14 +168,20 @@ export function AudioWaveform({
       const playedX = typeof progress === "number" ? Math.min(1, Math.max(0, progress)) * w : null;
       const hoverX = hoverRef.current;
 
+      // A bar is a column of dots on a square grid: loudness lights more of them.
+      const rows = Math.max(1, Math.floor((usable + barGap) / step));
       const bar = (x: number, v: number, alpha: number) => {
-        const bh = Math.max(minBarHeight, v * usable);
-        const y = align === "bottom" ? h - 1 - bh : (h - bh) / 2;
+        const lit = Math.min(rows, Math.max(minBarHeight > 0 ? 1 : 0, Math.round(v * rows)));
+        if (lit === 0) return;
+        const cx = x + radius;
+        const first = align === "bottom" ? h - 1 - radius : h / 2 + ((lit - 1) * step) / 2;
         ctx.globalAlpha = alpha;
         ctx.beginPath();
-        if (typeof ctx.roundRect === "function")
-          ctx.roundRect(x, y, barWidth, bh, Math.min(radius, bh / 2));
-        else ctx.rect(x, y, barWidth, bh);
+        for (let k = 0; k < lit; k++) {
+          const cy = first - k * step;
+          ctx.moveTo(cx + radius, cy);
+          ctx.arc(cx, cy, radius, 0, Math.PI * 2);
+        }
         ctx.fill();
       };
 
@@ -217,11 +224,13 @@ export function AudioWaveform({
       // Live.
       const f = frame;
       if (variant === "line") {
-        const lw = 1.5;
+        // The oscilloscope trace is a line of dots too.
+        const lw = 2;
         ctx.globalAlpha = 1;
         ctx.lineWidth = lw;
         ctx.lineJoin = "round";
         ctx.lineCap = "round";
+        ctx.setLineDash?.([0.01, 5]);
         ctx.beginPath();
         const data = f?.waveform;
         const points = Math.min(160, Math.max(24, Math.floor(w / 4)));
@@ -245,6 +254,7 @@ export function AudioWaveform({
         }
         ctx.lineTo(px, py);
         ctx.stroke();
+        ctx.setLineDash?.([]);
         return;
       }
 
@@ -436,7 +446,7 @@ export function AudioWaveform({
         "relative h-10 w-full min-w-0 select-none",
         TONES[tone],
         seekable &&
-          "cursor-pointer touch-none rounded-kura-sm outline-none focus-visible:shadow-kura-focus",
+          "cursor-pointer touch-none rounded-kura-sm outline-none focus-visible:outline-2 focus-visible:outline-kura-ring focus-visible:outline-offset-2",
         className,
       )}
       {...props}
@@ -456,18 +466,22 @@ function drawEnvelope(
   const n = values.length;
   if (!n) return;
   const mid = h / 2;
-  const amp = (v: number) => Math.max(min / 2, (v * (h - 2)) / 2);
+  const amp = (v: number) => Math.max(min / 2, (v * (h - 4)) / 2);
   ctx.globalAlpha = 1;
-  ctx.beginPath();
-  ctx.moveTo(0, mid);
-  for (let i = 0; i < n; i++) {
-    const x = (i / Math.max(1, n - 1)) * w;
-    ctx.lineTo(x, mid - amp(values[i] ?? 0));
+  ctx.lineWidth = 2;
+  ctx.lineCap = "round";
+  ctx.lineJoin = "round";
+  ctx.setLineDash?.([0.01, 5]);
+  // The envelope's upper and lower edge, each a line of dots.
+  for (const side of [-1, 1]) {
+    ctx.beginPath();
+    for (let i = 0; i < n; i++) {
+      const x = 1 + (i / Math.max(1, n - 1)) * (w - 2);
+      const y = mid + side * amp(values[i] ?? 0);
+      if (i === 0) ctx.moveTo(x, y);
+      else ctx.lineTo(x, y);
+    }
+    ctx.stroke();
   }
-  for (let i = n - 1; i >= 0; i--) {
-    const x = (i / Math.max(1, n - 1)) * w;
-    ctx.lineTo(x, mid + amp(values[i] ?? 0));
-  }
-  ctx.closePath();
-  ctx.fill();
+  ctx.setLineDash?.([]);
 }

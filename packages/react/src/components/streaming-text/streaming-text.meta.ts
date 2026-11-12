@@ -6,7 +6,7 @@ export default defineComponent({
   category: "conversation",
   status: "beta",
   description:
-    "Token-by-token model output with an even reveal cadence, word-group fade/blur-in and a soft caret. Takes a growing string or an async iterable.",
+    "Token-by-token model output with an even reveal cadence, word-group fade-in and one pulsing dot at the live edge. Takes a growing string or an async iterable.",
   whenToUse: [
     "Render an LLM answer while it streams in (AI SDK, OpenAI/Anthropic SSE, a ReadableStream adapted to an async iterable).",
     "Smooth out bursty token delivery so text appears at a calm, even rhythm instead of in jumps.",
@@ -54,9 +54,9 @@ export default defineComponent({
     {
       name: "animation",
       type: '"blur" | "fade" | "none"',
-      default: '"blur"',
+      default: '"fade"',
       description:
-        "How each newly revealed word group enters: fade + 3px blur, fade only, or no animation.",
+        "How each newly revealed word group enters: fade only (default), fade + 3px blur, or no animation.",
     },
     {
       name: "caret",
@@ -92,7 +92,7 @@ export default defineComponent({
       "The caret is decorative (`aria-hidden`).",
     ],
     reducedMotion:
-      "Word groups only fade in (no blur) and the caret stops pulsing; the even reveal cadence is kept because it carries meaning (text is still arriving).",
+      "Word groups only fade in and the live dot stops pulsing; the even reveal cadence is kept because it carries meaning (text is still arriving).",
   },
   dependencies: { npm: [], kura: [] },
   related: ["message", "reasoning", "code-block", "shimmer-text"],
@@ -116,7 +116,7 @@ export default defineComponent({
       kind: "composition",
       title: "Custom renderer with useStreamingText",
       description:
-        "Shimmering “Thinking…” until the first token, then a hand-rolled renderer built on the hook, with a Stop button.",
+        "“Thinking…” until the first token, then a hand-rolled renderer built on the hook, with a Stop button.",
     },
   ],
   agentNotes: [

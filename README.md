@@ -27,9 +27,9 @@ React 19 · Tailwind CSS v4 · motion · Radix · TypeScript strict · MIT
   examples. CI fails if the manifest drifts from the TypeScript.
 - **One source, many surfaces.** The docs, the shadcn registry, `llms.txt`, a JSON catalog, an MCP
   server and a CLI are all generated from the manifests — they cannot disagree.
-- **A real design language.** [Kura Signal](./DESIGN.md): warm paper-and-ink neutrals in OKLCH, one
-  blue accent reserved for "the model is doing something", hairline borders, layered shadows,
-  short interruptible motion, reduced-motion that removes travel but keeps meaning.
+- **A design language with opinions.** [The dot language](./DESIGN.md): agents emit tokens, so
+  everything measured or stateful is drawn in dots. Status is a dot glyph, every agent has a dot
+  sigil for a face, progress is a row of dots, and the one colour (ember) means "this needs you".
 - **Serious library hygiene.** Accessible (axe in every test), SSR-safe, tree-shakeable per-component
   entry points with `"use client"` only where needed, dark mode via tokens, Vitest + Playwright, Biome, changesets, CI.
 

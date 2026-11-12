@@ -37,13 +37,13 @@ export function CopyButton({
           <Copy
             className={cn(
               "absolute inset-0 size-3.5 transition-all duration-(--kura-duration-fast)",
-              copied && "scale-50 opacity-0 blur-[2px]",
+              copied && "scale-50 opacity-0",
             )}
           />
           <Check
             className={cn(
               "absolute inset-0 size-3.5 text-kura-accent-text transition-all duration-(--kura-duration-fast)",
-              !copied && "scale-50 opacity-0 blur-[2px]",
+              !copied && "scale-50 opacity-0",
             )}
           />
         </span>

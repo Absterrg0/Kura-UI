@@ -6,7 +6,7 @@ export default defineComponent({
   category: "primitives",
   status: "stable",
   description:
-    "The Kura button on ui-sdk: six variants, four sizes, loading, asChild, tactile press, a signal focus ring. Agents can press it; data-agent-confirm makes a person decide.",
+    "The Kura button, a keycap on ui-sdk: variants, four sizes, loading, asChild, a printed shortcut. Agents can press it; data-agent-confirm makes a person decide.",
   whenToUse: [
     "Any clickable action: submit, confirm, cancel, open.",
     "Links that should look like buttons (use asChild with your router's Link).",
@@ -21,7 +21,7 @@ export default defineComponent({
       type: '"primary" | "secondary" | "ghost" | "outline" | "accent" | "danger"',
       default: '"primary"',
       description:
-        "primary = solid ink call to action; secondary = soft grey fill; outline = surface with a hairline; ghost = no chrome until hover; accent = the AI signal color (max one per view); danger = destructive.",
+        "Every button is a keycap. primary = the ink fill (light on dark, dark on light); secondary and outline = a raised key; ghost = no chrome until hover; accent = the same ink fill as primary (there is no accent colour); danger = destructive.",
     },
     {
       name: "size",
@@ -84,7 +84,7 @@ export default defineComponent({
     { name: "ButtonAsLink", kind: "composition", title: "As a link (asChild)" },
   ],
   agentNotes: [
-    "Use `accent` only for the single most AI-specific action in view (e.g. “Run agent”). Default to `primary`.",
+    "There is no accent colour: `accent` renders like `primary`. Print the shortcut on the key with a ghost `Kbd` child.",
     "Icons inside are auto-sized; do not add size classes unless you need a non-default size.",
     "Destructive or costly actions an agent might trigger (delete, deploy, pay, send) should carry data-agent-confirm with a plain sentence of what happens; the agent's press then waits for the person.",
   ],

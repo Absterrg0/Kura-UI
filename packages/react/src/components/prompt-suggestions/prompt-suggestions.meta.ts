@@ -6,7 +6,7 @@ export default defineComponent({
   category: "input",
   status: "beta",
   description:
-    "Starter prompts for empty chat states — chips, cards or a list that rise in with a short stagger and fill the composer when clicked.",
+    "Starter prompts for empty chat states — keycaps, cards or a list that rise in with a short stagger and fill the composer when clicked.",
   whenToUse: [
     "The empty state of a chat or agent: show 3–6 example prompts the user can start from.",
     "Follow-up suggestions under an answer (“Make it shorter”, “Add sources”) using the chips variant.",
@@ -35,7 +35,7 @@ export default defineComponent({
       type: '"chips" | "cards" | "list"',
       default: '"cards"',
       description:
-        "chips = wrapping pills (titles only), cards = two-column tiles with icon and description, list = hairline-separated rows.",
+        "chips = wrapping keycaps (titles only), cards = two-column sheets with icon and description, list = bare rows.",
     },
     {
       name: "stagger",
@@ -85,7 +85,7 @@ export default defineComponent({
       { keys: "Enter / Space", action: "Select a suggestion" },
     ],
     reducedMotion:
-      "Items fade in together-ish without rising or blurring; hover arrows and press scales do not move.",
+      "Items fade in together-ish without rising; hover arrows and press travel do not move.",
   },
   dependencies: { npm: ["lucide-react", "motion"], kura: [] },
   related: ["composer", "slash-command-menu", "command-palette"],

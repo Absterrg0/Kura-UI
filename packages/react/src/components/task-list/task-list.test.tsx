@@ -32,7 +32,11 @@ describe("TaskList", () => {
     expect(root).toHaveClass("custom");
     expect(root).toHaveAttribute("data-progress", "3/6");
     expect(screen.getByText("3 of 6")).toBeInTheDocument();
-    expect(container.querySelectorAll("[data-slot=task-list-progress] > span")).toHaveLength(6);
+    // Progress is a rail of dots; a step in hand counts as half.
+    const rail = container.querySelector<HTMLElement>("[data-slot=task-list-progress]")!;
+    expect(rail.querySelector<HTMLElement>("[data-slot=dot-rail-lit]")?.style.width).toMatch(
+      /^round\(up, 58\.\d+%, 6px\)$/,
+    );
     const running = container.querySelector("li[data-status=running]")!;
     expect(running).toHaveAttribute("aria-current", "step");
     expect(running).toHaveTextContent("Patch client (in progress)");

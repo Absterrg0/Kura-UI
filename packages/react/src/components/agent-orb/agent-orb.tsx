@@ -10,48 +10,6 @@ import { ShaderCanvas } from "../shader-canvas";
 import { AGENT_ORB_FRAG } from "./agent-orb.glsl";
 
 export type AgentOrbState = "idle" | "listening" | "thinking" | "speaking" | "error";
-export type AgentOrbPreset = "signal" | "pearl" | "graphite" | "ocean" | "amber";
-
-/**
- * Palettes as [deep, mid, bright, glint]: the densest clouds, the body, the light between the
- * clouds, and the rim/sheen. `signal` is built from Kura tokens and follows the theme — pearl with
- * blue clouds on light pages, graphite with blue clouds on dark ones. The rest are fixed.
- */
-export const agentOrbPresets: Record<AgentOrbPreset, readonly [string, string, string, string]> = {
-  signal: [
-    "var(--kura-accent)",
-    "color-mix(in oklab, var(--kura-accent) 38%, var(--kura-surface))",
-    "color-mix(in oklab, var(--kura-accent) 9%, var(--kura-surface))",
-    "oklch(0.99 0.004 255)",
-  ],
-  pearl: [
-    "oklch(0.7 0.008 255)",
-    "oklch(0.85 0.006 255)",
-    "oklch(0.975 0.003 255)",
-    "oklch(1 0 0)",
-  ],
-  graphite: [
-    "oklch(0.2 0.004 255)",
-    "oklch(0.33 0.008 255)",
-    "oklch(0.56 0.02 255)",
-    "oklch(0.9 0.01 255)",
-  ],
-  ocean: [
-    "oklch(0.4 0.16 264)",
-    "oklch(0.57 0.17 258)",
-    "oklch(0.82 0.08 245)",
-    "oklch(0.97 0.02 240)",
-  ],
-  amber: ["oklch(0.7 0.12 58)", "oklch(0.85 0.06 70)", "oklch(0.97 0.015 85)", "oklch(1 0 0)"],
-};
-
-/** Error follows the theme like `signal`, with the danger token as the cloud colour. */
-const ERROR_PALETTE = [
-  "var(--kura-danger)",
-  "color-mix(in oklab, var(--kura-danger) 40%, var(--kura-surface))",
-  "color-mix(in oklab, var(--kura-danger) 6%, var(--kura-surface))",
-  "oklch(0.99 0.004 25)",
-] as const;
 
 const STATE_LABEL: Record<AgentOrbState, string> = {
   idle: "Voice agent idle",
@@ -67,47 +25,24 @@ interface Targets {
   spinSpeed: number;
   flow: number;
   breath: number;
-  halo: number;
   error: number;
 }
 
 const TARGETS: Record<AgentOrbState, Targets> = {
-  idle: { energy: 0.15, swirl: 0.05, spinSpeed: 0.04, flow: 0.2, breath: 1, halo: 0.2, error: 0 },
-  listening: {
-    energy: 0.4,
-    swirl: 0.08,
-    spinSpeed: 0.08,
-    flow: 0.4,
-    breath: 0.4,
-    halo: 0.35,
-    error: 0,
-  },
-  thinking: {
-    energy: 0.5,
-    swirl: 0.6,
-    spinSpeed: 0.7,
-    flow: 0.5,
-    breath: 0.3,
-    halo: 0.35,
-    error: 0,
-  },
-  speaking: {
-    energy: 0.5,
-    swirl: 0.12,
-    spinSpeed: 0.14,
-    flow: 0.5,
-    breath: 0.2,
-    halo: 0.55,
-    error: 0,
-  },
-  error: { energy: 0.1, swirl: 0, spinSpeed: 0.02, flow: 0.12, breath: 0.6, halo: 0.25, error: 1 },
+  idle: { energy: 0.45, swirl: 0, spinSpeed: 0.2, flow: 0.25, breath: 1, error: 0 },
+  listening: { energy: 0.5, swirl: 0, spinSpeed: 0.2, flow: 0.4, breath: 0.4, error: 0 },
+  thinking: { energy: 0.4, swirl: 1, spinSpeed: 3.2, flow: 0.5, breath: 0.2, error: 0 },
+  speaking: { energy: 0.6, swirl: 0, spinSpeed: 0.2, flow: 0.6, breath: 0.2, error: 0 },
+  error: { energy: 0.3, swirl: 0, spinSpeed: 0, flow: 0.08, breath: 0.5, error: 1 },
 };
 
-export interface AgentOrbProps extends Omit<React.ComponentProps<"div">, "children"> {
-  /** What the agent is doing. Drives motion, colour and the announced label. Default "idle". */
+export interface AgentOrbProps extends Omit<React.ComponentProps<"div">, "children" | "color"> {
+  /** What the agent is doing. Drives the motion and the announced label. Default "idle". */
   state?: AgentOrbState;
-  /** A preset, or four CSS colours `[deep, mid, bright, glint]`. Default "signal". */
-  colors?: AgentOrbPreset | readonly [string, string, string, string];
+  /** Dot colour, any CSS colour. Default the ink (`var(--kura-fg)`). `error` uses the danger colour. */
+  color?: string;
+  /** Dots across the diameter. Fewer reads bolder, more reads finer. Default 19. */
+  dots?: number;
   /**
    * Audio analyser (from `useAudioAnalyser`). Its level drives the orb while `listening` (input)
    * or `speaking` (output). Overridden by `inputLevel`/`outputLevel` when those are set.
@@ -125,19 +60,31 @@ export interface AgentOrbProps extends Omit<React.ComponentProps<"div">, "childr
   maxDpr?: number;
 }
 
+// The no-WebGL ball: large dots in the middle, small ones toward the limb. The radius is a
+// percentage of each cell's half-diagonal.
+const FALLBACK_RINGS = [
+  { r: "42%", mask: "radial-gradient(circle closest-side, #000 52%, transparent 54%)" },
+  {
+    r: "22%",
+    mask: "radial-gradient(circle closest-side, transparent 54%, #000 56%, #000 98%, transparent 100%)",
+  },
+] as const;
+
 function lerp(a: number, b: number, k: number) {
   return a + (b - a) * k;
 }
 
 /**
- * The voice-agent orb: a calm, softly glassy sphere of slow colour clouds, rendered in a fragment
- * shader. It breathes when idle, swells with the microphone while listening, turns while thinking,
- * lifts with the agent's voice while speaking and shifts to the danger colour on error — every
- * transition is eased on the GPU uniforms. Decorative canvas plus a polite text equivalent.
+ * The voice-agent orb: a sphere drawn as a halftone of dots, rendered in a fragment shader. The
+ * dots breathe when idle, swell in rings with the microphone while listening, carry one bright
+ * band round the ball while thinking, pulse with the agent's voice while speaking, and turn the
+ * danger colour on error. Every transition is eased on the GPU uniforms. Decorative canvas plus a
+ * polite text equivalent.
  */
 export function AgentOrb({
   state = "idle",
-  colors = "signal",
+  color = "var(--kura-fg)",
+  dots = 19,
   analyser,
   inputLevel,
   outputLevel,
@@ -151,9 +98,9 @@ export function AgentOrb({
 }: AgentOrbProps) {
   const rootRef = React.useRef<HTMLDivElement>(null);
   const reducedMotion = useReducedMotion();
-  const palette = typeof colors === "string" ? agentOrbPresets[colors] : colors;
-  const list = React.useMemo(() => [...palette, ...ERROR_PALETTE, "var(--kura-canvas)"], [palette]);
+  const list = React.useMemo(() => [color, "var(--kura-danger-text)"], [color]);
   const { colors: resolved, version } = useResolvedColors(rootRef, list);
+  const cells = Math.max(5, Math.min(61, Math.round(dots)));
 
   // Everything the render loop needs, without re-creating uniforms on every prop change.
   const live = React.useRef({ state, analyser, inputLevel, outputLevel, reducedMotion });
@@ -166,18 +113,12 @@ export function AgentOrb({
     spin: 0,
     phase: 0,
     last: 0,
-    out: {
-      deep: [0, 0, 0] as Vec3,
-      mid: [0, 0, 0] as Vec3,
-      bright: [0, 0, 0] as Vec3,
-      glint: [0, 0, 0] as Vec3,
-    },
-    light: 0,
+    ink: [0, 0, 0] as Vec3,
   });
 
   // Under reduced motion the shader is frozen in time; wake it briefly to fade between states.
   const [awake, setAwake] = React.useState(true);
-  // biome-ignore lint/correctness/useExhaustiveDependencies: wake on state/theme/palette changes.
+  // biome-ignore lint/correctness/useExhaustiveDependencies: wake on state/theme/colour changes.
   React.useEffect(() => {
     if (!reducedMotion) return;
     setAwake(true);
@@ -205,7 +146,6 @@ export function AgentOrb({
       s.spinSpeed = lerp(s.spinSpeed, target.spinSpeed, k);
       s.flow = lerp(s.flow, target.flow, k);
       s.breath = lerp(s.breath, target.breath, k);
-      s.halo = lerp(s.halo, target.halo, k);
       s.error = lerp(s.error, target.error, 1 - Math.exp(-dt / 0.25));
 
       let level = 0;
@@ -217,45 +157,31 @@ export function AgentOrb({
       // Fast attack, slower release, like a VU meter.
       s.level = lerp(s.level, level, 1 - Math.exp(-dt / (level > s.level ? 0.05 : 0.18)));
       if (!rm) {
-        s.spin += dt * s.spinSpeed * 1.6;
+        s.spin += dt * s.spinSpeed;
         s.phase += dt * s.flow;
       }
 
-      // Blend toward the error palette in OKLab; the shader works in OKLab too.
       const c = resolved.current;
-      const mix = (i: number, out: Vec3) => {
-        const a = c[i]?.oklab ?? [0.6, 0, 0];
-        const b = c[i + 4]?.oklab ?? a;
-        for (let j = 0; j < 3; j++) out[j] = lerp(a[j]!, b[j]!, s.error);
-        return out;
-      };
-      mix(0, s.out.deep);
-      mix(1, s.out.mid);
-      mix(2, s.out.bright);
-      mix(3, s.out.glint);
-      s.light = (c[8]?.oklab[0] ?? 1) > 0.55 ? 1 : 0;
-      return s.out.deep;
+      const ink = c[0]?.linear ?? [0.9, 0.9, 0.9];
+      const danger = c[1]?.linear ?? ink;
+      for (let j = 0; j < 3; j++) s.ink[j] = lerp(ink[j]!, danger[j]!, s.error);
+      return s.ink;
     };
     const s = sim.current;
-    // ShaderCanvas evaluates uniforms in insertion order: `u_deep` runs the tick first.
+    // ShaderCanvas evaluates uniforms in insertion order: `u_ink` runs the tick first.
     return {
-      u_deep: tick,
-      u_mid: () => s.out.mid,
-      u_bright: () => s.out.bright,
-      u_glint: () => s.out.glint,
-      u_energy: () => s.energy + s.level * 0.5,
+      u_ink: tick,
+      u_cells: () => cells,
+      u_energy: () => s.energy,
       u_swirl: () => s.swirl,
       u_spin: () => s.spin,
       u_phase: () => s.phase,
       u_level: () => s.level,
       u_breath: () => s.breath,
-      u_halo: () => s.halo + s.level * 0.6,
-      u_light: () => s.light,
     };
-  }, [resolved]);
+  }, [resolved, cells]);
 
   const text = label ?? STATE_LABEL[state];
-  const [deep, mid, bright, glint] = state === "error" ? ERROR_PALETTE : palette;
 
   return (
     <div
@@ -276,31 +202,31 @@ export function AgentOrb({
         maxDpr={maxDpr}
         className="absolute inset-0"
         fallback={
+          // No WebGL: the same ball as two rings of CSS dots, larger at the centre.
           <div
             aria-hidden
             data-slot="agent-orb-fallback"
             className={cn(
-              "absolute inset-[8%] overflow-hidden rounded-full shadow-kura-md transition-[scale] duration-(--kura-duration-slower) ease-kura-out motion-reduce:transition-none",
-              state === "speaking" && "scale-[1.03] motion-reduce:scale-100",
+              "absolute inset-[3%]",
+              state === "thinking" && "animate-kura-pulse motion-reduce:animate-none",
             )}
-            style={{ background: bright }}
+            style={{ color: state === "error" ? "var(--kura-danger-text)" : color }}
           >
-            <div
-              className={cn(
-                "absolute inset-0 rounded-full blur-md",
-                state === "thinking" &&
-                  "animate-kura-spin [animation-duration:3.2s] motion-reduce:animate-none",
-              )}
-              style={{
-                background: `radial-gradient(60% 55% at 70% 72%, ${deep}, transparent 70%), radial-gradient(55% 50% at 28% 62%, ${mid}, transparent 72%), radial-gradient(50% 45% at 60% 22%, ${mid}, transparent 70%)`,
-              }}
-            />
-            <div
-              className="absolute inset-0 rounded-full"
-              style={{
-                background: `radial-gradient(42% 32% at 34% 24%, color-mix(in oklab, ${glint} 55%, transparent), transparent 70%), radial-gradient(circle at 50% 50%, transparent 66%, color-mix(in oklab, ${glint} 45%, transparent) 100%)`,
-              }}
-            />
+            {FALLBACK_RINGS.map((ring) => (
+              <span
+                key={ring.r}
+                className="kura-dots absolute inset-0"
+                style={
+                  {
+                    "--kura-dots-color": "currentColor",
+                    "--kura-dots-pitch": `${100 / cells}%`,
+                    "--kura-dots-r": ring.r,
+                    maskImage: ring.mask,
+                    WebkitMaskImage: ring.mask,
+                  } as React.CSSProperties
+                }
+              />
+            ))}
           </div>
         }
       />

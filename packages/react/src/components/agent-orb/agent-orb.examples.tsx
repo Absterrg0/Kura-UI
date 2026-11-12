@@ -5,24 +5,23 @@ import * as React from "react";
 import { useAudioAnalyser } from "../../hooks/use-audio-analyser";
 import { Button } from "../button";
 import { IconButton } from "../icon-button";
-import { ShimmerText } from "../shimmer-text";
-import { AgentOrb, type AgentOrbPreset, type AgentOrbState } from "./agent-orb";
+import { AgentOrb, type AgentOrbState } from "./agent-orb";
 
 export function AgentOrbMinimal() {
   return <AgentOrb className="size-48" />;
 }
 
 const states: AgentOrbState[] = ["idle", "listening", "thinking", "speaking", "error"];
-const presets: AgentOrbPreset[] = ["signal", "pearl", "graphite", "ocean", "amber"];
+const densities = [13, 19, 27] as const;
 
 export function AgentOrbFull() {
   const [state, setState] = React.useState<AgentOrbState>("speaking");
-  const [preset, setPreset] = React.useState<AgentOrbPreset>("signal");
+  const [dots, setDots] = React.useState<number>(19);
   // Simulated audio for the demo; pass `source: micStream` in a real app.
   const analyser = useAudioAnalyser({ simulate: "speech" });
   return (
     <div className="flex w-full max-w-md flex-col items-center gap-5">
-      <AgentOrb state={state} colors={preset} analyser={analyser} className="size-64" />
+      <AgentOrb state={state} dots={dots} analyser={analyser} className="size-64" />
       <div
         role="radiogroup"
         aria-label="Agent state"
@@ -42,18 +41,19 @@ export function AgentOrbFull() {
           </Button>
         ))}
       </div>
-      <div role="radiogroup" aria-label="Palette" className="flex gap-1">
-        {presets.map((p) => (
+      <div role="radiogroup" aria-label="Dots across" className="flex items-center gap-1">
+        {densities.map((d) => (
           <Button
-            key={p}
+            key={d}
             size="xs"
-            variant={p === preset ? "secondary" : "ghost"}
+            variant={d === dots ? "secondary" : "ghost"}
             role="radio"
-            aria-checked={p === preset}
-            onClick={() => setPreset(p)}
-            className="capitalize"
+            aria-checked={d === dots}
+            aria-label={`${d} dots across`}
+            onClick={() => setDots(d)}
+            className="font-kura-mono"
           >
-            {p}
+            {d}
           </Button>
         ))}
       </div>
@@ -92,15 +92,15 @@ export function AgentOrbVoiceSession() {
   }, [current]);
   const state: AgentOrbState = muted && current.state === "listening" ? "idle" : current.state;
   return (
-    <div className="flex w-full max-w-sm flex-col items-center gap-4 rounded-kura-2xl bg-kura-surface p-6 shadow-kura-md">
+    <div className="flex w-full max-w-sm flex-col items-center gap-4 rounded-kura-xl bg-kura-surface p-6 shadow-kura-surface">
       <AgentOrb
         state={state}
         analyser={analyser}
         label={muted ? "Muted" : undefined}
         className="size-44"
       />
-      <p className="flex h-10 items-center text-center text-kura-fg-muted text-sm" aria-hidden>
-        {state === "thinking" ? <ShimmerText>{current.caption}</ShimmerText> : current.caption}
+      <p className="flex h-10 items-center text-center text-[13px] text-kura-fg-muted" aria-hidden>
+        {current.caption}
       </p>
       <div className="flex items-center gap-2">
         <IconButton

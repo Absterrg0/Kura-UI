@@ -40,7 +40,7 @@ export default defineComponent({
       type: '"generating" | "updating" | "ready" | "error"',
       default: '"ready"',
       description:
-        "Lifecycle. generating = first write and updating = an edit (both: jade icon tile, shimmering statusText, progress bar, aria-busy); error = danger tile and message.",
+        "Lifecycle. generating = first write and updating = an edit (both: the chasing glyph in the icon tile, statusText, a dot rail when progress is known, aria-busy); error = the failed glyph and message.",
     },
     {
       name: "meta",
@@ -77,7 +77,7 @@ export default defineComponent({
       name: "preview",
       type: "React.ReactNode",
       description:
-        'Thumbnail content for variant="preview": a text excerpt, an <img className="size-full object-cover">, a headerless CodeBlock. It fades out at the bottom and is aria-hidden/inert. Default: a sketch of the kind that shimmers while busy.',
+        'Thumbnail content for variant="preview": a text excerpt, an <img className="size-full object-cover">, a headerless CodeBlock. It sits in a sunk well, clipped at the bottom, and is aria-hidden/inert. Default: the kind sketched in rows of dots.',
     },
     {
       name: "versions",
@@ -157,7 +157,7 @@ export default defineComponent({
     {
       name: "Meta",
       dataSlot: "artifact-card-meta",
-      description: "Second line: meta, shimmering statusText + percentage, or the error.",
+      description: "Second line: meta, statusText + percentage, or the error.",
     },
     {
       name: "Versions",
@@ -189,9 +189,9 @@ export default defineComponent({
       { keys: "Enter / Space", action: "Open the artifact (Enter follows the link for href)" },
     ],
     reducedMotion:
-      "The shimmer and the indeterminate sweep stop (a still tinted track remains); the hover zoom of the preview, the press scale and the chevron nudge are removed. Colour and opacity changes stay.",
+      "The running glyph and the rail's leading dot hold still, and the placeholder dots stop pulsing; the press travel is removed. Colour and opacity changes stay.",
   },
-  dependencies: { npm: ["lucide-react"], kura: ["icon-button", "shimmer-text"] },
+  dependencies: { npm: ["lucide-react"], kura: ["dot-rail", "icon-button", "status-glyph"] },
   related: ["message", "code-block", "attachment", "tool-call", "streaming-text"],
   tags: ["artifact", "canvas", "document", "file", "output", "generation", "versions", "preview"],
   examples: [

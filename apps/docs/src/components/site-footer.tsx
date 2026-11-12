@@ -33,9 +33,10 @@ const COLUMNS = [
 
 export function SiteFooter() {
   return (
-    <footer className="border-kura-border-subtle border-t">
+    <footer>
       <div className="px-5 md:px-6">
-        <div className="mx-auto grid max-w-[1200px] gap-10 pt-14 pb-12 text-[14px] sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1fr]">
+        <span aria-hidden className="kura-leader mx-auto block h-[5px] max-w-[1180px]" />
+        <div className="mx-auto grid max-w-[1180px] gap-10 pt-14 pb-12 text-[14px] sm:grid-cols-2 lg:grid-cols-[1.4fr_1fr_1fr_1fr]">
           <div className="flex flex-col gap-3">
             <Logo />
             <p className="max-w-[16rem] text-kura-fg-subtle leading-relaxed">

@@ -1,8 +1,35 @@
+import { AgentSigil } from "@kura-ui/react/agent-sigil";
+import { DotRail } from "@kura-ui/react/dot-rail";
+import { StatusGlyph } from "@kura-ui/react/status-glyph";
 import type { Metadata } from "next";
 import Link from "next/link";
 import { CodeBlock } from "@/components/code-block";
 import { C, DocsShell, PageHeader, Section } from "@/components/docs-shell";
 import { catalog } from "@/lib/catalog";
+
+const STATES = [
+  ["queued", "Queued"],
+  ["running", "Running"],
+  ["waiting", "Needs you"],
+  ["done", "Done"],
+  ["failed", "Failed"],
+  ["skipped", "Skipped"],
+  ["paused", "Paused"],
+] as const;
+
+const AGENTS = ["explorer", "test-writer", "reviewer", "migrator"];
+
+const INKS = [
+  ["canvas", "canvas"],
+  ["sheet", "surface"],
+  ["well", "surface-sunken"],
+  ["ink", "fg"],
+  ["ink-2", "fg-muted"],
+  ["ink-3", "fg-subtle"],
+  ["ember", "ember"],
+  ["green", "success"],
+  ["red", "danger"],
+] as const;
 
 export const metadata: Metadata = {
   title: "Getting started",
@@ -29,7 +56,7 @@ export default function DocsPage() {
               code={`@import "tailwindcss";\n@import "@kura-ui/react/styles.css";`}
             />
             <CodeBlock
-              code={`import { ShimmerText } from "@kura-ui/react/shimmer-text";\n\nexport function Status() {\n  return <ShimmerText>Thinking…</ShimmerText>;\n}`}
+              code={`import { StatusGlyph } from "@kura-ui/react/status-glyph";\n\nexport function Status() {\n  return <StatusGlyph status="running" />;\n}`}
             />
             <p className="text-[15.5px] text-kura-fg-muted leading-relaxed">
               Each component is its own entry point (<C>@kura-ui/react/&lt;slug&gt;</C>),
@@ -43,7 +70,7 @@ export default function DocsPage() {
         <Section id="shadcn" title="1b. Or copy the source (shadcn)">
           <CodeBlock
             lang="bash"
-            code={`${catalog.install.shadcnTheme}\nnpx shadcn@latest add ${catalog.homepage}/r/shimmer-text.json`}
+            code={`${catalog.install.shadcnTheme}\nnpx shadcn@latest add ${catalog.homepage}/r/status-glyph.json`}
           />
         </Section>
 
@@ -55,10 +82,11 @@ export default function DocsPage() {
         </Section>
 
         <Section id="design" title="3. Design language">
-          <p className="pb-4 text-[15.5px] text-kura-fg-muted leading-relaxed">
-            Everything is still until the model speaks. Neutral greys, hairline borders and one blue
-            signal colour reserved for AI activity: streaming, listening, running, waiting on you.
-            Geist for text, Geist Mono for data, and short, interruptible motion. Full guide in{" "}
+          <p className="pb-6 text-[15.5px] text-kura-fg-muted leading-relaxed">
+            Agents emit tokens, so everything measured or stateful is drawn in dots. Status is a dot
+            glyph, every agent has a dot sigil for a face, and progress is a row of dots. Text is
+            monochrome ink; ember appears only where a person is needed. Geist for words, Geist Mono
+            for data. Full guide in{" "}
             <a
               className="underline underline-offset-4 hover:text-kura-fg"
               href="https://github.com/Absterrg0/Kura-UI/blob/main/DESIGN.md"
@@ -67,33 +95,40 @@ export default function DocsPage() {
             </a>
             .
           </p>
-          <div className="grid grid-cols-6 gap-1.5 pb-4 sm:grid-cols-12" aria-hidden>
-            {Array.from({ length: 12 }, (_, i) => (
-              <div key={i} className="flex flex-col gap-1">
-                <div
-                  className="h-10 rounded-kura-sm shadow-kura-xs"
-                  style={{ background: `var(--kura-gray-${i + 1})` }}
-                />
-                <span className="text-center font-kura-mono text-kura-fg-subtle text-[10px]">
-                  {i + 1}
-                </span>
-              </div>
+          <ul className="grid grid-cols-4 gap-x-2 gap-y-5 pb-7 sm:grid-cols-7">
+            {STATES.map(([status, label]) => (
+              <li key={status} className="flex flex-col items-center gap-2.5">
+                <StatusGlyph status={status} size="lg" label={null} />
+                <span className="text-[12.5px] text-kura-fg-muted">{label}</span>
+              </li>
             ))}
+          </ul>
+          <div className="flex flex-col gap-5 pb-7">
+            <div className="flex flex-wrap items-center gap-x-5 gap-y-3">
+              {AGENTS.map((name) => (
+                <span key={name} className="flex items-center gap-2 text-[13px] text-kura-fg-muted">
+                  <AgentSigil name={name} />
+                  {name}
+                </span>
+              ))}
+            </div>
+            <DotRail value={0.62} live />
           </div>
-          <div className="flex flex-wrap gap-2 pb-4">
-            {["accent", "accent-subtle", "ink", "danger", "success", "warning"].map((n) => (
-              <div
-                key={n}
-                className="flex items-center gap-2 rounded-full py-1 pr-3 pl-1 font-kura-mono text-[12px] text-kura-fg-muted shadow-[inset_0_0_0_1px_var(--kura-border)]"
+          <ul className="flex flex-wrap gap-x-5 gap-y-2.5 pb-6">
+            {INKS.map(([name, token]) => (
+              <li
+                key={name}
+                className="flex items-center gap-2 font-kura-mono text-[12px] text-kura-fg-muted"
               >
                 <span
-                  className="size-5 rounded-full shadow-kura-xs"
-                  style={{ background: `var(--kura-${n})` }}
+                  aria-hidden
+                  className="size-3 rounded-full shadow-[0_0_0_1px_var(--kura-border-strong)]"
+                  style={{ background: `var(--kura-${token})` }}
                 />
-                {n}
-              </div>
+                {name}
+              </li>
             ))}
-          </div>
+          </ul>
           <CodeBlock
             lang="ts"
             title="Motion presets — @kura-ui/react/utils"

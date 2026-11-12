@@ -1,7 +1,11 @@
 import { describe, expect, it } from "vitest";
 import { axe, render, screen, setReducedMotion } from "../../../test/utils";
 import { StatusGlyph } from "./status-glyph";
-import { StatusGlyphFull, StatusGlyphMinimal } from "./status-glyph.examples";
+import {
+  StatusGlyphComposition,
+  StatusGlyphFull,
+  StatusGlyphMinimal,
+} from "./status-glyph.examples";
 
 describe("StatusGlyph", () => {
   it("renders the state with a data-slot and a spoken name", () => {
@@ -18,7 +22,7 @@ describe("StatusGlyph", () => {
     expect(container.firstElementChild).toHaveAttribute("aria-hidden", "true");
   });
 
-  it("sizes to 14, 16 and 20px", () => {
+  it("sizes to 13, 15 and 20px", () => {
     const { container } = render(
       <>
         <StatusGlyph status="queued" size="sm" />
@@ -26,21 +30,35 @@ describe("StatusGlyph", () => {
       </>,
     );
     const [sm, lg] = container.querySelectorAll("[data-slot=status-glyph]");
-    expect((sm as HTMLElement).style.width).toBe("14px");
+    expect((sm as HTMLElement).style.width).toBe("13px");
     expect((lg as HTMLElement).style.width).toBe("20px");
   });
 
-  it("stops the running arc under reduced motion", () => {
+  it("draws each state as its own dot pattern", () => {
+    const count = (status: Parameters<typeof StatusGlyph>[0]["status"]) => {
+      const { container, unmount } = render(<StatusGlyph status={status} />);
+      const n = container.querySelectorAll("circle").length;
+      unmount();
+      return n;
+    };
+    expect(count("queued")).toBe(12);
+    expect(count("waiting")).toBe(13);
+    expect(count("done")).toBe(21);
+    expect(count("failed")).toBe(9);
+    expect(count("running")).toBe(12);
+  });
+
+  it("stops the chasing light under reduced motion", () => {
     setReducedMotion(true);
     const { container } = render(<StatusGlyph status="running" />);
-    expect(container.querySelector("path")?.getAttribute("class")).toContain(
-      "motion-reduce:animate-none",
-    );
+    const ring = container.querySelectorAll("circle");
+    expect(ring[0]?.getAttribute("class")).toContain("motion-reduce:animate-none");
+    expect(ring[0]?.getAttribute("class")).toContain("motion-reduce:opacity-100");
     setReducedMotion(false);
   });
 
   it("examples render without a11y violations", async () => {
-    for (const Example of [StatusGlyphMinimal, StatusGlyphFull]) {
+    for (const Example of [StatusGlyphMinimal, StatusGlyphFull, StatusGlyphComposition]) {
       const { container, unmount } = render(<Example />);
       await axe(container);
       unmount();

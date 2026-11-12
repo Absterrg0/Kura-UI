@@ -4,19 +4,16 @@ import { siteButton } from "../site-button";
 import { EmberLight } from "./ember-light";
 import { InstallChip } from "./install-chip";
 
-/** The closing call to action: the mark lit from behind, one headline, two buttons. */
+/** The closing call to action: the mark with the halftone rising behind it, one headline, two keys. */
 export function CtaBand({ install }: { install: string }) {
   return (
     <section
       aria-labelledby="cta-title"
-      className="relative isolate px-5 pt-36 pb-28 text-center md:pt-44 md:pb-36"
+      className="relative isolate overflow-hidden px-5 pt-40 pb-28 text-center md:pt-52 md:pb-36"
     >
-      <div className="relative mx-auto flex h-[120px] max-w-[1200px] items-center justify-center">
-        <EmberLight
-          variant="band"
-          className="top-1/2 -z-10 -translate-y-1/2 max-md:scale-x-[0.6]"
-        />
-        <LogoMark className="size-[76px] rounded-[22px] shadow-[0_0_0_1px_rgb(255_255_255/0.12),0_20px_60px_-12px_color-mix(in_oklch,var(--ember-deep)_70%,transparent)]" />
+      <div className="relative mx-auto flex max-w-[1180px] justify-center">
+        <EmberLight className="-top-[150px] -z-10 max-w-[720px]" />
+        <LogoMark className="size-[68px] rounded-[20px] shadow-kura-popover" />
       </div>
       <div className="mx-auto flex max-w-3xl flex-col items-center gap-6 pt-12">
         <h2

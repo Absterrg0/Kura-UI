@@ -4,6 +4,7 @@ import * as React from "react";
 import { useControllableState } from "../../hooks/use-controllable-state";
 import { useReducedMotion } from "../../hooks/use-reduced-motion";
 import { cn } from "../../lib/cn";
+import { DotRail } from "../dot-rail";
 import { Popover, PopoverContent, PopoverTrigger } from "../popover";
 
 export interface ContextSegment {
@@ -79,13 +80,22 @@ function useTweened(target: number, duration = 520): number {
   return value;
 }
 
-const tints = ["var(--kura-fg)", "var(--kura-gray-9)", "var(--kura-gray-8)", "var(--kura-gray-7)"];
+// Segments are told apart by how bright their dots are, never by hue.
+const SHADES = [100, 62, 38, 22];
 const segmentColor = (s: ContextSegment, i: number) =>
-  s.color ?? `color-mix(in oklab, ${tints[i % tints.length]} ${i < 4 ? 100 : 60}%, transparent)`;
+  s.color ?? `color-mix(in oklab, var(--kura-fg) ${SHADES[i % SHADES.length]}%, transparent)`;
+
+// The ring of a 5×5 dot matrix, clockwise from the top.
+// biome-ignore format: a 5×5 ring reads better as two rows of pairs
+const RING: readonly (readonly [number, number])[] = [
+  [2, 0], [3, 0], [4, 1], [4, 2], [4, 3], [3, 4],
+  [2, 4], [1, 4], [0, 3], [0, 2], [0, 1], [1, 0],
+];
 
 /**
- * Token / context-window usage as a compact ring or bar with warning and danger thresholds,
- * rolling tabular numbers, and a hover card that breaks usage down by segment.
+ * Token / context-window usage as a compact dial or rail of dots with warning and danger
+ * thresholds, rolling tabular numbers, and a hover card that draws the window as one hundred dots
+ * (one per percent), shaded by segment.
  */
 export function ContextMeter({
   max,
@@ -133,15 +143,9 @@ export function ContextMeter({
 
   const tone = cn(
     level === "ok" && "text-kura-fg-muted",
-    level === "warning" && "text-kura-warning-text",
+    level === "warning" && "text-kura-fg",
     level === "danger" && "text-kura-danger-text",
   );
-  const stroke =
-    level === "danger"
-      ? "var(--kura-danger)"
-      : level === "warning"
-        ? "var(--kura-warning)"
-        : "var(--kura-fg-muted)";
 
   const value =
     display === "none" ? null : (
@@ -164,8 +168,8 @@ export function ContextMeter({
       </span>
     );
 
-  const R = 7;
-  const C = 2 * Math.PI * R;
+  // A dial of twelve dots: one lights for every twelfth of the window in use.
+  const litDots = ratio === 0 ? 0 : Math.max(1, Math.round(tweenedRatio * RING.length));
 
   return (
     <Popover
@@ -187,8 +191,8 @@ export function ContextMeter({
           onFocus={onFocus}
           onBlur={onBlur}
           className={cn(
-            "group/meter inline-flex h-7 cursor-pointer items-center gap-2 rounded-kura-sm px-1.5 font-kura-sans outline-none",
-            "transition-[background-color,box-shadow] duration-(--kura-duration-fast) ease-kura-out hover:bg-kura-hover focus-visible:shadow-kura-focus data-open:bg-kura-hover",
+            "group/meter inline-flex h-7 cursor-pointer items-center gap-2 rounded-kura-md px-1.5 font-kura-sans outline-none",
+            "transition-[background-color] duration-(--kura-duration-fast) ease-kura-snap hover:bg-kura-hover focus-visible:outline-2 focus-visible:outline-kura-ring data-open:bg-kura-hover",
             className,
           )}
           {...props}
@@ -197,39 +201,28 @@ export function ContextMeter({
             <svg
               aria-hidden
               data-slot="context-meter-ring"
-              viewBox="0 0 18 18"
-              className="size-[18px] shrink-0 -rotate-90"
+              viewBox="0 0 15 15"
+              className={cn("size-[15px] shrink-0", tone)}
             >
-              <circle
-                cx="9"
-                cy="9"
-                r={R}
-                fill="none"
-                strokeWidth="2.25"
-                className="stroke-kura-border"
-              />
-              <circle
-                cx="9"
-                cy="9"
-                r={R}
-                fill="none"
-                strokeWidth="2.25"
-                strokeLinecap="round"
-                strokeDasharray={C}
-                strokeDashoffset={C * (1 - tweenedRatio)}
-                style={{ stroke }}
-                className="transition-[stroke] duration-(--kura-duration-slow) ease-kura-out"
-                opacity={ratio === 0 ? 0 : 1}
-              />
+              {RING.map(([x, y], i) => (
+                <circle
+                  key={`${x}-${y}`}
+                  cx={1.5 + x * 3}
+                  cy={1.5 + y * 3}
+                  r={1.1}
+                  className={cn(
+                    "transition-[fill] duration-(--kura-duration-base) ease-kura-snap motion-reduce:transition-none",
+                    i < litDots ? "fill-current" : "fill-kura-dot-off",
+                  )}
+                />
+              ))}
             </svg>
           ) : (
-            <SegmentBar
-              segments={segments}
-              used={used}
-              max={max}
-              level={level}
-              ratio={tweenedRatio}
-              className="h-1.5 w-28 shrink-0"
+            <DotRail
+              data-slot="context-meter-bar"
+              value={tweenedRatio}
+              tone={level === "danger" ? "danger" : level === "warning" ? "ink" : "muted"}
+              className="w-28 shrink-0"
             />
           )}
           {value}
@@ -240,130 +233,196 @@ export function ContextMeter({
           side="top"
           align={variant === "bar" ? "start" : "center"}
           data-slot="context-meter-card"
-          className="w-72 p-3.5"
+          className="w-[302px] p-4"
           initialFocus="none"
         >
-          <div className="flex flex-col gap-3">
-            <div className="flex items-baseline justify-between">
-              <span className="font-medium text-kura-fg text-sm">{label} window</span>
-              <span className={cn("font-kura-mono text-xs tabular-nums", tone)}>
-                {formatTokens(used)}{" "}
-                <span className="text-kura-fg-subtle">/ {formatTokens(max)}</span>
-              </span>
-            </div>
-            <SegmentBar
-              segments={segments}
-              used={used}
-              max={max}
-              level={level}
-              ratio={ratio}
-              className="h-2"
-            />
-            <ul className="flex flex-col gap-1.5" aria-label="Breakdown">
-              {segments.map((s, i) => (
-                <li
-                  key={s.id}
-                  data-slot="context-meter-segment"
-                  className="flex items-center gap-2 text-[13px]"
-                >
-                  <span
-                    aria-hidden
-                    className="size-2 shrink-0 rounded-[2px]"
-                    style={{ background: segmentColor(s, i) }}
-                  />
-                  <span className="min-w-0 flex-1 truncate text-kura-fg-muted">{s.label}</span>
-                  <span className="font-kura-mono text-kura-fg text-xs tabular-nums">
-                    {formatTokens(s.tokens)}
-                  </span>
-                  <span className="w-9 text-right font-kura-mono text-kura-fg-subtle text-xs tabular-nums">
-                    {max > 0 ? `${Math.round((s.tokens / max) * 100)}%` : "–"}
-                  </span>
-                </li>
-              ))}
-              <li className="flex items-center gap-2 text-[13px]">
-                <span
-                  aria-hidden
-                  className="size-2 shrink-0 rounded-[2px] shadow-[inset_0_0_0_1px_var(--kura-border-strong)]"
-                />
-                <span className="flex-1 text-kura-fg-subtle">Free</span>
-                <span className="font-kura-mono text-kura-fg-subtle text-xs tabular-nums">
-                  {formatTokens(Math.max(0, max - used))}
-                </span>
-                <span className="w-9" />
-              </li>
-            </ul>
-            {(footer != null || level !== "ok") && (
-              <p
-                className={cn(
-                  "text-xs leading-relaxed shadow-[inset_0_1px_0_var(--kura-border-subtle)] pt-2.5",
-                  level === "ok" ? "text-kura-fg-muted" : tone,
-                )}
-              >
-                {footer ??
-                  (level === "danger"
-                    ? "Nearly full — the oldest turns will be dropped or summarized."
-                    : "Filling up — consider starting a new thread for unrelated work.")}
-              </p>
-            )}
-          </div>
+          <Breakdown
+            segments={segments}
+            used={used}
+            max={max}
+            level={level}
+            label={label}
+            footer={footer}
+          />
         </PopoverContent>
       )}
     </Popover>
   );
 }
 
-function SegmentBar({
+function levelOf(ratio: number, warningAt: number, dangerAt: number) {
+  return ratio >= dangerAt ? "danger" : ratio >= warningAt ? "warning" : "ok";
+}
+
+const TONE = {
+  ok: "text-kura-fg-muted",
+  warning: "text-kura-fg",
+  danger: "text-kura-danger-text",
+} as const;
+
+/** The breakdown shared by the hover card and the panel: figures, one hundred dots, a legend. */
+function Breakdown({
   segments,
   used,
   max,
   level,
-  ratio,
-  className,
+  label,
+  footer,
 }: {
-  segments: readonly ContextSegment[] | undefined;
+  segments: readonly ContextSegment[];
   used: number;
   max: number;
   level: "ok" | "warning" | "danger";
-  ratio: number;
-  className?: string;
+  label: string;
+  footer?: React.ReactNode;
 }) {
-  const fill =
-    level === "danger"
-      ? "bg-kura-danger"
-      : level === "warning"
-        ? "bg-kura-warning"
-        : "bg-kura-fg-muted";
+  const tone = TONE[level];
+  return (
+    <div className="flex flex-col gap-3">
+      <div className="flex items-baseline justify-between">
+        <span className="font-semibold text-[13px] text-kura-fg tracking-[-0.01em]">
+          {label} window
+        </span>
+        <span className={cn("font-kura-mono text-xs tabular-nums", tone)}>
+          {formatTokens(used)} <span className="text-kura-fg-subtle">/ {formatTokens(max)}</span>
+        </span>
+      </div>
+      <DotMatrix segments={segments} max={max} level={level} />
+      <ul className="flex flex-col gap-1.5" aria-label="Breakdown">
+        {segments.map((s, i) => (
+          <li
+            key={s.id}
+            data-slot="context-meter-segment"
+            className="flex items-center gap-2 text-[13px]"
+          >
+            <span
+              aria-hidden
+              className="size-1.5 shrink-0 rounded-full"
+              style={{ background: segmentColor(s, i) }}
+            />
+            <span className="min-w-0 flex-1 truncate text-kura-fg-muted">{s.label}</span>
+            <span className="font-kura-mono text-kura-fg text-xs tabular-nums">
+              {formatTokens(s.tokens)}
+            </span>
+            <span className="w-9 text-right font-kura-mono text-kura-fg-subtle text-xs tabular-nums">
+              {max > 0 ? `${Math.round((s.tokens / max) * 100)}%` : "–"}
+            </span>
+          </li>
+        ))}
+        <li className="flex items-center gap-2 text-[13px]">
+          <span aria-hidden className="size-1.5 shrink-0 rounded-full bg-kura-dot-off" />
+          <span className="flex-1 text-kura-fg-subtle">Free</span>
+          <span className="font-kura-mono text-kura-fg-subtle text-xs tabular-nums">
+            {formatTokens(Math.max(0, max - used))}
+          </span>
+          <span className="w-9" />
+        </li>
+      </ul>
+      {(footer != null || level !== "ok") && (
+        <p className={cn("text-xs leading-relaxed", level === "ok" ? "text-kura-fg-muted" : tone)}>
+          {footer ??
+            (level === "danger"
+              ? "Nearly full — the oldest turns will be dropped or summarized."
+              : "Filling up — consider starting a new thread for unrelated work.")}
+        </p>
+      )}
+    </div>
+  );
+}
+
+export interface ContextPanelProps extends Omit<React.ComponentProps<"section">, "children"> {
+  /** Context window size in tokens, e.g. 200000. */
+  max: number;
+  /** Tokens used. Default: the sum of `segments`. */
+  used?: number;
+  /** What fills the window, e.g. system, history, tools, files. */
+  segments: readonly ContextSegment[];
+  /** Fraction (0–1) at which the figures turn to warning. Default 0.7. */
+  warningAt?: number;
+  /** Fraction (0–1) at which the dots turn red. Default 0.9. */
+  dangerAt?: number;
+  /** Short name used in the title. Default “Context”. */
+  label?: string;
+  /** Extra line at the bottom, e.g. “Older turns will be summarized”. */
+  footer?: React.ReactNode;
+}
+
+/**
+ * The context window as a panel that is always open: one hundred dots, one per percent, shaded by
+ * what fills them, with a legend. The same breakdown ContextMeter shows on hover.
+ */
+export function ContextPanel({
+  max,
+  used: usedProp,
+  segments,
+  warningAt = 0.7,
+  dangerAt = 0.9,
+  label = "Context",
+  footer,
+  className,
+  ...props
+}: ContextPanelProps) {
+  const used = usedProp ?? segments.reduce((sum, s) => sum + s.tokens, 0);
+  const ratio = max > 0 ? Math.min(1, Math.max(0, used / max)) : 0;
+  const level = levelOf(ratio, warningAt, dangerAt);
+  return (
+    <section
+      data-slot="context-panel"
+      data-level={level}
+      aria-label={`${label} window: ${Math.round(ratio * 100)}% used`}
+      className={cn(
+        "flex min-w-0 flex-col rounded-kura-xl bg-kura-surface p-4 font-kura-sans text-kura-fg shadow-kura-sm",
+        className,
+      )}
+      {...props}
+    >
+      <Breakdown
+        segments={segments}
+        used={used}
+        max={max}
+        level={level}
+        label={label}
+        footer={footer}
+      />
+    </section>
+  );
+}
+
+/** The window as one hundred dots, one per percent, lit in the shade of the segment that fills it. */
+function DotMatrix({
+  segments,
+  max,
+  level,
+}: {
+  segments: readonly ContextSegment[];
+  max: number;
+  level: "ok" | "warning" | "danger";
+}) {
+  const cells: (string | undefined)[] = [];
+  if (max > 0) {
+    let filled = 0;
+    let exact = 0;
+    segments.forEach((s, i) => {
+      exact += (s.tokens / max) * 100;
+      const upTo = Math.min(100, Math.round(exact));
+      for (; filled < upTo; filled++) {
+        cells[filled] = level === "danger" ? "var(--kura-danger-text)" : segmentColor(s, i);
+      }
+    });
+  }
   return (
     <span
       aria-hidden
-      data-slot="context-meter-bar"
-      className={cn("relative flex overflow-hidden rounded-full bg-kura-active", className)}
+      data-slot="context-meter-matrix"
+      className="grid grid-cols-[repeat(25,6px)] justify-between gap-y-[5px]"
     >
-      {segments && segments.length > 0 && level === "ok" ? (
+      {Array.from({ length: 100 }, (_, i) => (
         <span
-          className="flex h-full origin-left transition-[width] duration-(--kura-duration-slow) ease-kura-out motion-reduce:transition-none"
-          style={{ width: `${ratio * 100}%` }}
-        >
-          {segments.map((s, i) => (
-            <span
-              key={s.id}
-              className="h-full [&+&]:ml-px"
-              style={{
-                width: `${used > 0 ? (s.tokens / used) * 100 : 0}%`,
-                background: segmentColor(s, i),
-              }}
-            />
-          ))}
-        </span>
-      ) : (
-        <span
-          className={cn(
-            "h-full rounded-full transition-[width,background-color] duration-(--kura-duration-slow) ease-kura-out motion-reduce:transition-none",
-            fill,
-          )}
-          style={{ width: `${max > 0 ? ratio * 100 : 0}%` }}
+          key={`dot-${i + 1}`}
+          className="size-1.5 rounded-full bg-kura-dot-off transition-colors duration-(--kura-duration-slow) ease-kura-snap motion-reduce:transition-none"
+          style={cells[i] ? { background: cells[i] } : undefined}
         />
-      )}
+      ))}
     </span>
   );
 }

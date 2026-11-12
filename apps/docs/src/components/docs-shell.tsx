@@ -5,7 +5,7 @@ import { Sidebar } from "./sidebar";
 export function DocsShell({ children }: { children: React.ReactNode }) {
   return (
     <div className="px-5 md:px-6">
-      <div className="mx-auto flex max-w-[1200px] gap-12">
+      <div className="mx-auto flex max-w-[1180px] gap-12">
         <Sidebar />
         <div className="min-w-0 flex-1 pt-12 pb-28 md:pt-16">{children}</div>
       </div>

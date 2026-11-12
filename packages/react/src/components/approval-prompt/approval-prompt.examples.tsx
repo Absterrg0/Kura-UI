@@ -10,7 +10,7 @@ import { type ApprovalDecision, ApprovalPrompt } from "./approval-prompt";
 export function ApprovalPromptMinimal() {
   return (
     <ApprovalPrompt
-      title="Kura wants to run a command"
+      title="Install dependencies"
       command="pnpm install"
       risk="low"
       shortcuts={false}
@@ -21,25 +21,32 @@ export function ApprovalPromptMinimal() {
 
 export function ApprovalPromptFull() {
   const [decision, setDecision] = React.useState<ApprovalDecision>("pending");
+  const [asked] = React.useState(() => Date.now() - 14_000);
   return (
     <div className="flex w-full max-w-lg flex-col gap-3">
       <ApprovalPrompt
-        title="Kura wants to delete a directory"
-        command="rm -rf build"
-        description="Clears stale output before rebuilding. Affects 1,204 files under ./build only."
+        title="Run the sessions migration on production"
+        agent={{ name: "migrator", detail: "for step 4 of the plan" }}
+        requestedAt={asked}
+        command="pnpm db:migrate --env production"
+        facts={[
+          { label: "Target", value: "acme-prod · Postgres 16" },
+          { label: "Rows affected", value: "48,210" },
+          { label: "Rollback", value: "Snapshot first, about 2 min" },
+        ]}
         risk="high"
         details={
           <ul className="flex list-disc flex-col gap-1 pl-4">
-            <li>Working directory: ~/code/kura-ui</li>
-            <li>Requested by step 3 of 5, “Rebuild the docs”</li>
-            <li>Not tracked by git — cannot be restored from history</li>
+            <li>Adds refresh_token_hash to sessions and backfills it</li>
+            <li>Takes a short write lock on the table</li>
+            <li>A snapshot is taken first</li>
           </ul>
         }
         decision={decision}
         onDecisionChange={setDecision}
         onAlwaysAllow={() => {}}
         shortcuts
-        approveLabel="Run anyway"
+        approveLabel="Run migration"
         denyLabel="Deny"
         alwaysAllowLabel="Always allow"
       />
@@ -61,21 +68,21 @@ export function ApprovalPromptResolved() {
   return (
     <div className="flex w-full max-w-lg flex-col gap-3">
       <ApprovalPrompt
-        title="Kura wants to run a command"
+        title="Push to main"
         command="git push origin main"
         risk="medium"
         defaultDecision="approved"
         shortcuts={false}
       />
       <ApprovalPrompt
-        title="Kura wants to run a command"
+        title="Delete project 42"
         command="curl -X DELETE https://api.example.com/v1/projects/42"
         risk="high"
         defaultDecision="denied"
         shortcuts={false}
       />
       <ApprovalPrompt
-        title="Kura wants to read a file"
+        title="Read the example env file"
         command="cat .env.example"
         risk="low"
         defaultDecision="always"
@@ -110,8 +117,8 @@ export function ApprovalPromptWithDiff() {
         summary="+2 −1"
       />
       <ApprovalPrompt
-        title="Apply this edit?"
-        icon={<FilePen />}
+        title="Apply this edit to src/config.ts"
+        agent={{ name: "Kura" }}
         risk="low"
         decision={decision}
         onDecisionChange={setDecision}

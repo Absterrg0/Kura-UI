@@ -17,6 +17,7 @@ import {
   filesFromDataTransfer,
 } from "../attachment/attachment-utils";
 import { IconButton } from "../icon-button";
+import { Spinner } from "../spinner";
 import { Tooltip } from "../tooltip";
 
 export type ComposerStatus = "idle" | "submitted" | "streaming" | "error";
@@ -296,12 +297,10 @@ export function Composer({
           addFiles(filesFromDataTransfer(e.dataTransfer));
         }}
         className={cn(
-          "group/composer relative isolate flex w-full cursor-text flex-col rounded-kura-2xl bg-kura-surface-raised font-kura-sans text-kura-fg shadow-kura-md",
-          "transition-[box-shadow,opacity] duration-(--kura-duration-base) ease-kura-out",
-          // Rest: hairline + soft lift. Hover firms the hairline. Focus: firm hairline plus a quiet
-          // neutral halo — blue stays reserved for the model's own state.
-          "hover:shadow-[0_0_0_1px_var(--kura-border-strong),var(--kura-shadow-md)]",
-          "data-[focused=true]:shadow-[0_0_0_1px_var(--kura-border-strong),0_0_0_4px_color-mix(in_oklch,var(--kura-gray-12)_6%,transparent),var(--kura-shadow-md)]",
+          "group/composer relative isolate flex w-full cursor-text flex-col rounded-kura-xl bg-kura-surface font-kura-sans text-kura-fg shadow-kura-surface",
+          "transition-[box-shadow,opacity] duration-(--kura-duration-base) ease-kura-snap",
+          // A sheet like any other. Focus firms its ring in ink; nothing glows.
+          "data-[focused=true]:shadow-[0_0_0_1px_var(--kura-fg-subtle),var(--kura-elev-surface)]",
           disabled && "cursor-not-allowed opacity-60",
           className,
         )}
@@ -618,14 +617,14 @@ export function ComposerHint({
         "inline-flex select-none items-center gap-1.5 text-xs text-kura-fg-subtle tabular-nums",
         "transition-[opacity,color] duration-(--kura-duration-base) ease-kura-out",
         !visible && "pointer-events-none opacity-0",
-        level === "near" && "text-kura-warning-text",
+        level === "near" && "text-kura-fg",
         level === "over" && "text-kura-danger-text",
         className,
       )}
       {...props}
     >
       {maxLength !== undefined && resolved === "characters" && (
-        <AttachmentProgressRing progress={Math.min(1, ratio)} thickness={3} className="size-3.5" />
+        <AttachmentProgressRing progress={Math.min(1, ratio)} className="size-[13px]" />
       )}
       <span aria-hidden>{label}</span>
       {maxLength !== undefined && (
@@ -655,7 +654,7 @@ export interface ComposerSubmitProps
 
 /**
  * Send button that becomes a stop button while the composer is `submitted` or `streaming`.
- * The icons cross-fade with a 2px blur; a thin arc turns inside the button while waiting for
+ * It is a keycap: the icons cross-fade, and the chasing ring replaces the icon while waiting for
  * the first token.
  */
 export function ComposerSubmit({
@@ -681,9 +680,9 @@ export function ComposerSubmit({
         transition: { duration: 0.12 },
       }
     : {
-        initial: { opacity: 0, scale: 0.5, filter: "blur(2px)" },
-        animate: { opacity: 1, scale: 1, filter: "blur(0px)" },
-        exit: { opacity: 0, scale: 0.5, filter: "blur(2px)" },
+        initial: { opacity: 0, scale: 0.6 },
+        animate: { opacity: 1, scale: 1 },
+        exit: { opacity: 0, scale: 0.6 },
         transition: springs.snappy,
       };
 
@@ -702,47 +701,32 @@ export function ComposerSubmit({
         else ctx.submit();
       }}
       className={cn(
-        "relative flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-full outline-none",
-        "transition-[background-color,color,box-shadow,transform] duration-(--kura-duration-fast) ease-kura-out",
-        "focus-visible:shadow-kura-focus active:not-disabled:scale-[0.94] motion-reduce:active:not-disabled:scale-100",
+        "relative flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-[9px] outline-none",
+        "transition-[background-color,color,transform] duration-(--kura-duration-fast) ease-kura-snap",
+        "focus-visible:outline-2 focus-visible:outline-kura-ring focus-visible:outline-offset-2 active:not-disabled:translate-y-px motion-reduce:active:not-disabled:translate-y-0",
         "disabled:cursor-not-allowed",
         ready
-          ? "bg-kura-ink text-kura-fg-inverted hover:bg-kura-ink-hover"
-          : "bg-kura-gray-4 text-kura-fg-subtle",
+          ? "bg-kura-ink-fill text-kura-fg-inverted shadow-kura-ink hover:bg-kura-ink-fill-hover"
+          : "bg-kura-raised text-kura-fg-subtle shadow-kura-raised",
         className,
       )}
       {...props}
     >
       <AnimatePresence initial={false} mode="popLayout">
-        <motion.span key={mode} className="flex items-center justify-center" {...swap}>
-          {mode === "stop" ? (
+        <motion.span
+          key={ctx.status === "submitted" ? "pending" : mode}
+          className="flex items-center justify-center"
+          {...swap}
+        >
+          {ctx.status === "submitted" ? (
+            <Spinner data-slot="composer-submit-pending" size="md" label={null} />
+          ) : mode === "stop" ? (
             <span aria-hidden className="size-2.5 rounded-[2px] bg-current" />
           ) : (
             <ArrowUp aria-hidden className="size-4" strokeWidth={2.25} />
           )}
         </motion.span>
       </AnimatePresence>
-      {ctx.status === "submitted" && (
-        <svg
-          aria-hidden
-          data-slot="composer-submit-pending"
-          viewBox="0 0 32 32"
-          fill="none"
-          className="pointer-events-none absolute inset-0 size-full animate-kura-spin motion-reduce:animate-kura-pulse"
-        >
-          {/* a quarter arc turning just inside the button's edge while waiting for the first token */}
-          <circle
-            cx="16"
-            cy="16"
-            r="13"
-            stroke="currentColor"
-            strokeOpacity="0.45"
-            strokeWidth="1.5"
-            strokeLinecap="round"
-            strokeDasharray="20 62"
-          />
-        </svg>
-      )}
     </button>
   );
 

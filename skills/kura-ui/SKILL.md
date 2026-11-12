@@ -29,7 +29,7 @@ global CSS). If `tokens` fails, run `npx @kura-ui/cli init` (copy-in) or add
 ## 3. Install — pick ONE style per project
 
 - **npm package** (default for apps): `npm i @kura-ui/react`, import per component:
-  `import { ShimmerText } from "@kura-ui/react/shimmer-text"`. Hooks: `@kura-ui/react/hooks`. Utils: `@kura-ui/react/utils`.
+  `import { StatusGlyph } from "@kura-ui/react/status-glyph"`. Hooks: `@kura-ui/react/hooks`. Utils: `@kura-ui/react/utils`.
 - **Copy source** (when the user wants to customise): `npx @kura-ui/cli add <slug...>` or
   `npx shadcn@latest add https://kuro.abstergo.fyi/r/<slug>.json`. Files land in
   `components/kura/<slug>/`; import from `@/components/kura/<slug>`.
@@ -41,10 +41,16 @@ folder) and stay consistent.
 
 - Start from the manifest's `minimal` example, then add props from the props table. Respect `required`.
 - Controlled components use `value`/`onValueChange` or `open`/`onOpenChange`; otherwise use `default*`.
-- Style surrounding UI with Kura tokens, not raw colors: `bg-kura-canvas`, `bg-kura-surface`,
-  `text-kura-fg`, `text-kura-fg-muted`, `border-kura-border`, `shadow-kura-sm`, `rounded-kura-lg`.
+- Style surrounding UI with Kura tokens, not raw colors: `bg-kura-canvas`, `bg-kura-surface`
+  (a sheet, with `shadow-kura-surface rounded-kura-xl`), `bg-kura-surface-sunken` (a well, with
+  `shadow-kura-sunk rounded-kura-lg`), `text-kura-fg`, `text-kura-fg-muted`, `text-kura-fg-subtle`.
   Never add `dark:` overrides — tokens handle dark mode under `.dark`.
-- Use the accent (`bg-kura-accent`, `variant="accent"`) at most once per view, for AI activity.
+- Kura is monochrome ink with no accent colour. Draw state with `StatusGlyph`, agents with
+  `AgentSigil`, progress with `DotRail`; never add progress bars, status pills or letter avatars.
+- Ember (`text-kura-ember-text`, `Halftone`) means "a person is needed" and nothing else. It
+  belongs to `ApprovalPrompt` and to `status="waiting"`; do not use it for decoration or warnings.
+- Buttons are keycaps: print the shortcut on the key with a `Kbd` child. `variant="accent"`
+  renders like `primary`.
 - Customise with `className` (merged last) and target parts with `[data-slot=…]` selectors.
 - Components with hooks already include `"use client"`; server components can render server-safe ones directly.
 - Icon-only buttons: `<IconButton label="…" icon={<Icon />} />` — `label` is required.

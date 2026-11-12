@@ -66,14 +66,18 @@ export default defineComponent({
       name: "Item",
       dataSlot: "checkpoints-item",
       description:
-        "<li> with `data-kind`, `data-current`, `data-ahead` (newer than current = undone) and `data-state='confirming'`. Node on a hairline rail: hollow ring = auto, diamond = saved, ink dot with halo = current.",
+        "<li> with `data-kind`, `data-current`, `data-ahead` (newer than current = undone) and `data-state='confirming'`. A StatusGlyph on a dotted spine: solid disc = current, hollow ring = any other; undone ones are faint.",
     },
     {
       name: "Label",
       dataSlot: "checkpoints-label",
       description: "What the agent had just done. Truncates.",
     },
-    { name: "Current", dataSlot: "checkpoints-current", description: "'Current' pill." },
+    {
+      name: "Current",
+      dataSlot: "checkpoints-current",
+      description: "The word 'Current' after the label.",
+    },
     {
       name: "Files",
       dataSlot: "checkpoints-files",
@@ -109,7 +113,7 @@ export default defineComponent({
     reducedMotion:
       "Rows fade in without rising; the confirm opens with a fade instead of a height transition.",
   },
-  dependencies: { npm: ["@ui-sdk/react", "lucide-react"], kura: ["button"] },
+  dependencies: { npm: ["@ui-sdk/react", "lucide-react"], kura: ["button", "status-glyph"] },
   related: ["run-header", "diff-view", "file-changes", "task-list"],
   tags: ["agent", "checkpoint", "restore", "rewind", "undo", "history", "snapshot"],
   examples: [

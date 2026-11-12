@@ -6,7 +6,7 @@ export function InstallChip({ command, className }: { command: string; className
   return (
     <div
       className={cn(
-        "inline-flex h-9 max-w-full items-center gap-2 rounded-[10px] bg-kura-hover pr-1 pl-3.5 font-kura-mono text-[12.5px] text-kura-fg-muted shadow-[inset_0_0_0_1px_var(--kura-border-subtle)]",
+        "well inline-flex h-9 max-w-full items-center gap-2 rounded-kura-lg pr-1 pl-3.5 font-kura-mono text-[12.5px] text-kura-fg-muted",
         className,
       )}
     >

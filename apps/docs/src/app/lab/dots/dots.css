@@ -1,0 +1,801 @@
+/* Kura — dot language. Scoped to .kd so it can't leak into the rest of the docs. */
+body:has(.kd) > header,
+body:has(.kd) footer {
+  display: none;
+}
+
+.kd {
+  --canvas: #0c0d0f;
+  --sheet: #141518;
+  --well: #0a0b0d;
+  --hover: rgb(255 255 255 / 0.045);
+  --ink: #f2f3f4;
+  --ink-2: #a4a7ad;
+  --ink-3: #6b6f76;
+  --ink-4: #3a3d43;
+  --line: rgb(255 255 255 / 0.07);
+  --dot-off: rgb(255 255 255 / 0.13);
+  --ember: #ff6b2c;
+  --ember-ink: #ff9864;
+  --green: #5fc27a;
+  --red: #f26b60;
+  --surface:
+    0 0 0 1px rgb(0 0 0 / 0.7), 0 0 0 2px rgb(255 255 255 / 0.055),
+    0 12px 32px -16px rgb(0 0 0 / 0.7);
+  --etch: inset 0 1px 0 rgb(255 255 255 / 0.05);
+  --sunk: inset 0 1px 2px rgb(0 0 0 / 0.45), inset 0 0 0 1px rgb(255 255 255 / 0.045);
+  --raised:
+    inset 0 1px 0 rgb(255 255 255 / 0.07), 0 0 0 1px rgb(255 255 255 / 0.09),
+    0 1px 2px rgb(0 0 0 / 0.4);
+  --raised-bg: #1e2024;
+  --ink-fill: linear-gradient(#fafafa, #e1e2e6);
+  --ink-fill-fg: #111214;
+  --ink-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.8), 0 0 0 1px rgb(0 0 0 / 0.5), 0 1px 2px rgb(0 0 0 / 0.4);
+  --key: inset 0 -1px 0 rgb(0 0 0 / 0.35), 0 0 0 1px rgb(255 255 255 / 0.12);
+  --snap: cubic-bezier(0.2, 0.8, 0.2, 1);
+
+  min-height: 100dvh;
+  padding: 28px;
+  background: var(--canvas);
+  color: var(--ink);
+  font:
+    13px / 20px var(--font-geist-sans),
+    system-ui,
+    sans-serif;
+  letter-spacing: -0.003em;
+  -webkit-font-smoothing: antialiased;
+}
+.kd[data-theme="light"] {
+  --canvas: #e8eaed;
+  --sheet: #ffffff;
+  --well: #f2f3f5;
+  --hover: rgb(17 18 20 / 0.04);
+  --ink: #111214;
+  --ink-2: #53565c;
+  --ink-3: #8b8f96;
+  --ink-4: #c4c7cc;
+  --line: rgb(17 18 20 / 0.075);
+  --dot-off: rgb(17 18 20 / 0.15);
+  --ember: #f2591a;
+  --ember-ink: #c4440d;
+  --green: #2c9a58;
+  --red: #d8463a;
+  --surface:
+    0 0 0 1px rgb(17 18 20 / 0.1), 0 0 0 2px rgb(255 255 255 / 0.95),
+    0 1px 2px 1px rgb(17 18 20 / 0.04), 0 10px 28px -14px rgb(17 18 20 / 0.1);
+  --etch: inset 0 0 0 1px rgb(255 255 255 / 0.7);
+  --sunk: inset 0 1px 2px rgb(17 18 20 / 0.07), inset 0 0 0 1px rgb(17 18 20 / 0.05);
+  --raised:
+    inset 0 1px 0 rgb(255 255 255 / 0.9), 0 0 0 1px rgb(17 18 20 / 0.09),
+    0 1px 2px rgb(17 18 20 / 0.06);
+  --raised-bg: #ffffff;
+  --ink-fill: linear-gradient(#2d2f34, #121316);
+  --ink-fill-fg: #ffffff;
+  --ink-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.16), 0 0 0 1px #0b0c0e, 0 1px 2px rgb(0 0 0 / 0.25);
+  --key: inset 0 -1px 0 rgb(17 18 20 / 0.08), 0 0 0 1px rgb(17 18 20 / 0.1);
+}
+
+.kd *,
+.kd *::before,
+.kd *::after {
+  box-sizing: border-box;
+}
+.kd .mono {
+  font-family: var(--font-geist-mono), ui-monospace, monospace;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0;
+}
+.kd-frame {
+  display: grid;
+  gap: 12px;
+  width: min(1180px, 100%);
+  margin: 0 auto;
+}
+.kd-cols {
+  display: grid;
+  grid-template-columns: 330px minmax(0, 1fr) 320px;
+  gap: 12px;
+  align-items: start;
+}
+.kd-stack {
+  display: grid;
+  gap: 12px;
+}
+
+/* Sheet: one crisp ring, one light halo, an etched top edge. Nothing else draws an edge. */
+.kd-sheet {
+  position: relative;
+  border-radius: 14px;
+  background: var(--sheet);
+  box-shadow: var(--surface);
+}
+.kd-sheet::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  box-shadow: var(--etch);
+  pointer-events: none;
+}
+.kd-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 44px;
+  padding: 0 16px;
+}
+.kd-head h2 {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+.kd-head .count {
+  color: var(--ink-3);
+  font-size: 12px;
+}
+.kd-head .end {
+  margin-left: auto;
+  color: var(--ink-3);
+  font-size: 12px;
+}
+
+/* ── Dot glyph: a 5×5 matrix. Unlit dots stay faintly visible, like a display at rest. ── */
+.kd-glyph {
+  flex: none;
+  display: block;
+  color: var(--ink-2);
+}
+.kd-glyph circle {
+  fill: transparent;
+}
+.kd-glyph circle[data-on] {
+  fill: currentColor;
+}
+.kd-glyph circle[data-chase] {
+  fill: var(--dot-off);
+}
+.kd-glyph[data-state="done"] {
+  color: var(--ink-2);
+}
+.kd-glyph[data-state="queued"] {
+  color: var(--ink-3);
+}
+.kd-glyph[data-state="running"] {
+  color: var(--ink);
+}
+.kd-glyph[data-state="waiting"] {
+  color: var(--ember);
+}
+.kd-glyph[data-state="failed"] {
+  color: var(--red);
+}
+.kd-glyph circle[data-chase] {
+  animation: kd-chase 1.2s linear infinite;
+  animation-delay: calc(var(--i) * 100ms);
+}
+.kd-glyph circle[data-blink] {
+  animation: kd-blink 1.1s steps(2, jump-none) infinite;
+}
+@keyframes kd-chase {
+  0%,
+  100% {
+    fill: var(--dot-off);
+  }
+  8%,
+  30% {
+    fill: currentColor;
+  }
+  55% {
+    fill: var(--dot-off);
+  }
+}
+@keyframes kd-blink {
+  50% {
+    fill: transparent;
+  }
+}
+
+/* ── Sigil: every agent gets a face, generated from its name. ── */
+.kd-sigil {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 9px;
+  background: var(--raised-bg);
+  box-shadow: var(--raised);
+  color: var(--ink);
+}
+.kd-sigil.sm {
+  width: 22px;
+  height: 22px;
+  border-radius: 7px;
+}
+.kd-sigil circle {
+  fill: transparent;
+}
+.kd-sigil circle[data-on] {
+  fill: currentColor;
+}
+
+/* ── Dot rail: progress as a row of dots. ── */
+.kd-rail {
+  --pitch: 6px;
+  position: relative;
+  height: 6px;
+  background:
+    radial-gradient(circle at center, var(--dot-off) 1.1px, transparent 1.5px) 0 0 / var(--pitch)
+    6px;
+}
+.kd-rail > i {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: round(down, var(--p), var(--pitch));
+  background:
+    radial-gradient(circle at center, var(--c, var(--ink)) 1.1px, transparent 1.5px) 0 0 /
+    var(--pitch) 6px;
+  transition: width 600ms var(--snap);
+}
+.kd-rail > b {
+  position: absolute;
+  top: 0;
+  left: round(down, var(--p), var(--pitch));
+  width: 6px;
+  height: 6px;
+  background: radial-gradient(circle at center, var(--c, var(--ink)) 1.6px, transparent 2px);
+  animation: kd-pulse 1.1s ease-in-out infinite;
+  transition: left 600ms var(--snap);
+}
+@keyframes kd-pulse {
+  50% {
+    opacity: 0.25;
+  }
+}
+
+/* ── Run header ── */
+.kd-run {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 4px 24px;
+  align-items: center;
+  padding: 16px 18px 14px;
+}
+.kd-run .who {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+.kd-run h1 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.kd-run .sub {
+  display: flex;
+  gap: 8px;
+  color: var(--ink-3);
+  font-size: 12px;
+}
+.kd-run .stats {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+}
+.kd-stat {
+  display: grid;
+  justify-items: end;
+  line-height: 16px;
+}
+.kd-stat b {
+  font-weight: 500;
+  font-size: 15px;
+  line-height: 20px;
+}
+.kd-stat span {
+  color: var(--ink-3);
+  font-size: 11.5px;
+}
+.kd-state {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  height: 28px;
+  padding: 0 10px 0 8px;
+  border-radius: 8px;
+  background: var(--well);
+  box-shadow: var(--sunk);
+  font-weight: 500;
+  font-size: 12.5px;
+}
+.kd-state[data-state="waiting"] {
+  color: var(--ember-ink);
+}
+.kd-run .kd-rail {
+  grid-column: 1 / -1;
+  margin-top: 12px;
+}
+
+/* ── Rows ── */
+.kd-list {
+  display: grid;
+  padding: 0 6px 6px;
+}
+.kd-row {
+  display: grid;
+  grid-template-columns: 15px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 11px;
+  min-height: 36px;
+  padding: 0 10px;
+  border-radius: 9px;
+  transition: background-color 120ms var(--snap);
+}
+.kd-row:hover {
+  background: var(--hover);
+}
+.kd-row .t {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.kd-row .m {
+  color: var(--ink-3);
+  font-size: 12px;
+}
+.kd-row[data-state="done"] .t {
+  color: var(--ink-2);
+}
+.kd-row[data-state="queued"] .t {
+  color: var(--ink-3);
+}
+.kd-row[data-state="waiting"] .m {
+  color: var(--ember-ink);
+  font-family: inherit;
+  font-weight: 500;
+}
+
+/* ── Subagents ── */
+.kd-agent {
+  display: grid;
+  grid-template-columns: 30px minmax(0, 1fr) auto;
+  gap: 2px 12px;
+  align-items: center;
+  padding: 9px 10px;
+  border-radius: 9px;
+  transition: background-color 120ms var(--snap);
+}
+.kd-agent:hover {
+  background: var(--hover);
+}
+.kd-agent .kd-sigil {
+  grid-row: span 2;
+}
+.kd-agent .n {
+  font-weight: 500;
+}
+.kd-agent .a {
+  grid-column: 2 / -1;
+  color: var(--ink-3);
+  font-size: 12.5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.kd-agent .r {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--ink-3);
+  font-size: 12px;
+}
+.kd-agent .kd-rail {
+  grid-column: 2 / -1;
+  margin-top: 5px;
+}
+
+/* ── Approval ── */
+.kd-approval {
+  padding: 18px 18px 0;
+  overflow: hidden;
+}
+.kd-halftone {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  overflow: hidden;
+  pointer-events: none;
+  transition: opacity 500ms var(--snap);
+}
+.kd-halftone i {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(circle at center, var(--ember) var(--r), transparent calc(var(--r) + 0.5px)) 0 0
+    / 7px 7px;
+  -webkit-mask: radial-gradient(
+    62% 88% at 100% 0%,
+    transparent var(--from),
+    #000 var(--mid),
+    transparent var(--to)
+  );
+  mask: radial-gradient(
+    62% 88% at 100% 0%,
+    transparent var(--from),
+    #000 var(--mid),
+    transparent var(--to)
+  );
+}
+.kd-halftone::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    70% 90% at 100% 0%,
+    color-mix(in oklch, var(--ember) 16%, transparent),
+    transparent 70%
+  );
+}
+.kd-approval[data-decision]:not([data-decision="pending"]) .kd-halftone {
+  opacity: 0;
+}
+.kd-approval > :not(.kd-halftone) {
+  position: relative;
+}
+.kd-approval .top {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 500;
+  font-size: 12.5px;
+  color: var(--ember-ink);
+}
+.kd-approval[data-decision="approved"] .top {
+  color: var(--ink-2);
+}
+.kd-approval[data-decision="denied"] .top {
+  color: var(--ink-3);
+}
+.kd-approval .top .wait {
+  color: var(--ink-3);
+  font-weight: 400;
+  font-size: 12px;
+}
+.kd-approval h3 {
+  margin: 14px 0 0;
+  font-size: 19px;
+  line-height: 24px;
+  font-weight: 600;
+  letter-spacing: -0.022em;
+  text-wrap: balance;
+  max-width: 22ch;
+}
+.kd-approval .by {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+  color: var(--ink-2);
+}
+.kd-cmd {
+  display: flex;
+  gap: 9px;
+  margin-top: 16px;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: var(--well);
+  box-shadow: var(--sunk);
+  font-size: 12.5px;
+}
+.kd-cmd .p {
+  color: var(--ink-3);
+  user-select: none;
+}
+.kd-cmd b {
+  font-weight: 600;
+}
+.kd-cmd .f {
+  color: var(--ink-2);
+}
+.kd-facts {
+  display: grid;
+  gap: 7px;
+  margin: 14px 0 0;
+  padding: 0 2px;
+}
+.kd-fact {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-size: 12.5px;
+}
+.kd-fact dt {
+  color: var(--ink-3);
+}
+.kd-fact dd {
+  margin: 0;
+  font-weight: 500;
+}
+/* Dotted leader: the same dots, doing a typesetter's job. */
+.kd-fact i {
+  flex: 1;
+  height: 4px;
+  background:
+    radial-gradient(circle at center, var(--ink-4) 0.8px, transparent 1.1px) 0 0 / 5px 4px;
+}
+.kd-foot {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 56px;
+  margin: 16px -18px 0;
+  padding: 0 14px 0 18px;
+  border-top: 1px solid var(--line);
+}
+.kd-risk {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--red);
+  font-weight: 500;
+  font-size: 12.5px;
+}
+.kd-risk span {
+  display: inline-flex;
+  gap: 3px;
+}
+.kd-risk span i {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: currentColor;
+}
+.kd-foot .sp {
+  flex: 1;
+}
+.kd-outcome {
+  color: var(--ink-2);
+  animation: kd-in 220ms var(--snap);
+}
+@keyframes kd-in {
+  from {
+    opacity: 0;
+    transform: translateY(3px);
+  }
+}
+
+/* ── Buttons: keycaps. The shortcut is printed on the key. ── */
+.kd-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  height: 32px;
+  padding: 0 11px;
+  border: 0;
+  border-radius: 9px;
+  background: var(--raised-bg);
+  box-shadow: var(--raised);
+  color: var(--ink);
+  font:
+    500 13px / 1 var(--font-geist-sans),
+    system-ui,
+    sans-serif;
+  letter-spacing: -0.005em;
+  cursor: pointer;
+  transition:
+    transform 120ms var(--snap),
+    filter 120ms var(--snap);
+}
+.kd-btn:hover {
+  filter: brightness(1.12);
+}
+.kd[data-theme="light"] .kd-btn:hover {
+  filter: brightness(0.97);
+}
+.kd-btn:active {
+  transform: translateY(1px) scale(0.985);
+}
+.kd-btn:focus-visible {
+  outline: 2px solid var(--ink-3);
+  outline-offset: 2px;
+}
+.kd-btn.primary {
+  background: var(--ink-fill);
+  box-shadow: var(--ink-shadow);
+  color: var(--ink-fill-fg);
+}
+.kd-btn.primary:hover {
+  filter: brightness(1.04);
+}
+.kd-key {
+  display: inline-grid;
+  place-items: center;
+  min-width: 18px;
+  height: 18px;
+  margin-right: -3px;
+  padding: 0 4px;
+  border-radius: 5px;
+  background: var(--sheet);
+  box-shadow: var(--key);
+  color: var(--ink-3);
+  font:
+    500 10.5px / 1 var(--font-geist-sans),
+    system-ui,
+    sans-serif;
+}
+.kd-btn.primary .kd-key {
+  background: rgb(0 0 0 / 0.08);
+  box-shadow: inset 0 0 0 1px rgb(0 0 0 / 0.12);
+  color: inherit;
+  opacity: 0.7;
+}
+.kd[data-theme="light"] .kd-btn.primary .kd-key {
+  background: rgb(255 255 255 / 0.14);
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.14);
+}
+.kd-icon {
+  display: inline-grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+}
+
+/* ── Terminal ── */
+.kd-term {
+  margin: 0 6px 6px;
+  padding: 12px 14px 14px;
+  min-height: 176px;
+  border-radius: 10px;
+  background: var(--well);
+  box-shadow: var(--sunk);
+  font-size: 12.5px;
+  line-height: 21px;
+  color: var(--ink-2);
+  white-space: pre;
+  overflow: hidden;
+}
+.kd-term .cmd {
+  color: var(--ink);
+}
+.kd-term .ok {
+  color: var(--green);
+}
+.kd-term .dim {
+  color: var(--ink-3);
+}
+.kd-term .line {
+  animation: kd-in 160ms var(--snap);
+}
+.kd-caret {
+  display: inline-block;
+  width: 7px;
+  height: 14px;
+  margin-left: 2px;
+  vertical-align: -2px;
+  background: var(--ember);
+  animation: kd-caret 1.1s steps(2, jump-none) infinite;
+}
+@keyframes kd-caret {
+  50% {
+    opacity: 0;
+  }
+}
+
+/* ── Trace: a waterfall of spans, each one a run of dots on the same time axis. ── */
+.kd-trace {
+  display: grid;
+  gap: 9px;
+  padding: 2px 16px 14px;
+}
+.kd-span {
+  display: grid;
+  grid-template-columns: 84px minmax(0, 1fr) 50px;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+  color: var(--ink-3);
+}
+.kd-span .l {
+  color: var(--ink-2);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.kd-span .d {
+  text-align: right;
+  white-space: nowrap;
+}
+.kd-span .kd-rail > i {
+  left: round(down, var(--s), var(--pitch));
+  width: round(up, var(--w), var(--pitch));
+}
+.kd-span .kd-rail > b {
+  left: round(down, calc(var(--s) + var(--w)), var(--pitch));
+}
+.kd-axis {
+  display: grid;
+  grid-template-columns: 84px minmax(0, 1fr) 50px;
+  gap: 10px;
+  padding-top: 2px;
+  color: var(--ink-4);
+  font-size: 11px;
+}
+.kd-axis div {
+  display: flex;
+  justify-content: space-between;
+}
+
+/* ── Context: one hundred dots, one per percent. ── */
+.kd-ctx {
+  padding: 0 16px 16px;
+}
+.kd-matrix {
+  display: grid;
+  grid-template-columns: repeat(25, 6px);
+  gap: 5.5px;
+  justify-content: space-between;
+}
+.kd-matrix i {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--dot-off);
+  transition: background-color 300ms var(--snap);
+}
+.kd-matrix i[data-s="0"] {
+  background: var(--ink);
+}
+.kd-matrix i[data-s="1"] {
+  background: color-mix(in oklch, var(--ink) 62%, transparent);
+}
+.kd-matrix i[data-s="2"] {
+  background: color-mix(in oklch, var(--ink) 38%, transparent);
+}
+.kd-matrix i[data-s="3"] {
+  background: color-mix(in oklch, var(--ink) 22%, transparent);
+}
+.kd-legend {
+  display: grid;
+  gap: 6px;
+  margin-top: 14px;
+  font-size: 12.5px;
+}
+.kd-legend div {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  color: var(--ink-2);
+}
+.kd-legend i {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+.kd-legend span {
+  margin-left: auto;
+  color: var(--ink-3);
+  font-size: 12px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kd *,
+  .kd *::before,
+  .kd *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+@media (max-width: 1100px) {
+  .kd-cols {
+    grid-template-columns: 1fr;
+  }
+}

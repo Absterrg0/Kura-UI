@@ -8,6 +8,30 @@ import { ExamplePreview } from "@/components/example-preview";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/tabs";
 import { components, getComponent } from "@/lib/catalog";
 
+/** "Mod+Enter", "J / K", "Enter / Space" → keycaps, alternatives separated by a slash. */
+function Keys({ value }: { value: string }) {
+  const alternatives = value.split(/\s+\/\s+/);
+  return (
+    <span className="inline-flex flex-wrap items-center gap-1.5">
+      {alternatives.map((combo, i) => (
+        <span key={combo} className="inline-flex items-center gap-1.5">
+          {i > 0 && <span className="text-[12px] text-kura-fg-subtle">or</span>}
+          <span className="inline-flex items-center gap-[3px]">
+            {combo.split("+").map((key) => (
+              <kbd
+                key={key}
+                className="inline-flex h-[20px] min-w-[20px] items-center justify-center rounded-[5px] bg-kura-surface px-1.5 font-kura-sans font-medium text-[11px] text-kura-fg-muted shadow-kura-key"
+              >
+                {key.trim()}
+              </kbd>
+            ))}
+          </span>
+        </span>
+      ))}
+    </span>
+  );
+}
+
 export const dynamicParams = false;
 
 export function generateStaticParams() {
@@ -136,11 +160,12 @@ export default async function ComponentPage({ params }: { params: Promise<{ slug
                   {ex.title}
                 </h2>
               )}
+              {/* The stage is the page with one hairline round it: the component is the only box. */}
               <Tabs
                 defaultValue="preview"
-                className="gloss overflow-hidden rounded-[18px] bg-kura-surface"
+                className="overflow-hidden rounded-kura-xl shadow-[inset_0_0_0_1px_var(--kura-border-subtle)]"
               >
-                <div className="flex items-center justify-between border-kura-border-subtle border-b px-2.5 py-2.5">
+                <div className="flex items-center justify-between px-2.5 pt-2.5">
                   <TabsList>
                     <TabsTrigger value="preview">Preview</TabsTrigger>
                     <TabsTrigger value="code">Code</TabsTrigger>
@@ -150,9 +175,9 @@ export default async function ComponentPage({ params }: { params: Promise<{ slug
                   </span>
                 </div>
                 <TabsContent value="preview" forceMount className="data-[state=inactive]:hidden">
-                  <ExamplePreview slug={c.slug} name={ex.name} className="bg-stage" />
+                  <ExamplePreview slug={c.slug} name={ex.name} />
                 </TabsContent>
-                <TabsContent value="code" className="bg-stage p-2.5">
+                <TabsContent value="code" className="p-2.5">
                   <CodeBlock code={ex.code} />
                 </TabsContent>
               </Tabs>
@@ -237,7 +262,14 @@ export default async function ComponentPage({ params }: { params: Promise<{ slug
 
         <Section id="props" title="Props">
           {c.props.length ? (
-            <div className="overflow-x-auto border-kura-border border-t">
+            // biome-ignore lint/a11y/useSemanticElements: a scrollable table wrapper, not a page section
+            <div
+              role="region"
+              aria-label={`${c.title} props`}
+              // biome-ignore lint/a11y/noNoninteractiveTabindex: a scrollable region must be keyboard-reachable
+              tabIndex={0}
+              className="overflow-x-auto border-kura-border border-t outline-none focus-visible:shadow-[inset_0_0_0_2px_var(--kura-ring)]"
+            >
               <table className="w-full text-left text-sm">
                 <thead className="border-kura-border-subtle border-b text-[12.5px] text-kura-fg-subtle">
                   <tr>
@@ -336,7 +368,9 @@ export default async function ComponentPage({ params }: { params: Promise<{ slug
               <tbody>
                 {c.a11y.keyboard.map((k) => (
                   <tr key={k.keys} className="border-kura-border-subtle border-t">
-                    <td className="py-2 pr-4 font-kura-mono text-[13px]">{k.keys}</td>
+                    <td className="py-2 pr-4">
+                      <Keys value={k.keys} />
+                    </td>
                     <td className="py-2 text-kura-fg-muted">
                       <Prose>{k.action}</Prose>
                     </td>
@@ -349,7 +383,7 @@ export default async function ComponentPage({ params }: { params: Promise<{ slug
 
         {!!c.agentNotes?.length && (
           <Section id="agents" title="Notes for agents">
-            <ul className="gloss flex list-disc flex-col gap-2 rounded-[16px] bg-kura-surface p-5 pl-9 text-[15px] leading-relaxed marker:text-kura-fg-subtle">
+            <ul className="sheet flex list-disc flex-col gap-2 rounded-kura-xl bg-kura-surface p-5 pl-9 text-[14.5px] leading-relaxed marker:text-kura-fg-subtle">
               {c.agentNotes.map((n) => (
                 <li key={n}>
                   <Prose>{n}</Prose>
@@ -367,14 +401,14 @@ export default async function ComponentPage({ params }: { params: Promise<{ slug
                   <Link
                     key={r.slug}
                     href={`/components/${r.slug}`}
-                    className="rounded-[10px] px-3 py-1.5 font-kura-mono text-[13px] text-kura-fg-muted shadow-[inset_0_0_0_1px_var(--kura-border)] outline-none hover:bg-kura-hover hover:text-kura-fg focus-visible:shadow-kura-focus"
+                    className="inline-flex h-8 items-center rounded-[9px] bg-kura-raised px-[11px] font-kura-mono text-[12.5px] text-kura-fg shadow-kura-raised outline-none transition-colors duration-150 hover:bg-kura-raised-hover active:translate-y-px motion-reduce:transition-none"
                   >
                     {r.slug}
                   </Link>
                 ) : (
                   <span
                     key={r.slug}
-                    className="rounded-[10px] px-3 py-1.5 font-kura-mono text-[13px] text-kura-fg-subtle shadow-[inset_0_0_0_1px_var(--kura-border-subtle)]"
+                    className="inline-flex h-8 items-center px-1 font-kura-mono text-[12.5px] text-kura-fg-subtle"
                     title="Coming soon"
                   >
                     {r.slug}

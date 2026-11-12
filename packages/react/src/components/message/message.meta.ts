@@ -11,7 +11,7 @@ export default defineComponent({
     "Render the turns of a chat with an LLM: user bubbles on the right, assistant answers as open text on the left.",
     "Add per-message actions: copy, regenerate, edit, thumbs up/down and navigation between regenerated versions.",
     "Show a failed generation with an inline error and a Retry button.",
-    "Wrap a whole conversation in MessageList for stick-to-bottom autoscroll with a “Jump to latest” pill.",
+    "Wrap a whole conversation in MessageList for stick-to-bottom autoscroll with a “Jump to latest” key.",
   ],
   whenNotToUse: [
     "Only the streaming answer text, without chrome — use streaming-text.",
@@ -69,7 +69,7 @@ export default defineComponent({
       name: "MessageList",
       dataSlot: "message-list",
       description:
-        'Thread container (`role="log"` viewport). Sticks to the bottom while content grows, releases when the reader scrolls up, shows a “Jump to latest” pill. `data-at-bottom`.',
+        'Thread container (`role="log"` viewport). Sticks to the bottom while content grows, releases when the reader scrolls up, shows a “Jump to latest” key. `data-at-bottom`.',
       props: [
         {
           name: "stickToBottom",
@@ -87,7 +87,7 @@ export default defineComponent({
           name: "jumpLabel",
           type: "string",
           default: '"Jump to latest"',
-          description: "Label of the jump pill.",
+          description: "Label of the jump key.",
         },
         {
           name: "contentClassName",
@@ -116,13 +116,14 @@ export default defineComponent({
     {
       name: "MessageAvatar",
       dataSlot: "message-avatar",
-      description: "28px round avatar: image → custom fallback → initials.",
+      description:
+        "30px raised tile: image → custom fallback → the dot sigil generated from `name`.",
       props: [
         {
           name: "name",
           type: "string",
           required: true,
-          description: "Alt text and initials source.",
+          description: "Alt text, and the seed of the sigil fallback.",
         },
         { name: "src", type: "string", description: "Image URL; broken images fall back." },
         {
@@ -208,7 +209,7 @@ export default defineComponent({
     {
       name: "Jump",
       dataSlot: "message-list-jump",
-      description: '“Jump to latest” pill; `data-state="visible" | "hidden"` (inert when hidden).',
+      description: '“Jump to latest” key; `data-state="visible" | "hidden"` (inert when hidden).',
     },
   ],
   a11y: {
@@ -218,7 +219,7 @@ export default defineComponent({
       "Every action is a labelled icon button with a tooltip; feedback toggles use aria-pressed; the branch switcher announces “Version 2 of 3”.",
       "Actions are revealed on hover AND keyboard focus (focus-within), and are always visible on touch devices.",
       'The error row is `role="alert"`.',
-      "The hidden jump pill is inert and aria-hidden, so it never traps focus.",
+      "The hidden jump key is inert and aria-hidden, so it never traps focus.",
     ],
     keyboard: [
       {
@@ -229,9 +230,9 @@ export default defineComponent({
       { keys: "Enter / Space", action: "Activate an action; toggle feedback" },
     ],
     reducedMotion:
-      "Jump-to-latest scrolls instantly and its pill only fades (no slide/scale); the copy check and thumbs swap without scale/blur.",
+      "Jump-to-latest scrolls instantly and its key only fades (no slide); the copy check and thumbs swap without scale.",
   },
-  dependencies: { npm: ["lucide-react"], kura: ["button", "icon-button"] },
+  dependencies: { npm: ["lucide-react"], kura: ["agent-sigil", "button", "icon-button"] },
   related: ["streaming-text", "code-block", "reasoning", "tool-call", "citation", "composer"],
   tags: [
     "chat",
@@ -268,7 +269,7 @@ export default defineComponent({
       kind: "composition",
       title: "Autoscrolling thread",
       description:
-        "MessageList with StreamingText, CodeBlock and a shimmering “Thinking…” turn. Scroll up mid-stream to see “Jump to latest”.",
+        "MessageList with StreamingText, CodeBlock and a “Thinking…” turn. Scroll up mid-stream to see “Jump to latest”.",
     },
   ],
   agentNotes: [

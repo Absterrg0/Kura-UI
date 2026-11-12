@@ -13,8 +13,9 @@ export function SidebarLink({ href, children }: { href: string; children: React.
       aria-current={active ? "page" : undefined}
       className={cn(
         "relative flex h-8 items-center rounded-lg px-3 outline-none transition-colors duration-150 focus-visible:shadow-kura-focus",
+        // You are here: one ink dot in the margin, nothing boxed.
         active
-          ? "bg-kura-hover font-medium text-kura-fg shadow-[inset_0_0_0_1px_var(--kura-border-subtle)]"
+          ? "font-medium text-kura-fg before:absolute before:top-1/2 before:left-0 before:size-1 before:-translate-y-1/2 before:rounded-full before:bg-kura-fg"
           : "text-kura-fg-muted hover:text-kura-fg",
       )}
     >

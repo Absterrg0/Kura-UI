@@ -143,7 +143,7 @@ export default defineComponent({
       name: "Bar",
       dataSlot: "trace-waterfall-bar",
       description:
-        "Positioned on the shared axis. Neutral greys by kind (LLM darkest), thin for agent spans; blue while running, red failed, amber waiting, ink when selected.",
+        "A run of lit dots on the shared axis, over a faint dot track. Ink tiers by kind (LLM brightest), a pulsing leading dot while running, red failed, ember waiting on a person.",
     },
     {
       name: "Now",
@@ -195,7 +195,7 @@ export default defineComponent({
     reducedMotion:
       "Bars and the now-line jump to their new positions instead of easing; the chevron turns instantly; rows and details only fade.",
   },
-  dependencies: { npm: ["lucide-react"], kura: ["status-glyph"] },
+  dependencies: { npm: ["lucide-react"], kura: ["agent-sigil", "status-glyph"] },
   related: ["task-list", "agent-fleet", "run-header", "tool-call", "agent-timeline"],
   tags: ["agent", "trace", "observability", "spans", "waterfall", "timeline", "tokens", "latency"],
   examples: [

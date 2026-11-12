@@ -46,8 +46,18 @@ describe("RunHeader", () => {
     const stats = document.querySelector("[data-slot=run-header-stats]") as HTMLElement;
     expect(stats.querySelector("[data-stat=elapsed] dd")).toHaveTextContent("2:05");
     expect(stats.querySelector("[data-stat=steps] dd")).toHaveTextContent("7 of 7");
-    expect(stats.querySelector("[data-stat=tokens] dd")).toHaveTextContent("412k in · 38.1k out");
-    expect(stats.querySelector("[data-stat=cost] dd")).toHaveTextContent("$1.82 of $5.00");
+    expect(stats.querySelector("[data-stat=tokens] dd")).toHaveTextContent("450k");
+    expect(stats.querySelector("[data-stat=tokens]")).toHaveAttribute(
+      "title",
+      "412k in, 38.1k out",
+    );
+    expect(stats.querySelector("[data-stat=cost] dd")).toHaveTextContent("$1.82");
+    expect(stats.querySelector("[data-stat=cost] dt")).toHaveTextContent("of $5.00");
+    // Progress is a rail of dots, not a bar.
+    expect(document.querySelector("[data-slot=run-header-progress]")).toHaveAttribute(
+      "data-tone",
+      "ink",
+    );
     expect(screen.getByText("Completed")).toBeInTheDocument();
   });
 

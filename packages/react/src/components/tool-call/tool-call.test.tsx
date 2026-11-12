@@ -52,7 +52,7 @@ describe("ToolCall", () => {
   it("ticks while running and freezes the measured duration", () => {
     vi.useFakeTimers();
     const { rerender, container } = render(<ToolCall name="t" status="running" />);
-    expect(container.querySelector("[data-slot=shimmer-text]")).not.toBeNull();
+    expect(container.querySelector("[data-slot=status-glyph][data-status=running]")).not.toBeNull();
     act(() => vi.advanceTimersByTime(1500));
     expect(container.querySelector("[data-slot=tool-call-elapsed]")).toHaveTextContent("1.5s");
     rerender(<ToolCall name="t" status="success" />);
@@ -84,12 +84,12 @@ describe("ToolCall", () => {
     expect(formatDuration(65_000)).toBe("1m 5s");
   });
 
-  it("stops the running arc under reduced motion", () => {
+  it("stops the chasing light under reduced motion", () => {
     setReducedMotion(true);
     const { container } = render(<ToolCall name="t" status="running" />);
     expect(
       container
-        .querySelector("[data-slot=tool-call-status] [data-status=running] path")!
+        .querySelector("[data-slot=tool-call-status] [data-status=running] circle")!
         .getAttribute("class"),
     ).toContain("motion-reduce:animate-none");
   });

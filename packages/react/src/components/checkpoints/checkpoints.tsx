@@ -6,6 +6,7 @@ import * as React from "react";
 import { agentSurface } from "../../lib/agent-surface";
 import { cn } from "../../lib/cn";
 import { Button } from "../button";
+import { StatusGlyph } from "../status-glyph";
 
 export interface Checkpoint {
   /** Stable id passed to `onRestore`. */
@@ -116,7 +117,7 @@ export function Checkpoints({
     >
       <div
         data-slot="checkpoints-header"
-        className="flex h-10 shrink-0 items-center gap-2 border-kura-border-subtle border-b pr-2 pl-3.5"
+        className="flex h-11 shrink-0 items-center gap-2 pr-2 pl-4"
       >
         <h3 className="flex items-baseline gap-2 font-medium text-[13px]">
           <span id={`${id}-title`}>{title}</span>
@@ -156,7 +157,7 @@ export function Checkpoints({
         // Restoring rewinds the workspace, so an agent's restore always waits for the person.
         <CheckpointList
           aria-labelledby={`${id}-title`}
-          className="flex flex-col py-1"
+          className="flex flex-col pb-1.5"
           value={current ? `At “${current.label}”` : ""}
           items={checkpoints
             .filter((c) => !c.current)
@@ -189,27 +190,40 @@ export function Checkpoints({
                 data-current={c.current || undefined}
                 data-ahead={ahead || undefined}
                 data-state={open ? "confirming" : undefined}
-                className="group/cp relative animate-[kura-rise-in_var(--kura-duration-base)_var(--ease-kura-out)_both] [--kura-rise-blur:0px] [--kura-rise-y:2px] motion-reduce:[--kura-rise-y:0px]"
+                className="group/cp relative"
               >
                 {checkpoints.length > 1 && (
                   <span
                     aria-hidden
                     className={cn(
-                      "absolute left-[21.5px] w-px bg-kura-border",
-                      first ? "top-[18px] bottom-0" : last ? "top-0 h-[18px]" : "inset-y-0",
-                      ahead && "bg-kura-border-subtle",
+                      "kura-leader absolute left-[19.5px] w-[5px]",
+                      first ? "top-[26px] bottom-0" : last ? "top-0 h-[10px]" : "inset-y-0",
                     )}
                   />
                 )}
                 <div
                   className={cn(
-                    "relative flex h-9 items-center gap-2.5 pr-2 pl-3.5 transition-colors duration-(--kura-duration-instant) ease-kura-out",
+                    "relative mx-1.5 flex h-9 items-center gap-2.5 rounded-[9px] pr-1.5 pl-2 transition-colors duration-(--kura-duration-instant) ease-kura-out",
                     !c.current && "hover:bg-kura-hover",
                     open && "bg-kura-hover",
                   )}
                 >
-                  <span aria-hidden className="grid w-4 shrink-0 place-items-center">
-                    <Node checkpoint={c} ahead={ahead} />
+                  <span
+                    aria-hidden
+                    className={cn(
+                      "relative grid w-4 shrink-0 place-items-center bg-kura-surface py-0.5 group-hover/cp:bg-transparent",
+                      c.current
+                        ? "text-kura-fg"
+                        : ahead
+                          ? "text-kura-faint"
+                          : "text-kura-fg-subtle",
+                    )}
+                  >
+                    <StatusGlyph
+                      status={c.current ? "done" : "queued"}
+                      label={null}
+                      className="text-inherit"
+                    />
                   </span>
                   <span
                     data-slot="checkpoints-label"
@@ -227,7 +241,7 @@ export function Checkpoints({
                   {c.current && (
                     <span
                       data-slot="checkpoints-current"
-                      className="inline-flex h-[18px] shrink-0 items-center rounded-full bg-kura-hover px-1.5 font-medium text-[11px] text-kura-fg-muted"
+                      className="shrink-0 text-[12px] text-kura-fg-subtle"
                     >
                       Current
                     </span>
@@ -315,32 +329,6 @@ export function Checkpoints({
   );
 }
 
-function Node({ checkpoint, ahead }: { checkpoint: Checkpoint; ahead: boolean }) {
-  if (checkpoint.current) {
-    return (
-      <span className="size-2.5 rounded-full bg-kura-fg shadow-[0_0_0_3px_var(--kura-surface)]" />
-    );
-  }
-  if (checkpoint.kind === "manual") {
-    return (
-      <span
-        className={cn(
-          "size-2 rotate-45 rounded-[2px]",
-          ahead ? "bg-kura-border-strong" : "bg-kura-fg-muted",
-        )}
-      />
-    );
-  }
-  return (
-    <span
-      className={cn(
-        "size-2 rounded-full bg-kura-surface",
-        ahead ? "ring-1 ring-kura-border-strong" : "ring-[1.5px] ring-kura-fg-subtle",
-      )}
-    />
-  );
-}
-
 function ConfirmBody({
   checkpoint,
   between,
@@ -369,7 +357,7 @@ function ConfirmBody({
           onCancel();
         }
       }}
-      className="m-0 flex min-w-0 flex-col gap-2.5 border-0 pt-1 pr-3.5 pb-3 pl-10"
+      className="m-0 flex min-w-0 flex-col gap-2.5 border-0 pt-1 pr-3.5 pb-3 pl-[42px]"
     >
       <p className="text-[12.5px] text-kura-fg-muted leading-[18px]">
         {forward ? (

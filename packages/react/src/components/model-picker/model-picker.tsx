@@ -19,6 +19,7 @@ import {
 import * as React from "react";
 import { useControllableState } from "../../hooks/use-controllable-state";
 import { cn } from "../../lib/cn";
+import { AgentSigil } from "../agent-sigil";
 import { Popover, PopoverContent, PopoverTrigger } from "../popover";
 
 export type ModelCapability = "vision" | "tools" | "reasoning" | "web" | "audio" | "files";
@@ -101,32 +102,21 @@ function ProviderMark({ model, className }: { model: ModelPickerModel; className
       </span>
     );
   }
-  const letter = (model.provider ?? model.name).trim().charAt(0).toUpperCase();
-  return (
-    <span
-      aria-hidden
-      className={cn(
-        "flex size-4 shrink-0 items-center justify-center rounded-kura-xs bg-kura-active font-semibold text-[9px] text-kura-fg-muted leading-none",
-        className,
-      )}
-    >
-      {letter}
-    </span>
-  );
+  // No logo given: the model gets a face, the same dot sigil every time.
+  return <AgentSigil name={model.name} bare size="sm" className={cn("size-4", className)} />;
 }
 
 function Meter({ value, label, kind }: { value: number; label: string; kind: "speed" | "cost" }) {
   return (
     <span className="inline-flex items-center gap-1" title={label}>
-      <span aria-hidden className="inline-flex items-end gap-[2px]">
+      <span aria-hidden className="inline-flex items-center gap-[3px]">
         {[1, 2, 3].map((i) =>
           kind === "speed" ? (
             <span
               key={i}
               className={cn(
-                "w-[3px] rounded-full",
-                i === 1 ? "h-1.5" : i === 2 ? "h-2" : "h-2.5",
-                i <= value ? "bg-kura-fg-muted" : "bg-kura-border-strong",
+                "size-1 rounded-full",
+                i <= value ? "bg-kura-fg-muted" : "bg-kura-dot-off",
               )}
             />
           ) : (
@@ -324,11 +314,11 @@ export function ModelPicker({
           disabled={disabled}
           aria-label={selected ? `Model: ${selected.name}` : placeholder}
           className={cn(
-            "group/model-picker inline-flex min-w-0 shrink cursor-pointer select-none items-center gap-1.5 rounded-kura-lg font-kura-sans font-medium text-kura-fg-muted outline-none",
-            "transition-[background-color,color,transform] duration-(--kura-duration-fast) ease-kura-out",
+            "group/model-picker inline-flex min-w-0 shrink cursor-pointer select-none items-center gap-1.5 rounded-[9px] font-kura-sans font-medium text-kura-fg-muted outline-none",
+            "transition-[background-color,color,transform] duration-(--kura-duration-fast) ease-kura-snap",
             "hover:not-disabled:bg-kura-hover hover:not-disabled:text-kura-fg data-[state=open]:bg-kura-hover data-[state=open]:text-kura-fg",
-            "focus-visible:shadow-kura-focus active:not-disabled:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-50 motion-reduce:active:not-disabled:scale-100",
-            size === "sm" ? "h-8 px-2 text-[13px]" : "h-9 px-2.5 text-sm",
+            "focus-visible:outline-2 focus-visible:outline-kura-ring focus-visible:outline-offset-2 active:not-disabled:translate-y-px disabled:cursor-not-allowed disabled:opacity-50 motion-reduce:active:not-disabled:translate-y-0",
+            size === "sm" ? "h-7 px-2 text-[13px]" : "h-8 px-2.5 text-[13px]",
             className,
           )}
           {...props}
@@ -400,7 +390,7 @@ export function ModelPicker({
                 {provider && (
                   <div
                     id={headingId}
-                    className="select-none px-2 pt-2 pb-1 font-medium text-[11px] text-kura-fg-subtle"
+                    className="select-none px-2 pt-2 pb-1 text-[12px] text-kura-fg-subtle"
                   >
                     {provider}
                   </div>
@@ -423,7 +413,7 @@ export function ModelPicker({
                       }
                       onClick={() => choose(model)}
                       className={cn(
-                        "flex cursor-pointer select-none items-center gap-2.5 rounded-kura-md px-2 py-1.5",
+                        "flex cursor-pointer select-none items-center gap-2.5 rounded-[9px] px-2 py-1.5",
                         "data-active:bg-kura-hover data-disabled:cursor-not-allowed data-disabled:opacity-45",
                       )}
                     >
@@ -434,7 +424,7 @@ export function ModelPicker({
                             {model.name}
                           </span>
                           {model.badge && (
-                            <span className="shrink-0 rounded-full bg-kura-active px-1.5 py-px font-medium text-[10px] text-kura-fg-muted leading-3.5">
+                            <span className="shrink-0 text-[11.5px] text-kura-fg-subtle leading-4">
                               {model.badge}
                             </span>
                           )}

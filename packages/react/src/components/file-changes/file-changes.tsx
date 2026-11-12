@@ -5,7 +5,7 @@ import * as React from "react";
 import { useControllableState } from "../../hooks/use-controllable-state";
 import { cn } from "../../lib/cn";
 import { IconButton } from "../icon-button";
-import { ShimmerText } from "../shimmer-text";
+import { StatusGlyph } from "../status-glyph";
 
 export type FileChangeStatus = "A" | "M" | "D" | "R";
 
@@ -52,7 +52,7 @@ export interface FileChangesProps extends Omit<React.ComponentProps<"div">, "tit
 
 const STATUS_CLASS: Record<FileChangeStatus, string> = {
   A: "text-kura-success-text",
-  M: "text-kura-warning-text",
+  M: "text-kura-fg-subtle",
   D: "text-kura-danger-text",
   R: "text-kura-fg-muted",
 };
@@ -153,11 +153,8 @@ function folderStats(node: FolderNode): { files: number; live: boolean } {
 function Counts({ file }: { file: FileChange }) {
   if (file.state === "editing")
     return (
-      <span className="inline-flex items-center gap-1.5 text-kura-accent-text">
-        <span
-          aria-hidden
-          className="size-1.5 rounded-full bg-kura-accent animate-kura-pulse motion-reduce:animate-none"
-        />
+      <span className="inline-flex items-center gap-1.5 text-kura-fg-muted">
+        <StatusGlyph status="running" size="sm" label={null} />
         editing
       </span>
     );
@@ -332,7 +329,7 @@ export function FileChanges({
     >
       <div
         data-slot="file-changes-header"
-        className="flex h-10 shrink-0 items-center gap-2.5 border-kura-border-subtle border-b pr-1.5 pl-3.5"
+        className="flex h-11 shrink-0 items-center gap-2.5 pr-1.5 pl-4"
       >
         <span className="min-w-[3rem] truncate font-medium tracking-[-0.006em]">{title}</span>
         <span
@@ -395,7 +392,7 @@ export function FileChanges({
           role={isTree ? "tree" : "listbox"}
           aria-label={typeof title === "string" ? title : "Changed files"}
           className={cn(
-            "py-1",
+            "pb-1.5",
             maxHeight != null && "overflow-y-auto overscroll-contain [scrollbar-width:thin]",
           )}
           style={maxHeight != null ? { maxHeight } : undefined}
@@ -404,15 +401,15 @@ export function FileChanges({
             const { node } = row;
             const key = rowKey(row);
             const focusable = tabStop && rowKey(tabStop) === key;
-            const indent = 10 + row.depth * 14;
+            const indent = 8 + row.depth * 14;
             const guides = isTree
               ? Array.from({ length: row.depth }, (_, k) => (
                   <span
                     key={k}
                     aria-hidden
                     data-slot="file-changes-guide"
-                    className="pointer-events-none absolute inset-y-0 w-px bg-kura-border-subtle"
-                    style={{ left: 10 + k * 14 + 6.5 }}
+                    className="kura-leader pointer-events-none absolute inset-y-0 w-[5px]"
+                    style={{ left: 8 + k * 14 + 4.5 }}
                   />
                 ))
               : null;
@@ -421,7 +418,7 @@ export function FileChanges({
               else rowEls.current.delete(key);
             };
             const rowClass =
-              "relative flex h-8 cursor-pointer select-none items-center gap-1.5 pr-3 outline-none transition-colors duration-(--kura-duration-fast) ease-kura-out hover:bg-kura-hover focus-visible:shadow-[inset_0_0_0_2px_var(--kura-ring)] motion-reduce:transition-none";
+              "relative mx-1.5 flex h-8 cursor-pointer select-none items-center gap-1.5 rounded-[9px] pr-2.5 outline-none transition-colors duration-(--kura-duration-fast) ease-kura-out hover:bg-kura-hover focus-visible:shadow-[inset_0_0_0_2px_var(--kura-ring)] motion-reduce:transition-none";
 
             if (node.kind === "folder") {
               const open = !collapsed.has(node.path);
@@ -460,10 +457,10 @@ export function FileChanges({
                   {!open && (
                     <span className="ml-auto flex shrink-0 items-center gap-2 font-kura-mono text-[12px] text-kura-fg-subtle tabular-nums">
                       {stats.live && (
-                        <span
-                          aria-label="contains a file being edited"
-                          role="img"
-                          className="size-1.5 rounded-full bg-kura-accent animate-kura-pulse motion-reduce:animate-none"
+                        <StatusGlyph
+                          status="running"
+                          size="sm"
+                          label="contains a file being edited"
                         />
                       )}
                       {stats.files}
@@ -508,12 +505,6 @@ export function FileChanges({
                 title={file.oldPath ? `${file.oldPath} → ${file.path}` : file.path}
               >
                 {guides}
-                {isSelected && (
-                  <span
-                    aria-hidden
-                    className="absolute inset-y-1 left-0 w-0.5 rounded-r-full bg-kura-accent"
-                  />
-                )}
                 {isTree && <span aria-hidden className="w-3.5 shrink-0" />}
                 <span className="flex min-w-0 flex-1 items-baseline gap-2">
                   <span
@@ -525,7 +516,7 @@ export function FileChanges({
                         : "text-kura-fg",
                     )}
                   >
-                    {live ? <ShimmerText>{node.name}</ShimmerText> : node.name}
+                    {node.name}
                   </span>
                   {!isTree && dir && (
                     <span className="min-w-0 flex-1 truncate text-left font-kura-mono text-[12px] text-kura-fg-subtle [direction:rtl]">

@@ -158,7 +158,7 @@ export default defineComponent({
       name: "Jump",
       dataSlot: "terminal-jump",
       description:
-        "Floating “Jump to latest” / “N new lines” pill when scrolled away from the bottom.",
+        "Floating “Jump to latest” / “N new lines” key when scrolled away from the bottom.",
     },
   ],
   a11y: {
@@ -175,7 +175,7 @@ export default defineComponent({
       { keys: "Enter / Space", action: "Activate Show all / Jump to latest / Copy" },
     ],
     reducedMotion:
-      "The cursor stops pulsing, the running glyph stops spinning, and the copy icon swap and pill entrance become plain fades. Jump to latest still scrolls smoothly only if the browser allows it.",
+      "The cursor stops pulsing, the running glyph stops chasing, and the copy icon swap and jump-key entrance become plain fades. Jump to latest still scrolls smoothly only if the browser allows it.",
   },
   dependencies: { npm: ["@ui-sdk/react", "lucide-react"], kura: ["icon-button", "status-glyph"] },
   related: ["diff-view", "file-changes", "code-block", "tool-call", "agent-timeline"],
@@ -214,7 +214,7 @@ export default defineComponent({
     "For a growing string, only append — replacing earlier text triggers a full re-parse (still correct, just slower).",
     "Keep the same Terminal mounted from running → done so the measured duration works; for history pass `duration`.",
     "`stream` is consumed once; create a new iterable to restart. Set `exitCode` in onStreamEnd to finish with a badge.",
-    "Colours map to Kura tokens; override any of them with --kura-terminal-{red,green,yellow,blue,magenta,cyan,white,gray,black} on a parent.",
+    "Monochrome by default: only red and green keep a hue; yellow maps to ink and blue/magenta/cyan to muted ink. Override any with --kura-terminal-{red,green,yellow,blue,magenta,cyan,white,gray,black} on a parent.",
     "Helpers exported alongside: parseAnsi(text), stripAnsi(text), AnsiScreen (incremental).",
   ],
 });

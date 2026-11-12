@@ -319,7 +319,7 @@ describe("DiffView", () => {
   it("accepts a whole file and collapses it; Accept all finishes the review", async () => {
     const user = userEvent.setup();
     const { container } = render(<DiffView diff={TWO_FILES} />);
-    await user.click(screen.getByRole("button", { name: "Accept all changes in src/a.ts" }));
+    await user.click(screen.getByRole("button", { name: "Accept file src/a.ts" }));
     const fileA = container.querySelector("[data-slot=diff-view-file]")!;
     expect(fileA).toHaveAttribute("data-state", "closed");
     expect(screen.getByRole("button", { name: /src\/a\.ts/, expanded: false })).toBeInTheDocument();
@@ -383,8 +383,8 @@ describe("DiffView", () => {
   it("respects reduced motion", () => {
     setReducedMotion(true);
     const { container } = render(<DiffView diff={TWO_FILES} />);
-    const lines = container.querySelector("[data-slot=diff-view-lines]")!;
-    expect(lines.className).toContain("motion-reduce:transition-none");
+    const line = container.querySelector("[data-slot=diff-view-line]")!;
+    expect(line.className).toContain("motion-reduce:transition-none");
     setReducedMotion(false);
   });
 

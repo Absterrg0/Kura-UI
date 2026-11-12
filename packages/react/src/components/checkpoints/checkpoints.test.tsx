@@ -135,10 +135,9 @@ describe("Checkpoints", () => {
     expect(screen.getByText("No checkpoints yet")).toBeInTheDocument();
   });
 
-  it("fades without travel under reduced motion", () => {
+  it("opens the confirm without travel under reduced motion", () => {
     setReducedMotion(true);
     const { container } = render(<Checkpoints checkpoints={list} onRestore={() => {}} />);
-    expect(container.innerHTML).toContain("motion-reduce:[--kura-rise-y:0px]");
     expect(container.innerHTML).toContain("motion-reduce:transition-opacity");
     setReducedMotion(false);
   });

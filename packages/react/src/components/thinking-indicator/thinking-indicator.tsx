@@ -187,7 +187,7 @@ export function ThinkingIndicator({
       data-variant={variant}
       data-size={size}
       className={cn(
-        "inline-flex items-center gap-2 align-middle text-kura-accent",
+        "inline-flex items-center gap-2 align-middle text-kura-fg",
         SIZE[size],
         className,
       )}
@@ -220,8 +220,8 @@ export function ThinkingIndicator({
                 key={`${i}-${line}`}
                 data-active={i === index}
                 className={cn(
-                  "col-start-1 row-start-1 whitespace-nowrap transition-[opacity,filter,translate] duration-(--kura-duration-slow) ease-kura-out motion-reduce:translate-y-0 motion-reduce:blur-none",
-                  i === index ? "opacity-100" : "translate-y-0.5 opacity-0 blur-[2px]",
+                  "col-start-1 row-start-1 whitespace-nowrap transition-[opacity,translate] duration-(--kura-duration-slow) ease-kura-snap motion-reduce:translate-y-0",
+                  i === index ? "opacity-100" : "translate-y-0.5 opacity-0",
                 )}
               >
                 {i === index ? <ShimmerText>{line}</ShimmerText> : line}

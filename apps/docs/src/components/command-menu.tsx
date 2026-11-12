@@ -4,17 +4,7 @@ import type { CatalogCategory } from "@kura/catalog-types";
 import { useHotkey } from "@kura-ui/react/hooks";
 import { Kbd } from "@kura-ui/react/kbd";
 import { Command } from "cmdk";
-import {
-  Anchor,
-  ArrowRight,
-  BookOpen,
-  Bot,
-  Box,
-  FileText,
-  LayoutGrid,
-  Search,
-  Workflow,
-} from "lucide-react";
+import { Anchor, BookOpen, Bot, Box, FileText, LayoutGrid, Search, Workflow } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { Dialog } from "radix-ui";
 import * as React from "react";
@@ -78,33 +68,33 @@ export function CommandMenu({
         type="button"
         onClick={() => setOpen(true)}
         data-testid="search-trigger"
-        className="group flex size-9 cursor-pointer items-center justify-center gap-2 rounded-lg text-[13.5px] text-kura-fg-muted outline-none transition-colors hover:bg-kura-hover hover:text-kura-fg focus-visible:shadow-kura-focus md:h-8 md:w-auto md:justify-start md:bg-kura-hover md:pr-1.5 md:pl-2.5 md:shadow-[inset_0_0_0_1px_var(--kura-border-subtle)] lg:w-52"
+        className="group flex size-9 cursor-pointer items-center justify-center gap-2 rounded-[9px] text-[13px] text-kura-fg-subtle outline-none transition-colors hover:text-kura-fg max-md:hover:bg-kura-hover md:h-8 md:w-auto md:justify-start md:bg-kura-surface-sunken md:pr-1.5 md:pl-2.5 md:shadow-kura-sunk lg:w-52"
       >
         <Search className="size-4 md:size-3.5" />
         <span className="hidden flex-1 truncate whitespace-nowrap text-left md:block">Search</span>
         <span className="sr-only md:hidden">Search components</span>
-        <Kbd keys={["mod", "k"]} size="sm" variant="ghost" className="hidden md:inline-flex" />
+        <Kbd keys={["mod", "k"]} size="sm" className="hidden md:inline-flex" />
       </button>
       <Dialog.Root open={open} onOpenChange={setOpen}>
         <Dialog.Portal>
-          <Dialog.Overlay className="fixed inset-0 z-50 bg-kura-canvas/60 backdrop-blur-[2px] data-[state=closed]:animate-kura-fade-out data-[state=open]:animate-kura-fade-in" />
+          <Dialog.Overlay className="fixed inset-0 z-50 bg-kura-canvas/80 data-[state=closed]:animate-kura-fade-out data-[state=open]:animate-kura-fade-in" />
           <Dialog.Content
             aria-describedby={undefined}
-            className="fixed top-[14vh] left-1/2 z-50 w-[min(640px,calc(100vw-32px))] -translate-x-1/2 origin-top overflow-hidden rounded-2xl bg-kura-overlay shadow-kura-lg backdrop-blur-2xl backdrop-saturate-150 data-[state=closed]:animate-kura-pop-out data-[state=open]:animate-kura-pop-in"
+            className="fixed top-[14vh] left-1/2 z-50 w-[min(640px,calc(100vw-32px))] -translate-x-1/2 origin-top overflow-hidden rounded-kura-xl bg-kura-surface shadow-kura-popover data-[state=closed]:animate-kura-pop-out data-[state=open]:animate-kura-pop-in"
           >
             <Dialog.Title className="sr-only">Search Kura UI</Dialog.Title>
             <Command
               label="Search Kura UI"
               loop
               filter={rank}
-              className="flex flex-col [&_[cmdk-group-heading]]:px-3 [&_[cmdk-group-heading]]:pt-3 [&_[cmdk-group-heading]]:pb-1.5 [&_[cmdk-group-heading]]:font-medium [&_[cmdk-group-heading]]:text-kura-fg-subtle [&_[cmdk-group-heading]]:text-xs"
+              className="flex flex-col [&_[cmdk-group-heading]]:px-3 [&_[cmdk-group-heading]]:pt-3 [&_[cmdk-group-heading]]:pb-1.5 [&_[cmdk-group-heading]]:text-[12px] [&_[cmdk-group-heading]]:text-kura-fg-subtle"
             >
               <div className="flex items-center gap-2 border-kura-border-subtle border-b px-4">
                 <Search className="size-4 text-kura-fg-subtle" />
                 <Command.Input
                   autoFocus
                   placeholder="Find a component, hook or page…"
-                  className="h-12 flex-1 bg-transparent text-[15px] outline-none placeholder:text-kura-fg-subtle"
+                  className="h-12 flex-1 bg-transparent text-[14px] outline-none placeholder:text-kura-fg-subtle"
                 />
                 <Kbd size="sm">Esc</Kbd>
               </div>
@@ -163,10 +153,15 @@ function Item(props: React.ComponentProps<typeof Command.Item>) {
   return (
     <Command.Item
       {...props}
-      className="group flex h-10 cursor-pointer select-none items-center gap-2.5 rounded-kura-md px-3 text-sm data-[selected=true]:bg-kura-hover"
+      className="group flex h-9 cursor-pointer select-none items-center gap-2.5 rounded-[9px] px-2.5 text-[13px] data-[selected=true]:bg-kura-hover"
     >
       {props.children}
-      <ArrowRight className="ml-auto size-3.5 shrink-0 text-kura-fg-subtle opacity-0 group-data-[selected=true]:opacity-100" />
+      <Kbd
+        aria-hidden
+        keys={["enter"]}
+        size="sm"
+        className="ml-auto shrink-0 opacity-0 group-data-[selected=true]:opacity-100"
+      />
     </Command.Item>
   );
 }
