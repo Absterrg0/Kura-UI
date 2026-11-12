@@ -1,6 +1,7 @@
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import type * as React from "react";
+import { AgentDemo } from "@/components/landing/agent-demo";
 import { AgentTerminal } from "@/components/landing/agent-terminal";
 import { BuiltRight } from "@/components/landing/built-right";
 import { CtaBand } from "@/components/landing/cta-band";
@@ -127,6 +128,18 @@ export default function Home() {
               <ArrowRight className="size-4 transition-transform duration-200 group-hover:translate-x-0.5 motion-reduce:transition-none" />
             </Link>
           </div>
+        </div>
+      </section>
+
+      {/* Your agent can use it */}
+      <section aria-labelledby="use" className="px-4 pt-36 md:px-6 md:pt-44">
+        <div className="mx-auto max-w-[1200px]">
+          <SectionHead id="use" title="Your agent can use it, too.">
+            Kura is built on Vercel's UI SDK. Every component tells an agent what it shows and what
+            it can do, so an in-app assistant works through the same UI your users see. Approvals
+            still wait for a person.
+          </SectionHead>
+          <AgentDemo />
         </div>
       </section>
 
