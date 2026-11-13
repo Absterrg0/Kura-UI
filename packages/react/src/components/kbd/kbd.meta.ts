@@ -54,7 +54,7 @@ export default defineComponent({
     ],
     reducedMotion: "Pressed state does not translate.",
   },
-  dependencies: { npm: [], kura: [] },
+  dependencies: { npm: ["lucide-react"], kura: [] },
   related: ["kbd-shortcut", "tooltip", "command-palette"],
   tags: ["keyboard", "key", "shortcut", "kbd", "hotkey"],
   examples: [
@@ -68,5 +68,8 @@ export default defineComponent({
         "A grouped help sheet of combos and alternatives with an IconButton close bound to Esc.",
     },
   ],
-  agentNotes: ["Use `mod` for the primary modifier; never hard-code ⌘ or Ctrl glyphs."],
+  agentNotes: [
+    "Use `mod` for the primary modifier; never hard-code ⌘ or Ctrl glyphs.",
+    "Enter (↵) and the arrows (↑ ↓ ← →) are drawn as icons, whether given as `keys` or as children, so they match the type at any size; the character stays in the text for copy and search.",
+  ],
 });
