@@ -34,6 +34,9 @@ export function MobileNav({ groups }: { groups: NavGroup[] }) {
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 z-50 bg-kura-canvas/80 data-[state=closed]:animate-kura-fade-out data-[state=open]:animate-kura-fade-in" />
         <Dialog.Content
+          // It is a modal: say so, for screen readers and for anything deciding whether to open
+          // on top of it.
+          aria-modal="true"
           aria-describedby={undefined}
           className="fixed inset-x-2 top-2 bottom-2 z-50 flex flex-col overflow-hidden rounded-kura-xl bg-kura-surface shadow-kura-popover data-[state=closed]:animate-kura-pop-out data-[state=open]:animate-kura-pop-in"
         >

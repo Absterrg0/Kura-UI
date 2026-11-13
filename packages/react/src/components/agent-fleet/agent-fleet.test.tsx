@@ -97,6 +97,22 @@ describe("AgentFleet", () => {
     setReducedMotion(false);
   });
 
+  it("repeats an announcement that reads the same as the last one", () => {
+    const agent = (status: "waiting" | "running") => [
+      { id: "a", name: "patcher", status, activity: "Editing" },
+    ];
+    const { rerender } = render(<AgentFleet agents={agent("running")} />);
+    const said = () => screen.getByRole("status").textContent;
+    rerender(<AgentFleet agents={agent("waiting")} />);
+    const first = said();
+    expect(first).toContain("patcher");
+    rerender(<AgentFleet agents={agent("running")} />);
+    rerender(<AgentFleet agents={agent("waiting")} />);
+    // Same words, but the text differs (by one invisible space), so it is spoken again.
+    expect(said()).not.toBe(first);
+    expect(said()?.trim()).toBe(first?.trim());
+  });
+
   it("examples render without a11y violations", async () => {
     for (const Example of [
       AgentFleetMinimal,

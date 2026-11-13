@@ -107,7 +107,10 @@ export function HeroStage({ className }: { className?: string }) {
   // every clock on the stage counts the same 5.1 seconds.
   const tests = useStream(TESTS, "tests", reduced, 306);
   const testLines = tests.lines;
-  const migrateLines = useStream(MIGRATE, `migrate-${decision}`, !approved, 850).lines;
+  // Until the stream has started, the lines it still holds are the pending state's, not output:
+  // nothing is done, and nothing is announced as done, before it has run.
+  const migration = useStream(MIGRATE, `migrate-${decision}`, !approved, 850);
+  const migrateLines = migration.startedAt == null ? [] : migration.lines;
   const migrated = approved && migrateLines.length >= MIGRATE.length;
   const term = approved
     ? {

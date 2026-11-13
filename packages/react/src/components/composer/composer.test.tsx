@@ -138,7 +138,7 @@ describe("Composer", () => {
       "6 of 5 characters, over the limit",
     );
     // Over the limit the count has to show: it keeps its width, and a full row may wrap for it.
-    expect(hint).toHaveClass("min-w-[4.5rem]");
+    expect(hint).toHaveClass("min-w-[8rem]");
     const toolbar = document.querySelector("[data-slot=composer-toolbar]")!;
     expect(toolbar).toHaveAttribute("data-over", "true");
     expect(toolbar).toHaveClass("flex-wrap");

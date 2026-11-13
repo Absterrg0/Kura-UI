@@ -184,7 +184,7 @@ export function ComposerStates() {
   return (
     <div className="flex w-full max-w-xl flex-col gap-5">
       <div>
-        <StateLabel>Submitted — waiting for the first token</StateLabel>
+        <StateLabel>Submitted: waiting for the first token</StateLabel>
         <Composer
           defaultValue="Summarize the attached incident report for the #eng-oncall channel."
           status="submitted"
@@ -201,7 +201,7 @@ export function ComposerStates() {
         </Composer>
       </div>
       <div>
-        <StateLabel>Streaming, close to the character limit</StateLabel>
+        <StateLabel>Streaming: close to the character limit</StateLabel>
         <Composer
           defaultValue="Draft release notes for v2.4 — keep it under 200 words and lead with the breaking change to the auth middleware."
           status="streaming"
@@ -220,7 +220,7 @@ export function ComposerStates() {
         </Composer>
       </div>
       <div>
-        <StateLabel>Over the character limit: the count turns red and Send waits</StateLabel>
+        <StateLabel>Over the limit: the count turns red and Send waits</StateLabel>
         <Composer
           defaultValue="Draft release notes for v2.4 — keep it under 200 words, lead with the breaking change to the auth middleware, and thank the contributors."
           maxLength={120}

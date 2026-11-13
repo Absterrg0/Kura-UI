@@ -91,7 +91,7 @@ export interface ComposerProps
   status?: ComposerStatus;
   /** Disable typing, attaching and sending. */
   disabled?: boolean;
-  /** Character limit. The hint turns amber at 90% and sending is blocked above it. */
+  /** Character limit. The hint darkens at 90%, turns red above it, and sending is blocked there. */
   maxLength?: number;
   /** `enter` = Enter sends, Shift+Enter is a newline. `mod+enter` = ⌘/Ctrl+Enter sends. Default "enter". */
   submitKey?: "enter" | "mod+enter";
@@ -595,7 +595,7 @@ export interface ComposerHintProps extends Omit<React.ComponentProps<"span">, "c
 const nf = new Intl.NumberFormat("en-US");
 
 /**
- * Character or token count with a tiny gauge. Quiet until it matters: amber at 90% of
+ * Character or token count with a dial. Quiet until it matters: full ink at 90% of
  * `maxLength`, red when over (sending is then blocked).
  */
 export function ComposerHint({
@@ -645,8 +645,9 @@ export function ComposerHint({
         "transition-[opacity,color] duration-(--kura-duration-base) ease-kura-out",
         !visible && "pointer-events-none opacity-0",
         level === "near" && "text-kura-fg",
-        // Over the limit it keeps the width of its dial and count, whatever the row has left.
-        level === "over" && "min-w-[4.5rem] text-kura-danger-text",
+        // Over the limit it keeps the width of its dial, count and limit, whatever the row has
+        // left: a row too full for that wraps (see ComposerToolbar).
+        level === "over" && "min-w-[8rem] text-kura-danger-text",
         className,
       )}
       {...props}

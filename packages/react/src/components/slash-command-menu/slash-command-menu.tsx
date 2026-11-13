@@ -285,7 +285,9 @@ export function SlashCommandMenu({
         picked.current = { start: match.start, side: next };
       }
       setPlacement(next);
-      setRoom(Math.max(0, Math.min(MAX_HEIGHT, next === "top" ? above : below)));
+      // A caret that has scrolled out of sight has no room on either side: the menu waits, hidden.
+      const inSight = rect.top + rect.height > top && rect.top < bottom;
+      setRoom(inSight ? Math.max(0, Math.min(MAX_HEIGHT, next === "top" ? above : below)) : 0);
     },
     [textareaRef, match, side],
   );
@@ -408,7 +410,13 @@ export function SlashCommandMenu({
       data-side={placement}
       data-state="open"
       onMouseDown={(e) => e.preventDefault()}
-      style={{ ...positioned, width: MENU_WIDTH, maxHeight: room, ...style }}
+      style={{
+        ...positioned,
+        width: MENU_WIDTH,
+        maxHeight: room,
+        ...(room <= 0 ? { visibility: "hidden" as const } : null),
+        ...style,
+      }}
       className={cn(
         "fixed z-50 flex max-w-[calc(100vw-16px)] flex-col overflow-hidden rounded-kura-xl bg-kura-raised font-kura-sans text-kura-fg shadow-kura-popover",
         "animate-kura-pop-in data-[side=bottom]:origin-top-left data-[side=top]:origin-bottom-left",

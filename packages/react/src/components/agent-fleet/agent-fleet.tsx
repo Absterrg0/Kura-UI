@@ -83,7 +83,12 @@ function useAnnouncements(agents: FleetAgent[]) {
     const changes = agents
       .filter((a) => before.has(a.id) && before.get(a.id) !== a.status && a.status !== "running")
       .map((a) => `${a.name} ${SPOKEN[a.status]}`);
-    if (changes.length) setMessage(changes.join(", "));
+    if (changes.length) {
+      // A status region only speaks when its text changes: an agent that waits, runs and waits
+      // again would be silent the second time, so a repeat differs by one invisible space.
+      const next = changes.join(", ");
+      setMessage((last) => (last === next ? `${next}\u00a0` : next));
+    }
   }, [agents]);
   return message;
 }

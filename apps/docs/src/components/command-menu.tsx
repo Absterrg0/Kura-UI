@@ -78,8 +78,9 @@ export function CommandMenu({
   }, [open]);
   useHotkey(["mod", "k"], (e) => {
     // Pressed inside another modal (a palette in an example): the site search stays behind it
-    // rather than stacking on top. The key is still taken, so the browser does nothing with it.
-    const modal = e.target instanceof Element && e.target.closest('[role="dialog"]');
+    // rather than stacking on top. A popover is a dialog too, but not a modal one: from there
+    // the key works as usual.
+    const modal = e.target instanceof Element && e.target.closest('[aria-modal="true"]');
     if (!open && modal) return;
     show((o) => !o);
   });
@@ -107,6 +108,9 @@ export function CommandMenu({
         <Dialog.Portal>
           <Dialog.Overlay className="fixed inset-0 z-50 bg-kura-canvas/80 data-[state=closed]:animate-kura-fade-out data-[state=open]:animate-kura-fade-in" />
           <Dialog.Content
+            // It is a modal: say so, for screen readers and for a palette deciding whether it
+            // may open on top.
+            aria-modal="true"
             aria-describedby={undefined}
             onOpenAutoFocus={(e) => {
               e.preventDefault();

@@ -174,7 +174,15 @@ export function CommandPalette({
     onQueryChange?.(q);
   };
 
-  useHotkey(hotkey, () => setOpen((o) => !o), { enabled: hotkey !== null, allowInInputs: true });
+  useHotkey(
+    hotkey,
+    (e) => {
+      // It closes from anywhere, but does not open on top of another modal.
+      if (!open && e.target instanceof Element && e.target.closest('[aria-modal="true"]')) return;
+      setOpen((o) => !o);
+    },
+    { enabled: hotkey !== null, allowInInputs: true },
+  );
 
   // Reset when closed.
   React.useEffect(() => {
@@ -401,7 +409,8 @@ export function CommandPalette({
             }
             className="h-full min-w-0 flex-1 bg-transparent text-[14px] text-kura-fg outline-hidden placeholder:text-kura-fg-subtle"
           />
-          <Kbd keys={["esc"]} size="sm" className="shrink-0" />
+          {/* Key hints are for a keyboard: they are not printed on a touch screen. */}
+          <Kbd keys={["esc"]} size="sm" className="shrink-0 pointer-coarse:hidden" />
         </div>
 
         <div
@@ -505,7 +514,7 @@ export function CommandPalette({
           </span>
           <span className="flex shrink-0 items-center gap-1.5">
             {activeRow && nested(activeRow.item) ? "Open" : "Run"}
-            <Kbd aria-hidden keys={["enter"]} size="sm" />
+            <Kbd aria-hidden keys={["enter"]} size="sm" className="pointer-coarse:hidden" />
           </span>
         </div>
       </DialogContent>

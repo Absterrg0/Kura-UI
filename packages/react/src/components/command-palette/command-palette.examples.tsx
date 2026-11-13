@@ -25,6 +25,8 @@ export function CommandPaletteMinimal() {
   return (
     <div className="w-72">
       <CommandPalette
+        // Opened by its trigger only. Leave `hotkey` out to get the default ⌘K on the one palette
+        // that owns it, and give the trigger the same `shortcut` to print it.
         hotkey={null}
         trigger={<CommandPaletteTrigger shortcut={null} />}
         items={[
@@ -156,7 +158,7 @@ export function CommandPaletteFull() {
         items={items}
         open={open}
         onOpenChange={setOpen}
-        // ⌘K belongs to the page this example sits on, so the palette takes ⌘J here.
+        // One palette per shortcut: this one answers to ⌘J.
         hotkey={["mod", "j"]}
         recent={recent}
         onRecentChange={setRecent}
