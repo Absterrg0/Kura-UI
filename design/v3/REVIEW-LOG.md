@@ -16,6 +16,7 @@ reviewer (`design/v2/REVIEW-LOG.md`). The owner then rejected the look itself; v
 | R5    | 9.3       | 9.4      | Commit a6b1fec. Fully verified live. Every round-4 must-fix closed, no regressions. Left: focus lost when a pressed control unmounts, approval keys acting while the prompt is off screen, small phone seams.                                             |
 | R6    | 9.3       | 9.3      | Commit 3423ff9. Fully verified live. Round-5 items closed, but one fix regressed: inline code that never wraps makes ten component pages scroll sideways. PromptQueue still loses focus in two cases and is cramped on touch.                             |
 | R7    | 9.4       | 9.4      | Commit 790728c. Fully verified live. All round-6 must-fixes closed, no regressions, sweeps clean (overflow, axe at every level, rings). Left: one Composer example crushed on phones, the docs Replay key over previews at 390, two stale manifest lines. |
+| R8    | 9.4       | 9.5      | Commit 149cc9b. Fully verified live. All round-7 must-fixes closed, no regressions. Opus is at the bar with one must-fix; Fable has four: a ModelPicker popover that can leave a short viewport, the Composer count on phones, phrases inside keycaps, two manifests naming Radix. |
 
 ---
 
@@ -471,3 +472,66 @@ The overflow guard and the `C` wrap rule, PromptQueue focus and touch layout, he
 and clocks (five widths, both motion settings, both themes), ModelPicker's strip, Terminal
 wrapping, Checkpoints on touch, the install section, focus fallbacks, approval key scoping, ⌘K,
 reduced motion, ember discipline, axe at every level.
+
+## Round 8 — commit 149cc9b
+
+Both reviewers ran everything live: the round-7 claims one by one, a sideways-scroll sweep (0 of
+48 pages at four to five widths), axe on 48 pages × 4 configurations (0 serious/critical), Tab
+walks on 7 pages in both themes, approve and deny at three widths with and without reduced
+motion, Ctrl+K and ⌘K, phone screenshots with touch emulation.
+
+| # | Category | Fable 5.2 | Opus 5.5 |
+| --- | --- | --- | --- |
+| 1 | Visual hierarchy | 9.6 | 9.5 |
+| 2 | Typography | 9.5 | 9.5 |
+| 3 | Colour & state semantics | 9.6 | 9.6 |
+| 4 | Layout & spacing | 9.4 | 9.5 |
+| 5 | Consistency | 9.4 | 9.4 |
+| 6 | Brand distinctiveness | 9.7 | 9.7 |
+| 7 | Clarity & density | 9.5 | 9.5 |
+| 8 | Interaction states | 9.4 | 9.5 |
+| 9 | Light/dark parity | 9.6 | 9.6 |
+| 10 | Craft & polish | 9.3 | 9.4 |
+| 11 | Accessibility | 9.5 | 9.5 |
+| 12 | Responsive | 9.3 | 9.4 |
+| 13 | Motion | 9.6 | 9.6 |
+| 14 | Copy | 9.4 | 9.5 |
+| | **OVERALL** | **9.4** | **9.5** |
+
+### Round-7 verification
+
+Fixed: the Composer toolbar at rest on phones; the Replay key (0 of 151 previews overlap, never
+two keys); both manifest lines; RunHeader bar's status word and phone slots; the trace detail on
+the sheet with wells; Ctrl+K; PromptQueue's touch hint and focus hand-off; ArtifactCard's
+two-line reason; Attachment's Retry target; AgentFleet's reading order; the no-wrap Terminal's
+"Show all"; the Installation command (wraps whole, copies exactly). Partly: the wiring page (one
+of three code blocks). No regressions.
+
+### Must-fix (merged, ranked)
+
+1. **ModelPicker popover leaves the viewport** (Fable) when fewer than 428px are available: the
+   list keeps 320px whatever the search row and details strip take.
+2. **Composer: the character count lands on a toolbar key on phones** (Fable) once it shows.
+3. **DiffView: a renamed file's new name disappears at 390** (Opus): old and new path shrink
+   equally.
+4. **Keyboard tables: a phrase inside a keycap** (Fable) wraps and escapes the cap at 390.
+5. **Two manifests say Radix** (Fable) for parts that come from ui-sdk; the README too.
+
+### Polish (merged)
+
+Five wiring-page code lines still cut at 1440; the same install command is cut in the page-head
+and hero chips but wrapped in Installation, and 25 file names split at a hyphen; the Kura CLI tab
+cuts a comment line at 390; TaskList cuts titles where AgentTimeline wraps them; an Attachment
+example hint says "Hover" on touch; the hidden Composer hint still holds a gap; a FileChanges
+example is a 1600px wrapped diff at 390; a RunHeader manifest note predates the 672px rule; the
+AgentOrb state switch wraps one key alone at 390.
+
+### Verified good (do not touch)
+
+The overflow guard, hero choreography and clocks, the preview stage's phone padding and single
+Replay key, the trace detail, RunHeader bar rules, Ctrl+K and ⌘K, PromptQueue hand-off, the
+sticky "Show all", focus rings, axe, ember discipline, reduced motion.
+
+Kept on purpose: the approval card's state label plus outcome sentence; single-line compact rows
+end in an ellipsis; SlashCommandMenu previews rest empty (a preview must not take focus on load);
+BrowserSession's highlight tag is an overlay and may sit over the page it annotates.
