@@ -188,7 +188,7 @@ export default defineComponent({
     "drag-and-drop",
   ],
   examples: [
-    { name: "AttachmentMinimal", kind: "minimal", title: "A single file" },
+    { name: "AttachmentMinimal", kind: "minimal", title: "Two attached files" },
     {
       name: "AttachmentFull",
       kind: "full",

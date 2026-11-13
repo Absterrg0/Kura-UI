@@ -41,7 +41,9 @@ describe("Attachment", () => {
     const { rerender } = render(
       <Attachment name="a.csv" status="uploading" progress={0.42} onRemove={onRemove} />,
     );
-    expect(screen.getByText("Uploading · 42%")).toBeInTheDocument();
+    expect(document.querySelector("[data-slot=attachment-meta]")).toHaveTextContent(
+      "Uploading · 42%",
+    );
     await userEvent.click(screen.getByRole("button", { name: "Remove a.csv" }));
     expect(onRemove).toHaveBeenCalledTimes(1);
     rerender(<Attachment name="a.csv" status="error" error="Too large" onRetry={onRetry} />);
