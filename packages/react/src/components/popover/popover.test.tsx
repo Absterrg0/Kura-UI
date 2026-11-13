@@ -1,5 +1,5 @@
 import { describe, expect, it, vi } from "vitest";
-import { axe, render, screen, userEvent } from "../../../test/utils";
+import { axe, render, screen, userEvent, waitFor } from "../../../test/utils";
 import { Popover, PopoverClose, PopoverContent, PopoverTrigger } from "./popover";
 import { PopoverFull, PopoverMinimal, PopoverShareChat } from "./popover.examples";
 
@@ -53,11 +53,15 @@ describe("Popover", () => {
   });
 
   it("is accessible open and closed", async () => {
-    const { container } = render(<PopoverMinimal />);
-    await axe(container);
-    await userEvent.click(screen.getByRole("button", { name: "Usage" }));
+    // The minimal example starts open (defaultOpen); its trigger closes and reopens it.
+    render(<PopoverMinimal />);
     expect(await screen.findByRole("dialog", { name: "Weekly usage" })).toBeInTheDocument();
     await axe(document.body);
+    await userEvent.click(screen.getByRole("button", { name: "Usage" }));
+    await waitFor(() => expect(screen.queryByRole("dialog")).not.toBeInTheDocument());
+    await axe(document.body);
+    await userEvent.click(screen.getByRole("button", { name: "Usage" }));
+    expect(await screen.findByRole("dialog", { name: "Weekly usage" })).toBeInTheDocument();
   });
 
   it("share composition switches visibility and stays accessible open", async () => {
