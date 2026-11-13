@@ -45,7 +45,8 @@ export default defineComponent({
     {
       name: "AgentSigil",
       dataSlot: "agent-sigil",
-      description: "Root span (the tile) with `data-size`; contains one 15-unit SVG of dots.",
+      description:
+        "Root span (the tile) with `data-size`; contains one 15-unit SVG of dots, drawn at 10, 15 or 20px so the 5×5 pitch is a whole number of pixels.",
     },
   ],
   a11y: {
@@ -58,8 +59,18 @@ export default defineComponent({
   related: ["status-glyph", "agent-fleet", "run-header", "approval-prompt"],
   tags: ["agent", "avatar", "identity", "dots", "sigil"],
   examples: [
-    { name: "AgentSigilMinimal", kind: "minimal", title: "One agent" },
-    { name: "AgentSigilFull", kind: "full", title: "Sizes, bare, a team" },
+    {
+      name: "AgentSigilMinimal",
+      kind: "minimal",
+      title: "One agent",
+      description: "The face goes beside the name; the name is the label.",
+    },
+    {
+      name: "AgentSigilFull",
+      kind: "full",
+      title: "A lead and its team",
+      description: "`lg` for the agent a view is about, `sm` for the agents under it.",
+    },
     {
       name: "AgentSigilComposition",
       kind: "composition",

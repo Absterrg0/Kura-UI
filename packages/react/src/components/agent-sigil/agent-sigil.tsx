@@ -12,11 +12,16 @@ export interface AgentSigilProps extends Omit<React.ComponentProps<"span">, "chi
   label?: string;
 }
 
+// The face is half the tile, and its pitch is a whole number of pixels at every size (2, 3, 4px),
+// so all 25 positions render as identical dots instead of smudging between pixels.
 const SIZE = {
-  sm: { box: "size-[22px] rounded-[7px]", px: 12 },
-  md: { box: "size-[30px] rounded-[9px]", px: 16 },
-  lg: { box: "size-10 rounded-[11px]", px: 22 },
+  sm: { box: "size-[22px] rounded-[7px]", px: 10 },
+  md: { box: "size-[30px] rounded-[9px]", px: 15 },
+  lg: { box: "size-10 rounded-[11px]", px: 20 },
 } as const;
+// In the 15-unit face: a 3-unit pitch and the rails' dot radius (1.1 at 6px pitch).
+const PITCH = 3;
+const DOT = 1.1;
 
 /**
  * The 5×5 pattern for a name, row by row. Mirrored left to right so it reads as a face; redrawn
@@ -64,6 +69,12 @@ export function AgentSigil({
 }: AgentSigilProps) {
   const cells = agentSigilPattern(name);
   const { box, px } = SIZE[size];
+  // Centre what is lit, so a face that leaves its top or bottom row empty still sits in the
+  // middle of the tile. (Faces are mirrored, so they are already centred across.)
+  const rows = cells.flatMap((on, i) => (on ? [Math.floor(i / 5)] : []));
+  const minY = Math.min(...rows);
+  const maxY = Math.max(...rows);
+  const dy = ((4 - maxY - minY) / 2) * PITCH;
   const shared = {
     "data-slot": "agent-sigil",
     "data-size": size,
@@ -81,9 +92,9 @@ export function AgentSigil({
         on ? (
           <circle
             key={`${i % 5}-${Math.floor(i / 5)}`}
-            cx={1.5 + (i % 5) * 3}
-            cy={1.5 + Math.floor(i / 5) * 3}
-            r={1.15}
+            cx={PITCH / 2 + (i % 5) * PITCH}
+            cy={PITCH / 2 + Math.floor(i / 5) * PITCH + dy}
+            r={DOT}
             className="fill-current"
           />
         ) : null,

@@ -2,24 +2,30 @@ import { StatusGlyph } from "../status-glyph";
 import { AgentSigil } from "./agent-sigil";
 
 export function AgentSigilMinimal() {
-  return <AgentSigil name="Kura" label="Kura" />;
+  return (
+    <span className="flex items-center gap-2.5 font-kura-sans font-medium text-[13px] text-kura-fg">
+      <AgentSigil name="explorer" />
+      explorer
+    </span>
+  );
 }
 
-const TEAM = ["explorer", "test-writer", "reviewer", "migrator", "planner", "deployer"];
+const TEAM = ["explorer", "test-writer", "reviewer", "migrator"];
 
 export function AgentSigilFull() {
   return (
-    <div className="flex flex-col gap-5 font-kura-sans text-[12.5px] text-kura-fg-muted">
+    <div className="flex flex-col gap-4 font-kura-sans text-[13px] text-kura-fg">
       <div className="flex items-center gap-3">
-        <AgentSigil name="Kura" size="sm" />
-        <AgentSigil name="Kura" />
-        <AgentSigil name="Kura" size="lg" />
-        <AgentSigil name="Kura" size="lg" bare />
+        <AgentSigil name="planner" size="lg" />
+        <div className="flex flex-col">
+          <span className="font-semibold">planner</span>
+          <span className="text-[12.5px] text-kura-fg-subtle">Leads four agents</span>
+        </div>
       </div>
-      <ul className="grid grid-cols-2 gap-x-5 gap-y-3 sm:grid-cols-3">
+      <ul className="grid grid-cols-2 gap-x-8 gap-y-2.5 pl-[52px]">
         {TEAM.map((name) => (
-          <li key={name} className="flex items-center gap-2 whitespace-nowrap">
-            <AgentSigil name={name} />
+          <li key={name} className="flex items-center gap-2 text-[12.5px] text-kura-fg-muted">
+            <AgentSigil name={name} size="sm" />
             {name}
           </li>
         ))}
