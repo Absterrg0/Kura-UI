@@ -254,6 +254,18 @@ describe("ApprovalPrompt", () => {
     );
   });
 
+  it("starts with details open when defaultDetailsOpen is set", async () => {
+    const user = userEvent.setup();
+    render(<ApprovalPrompt title="Apply?" details={<p>+2 −1</p>} defaultDetailsOpen />);
+    const toggle = screen.getByRole("button", { name: "Hide details" });
+    expect(toggle).toHaveAttribute("aria-expanded", "true");
+    await user.click(toggle);
+    expect(screen.getByRole("button", { name: "Details" })).toHaveAttribute(
+      "aria-expanded",
+      "false",
+    );
+  });
+
   it("ignores shortcuts when disabled or resolved", () => {
     const onApprove = vi.fn();
     render(<ApprovalPrompt title="Run?" shortcuts={false} onApprove={onApprove} />);

@@ -69,6 +69,13 @@ export default defineComponent({
         "Content behind a “Details” expander: a diff (CodeBlock), arguments, affected files.",
     },
     {
+      name: "defaultDetailsOpen",
+      type: "boolean",
+      default: "false",
+      description:
+        "Start with `details` expanded, for when the details are the thing being approved (the diff of an edit).",
+    },
+    {
       name: "decision",
       type: '"pending" | "approved" | "denied" | "always"',
       description: "Decision (controlled).",
@@ -250,7 +257,8 @@ export default defineComponent({
       name: "ApprovalPromptWithDiff",
       kind: "composition",
       title: "Approve a file edit",
-      description: "A diff CodeBlock in the details, driving a ToolCall's status.",
+      description:
+        "A diff CodeBlock in the details, open from the start with `defaultDetailsOpen`: the edit is what is being approved.",
     },
   ],
   agentNotes: [

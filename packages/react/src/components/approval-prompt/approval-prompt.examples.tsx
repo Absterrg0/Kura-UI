@@ -1,10 +1,9 @@
 "use client";
 
-import { FilePen, RotateCcw } from "lucide-react";
+import { RotateCcw } from "lucide-react";
 import * as React from "react";
 import { Button } from "../button";
 import { CodeBlock } from "../code-block";
-import { ToolCall } from "../tool-call";
 import { type ApprovalDecision, ApprovalPrompt } from "./approval-prompt";
 
 export function ApprovalPromptMinimal() {
@@ -108,30 +107,16 @@ const DIFF = `@@ -1,4 +1,5 @@
  };`;
 
 export function ApprovalPromptWithDiff() {
-  const [decision, setDecision] = React.useState<ApprovalDecision>("pending");
   return (
-    <div className="flex w-full max-w-lg flex-col gap-2">
-      <ToolCall
-        name="edit_file"
-        title="Edit src/config.ts"
-        icon={<FilePen />}
-        status={
-          decision === "pending" ? "awaiting-approval" : decision === "denied" ? "error" : "success"
-        }
-        error={decision === "denied" ? "Denied by user." : undefined}
-        duration={decision === "approved" ? 240 : undefined}
-        summary="+2 −1"
-      />
-      <ApprovalPrompt
-        title="Apply this edit to src/config.ts"
-        agent={{ name: "Kura" }}
-        risk="low"
-        decision={decision}
-        onDecisionChange={setDecision}
-        shortcuts={false}
-        approveLabel="Apply"
-        details={<CodeBlock code={DIFF} language="ts" diff header={false} />}
-      />
-    </div>
+    <ApprovalPrompt
+      title="Apply this edit to src/config.ts"
+      agent={{ name: "Kura", detail: "two lines in one file" }}
+      risk="low"
+      shortcuts={false}
+      approveLabel="Apply"
+      details={<CodeBlock code={DIFF} language="ts" diff header={false} />}
+      defaultDetailsOpen
+      className="w-full max-w-lg"
+    />
   );
 }
