@@ -156,7 +156,7 @@ export default defineComponent({
   ],
   a11y: {
     notes: [
-      "Each file is a labelled section; its header toggle is a button with aria-expanded/aria-controls.",
+      "Each file is a named group (role=group, aria-label = its path), not a landmark; its header toggle is a button with aria-expanded/aria-controls.",
       "Hunks are focusable groups named “Change 2 of 9, src/auth/client.ts lines 10–19, pending review”; only the current hunk (and its buttons) is in the Tab order.",
       "Added/removed lines carry sr-only “added:” / “removed:” prefixes; colour is never the only signal (+/− signs, status words, labels).",
       "Decisions are announced in a polite status region (“Accepted hunk in src/middleware.ts. 3 of 9 reviewed.”) — once per action, never per render.",

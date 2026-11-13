@@ -616,7 +616,8 @@ export function ComposerHint({
       className={cn(
         "inline-flex select-none items-center gap-1.5 text-xs text-kura-fg-subtle tabular-nums",
         "transition-[opacity,color] duration-(--kura-duration-base) ease-kura-out",
-        !visible && "pointer-events-none opacity-0",
+        // Hidden, it takes no room either: the tools beside it keep the whole toolbar.
+        !visible && "pointer-events-none w-0 overflow-hidden opacity-0",
         level === "near" && "text-kura-fg",
         level === "over" && "text-kura-danger-text",
         className,

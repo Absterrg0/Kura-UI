@@ -166,7 +166,8 @@ function Text({ children, tone }: { children: React.ReactNode; tone?: "danger" }
   return (
     <div
       className={cn(
-        "max-h-44 overflow-auto whitespace-pre-wrap break-words rounded-kura-md bg-kura-surface px-2.5 py-2 font-kura-mono text-[12px] leading-[18px] shadow-kura-xs",
+        // Code in a well, straight on the sheet: the one edge recipe, as ToolCall draws it.
+        "max-h-44 overflow-auto whitespace-pre-wrap break-words rounded-kura-lg bg-kura-surface-sunken px-3 py-2 font-kura-mono text-[12px] leading-[18px] shadow-kura-sunk",
         tone === "danger" ? "text-kura-danger-text" : "text-kura-fg-muted",
       )}
     >
@@ -695,7 +696,7 @@ export function TraceWaterfall({
                       <div
                         id={detailsId}
                         data-slot="trace-waterfall-details"
-                        className="relative mx-1.5 my-1 rounded-kura-lg bg-kura-surface-sunken px-3.5 py-3 shadow-kura-sunk animate-kura-fade-in"
+                        className="relative px-4 pt-2 pb-3.5 animate-kura-fade-in"
                       >
                         {details}
                       </div>

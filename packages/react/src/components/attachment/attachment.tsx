@@ -301,7 +301,7 @@ export function Attachment({
                 data-slot="attachment-retry"
                 onClick={onRetry}
                 aria-label={`Retry uploading ${name}`}
-                className="cursor-pointer rounded-kura-xs font-medium text-kura-fg underline decoration-kura-border-strong underline-offset-2 outline-hidden hover:decoration-current focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-kura-ring"
+                className="relative cursor-pointer rounded-kura-xs font-medium text-kura-fg underline decoration-kura-border-strong underline-offset-2 outline-hidden after:absolute after:-inset-x-1.5 after:-inset-y-2 hover:decoration-current focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-kura-ring"
               >
                 Retry
               </button>

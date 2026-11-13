@@ -81,7 +81,8 @@ function ToolToggle({
       className="inline-flex h-8 cursor-pointer items-center gap-1.5 rounded-[9px] px-2.5 font-medium text-[13px] text-kura-fg-muted outline-hidden transition-colors duration-(--kura-duration-fast) ease-kura-snap hover:bg-kura-hover hover:text-kura-fg focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-kura-ring aria-pressed:bg-kura-active aria-pressed:text-kura-fg [&_svg]:size-3.5"
     >
       {icon}
-      {children}
+      {/* On a phone the toolbar keeps the icons; the words are still read out. */}
+      <span className="sr-only sm:not-sr-only">{children}</span>
     </button>
   );
 }
@@ -157,7 +158,7 @@ export function ComposerFull() {
         </ComposerToolbar>
       </Composer>
       <div className="flex min-h-5 items-center justify-between gap-3 px-1.5">
-        <p className="truncate text-kura-fg-subtle text-xs" aria-live="polite">
+        <p className="text-pretty text-kura-fg-subtle text-xs" aria-live="polite">
           {status === "submitted"
             ? "Sending…"
             : status === "streaming"

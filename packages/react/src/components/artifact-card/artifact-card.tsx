@@ -278,7 +278,10 @@ export function ArtifactCard({
                 )}
               </>
             ) : status === "error" ? (
-              <span className="truncate text-kura-danger-text">{error ?? "Couldn't finish"}</span>
+              // A reason is a sentence: it gets two lines before it is cut.
+              <span className="line-clamp-2 text-kura-danger-text">
+                {error ?? "Couldn't finish"}
+              </span>
             ) : (
               <span className="truncate">{meta ?? k.label}</span>
             )}

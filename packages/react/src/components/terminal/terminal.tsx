@@ -542,8 +542,9 @@ export function Terminal({
                 data-slot="terminal-expand"
                 aria-expanded={false}
                 onClick={() => setExpanded(true)}
-                className="my-1 flex h-6 w-full cursor-pointer items-center gap-2 rounded-kura-sm px-1.5 -mx-1.5 font-kura-sans text-[12px] text-kura-fg-subtle outline-hidden transition-colors duration-(--kura-duration-fast) ease-kura-out hover:bg-kura-hover hover:text-kura-fg-muted focus-visible:shadow-kura-focus motion-reduce:transition-none"
-                style={{ width: "calc(100% + 0.75rem)" }}
+                // As wide as the terminal's window, not its content: in a no-wrap terminal it
+                // stays put while the lines scroll sideways under it.
+                className="sticky left-0 my-1 flex h-6 w-[calc(100cqw-2.5rem)] cursor-pointer items-center gap-2 rounded-kura-sm font-kura-sans text-[12px] text-kura-fg-subtle outline-hidden transition-colors duration-(--kura-duration-fast) ease-kura-out hover:text-kura-fg-muted focus-visible:shadow-kura-focus motion-reduce:transition-none"
               >
                 <ChevronsUpDown aria-hidden className="size-3.5" strokeWidth={1.75} />
                 Show all {total} lines

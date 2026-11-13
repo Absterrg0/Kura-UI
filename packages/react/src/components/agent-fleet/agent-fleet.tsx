@@ -372,7 +372,6 @@ function AgentRow({
         size={compact ? "sm" : "md"}
         className={cn(!compact && "row-span-2 self-start")}
       />
-      <span className="sr-only">{progressText}</span>
       {compact ? (
         <>
           {name}
@@ -408,6 +407,8 @@ function AgentRow({
           {progress && <span className="col-span-2 col-start-2 mt-[5px] mb-0.5">{progress}</span>}
         </>
       )}
+      {/* Read last: "test-writer, adding a fixture, running, 62%". */}
+      <span className="sr-only">{progressText}</span>
     </li>
   );
 }

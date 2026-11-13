@@ -269,7 +269,7 @@ export function RunHeader({
             {title}
           </h2>
           {/* The glyph already says the state; the word joins it once the title has its room. */}
-          <span className="hidden text-[12px] @lg:inline">
+          <span className="hidden text-[12px] @2xl:inline">
             <StatusLabel status={status} />
           </span>
           {branchChip && <span className="hidden min-w-0 @5xl:flex">{branchChip}</span>}
@@ -327,13 +327,21 @@ export function RunHeader({
           <>
             <span
               aria-hidden
-              className={cn("h-4 w-px shrink-0 bg-kura-border", !controls && "invisible")}
+              className={cn(
+                "h-4 w-px shrink-0 bg-kura-border",
+                !controls && "hidden @sm:invisible @sm:block",
+              )}
             />
-            <div data-slot="run-header-controls" className="flex shrink-0 items-center gap-1.5">
+            {/* In a narrow bar the columns cannot line up anyway: empty slots give the title room. */}
+            <div
+              data-slot="run-header-controls"
+              className={cn("shrink-0 items-center gap-1.5", controls ? "flex" : "hidden @sm:flex")}
+            >
               {actions}
               {(onPause != null || onResume != null) &&
-                (pauseButton || <span aria-hidden className="size-7 shrink-0" />)}
-              {onStop != null && (stopButton || <span aria-hidden className="size-7 shrink-0" />)}
+                (pauseButton || <span aria-hidden className="hidden size-7 shrink-0 @sm:block" />)}
+              {onStop != null &&
+                (stopButton || <span aria-hidden className="hidden size-7 shrink-0 @sm:block" />)}
             </div>
           </>
         )}

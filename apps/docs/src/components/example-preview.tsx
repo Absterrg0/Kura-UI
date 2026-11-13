@@ -45,7 +45,8 @@ export function ExamplePreview({
       data-example={`${slug}/${name}`}
       className={cn(
         "relative flex items-center justify-center overflow-hidden",
-        compact ? "min-h-40 p-6" : "min-h-44 px-5 pt-6 pb-10 md:px-12",
+        // On a phone the example runs the full width, so it starts below the Replay key.
+        compact ? "min-h-40 p-6" : "min-h-44 px-5 pt-10 pb-10 md:px-12 md:pt-6",
         className,
       )}
     >

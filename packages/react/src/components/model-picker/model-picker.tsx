@@ -301,7 +301,8 @@ export function ModelPicker({
           disabled={disabled}
           aria-label={selected ? `Model: ${selected.name}` : placeholder}
           className={cn(
-            "group/model-picker inline-flex min-w-0 shrink cursor-pointer select-none items-center gap-1.5 rounded-[9px] font-kura-sans font-medium text-kura-fg-muted outline-hidden",
+            // Squeezed, the name gives way first; the sigil and the chevron always remain.
+            "group/model-picker inline-flex min-w-14 shrink cursor-pointer select-none items-center gap-1.5 rounded-[9px] font-kura-sans font-medium text-kura-fg-muted outline-hidden",
             "transition-[background-color,color,transform] duration-(--kura-duration-fast) ease-kura-snap",
             "hover:not-disabled:bg-kura-hover hover:not-disabled:text-kura-fg data-[state=open]:bg-kura-hover data-[state=open]:text-kura-fg",
             "focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-kura-ring focus-visible:outline-offset-2 active:not-disabled:translate-y-px disabled:cursor-not-allowed disabled:opacity-50 motion-reduce:active:not-disabled:translate-y-0",

@@ -54,6 +54,9 @@ export interface PromptQueueProps
   variant?: "panel" | "tray";
 }
 
+const TABBABLE =
+  'a[href], button:not([disabled]), input:not([disabled]), textarea:not([disabled]), select:not([disabled]), [tabindex]:not([tabindex="-1"])';
+
 const { Root: QueueRoot } = createParts(
   agentSurface("prompt-queue", ["sendNow", "remove", "moveUp", "moveDown"]),
   { root: "div" },
@@ -101,7 +104,19 @@ export function PromptQueue({
   };
   const count = items.length;
   React.useEffect(() => {
-    if (count === 0 && focusEmpty.current) emptyRef.current?.focus();
+    if (count === 0 && focusEmpty.current) {
+      const line = emptyRef.current;
+      // What follows the queue in the same wrapper (the composer under a tray) is where the
+      // person goes next, and it shows its focus. With nothing there, the status line holds
+      // their place so the next Tab continues from where the queue was.
+      const next = [...(line?.parentElement?.querySelectorAll<HTMLElement>(TABBABLE) ?? [])].find(
+        (el) =>
+          line != null &&
+          (line.compareDocumentPosition(el) & Node.DOCUMENT_POSITION_FOLLOWING) !== 0 &&
+          (typeof el.checkVisibility !== "function" || el.checkVisibility()),
+      );
+      (next ?? line)?.focus();
+    }
     focusEmpty.current = false;
   }, [count]);
 

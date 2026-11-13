@@ -163,7 +163,12 @@ export default async function ComponentPage({ params }: { params: Promise<{ slug
                   </span>
                 </div>
                 <TabsContent value="preview" forceMount className="data-[state=inactive]:hidden">
-                  <ExamplePreview slug={c.slug} name={ex.name} />
+                  {/* An example with its own Replay key does not get the stage's as well. */}
+                  <ExamplePreview
+                    slug={c.slug}
+                    name={ex.name}
+                    replay={!/\bReplay\b/.test(ex.code)}
+                  />
                 </TabsContent>
                 <TabsContent value="code" className="p-2.5">
                   <CodeBlock code={ex.code} />

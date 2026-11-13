@@ -116,6 +116,8 @@ export function CommandMenu({
             <Command
               label="Search Kura UI"
               loop
+              // Ctrl+K toggles the palette here; cmdk's vim keys would take it for "previous item".
+              vimBindings={false}
               filter={rank}
               className="flex flex-col [&_[cmdk-group-heading]]:px-3 [&_[cmdk-group-heading]]:pt-3 [&_[cmdk-group-heading]]:pb-1.5 [&_[cmdk-group-heading]]:text-[12px] [&_[cmdk-group-heading]]:text-kura-fg-subtle"
             >

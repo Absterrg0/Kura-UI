@@ -11,13 +11,15 @@ export const metadata: Metadata = {
 
 const EVENTS = `// The events your agent loop already emits, in whatever SDK you use.
 // Map them to this small union at the edge.
+type Risk = "low" | "medium" | "high";
+
 type RunEvent =
   | { type: "run.started"; title: string; model: string; at: number }
   | { type: "plan.updated"; steps: { id: string; title: string }[] }
   | { type: "step.started"; id: string; at: number }
   | { type: "step.finished"; id: string; ok: boolean; at: number; error?: string }
   | { type: "tool.output"; chunk: string }
-  | { type: "approval.requested"; id: string; command: string; risk: "low" | "medium" | "high" }
+  | { type: "approval.requested"; id: string; command: string; risk: Risk }
   | { type: "usage"; input: number; output: number; cost: number };`;
 
 const REDUCER = `import type { TaskListItem } from "@kura-ui/react/task-list";

@@ -139,6 +139,19 @@ describe("focus stays in the widget when the pressed control leaves", () => {
     expect(document.activeElement).toHaveTextContent("0 queued");
   });
 
+  it("PromptQueue: emptied above a composer, focus goes on to the composer", async () => {
+    render(
+      <div>
+        <PromptQueue defaultItems={[{ id: "a", text: "Only" }]} />
+        <textarea aria-label="Message" />
+      </div>,
+    );
+    const user = userEvent.setup();
+    document.querySelector<HTMLElement>("[data-slot=prompt-queue-item]")!.focus();
+    await user.keyboard("{Delete}");
+    await waitFor(() => expect(screen.getByRole("textbox", { name: "Message" })).toHaveFocus());
+  });
+
   it("RunHeader: Stop leaves with the run, the header keeps focus", async () => {
     render(<Run />);
     await press(/Stop/);

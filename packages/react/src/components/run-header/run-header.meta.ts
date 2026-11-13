@@ -124,7 +124,12 @@ export default defineComponent({
       description:
         "Root <section> labelled by the title; `data-variant`, `data-status`. A size container.",
     },
-    { name: "Title", dataSlot: "run-header-title", description: "<h2>, truncated." },
+    {
+      name: "Title",
+      dataSlot: "run-header-title",
+      description:
+        "<h2>: up to two lines in a narrow panel, one line ending in an ellipsis in the bar.",
+    },
     {
       name: "Status",
       dataSlot: "run-header-status",

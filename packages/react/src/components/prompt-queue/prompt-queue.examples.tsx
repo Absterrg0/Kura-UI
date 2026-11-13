@@ -77,7 +77,12 @@ export function PromptQueueFull() {
             </span>
           </>
         ) : (
-          "Hover a prompt, or focus it and use Alt+↑/↓, Enter, Delete and Mod+Enter."
+          <>
+            <span className="pointer-coarse:hidden">
+              Hover a prompt, or focus it and use Alt+↑/↓, Enter, Delete and ⌘/Ctrl+Enter.
+            </span>
+            <span className="hidden pointer-coarse:inline">Tap a prompt for its keys.</span>
+          </>
         )}
       </p>
     </div>
