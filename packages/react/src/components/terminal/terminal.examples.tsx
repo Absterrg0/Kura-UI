@@ -105,6 +105,8 @@ export function TerminalFull() {
       exitCode={exitCode}
       onStreamEnd={() => setExitCode(1)}
       maxHeight={360}
+      // A fixed height, so the pane does not grow under the reader as output streams in.
+      style={{ height: 410 }}
     />
   );
 }
