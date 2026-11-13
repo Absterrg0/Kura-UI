@@ -3,7 +3,7 @@ import { act, axe, render, screen, setReducedMotion, userEvent } from "../../../
 import { ThinkingIndicator } from "./thinking-indicator";
 import {
   ThinkingIndicatorFull,
-  ThinkingIndicatorInMessage,
+  ThinkingIndicatorInThreadList,
   ThinkingIndicatorMinimal,
 } from "./thinking-indicator.examples";
 
@@ -63,18 +63,19 @@ describe("ThinkingIndicator", () => {
       expect(bar.className).toContain("motion-reduce:animate-none");
   });
 
-  it("responds to the Stop button in the composition example", async () => {
-    render(<ThinkingIndicatorInMessage />);
-    await userEvent.click(screen.getByRole("button", { name: "Stop" }));
-    expect(screen.queryByRole("status")).toBeNull();
-    expect(screen.getByText(/Stopped/)).toBeInTheDocument();
+  it("marks busy threads and selects one on click in the composition example", async () => {
+    render(<ThinkingIndicatorInThreadList />);
+    expect(screen.getAllByRole("status")).toHaveLength(2);
+    const churn = screen.getByRole("button", { name: /Q3 churn by cohort/ });
+    await userEvent.click(churn);
+    expect(churn).toHaveAttribute("aria-current", "page");
   });
 
   it("examples render without a11y violations", async () => {
     for (const Example of [
       ThinkingIndicatorMinimal,
       ThinkingIndicatorFull,
-      ThinkingIndicatorInMessage,
+      ThinkingIndicatorInThreadList,
     ]) {
       const { container, unmount } = render(<Example />);
       await axe(container);

@@ -1,75 +1,84 @@
 "use client";
 
 import * as React from "react";
-import { AgentSigil } from "../agent-sigil";
-import { Button } from "../button";
-import {
-  ThinkingIndicator,
-  type ThinkingIndicatorSize,
-  type ThinkingIndicatorVariant,
-} from "./thinking-indicator";
+import { cn } from "../../lib/cn";
+import { Message, MessageAvatar } from "../message";
+import { ThinkingIndicator } from "./thinking-indicator";
 
 export function ThinkingIndicatorMinimal() {
-  return <ThinkingIndicator />;
+  return (
+    <Message
+      from="assistant"
+      name="Kura"
+      avatar={<MessageAvatar name="Kura" />}
+      status="streaming"
+      className="max-w-md"
+    >
+      <ThinkingIndicator className="h-6" />
+    </Message>
+  );
 }
-
-const variants: ThinkingIndicatorVariant[] = ["dots", "pulse"];
-const sizes: ThinkingIndicatorSize[] = ["sm", "md", "lg"];
 
 export function ThinkingIndicatorFull() {
   return (
-    <div className="flex w-full max-w-lg flex-col gap-6">
-      <div className="grid grid-cols-[auto_repeat(3,1fr)] items-center gap-x-6 gap-y-4 text-kura-fg-subtle text-xs">
-        <span />
-        {sizes.map((s) => (
-          <span key={s} className="font-kura-mono">
-            {s}
-          </span>
-        ))}
-        {variants.map((v) => (
-          <React.Fragment key={v}>
-            <span className="font-kura-mono">{v}</span>
-            {sizes.map((s) => (
-              <span key={s} className="flex h-6 items-center">
-                <ThinkingIndicator variant={v} size={s} label={`Thinking (${v}, ${s})`} />
-              </span>
-            ))}
-          </React.Fragment>
-        ))}
-      </div>
-      <div className="border-kura-border-subtle border-t pt-5">
+    <div className="flex w-full max-w-xl flex-col gap-5">
+      <Message from="user">
+        Migrate the users table to the new schema and backfill the audit columns.
+      </Message>
+      <Message
+        from="assistant"
+        name="Kura"
+        avatar={<MessageAvatar name="Kura" />}
+        status="streaming"
+      >
         <ThinkingIndicator
           variant="text"
-          label="Researching"
-          messages={["Searching the web…", "Reading 4 files…", "Comparing 12 sources…"]}
+          size="md"
+          label="Kura is working"
+          messages={["Reading schema.prisma…", "Planning 3 migrations…", "Drafting the backfill…"]}
           interval={2200}
         />
-      </div>
+      </Message>
     </div>
   );
 }
 
-export function ThinkingIndicatorInMessage() {
-  const [stopped, setStopped] = React.useState(false);
+const THREADS = [
+  { id: "migrate", title: "Migrate users to the new schema", busy: "dots" },
+  { id: "flaky", title: "Fix the flaky login test", busy: "dots" },
+  { id: "churn", title: "Q3 churn by cohort" },
+  { id: "notes", title: "Release notes for v2.4" },
+] as const;
+
+export function ThinkingIndicatorInThreadList() {
+  const [current, setCurrent] = React.useState<string>("migrate");
   return (
-    <div className="flex w-full max-w-md items-start gap-3">
-      <AgentSigil name="Kura" />
-      <div className="flex min-w-0 flex-1 flex-col gap-2 rounded-kura-xl bg-kura-surface px-4 py-3 shadow-kura-sm">
-        {stopped ? (
-          <p className="text-kura-fg-muted text-sm">Stopped. Ask again whenever you're ready.</p>
-        ) : (
-          <ThinkingIndicator
-            variant="text"
-            label="Assistant is working"
-            messages={["Planning the migration…", "Reading schema.prisma…", "Drafting SQL…"]}
-          />
-        )}
-        <div className="flex justify-end">
-          <Button size="xs" variant="ghost" onClick={() => setStopped((s) => !s)}>
-            {stopped ? "Retry" : "Stop"}
-          </Button>
-        </div>
-      </div>
-    </div>
+    <nav
+      aria-label="Chats"
+      className="w-full max-w-xs rounded-kura-xl bg-kura-surface p-1.5 font-kura-sans shadow-kura-surface"
+    >
+      <ul className="flex flex-col">
+        {THREADS.map((t) => (
+          <li key={t.id}>
+            <button
+              type="button"
+              aria-current={current === t.id ? "page" : undefined}
+              onClick={() => setCurrent(t.id)}
+              className={cn(
+                "flex h-9 w-full cursor-pointer items-center gap-3 rounded-[9px] px-2.5 text-left text-[13px] text-kura-fg-muted outline-hidden",
+                "transition-colors duration-(--kura-duration-fast) ease-kura-snap hover:bg-kura-hover hover:text-kura-fg focus-visible:outline-2 focus-visible:outline-solid focus-visible:-outline-offset-2 focus-visible:outline-kura-ring",
+                "aria-[current=page]:bg-kura-hover aria-[current=page]:text-kura-fg",
+              )}
+            >
+              <span className="min-w-0 flex-1 truncate">{t.title}</span>
+              {"busy" in t && (
+                // A thread the agent is still answering carries a small live mark.
+                <ThinkingIndicator variant={t.busy} size="sm" label="Kura is replying" />
+              )}
+            </button>
+          </li>
+        ))}
+      </ul>
+    </nav>
   );
 }
