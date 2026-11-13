@@ -1,6 +1,5 @@
 "use client";
 
-import { RotateCcw } from "lucide-react";
 import * as React from "react";
 import { Button } from "../button";
 import { ToolCall, type ToolCallStatus } from "./tool-call";
@@ -19,54 +18,39 @@ export function ToolCallMinimal() {
 }
 
 const RESULT = {
-  results: [
-    { title: "useOptimistic – React", url: "https://react.dev/reference/react/useOptimistic" },
-    { title: "Server Actions and Mutations", url: "https://nextjs.org/docs/app/guides/forms" },
-  ],
-  took_ms: 412,
+  title: "useOptimistic – React",
+  url: "https://react.dev/reference/react/useOptimistic",
 };
 
 export function ToolCallFull() {
   const [status, setStatus] = React.useState<ToolCallStatus>("pending");
   const [open, setOpen] = React.useState(false);
-  const [run, setRun] = React.useState(0);
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: `run` replays the lifecycle
   React.useEffect(() => {
-    setStatus("pending");
     const a = setTimeout(() => setStatus("running"), 700);
-    const b = setTimeout(() => setStatus("success"), 3100);
+    const b = setTimeout(() => {
+      setStatus("success");
+      setOpen(true);
+    }, 3100);
     return () => {
       clearTimeout(a);
       clearTimeout(b);
     };
-  }, [run]);
+  }, []);
 
   return (
-    <div className="flex w-full max-w-lg flex-col items-start gap-3">
-      <ToolCall
-        name="search_web"
-        title={status === "success" ? "Searched the web" : "Searching the web"}
-        status={status}
-        args={{ query: "react useOptimistic rollback", max_results: 2 }}
-        result={status === "success" ? RESULT : undefined}
-        summary="react useOptimistic rollback"
-        variant="card"
-        open={open}
-        onOpenChange={setOpen}
-        className="w-full"
-      />
-      {status === "success" && (
-        <Button
-          variant="ghost"
-          size="xs"
-          className="animate-kura-fade-in self-end"
-          onClick={() => setRun((r) => r + 1)}
-        >
-          <RotateCcw /> Replay
-        </Button>
-      )}
-    </div>
+    <ToolCall
+      name="search_web"
+      title={status === "success" ? "Searched the web" : "Searching the web"}
+      status={status}
+      args={{ query: "react useOptimistic rollback", max_results: 1 }}
+      result={status === "success" ? RESULT : undefined}
+      summary="react useOptimistic rollback"
+      variant="card"
+      open={open}
+      onOpenChange={setOpen}
+      className="w-full max-w-lg"
+    />
   );
 }
 
@@ -74,7 +58,7 @@ export function ToolCallStates() {
   return (
     <div className="flex w-full max-w-lg flex-col gap-2">
       <ToolCall name="list_files" status="pending" args={{ dir: "src/components" }} />
-      <ToolCall name="run_tests" status="running" args={{ filter: "message" }} />
+      <ToolCall name="run_tests" status="running" args={{ filter: "src/auth" }} />
       <ToolCall
         name="read_file"
         status="success"
@@ -86,8 +70,8 @@ export function ToolCallStates() {
         name="deploy_preview"
         status="error"
         duration={4210}
-        args={{ branch: "feat/message" }}
-        error="Error: build failed — Type error in message.tsx:295"
+        args={{ branch: "feat/session-refresh" }}
+        error="Type error in src/middleware.ts:31"
         defaultOpen={false}
       />
     </div>

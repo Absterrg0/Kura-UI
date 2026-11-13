@@ -82,7 +82,11 @@ const GLYPH: Record<ToolCallStatus, AgentStatus> = {
 
 function StatusMark({ status, small }: { status: ToolCallStatus; small?: boolean }) {
   return (
-    <span aria-hidden data-slot="tool-call-status" className="grid shrink-0 place-items-center">
+    <span
+      aria-hidden
+      data-slot="tool-call-status"
+      className={cn("grid shrink-0 place-items-center", !small && "w-4")}
+    >
       <StatusGlyph status={GLYPH[status]} size={small ? "sm" : "md"} label={null} />
     </span>
   );
@@ -150,7 +154,7 @@ export function ToolCall({
   const line = summary === undefined ? deriveSummary(args) : summary;
   const inline = variant === "inline";
 
-  const label = title ?? <span className="font-kura-mono text-[0.93em]">{name}</span>;
+  const label = title ?? <span className="font-kura-mono text-[12.5px]">{name}</span>;
 
   const headerContent = (
     <>
@@ -165,7 +169,10 @@ export function ToolCall({
         </span>
       )}
       <span className="flex min-w-0 flex-1 items-baseline gap-2">
-        <span data-slot="tool-call-title" className="shrink-0 font-medium text-kura-fg">
+        <span
+          data-slot="tool-call-title"
+          className={cn("shrink-0 text-kura-fg", title != null && "font-medium")}
+        >
           {label}
         </span>
         {line != null && line !== "" && (
@@ -178,7 +185,10 @@ export function ToolCall({
       {elapsed != null && (
         <span
           data-slot="tool-call-elapsed"
-          className="shrink-0 font-kura-mono text-kura-fg-subtle text-xs tabular-nums"
+          className={cn(
+            "shrink-0 font-kura-mono text-[12px] tabular-nums",
+            status === "running" ? "text-kura-fg-muted" : "text-kura-fg-subtle",
+          )}
         >
           {status === "running" ? formatClock(elapsed) : formatDuration(elapsed)}
         </span>
@@ -195,9 +205,10 @@ export function ToolCall({
     </>
   );
 
+  // The card is a sheet holding one 32px row, inset 6px like every row in Kura.
   const headerClass = cn(
-    "flex w-full min-w-0 items-center gap-2 text-left outline-hidden",
-    inline ? "h-7 rounded-[8px] px-1.5 text-[13px]" : "h-11 px-4 text-[13px]",
+    "flex w-full min-w-0 items-center text-left text-[13px] outline-hidden",
+    inline ? "h-7 gap-2 rounded-[8px] px-1.5" : "h-8 gap-2.5 rounded-[9px] px-2.5",
   );
 
   return (
@@ -212,7 +223,7 @@ export function ToolCall({
         "flex min-w-0 flex-col font-kura-sans outline-hidden focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-kura-ring",
         inline
           ? "-mx-1.5 w-fit max-w-full rounded-kura-sm"
-          : "overflow-hidden rounded-kura-xl bg-kura-surface shadow-kura-surface",
+          : "overflow-hidden rounded-kura-xl bg-kura-surface p-1.5 shadow-kura-surface",
         className,
       )}
       {...props}
@@ -257,7 +268,7 @@ export function ToolCall({
             <div
               className={cn(
                 "relative flex flex-col gap-3",
-                inline ? "mt-1 mb-2 ml-[10px] pl-4" : "px-1.5 pb-1.5",
+                inline ? "mt-1 mb-2 ml-[10px] pl-4" : "pt-1.5",
               )}
             >
               {inline && (
@@ -267,7 +278,7 @@ export function ToolCall({
               {error != null && (
                 <div
                   data-slot="tool-call-error"
-                  className="rounded-kura-lg bg-kura-surface-sunken px-3 py-2 font-kura-mono text-kura-danger-text text-xs leading-relaxed shadow-kura-sunk"
+                  className="rounded-kura-lg bg-kura-surface-sunken px-3 py-2 font-kura-mono text-[12px] text-kura-danger-text leading-5 shadow-kura-sunk"
                 >
                   {error}
                 </div>
@@ -281,10 +292,7 @@ export function ToolCall({
       {actions != null && (
         <div
           data-slot="tool-call-actions"
-          className={cn(
-            "flex items-center justify-end gap-2",
-            inline ? "py-1.5" : "px-3 pt-1 pb-2.5",
-          )}
+          className={cn("flex items-center justify-end gap-2", inline ? "py-1.5" : "pt-2.5")}
         >
           {actions}
         </div>
@@ -298,7 +306,7 @@ function Section({ tool, label, value }: { tool: string; label: string; value: u
   const json = typeof value !== "string";
   return (
     <div data-slot="tool-call-section" className="flex flex-col gap-1.5">
-      <span className="px-2.5 text-kura-fg-subtle text-xs">{label}</span>
+      <span className="px-2.5 text-[12px] text-kura-fg-subtle leading-4">{label}</span>
       <CodeBlock
         code={text}
         // Names the scroll region after its tool, so two calls on a page stay distinct.
