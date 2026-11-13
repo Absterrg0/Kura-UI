@@ -7,12 +7,15 @@ import { cn } from "@/lib/cn";
 /**
  * The footer's wordmark: "Kura" set in lit dots on a grid of unlit ones, with an ember full stop
  * (the mark's tile, as nine dots). It draws itself left to right the first time it scrolls into
- * view, and the dots swell a little under the pointer. Under reduced motion it is simply there.
+ * view, and the dots bend away from the pointer, then spring back. Under reduced motion it is
+ * simply there.
  */
 
 const WORD = "Kura";
 const REVEAL_MS = 1300;
-const LENS = 110;
+// The pointer's reach, in cells, and how far it pushes a dot at its centre, in cells.
+const REACH = 13;
+const PUSH = 1.6;
 
 export function FooterWordmark({ className }: { className?: string }) {
   const canvasRef = React.useRef<HTMLCanvasElement>(null);
@@ -35,7 +38,8 @@ export function FooterWordmark({ className }: { className?: string }) {
     let off = "#444";
     let ember = "#f60";
     let startedAt: number | null = reduced ? -Infinity : null;
-    let pointer: { x: number; y: number } | null = null;
+    // Where the pointer is (x, y) chasing where it went (tx, ty); s eases toward ts.
+    const pointer = { x: 0, y: 0, tx: 0, ty: 0, s: 0, ts: 0 };
     let frame = 0;
 
     const readColors = () => {
@@ -98,15 +102,27 @@ export function FooterWordmark({ className }: { className?: string }) {
       // The reveal front, in columns, eased.
       const front = (1 - (1 - t) ** 3) * (cols + 8);
       const r0 = cell * 0.36;
+      const reach = REACH * cell;
+      const reach2 = reach * reach;
+      const push = PUSH * cell * pointer.s;
       for (let y = 0; y < rows; y++) {
         const cy = (y + 0.5) * cell;
         for (let x = 0; x < cols; x++) {
           const kind = cells[y * cols + x]!;
-          const cx = ox + (x + 0.5) * cell;
+          let cx = ox + (x + 0.5) * cell;
+          let py = cy;
           let lens = 0;
-          if (pointer) {
-            const d = Math.hypot(cx - pointer.x, cy - pointer.y);
-            if (d < LENS) lens = (1 - d / LENS) ** 2;
+          if (pointer.s > 0.002) {
+            const dx = cx - pointer.x;
+            const dy = cy - pointer.y;
+            const d2 = dx * dx + dy * dy;
+            if (d2 < reach2) {
+              const d = Math.sqrt(d2) || 1;
+              const fall = 1 - d2 / reach2;
+              lens = fall * fall * pointer.s;
+              cx += (dx / d) * fall * fall * push;
+              py += (dy / d) * fall * fall * push;
+            }
           }
           if (kind === 0) {
             // The unlit grid fades out toward the edges, so it never ends in a hard box.
@@ -116,7 +132,7 @@ export function FooterWordmark({ className }: { className?: string }) {
             ctx.globalAlpha = edge * edge * (0.55 + lens * 0.45);
             ctx.fillStyle = off;
             ctx.beginPath();
-            ctx.arc(cx, cy, cell * 0.16 + lens * cell * 0.08, 0, Math.PI * 2);
+            ctx.arc(cx, py, cell * 0.16 + lens * cell * 0.06, 0, Math.PI * 2);
             ctx.fill();
             continue;
           }
@@ -126,7 +142,7 @@ export function FooterWordmark({ className }: { className?: string }) {
           ctx.globalAlpha = 1;
           ctx.fillStyle = kind === 2 ? ember : ink;
           ctx.beginPath();
-          ctx.arc(cx, cy, r0 * k * (1 + lens * 0.35), 0, Math.PI * 2);
+          ctx.arc(cx, py, r0 * k * (1 + lens * 0.15), 0, Math.PI * 2);
           ctx.fill();
         }
       }
@@ -136,7 +152,15 @@ export function FooterWordmark({ className }: { className?: string }) {
 
     const tick = (now: number) => {
       frame = 0;
-      if (draw(now)) frame = requestAnimationFrame(tick);
+      pointer.x += (pointer.tx - pointer.x) * 0.32;
+      pointer.y += (pointer.ty - pointer.y) * 0.32;
+      pointer.s += (pointer.ts - pointer.s) * 0.14;
+      const settled =
+        Math.abs(pointer.ts - pointer.s) < 0.004 &&
+        Math.abs(pointer.tx - pointer.x) < 0.5 &&
+        Math.abs(pointer.ty - pointer.y) < 0.5;
+      if (settled) pointer.s = pointer.ts;
+      if (draw(now) || !settled) frame = requestAnimationFrame(tick);
     };
     const kick = () => {
       if (!frame) frame = requestAnimationFrame(tick);
@@ -175,10 +199,17 @@ export function FooterWordmark({ className }: { className?: string }) {
     const onMove = (e: PointerEvent) => {
       if (reduced || e.pointerType === "touch") return;
       const r = canvas.getBoundingClientRect();
-      const p = { x: e.clientX - r.left, y: e.clientY - r.top };
-      const inside = p.x > -LENS && p.x < w + LENS && p.y > -LENS && p.y < h + LENS;
-      if (!inside && !pointer) return;
-      pointer = inside ? p : null;
+      const x = e.clientX - r.left;
+      const y = e.clientY - r.top;
+      const inside = x >= 0 && x <= w && y >= 0 && y <= h;
+      if (!inside && pointer.ts === 0) return;
+      pointer.tx = x;
+      pointer.ty = y;
+      if (pointer.s < 0.01) {
+        pointer.x = x;
+        pointer.y = y;
+      }
+      pointer.ts = inside ? 1 : 0;
       kick();
     };
     window.addEventListener("pointermove", onMove, { passive: true });

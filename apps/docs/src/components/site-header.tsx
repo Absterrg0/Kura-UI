@@ -1,8 +1,10 @@
+import { Tooltip } from "@kura-ui/react/tooltip";
 import Link from "next/link";
 import { catalog, components, componentsByCategory, GITHUB_URL } from "@/lib/catalog";
 import { DOCS_PAGES } from "@/lib/docs-pages";
+import { GITHUB_SHORTCUT, THEME_SHORTCUT } from "@/lib/shortcuts";
 import { summaryFor } from "@/lib/summaries";
-import { CommandMenu } from "./command-menu";
+import { CommandMenu, Keys } from "./command-menu";
 import { CtaLink } from "./cta-link";
 import { GithubIcon } from "./icons";
 import { Logo } from "./logo";
@@ -39,14 +41,34 @@ export function SiteHeader() {
         <NavLinks />
         <div className="ml-auto flex items-center gap-1">
           <CommandMenu items={items} categories={catalog.categories} />
-          <a
-            href={GITHUB_URL}
-            aria-label="Kura UI on GitHub"
-            className="hidden size-8 items-center justify-center rounded-lg text-kura-fg-muted outline-hidden transition-colors duration-150 hover:bg-kura-hover hover:text-kura-fg focus-visible:shadow-kura-focus md:inline-flex"
+          <Tooltip
+            side="bottom"
+            content={
+              <span className="flex items-center gap-2">
+                GitHub
+                <Keys keys={GITHUB_SHORTCUT.keys} />
+              </span>
+            }
           >
-            <GithubIcon className="size-4" />
-          </a>
-          <ThemeToggle className="hidden md:inline-flex" />
+            <a
+              href={GITHUB_URL}
+              aria-label="Kura UI on GitHub"
+              className="hidden size-8 items-center justify-center rounded-lg text-kura-fg-muted outline-hidden transition-colors duration-150 hover:bg-kura-hover hover:text-kura-fg focus-visible:shadow-kura-focus md:inline-flex"
+            >
+              <GithubIcon className="size-4" />
+            </a>
+          </Tooltip>
+          <Tooltip
+            side="bottom"
+            content={
+              <span className="flex items-center gap-2">
+                Switch theme
+                <Keys keys={THEME_SHORTCUT} />
+              </span>
+            }
+          >
+            <ThemeToggle className="hidden md:inline-flex" />
+          </Tooltip>
           <span aria-hidden className="mx-1.5 hidden h-4 w-px bg-kura-border-strong md:block" />
           <CtaLink href="/docs" size="sm" className="hidden md:inline-flex">
             Get started

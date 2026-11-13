@@ -58,7 +58,7 @@ export default function Home() {
       >
         {/* Reaches up under the glass nav, so the nav has something to frost. */}
         <HeroField anchorId="hero-title" className="-top-[84px] h-[760px]" />
-        <div className="relative z-10 mx-auto flex max-w-3xl flex-col items-center text-center">
+        <div className="hero-in relative z-10 mx-auto flex max-w-3xl flex-col items-center text-center">
           <h1
             id="hero-title"
             className="font-semibold text-[42px] leading-[1.02] tracking-[-0.035em] text-balance sm:text-[56px] lg:text-[72px]"
@@ -69,15 +69,15 @@ export default function Home() {
             Open-source React components for agent runs, plans, terminals, diffs and approvals. Copy
             them into your app, or let your coding agent install them.
           </p>
-          <CtaLink href="/components" ring meta={components.length} className="mt-9">
+          <CtaLink href="/components" meta={components.length} className="mt-9">
             Browse components
           </CtaLink>
           <InstallChip command={install} className="mt-5" />
         </div>
 
         <div className="relative isolate mx-auto mt-20 max-w-[1180px] md:mt-24">
-          <EmberLight className="-top-[150px] -z-10" />
-          <HeroStage />
+          {/* The ember rises with the stage, never ahead of it. */}
+          <HeroStage backdrop={<EmberLight className="-top-[150px] -z-10" />} />
         </div>
       </section>
 

@@ -2,6 +2,7 @@ import { GeistMono } from "geist/font/mono";
 import { GeistSans } from "geist/font/sans";
 import type { Metadata, Viewport } from "next";
 import type * as React from "react";
+import { ScrollbarActivity } from "@/components/scrollbar-activity";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { ThemeProvider } from "@/components/theme-provider";
@@ -41,6 +42,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <SiteHeader />
           <main id="main">{children}</main>
           <SiteFooter />
+          <ScrollbarActivity />
         </ThemeProvider>
       </body>
     </html>

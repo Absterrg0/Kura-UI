@@ -145,59 +145,7 @@
   }
 }
 
-/*
- * The hero's call to action wears a dotted rim, and a short run of lit dots travels it: the
- * status glyph's "running" light at button scale.
- */
-.cta-ring rect {
-  x: 1px;
-  y: 1px;
-  width: calc(100% - 2px);
-  height: calc(100% - 2px);
-  fill: none;
-  stroke-linecap: round;
-  stroke-width: 1.7;
-}
-.cta-ring-base {
-  stroke: var(--kura-faint);
-  stroke-dasharray: 0 2;
-  transition: stroke 200ms;
-}
-.cta-ring:hover .cta-ring-base {
-  stroke: var(--kura-fg-subtle);
-}
-.cta-ring-tail,
-.cta-ring-head {
-  stroke: var(--kura-fg);
-  animation: cta-ring-run 5.5s linear infinite;
-}
-.cta-ring-tail {
-  opacity: 0.4;
-  stroke-dasharray: 0 2 0 2 0 2 0 2 0 2 0 2 0 2 0 2 0 184;
-}
-.cta-ring-head {
-  stroke-dasharray: 0 2 0 2 0 2 0 194;
-  stroke-dashoffset: -10;
-  animation-name: cta-ring-run-head;
-}
-@keyframes cta-ring-run {
-  to {
-    stroke-dashoffset: -200;
-  }
-}
-@keyframes cta-ring-run-head {
-  from {
-    stroke-dashoffset: -10;
-  }
-  to {
-    stroke-dashoffset: -210;
-  }
-}
 @media (prefers-reduced-motion: reduce) {
-  .cta-ring-tail,
-  .cta-ring-head {
-    display: none;
-  }
   :is(.group\/cta, .group):is(:hover, :focus-visible) .dot-arrow,
   :is(.group\/cta, .group):is(:hover, :focus-visible) .dot-arrow circle {
     animation: none;
@@ -282,7 +230,7 @@ html[data-theme-vt]::view-transition-new(root) {
       opacity 700ms cubic-bezier(0.2, 0.8, 0.2, 1),
       transform 900ms cubic-bezier(0.2, 0.8, 0.2, 1),
       filter 700ms cubic-bezier(0.2, 0.8, 0.2, 1);
-    transition-delay: calc(var(--d, 0) * 90ms);
+    transition-delay: calc(250ms + var(--d, 0) * 90ms);
   }
   .stage-reveal[data-entered="true"] [data-reveal] {
     opacity: 1;
@@ -405,5 +353,100 @@ html[data-theme-vt]::view-transition-new(root) {
 @media (prefers-reduced-motion: reduce) {
   .ring-chase {
     animation: none;
+  }
+}
+
+/*
+ * The page load, in order: the headline and its lines rise in, the dot field fades up under
+ * them, then the stage (and the ember with it) comes in panel by panel.
+ */
+@media (prefers-reduced-motion: no-preference) {
+  .hero-in > * {
+    animation: hero-rise 900ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  }
+  .hero-in > :nth-child(2) {
+    animation-delay: 80ms;
+  }
+  .hero-in > :nth-child(3) {
+    animation-delay: 160ms;
+  }
+  .hero-in > :nth-child(4) {
+    animation-delay: 230ms;
+  }
+  [data-slot="hero-field"] {
+    animation: field-in 1600ms 150ms ease-out both;
+  }
+}
+@keyframes hero-rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+    filter: blur(6px);
+  }
+}
+@keyframes field-in {
+  from {
+    opacity: 0;
+  }
+}
+
+/*
+ * Scrollbars: a thin pill on a clear track, shown only while the pointer is over something that
+ * scrolls, or for a moment after it scrolls (<ScrollbarActivity> sets [data-scrollbar]). The
+ * page's own bar stays faintly visible. The track keeps clear of rounded corners.
+ */
+@supports selector(::-webkit-scrollbar) {
+  /* A standard scrollbar-width / -color would switch the styles below off in Chromium. */
+  * {
+    scrollbar-width: auto !important;
+    scrollbar-color: auto !important;
+  }
+}
+::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+::-webkit-scrollbar-track,
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+::-webkit-scrollbar-track {
+  margin: 10px;
+}
+::-webkit-scrollbar-button {
+  display: none;
+}
+::-webkit-scrollbar-thumb {
+  background-color: transparent;
+  background-clip: padding-box;
+  border: 4px solid transparent;
+  border-radius: 999px;
+}
+[data-scrollbar]::-webkit-scrollbar-thumb {
+  background-color: color-mix(in oklab, var(--kura-fg) 20%, transparent);
+}
+[data-scrollbar]::-webkit-scrollbar-thumb:hover {
+  background-color: color-mix(in oklab, var(--kura-fg) 34%, transparent);
+  border-width: 3px;
+}
+[data-scrollbar]::-webkit-scrollbar-thumb:active {
+  background-color: color-mix(in oklab, var(--kura-fg) 46%, transparent);
+}
+html::-webkit-scrollbar-track {
+  margin: 0;
+}
+html::-webkit-scrollbar-thumb {
+  background-color: color-mix(in oklab, var(--kura-fg) 12%, transparent);
+}
+@supports not selector(::-webkit-scrollbar) {
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: transparent transparent;
+  }
+  [data-scrollbar] {
+    scrollbar-color: color-mix(in oklab, var(--kura-fg) 26%, transparent) transparent;
+  }
+  html {
+    scrollbar-color: color-mix(in oklab, var(--kura-fg) 18%, transparent) transparent;
   }
 }

@@ -7,6 +7,15 @@ import * as React from "react";
 import { flushSync } from "react-dom";
 import { cn } from "@/lib/cn";
 
+function mergeRefs<T>(...refs: (React.Ref<T> | undefined)[]) {
+  return (node: T | null) => {
+    for (const r of refs) {
+      if (typeof r === "function") r(node);
+      else if (r) (r as React.RefObject<T | null>).current = node;
+    }
+  };
+}
+
 type ViewTransitionDocument = Document & {
   startViewTransition?: (update: () => void) => { finished: Promise<void> };
 };
@@ -19,10 +28,11 @@ type ViewTransitionDocument = Document & {
 export function ThemeToggle({
   size = "sm",
   className,
+  ...props
 }: {
   size?: "sm" | "md";
   className?: string;
-}) {
+} & Omit<React.ComponentProps<"button">, "children" | "onClick">) {
   const { resolvedTheme, setTheme } = useTheme();
   const reduced = useReducedMotion();
   const ref = React.useRef<HTMLButtonElement>(null);
@@ -42,9 +52,11 @@ export function ThemeToggle({
       setTheme(next);
       return;
     }
+    // A hidden toggle (the nav's, on a phone, pressed by the T shortcut) spreads from the corner.
     const rect = ref.current?.getBoundingClientRect();
-    const x = rect ? rect.left + rect.width / 2 : window.innerWidth - 40;
-    const y = rect ? rect.top + rect.height / 2 : 40;
+    const shown = rect && rect.width > 0;
+    const x = shown ? rect.left + rect.width / 2 : window.innerWidth - 40;
+    const y = shown ? rect.top + rect.height / 2 : 40;
     const far = Math.hypot(Math.max(x, window.innerWidth - x), Math.max(y, window.innerHeight - y));
     root.style.setProperty("--vt-x", `${x}px`);
     root.style.setProperty("--vt-y", `${y}px`);
@@ -57,7 +69,8 @@ export function ThemeToggle({
 
   return (
     <button
-      ref={ref}
+      {...props}
+      ref={mergeRefs(ref, props.ref)}
       type="button"
       aria-label="Toggle theme"
       data-testid="theme-toggle"

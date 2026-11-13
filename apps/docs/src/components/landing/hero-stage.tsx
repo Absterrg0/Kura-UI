@@ -79,7 +79,14 @@ function useStream(
 // migrate), and when each step lands after the stage comes into view.
 const STEP_AT = [700, 1500, 2300, 4400] as const;
 
-export function HeroStage({ className }: { className?: string }) {
+export function HeroStage({
+  className,
+  backdrop,
+}: {
+  className?: string;
+  /** Drawn behind the stage (the ember halftone), revealed with the first panel. */
+  backdrop?: React.ReactNode;
+}) {
   const reduced = useReducedMotion();
   const root = React.useRef<HTMLDivElement>(null);
   // "out" until the stage is in view, then the panels rise in and the run replays to the ask.
@@ -113,7 +120,8 @@ export function HeroStage({ className }: { className?: string }) {
           );
         });
       },
-      { threshold: 0.2 },
+      // Any of it in view is enough: on load the stage starts at the fold and comes in at once.
+      { threshold: 0 },
     );
     io.observe(el);
     return () => {
@@ -344,6 +352,15 @@ export function HeroStage({ className }: { className?: string }) {
       data-entered={entered}
       className={cn("stage-reveal flex flex-col gap-3", className)}
     >
+      {backdrop != null && (
+        <div
+          data-reveal
+          className="pointer-events-none absolute inset-x-0 top-0 -z-10"
+          style={{ "--d": 0 } as React.CSSProperties}
+        >
+          {backdrop}
+        </div>
+      )}
       {/* On a phone the run header is not shown: the stage still has a heading above the prompt. */}
       <h2 className="sr-only md:hidden">Migrate session API to @acme/auth: an agent run</h2>
       <div

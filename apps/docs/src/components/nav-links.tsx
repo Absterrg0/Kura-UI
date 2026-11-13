@@ -1,8 +1,11 @@
 "use client";
 
+import { Tooltip } from "@kura-ui/react/tooltip";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/cn";
+import { shortcutFor } from "@/lib/shortcuts";
+import { Keys } from "./command-menu";
 
 export const NAV = [
   { href: "/components", label: "Components" },
@@ -22,17 +25,27 @@ export function NavLinks() {
       {NAV.map((l) => {
         const active = isActive(l.href);
         return (
-          <Link
+          <Tooltip
             key={l.href}
-            href={l.href}
-            aria-current={active ? "page" : undefined}
-            className={cn(
-              "whitespace-nowrap rounded-lg px-3 py-1.5 text-[14px] outline-hidden transition-colors duration-150 focus-visible:shadow-kura-focus",
-              active ? "text-kura-fg" : "text-kura-fg-muted hover:text-kura-fg",
-            )}
+            side="bottom"
+            content={
+              <span className="flex items-center gap-2">
+                Go to {l.label}
+                <Keys keys={shortcutFor(l.href) ?? []} />
+              </span>
+            }
           >
-            {l.label}
-          </Link>
+            <Link
+              href={l.href}
+              aria-current={active ? "page" : undefined}
+              className={cn(
+                "whitespace-nowrap rounded-lg px-3 py-1.5 text-[14px] outline-hidden transition-colors duration-150 focus-visible:shadow-kura-focus",
+                active ? "text-kura-fg" : "text-kura-fg-muted hover:text-kura-fg",
+              )}
+            >
+              {l.label}
+            </Link>
+          </Tooltip>
         );
       })}
     </nav>

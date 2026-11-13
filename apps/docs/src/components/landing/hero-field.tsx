@@ -12,13 +12,16 @@ import { cn } from "@/lib/cn";
  *   emits them;
  * - two dotted rings around the headline, each with a light chasing it: the status glyph's
  *   "running" ring at page scale;
- * - near the pointer the dots swell a little, like a lens.
+ * - the field bends around the pointer: dots within reach are pushed away from it (hardest
+ *   close in) and brighten, then spring back when it leaves.
  *
  * Under reduced motion it draws one still frame. It pauses offscreen and in background tabs.
  */
 
 const PITCH = 22;
-const LENS = 150;
+// How far the pointer reaches, and how hard it pushes the dots at its centre.
+const REACH = 190;
+const PUSH = 30;
 
 interface Stream {
   col: number;
@@ -43,8 +46,8 @@ export function HeroField({ anchorId, className }: { anchorId: string; className
     let cy = 0;
     let ring = 300;
     let ink = "#888";
-    let pointer: { x: number; y: number } | null = null;
-    let lens = 0;
+    // Where the pointer is (x, y) chasing where it went (tx, ty); s eases toward ts (1 inside).
+    const pointer = { x: 0, y: 0, tx: 0, ty: 0, s: 0, ts: 0 };
     let frame = 0;
     let visible = true;
     let last = performance.now();
@@ -80,10 +83,17 @@ export function HeroField({ anchorId, className }: { anchorId: string; className
       return edge * (0.4 + 0.6 * inner * inner);
     };
 
-    const lensAt = (x: number, y: number) => {
-      if (!pointer || lens <= 0) return 0;
-      const d = Math.hypot(x - pointer.x, y - pointer.y);
-      return d < LENS ? (1 - d / LENS) ** 2 * lens : 0;
+    // The bend: how far a dot at (x, y) moves away from the pointer, and how near it is (0..1).
+    const bend = (x: number, y: number): [number, number, number] => {
+      if (pointer.s < 0.002) return [x, y, 0];
+      const dx = x - pointer.x;
+      const dy = y - pointer.y;
+      const d2 = dx * dx + dy * dy;
+      if (d2 >= REACH * REACH) return [x, y, 0];
+      const d = Math.sqrt(d2) || 1;
+      const fall = 1 - d2 / (REACH * REACH);
+      const near = fall * fall * pointer.s;
+      return [x + (dx / d) * near * PUSH, y + (dy / d) * near * PUSH, near];
     };
 
     const dot = (x: number, y: number, r: number, a: number) => {
@@ -98,7 +108,10 @@ export function HeroField({ anchorId, className }: { anchorId: string; className
       const dt = Math.min(64, now - last) / 1000;
       last = now;
       const t = (now - t0) / 1000;
-      lens += ((pointer ? 1 : 0) - lens) * Math.min(1, dt * 6);
+      const k = Math.min(1, dt * 60);
+      pointer.x += (pointer.tx - pointer.x) * 0.3 * k;
+      pointer.y += (pointer.ty - pointer.y) * 0.3 * k;
+      pointer.s += (pointer.ts - pointer.s) * 0.12 * k;
       ctx.clearRect(0, 0, w, h);
       ctx.fillStyle = ink;
 
@@ -144,9 +157,9 @@ export function HeroField({ anchorId, className }: { anchorId: string; className
           const x = ox + c * PITCH;
           const f = field(x, y);
           if (f <= 0.01) continue;
-          const l = lensAt(x, y);
+          const [bx, by, l] = bend(x, y);
           const token = lit.get(r * cols + c) ?? 0;
-          dot(x, y, 1.15 + l * 1.1 + token * 0.6, f * (0.26 + l * 0.45 + token * 0.7));
+          dot(bx, by, 1.15 + l * 0.9 + token * 0.6, f * (0.26 + l * 0.6 + token * 0.7));
         }
       }
 
@@ -168,8 +181,8 @@ export function HeroField({ anchorId, className }: { anchorId: string; className
           let d = (dir * (head - a)) % (Math.PI * 2);
           if (d < 0) d += Math.PI * 2;
           const run = d < 1.1 ? (1 - d / 1.1) ** 1.6 : 0;
-          const l = lensAt(x, y);
-          dot(x, y, 1.2 + run * 0.6 + l * 0.9, f * (0.32 + run * 0.68 + l * 0.35));
+          const [bx, by, l] = bend(x, y);
+          dot(bx, by, 1.2 + run * 0.6 + l * 0.8, f * (0.32 + run * 0.68 + l * 0.5));
         }
       }
       ctx.globalAlpha = 1;
@@ -210,12 +223,20 @@ export function HeroField({ anchorId, className }: { anchorId: string; className
     const onMove = (e: PointerEvent) => {
       if (e.pointerType === "touch") return;
       const rect = canvas.getBoundingClientRect();
-      const p = { x: e.clientX - rect.left, y: e.clientY - rect.top };
-      pointer = p.y > -LENS && p.y < h + LENS ? p : null;
-      if (reduced) draw(performance.now());
+      const x = e.clientX - rect.left;
+      const y = e.clientY - rect.top;
+      const inside = x >= 0 && x <= w && y >= 0 && y <= h;
+      pointer.tx = x;
+      pointer.ty = y;
+      // Coming in from nowhere, the bend starts where the pointer is rather than sliding over.
+      if (pointer.s < 0.01) {
+        pointer.x = x;
+        pointer.y = y;
+      }
+      pointer.ts = inside ? 1 : 0;
     };
     const onLeave = () => {
-      pointer = null;
+      pointer.ts = 0;
     };
     const onVisibility = () => {
       if (!document.hidden && visible && !reduced) start();
