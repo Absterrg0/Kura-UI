@@ -15,6 +15,7 @@ reviewer (`design/v2/REVIEW-LOG.md`). The owner then rejected the look itself; v
 | R4    | 9.2       | 9.2      | Commit d5d3374. Fully verified live. All round-3 must-fixes closed except the hero clocks (live values still a second apart). New: approval shortcuts leak from other widgets; terminals break words.                         |
 | R5    | 9.3       | 9.4      | Commit a6b1fec. Fully verified live. Every round-4 must-fix closed, no regressions. Left: focus lost when a pressed control unmounts, approval keys acting while the prompt is off screen, small phone seams.                 |
 | R6    | 9.3       | 9.3      | Commit 3423ff9. Fully verified live. Round-5 items closed, but one fix regressed: inline code that never wraps makes ten component pages scroll sideways. PromptQueue still loses focus in two cases and is cramped on touch. |
+| R7    | 9.4       | 9.4      | Commit 790728c. Fully verified live. All round-6 must-fixes closed, no regressions, sweeps clean (overflow, axe at every level, rings). Left: one Composer example crushed on phones, the docs Replay key over previews at 390, two stale manifest lines. |
 
 ---
 
@@ -411,3 +412,62 @@ where round 5 asked for level columns (Fable).
 widths, AgentTimeline clock, RunHeader bar columns, terminal hanging indents, rings on every stop
 in both themes, axe clean, BrowserSession tag, CodeBlock labels, the dark well, home at 390 and
 768, ember discipline.
+
+## Round 7 — commit 790728c
+
+Both reviewers ran everything live: the round-6 claims one by one, a sideways-scroll sweep of 48
+pages at four to five widths (0 pages), axe on 48 pages × 4 configurations (clean at every
+level), Tab walks (17 and 7 pages, both themes), approve and deny at five widths with and
+without reduced motion, ⌘K, phone screenshots with touch emulation.
+
+| # | Category | Fable 5.2 | Opus 5.5 |
+| --- | --- | --- | --- |
+| 1 | Visual hierarchy | 9.6 | 9.5 |
+| 2 | Typography | 9.5 | 9.5 |
+| 3 | Colour & state semantics | 9.6 | 9.6 |
+| 4 | Layout & spacing | 9.4 | 9.4 |
+| 5 | Consistency | 9.4 | 9.4 |
+| 6 | Brand distinctiveness | 9.7 | 9.7 |
+| 7 | Clarity & density | 9.5 | 9.5 |
+| 8 | Interaction states | 9.5 | 9.5 |
+| 9 | Light/dark parity | 9.6 | 9.6 |
+| 10 | Craft & polish | 9.3 | 9.3 |
+| 11 | Accessibility | 9.5 | 9.5 |
+| 12 | Responsive | 9.2 | 9.3 |
+| 13 | Motion | 9.6 | 9.6 |
+| 14 | Copy | 9.4 | 9.4 |
+| | **OVERALL** | **9.4** | **9.4** |
+
+### Round-6 verification
+
+Fixed: no page scrolls sideways; PromptQueue focus (Move keys, the last prompt) and its touch
+layout; hero clocks under reduced motion; Terminal joints and hanging indents; ModelPicker's
+fixed strip; the hooks lede and `<DiffView />`; moderate axe; Checkpoints on touch; the install
+section. Not fixed: a RunHeader bar title still cut by 8px in one Checkpoints example (the status
+word joins too early); two manifest lines left behind by round 6's changes.
+
+### Must-fix (merged, ranked)
+
+1. **Composer example crushed on phones** (Fable): at 390–430 the model picker trigger is 16px
+   wide (name and chevron gone) while an invisible hint holds 75px beside the send key.
+2. **The docs Replay key sits on the example at 390** (Opus): 77 of 151 previews.
+3. **Two manifest lines contradict their neighbours** (both): DiffView "labelled section",
+   RunHeader title "truncated".
+
+### Polish (merged)
+
+RunHeader bar status word should join later (title cut at 576px); TraceWaterfall's span detail
+is sheet → well → raised cards; Ctrl+K does not close the site palette on Windows/Linux; RunHeader
+bar on a phone keeps empty control slots; a PromptQueue example hint speaks of hover and keys on
+touch; two sentences end in an ellipsis at 390 (Composer status, ArtifactCard failure); small
+touch targets on Attachment; SlashCommandMenu previews open empty; the Installation command is
+cut hard on phones; AgentFleet reads the percentage before the name; an emptied PromptQueue
+leaves focus on a line nobody sees; a wiring-page code line is cut at 1440; two Replay keys on
+one trace example; a no-wrap Terminal's "Show all" rule runs off the well.
+
+### Verified good (do not touch)
+
+The overflow guard and the `C` wrap rule, PromptQueue focus and touch layout, hero choreography
+and clocks (five widths, both motion settings, both themes), ModelPicker's strip, Terminal
+wrapping, Checkpoints on touch, the install section, focus fallbacks, approval key scoping, ⌘K,
+reduced motion, ember discipline, axe at every level.
