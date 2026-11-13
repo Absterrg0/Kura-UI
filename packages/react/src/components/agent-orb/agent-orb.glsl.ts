@@ -69,20 +69,23 @@ float snoise(vec3 v) {
 mat2 rot(float a) { float c = cos(a), s = sin(a); return mat2(c, -s, s, c); }
 
 void main() {
+  // Work in device pixels, on a grid snapped to them: the pitch is a whole number of pixels and
+  // every dot centre has the same sub-pixel offset, so dots of one size render identically.
   float s = min(u_resolution.x, u_resolution.y);
-  vec2 p = (gl_FragCoord.xy - 0.5 * u_resolution) * (2.0 / s);
   const float R = 0.94;
-  float pitch = 2.0 * R / u_cells;
+  float pitch = max(2.0, floor(R * s / u_cells));
+  float radius = 0.5 * pitch * u_cells;
+  vec2 origin = floor(0.5 * u_resolution);
   // An odd count puts a dot on the centre; an even count puts the centre between four.
   float odd = 0.5 * mod(u_cells, 2.0);
-  vec2 g = p / pitch + odd;
+  vec2 g = (gl_FragCoord.xy - origin) / pitch + odd;
   vec2 cell = floor(g) + 0.5;
   vec2 c = (cell - odd) * pitch;
-  float rc = length(c) / R;
+  float rc = length(c) / radius;
   float a = 0.0;
   if (rc < 1.0) {
     float z = sqrt(1.0 - rc * rc);
-    vec3 n = vec3(c / R, z);
+    vec3 n = vec3(c / radius, z);
 
     // The field lives on the surface and turns with the ball.
     vec3 P = n;
@@ -102,9 +105,9 @@ void main() {
     // Dots shrink toward the limb, the way a halftone fades out.
     v *= 0.4 + 0.6 * smoothstep(1.0, 0.6, rc);
 
-    float rad = mix(0.06, 0.45, clamp(v, 0.0, 1.0));
-    float aa = (2.0 / s) / pitch;
-    a = smoothstep(rad + aa, rad - aa, length(g - cell));
+    // Radius in pixels, never under one pixel across, with a one-pixel antialiased edge.
+    float rad = max(0.6, mix(0.06, 0.45, clamp(v, 0.0, 1.0)) * pitch);
+    a = clamp(rad - length(g - cell) * pitch + 0.5, 0.0, 1.0);
   }
   fragColor = vec4(linearToSrgb(u_ink) * a, a);
 }

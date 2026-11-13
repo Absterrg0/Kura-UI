@@ -1,4 +1,4 @@
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { act, axe, fireEvent, render, screen, setReducedMotion } from "../../../test/utils";
 import { AgentOrb } from "./agent-orb";
 import {
@@ -61,14 +61,24 @@ describe("AgentOrb", () => {
     ).toBe(`${100 / 11}%`);
   });
 
-  it("switches states from the full example", () => {
-    render(<AgentOrbFull />);
-    fireEvent.click(screen.getByRole("radio", { name: "thinking" }));
-    expect(screen.getByRole("radio", { name: "thinking" })).toHaveAttribute("aria-checked", "true");
-    expect(document.querySelector("[data-slot=agent-orb]")).toHaveAttribute(
-      "data-state",
-      "thinking",
-    );
+  it("talks through a turn in the full example", () => {
+    vi.useFakeTimers();
+    try {
+      render(<AgentOrbFull />);
+      const orb = () => document.querySelector("[data-slot=agent-orb]");
+      expect(orb()).toHaveAttribute("data-state", "idle");
+      fireEvent.click(screen.getByRole("button", { name: "Talk" }));
+      expect(orb()).toHaveAttribute("data-state", "listening");
+      fireEvent.click(screen.getByRole("button", { name: "Done" }));
+      expect(orb()).toHaveAttribute("data-state", "thinking");
+      act(() => vi.advanceTimersByTime(1600));
+      expect(orb()).toHaveAttribute("data-state", "speaking");
+      // Interrupting the answer hands the turn back to the person.
+      fireEvent.click(screen.getByRole("button", { name: "Interrupt" }));
+      expect(orb()).toHaveAttribute("data-state", "listening");
+    } finally {
+      vi.useRealTimers();
+    }
   });
 
   it("keeps state semantics and holds still under reduced motion", () => {

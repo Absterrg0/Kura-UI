@@ -127,15 +127,21 @@ export default defineComponent({
     {
       name: "AudioWaveformFull",
       kind: "full",
-      title: "Player with scrub, and every variant",
+      title: "Player",
+      description: "Recorded peaks with play and pause, drag or arrow keys to seek, and a timer.",
+    },
+    {
+      name: "AudioWaveformVariants",
+      kind: "variant",
+      title: "Spectrum, voice and signal",
       description:
-        "Recorded peaks with play/pause, drag-to-seek and a timer; below, bars/spectrum, mirrored/history and line.",
+        'Live data three ways: `variant="bars"` (frequency bands), the default mirrored history, and `variant="line"`.',
     },
     {
       name: "AudioWaveformVoiceNote",
       kind: "composition",
       title: "Voice note in a chat bubble",
-      description: "A compact muted waveform with an icon-button play control.",
+      description: "A compact player: a ghost play key, the waveform and the length.",
     },
   ],
   agentNotes: [
@@ -143,6 +149,7 @@ export default defineComponent({
     "For a mic: const rec = useMediaRecorder(); <AudioWaveform source={rec.stream} />. For playback pass the <audio> element as source.",
     "Pass one `analyser` to several visuals instead of creating an analyser per component.",
     "peaksFromSamples(audioBuffer.getChannelData(0), 200) turns decoded audio into peaks.",
-    "The waveform is a dot matrix: `barWidth` is the dot diameter and `barGap` the spacing, across and down.",
+    "The waveform is a dot matrix: `barWidth` is the dot diameter and `barGap` the spacing, across and down. Use whole pixels.",
+    "Mirrored columns always light an odd number of dots (one on the centre line), so every column sits on the same grid.",
   ],
 });

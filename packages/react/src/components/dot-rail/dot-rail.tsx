@@ -44,41 +44,44 @@ export function DotRail({
   const from = clamp(start);
   const length = Math.min(clamp(value), 1 - from);
   const step = `${pitch}px`;
+  const left = `round(down, ${from * 100}%, ${step})`;
+  const width = `round(up, ${length * 100}%, ${step})`;
   const shared = {
     "data-slot": "dot-rail",
     "data-tone": tone,
     "data-live": live || undefined,
-    className: cn("kura-dots relative w-full", TONE[tone], className),
+    className: cn("relative w-full", TONE[tone], className),
     style: { height: pitch, "--kura-dots-pitch": step, ...style } as React.CSSProperties,
     ...props,
   };
+  // The track is the widest run of whole dots that fits, so the rail never ends in half a dot.
+  // Lit dots and the live dot sit on the same grid, at the same size, over the unlit ones.
   const dots = (
-    <>
+    <span
+      data-slot="dot-rail-track"
+      className="kura-dots absolute inset-y-0 left-0"
+      style={{ width: `round(down, 100%, ${step})` }}
+    >
       <span
         data-slot="dot-rail-lit"
         className="kura-dots absolute inset-y-0 transition-[left,width] duration-(--kura-duration-slower) ease-kura-snap motion-reduce:transition-none"
-        style={
-          {
-            "--kura-dots-color": "currentColor",
-            left: `round(down, ${from * 100}%, ${step})`,
-            width: `round(up, ${length * 100}%, ${step})`,
-          } as React.CSSProperties
-        }
+        style={{ "--kura-dots-color": "currentColor", left, width } as React.CSSProperties}
       />
       {live && (
         <span
           data-slot="dot-rail-head"
-          className="absolute top-0 animate-kura-dot-pulse transition-[left] duration-(--kura-duration-slower) ease-kura-snap motion-reduce:animate-none motion-reduce:transition-none"
-          style={{
-            width: pitch,
-            height: pitch,
-            left: `min(round(down, ${(from + length) * 100}%, ${step}), calc(100% - ${step}))`,
-            backgroundImage:
-              "radial-gradient(circle at center, currentColor 1.6px, transparent 2px)",
-          }}
+          // The dot being filled now: the first unlit dot, pulsing.
+          className="kura-dots absolute inset-y-0 animate-kura-dot-pulse transition-[left] duration-(--kura-duration-slower) ease-kura-snap motion-reduce:animate-none motion-reduce:opacity-50 motion-reduce:transition-none"
+          style={
+            {
+              "--kura-dots-color": "currentColor",
+              width: step,
+              left: `min(calc(${left} + ${width}), calc(100% - ${step}))`,
+            } as React.CSSProperties
+          }
         />
       )}
-    </>
+    </span>
   );
   return label ? (
     <div

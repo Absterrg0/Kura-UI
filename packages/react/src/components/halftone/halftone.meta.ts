@@ -35,7 +35,7 @@ export default defineComponent({
       name: "Halftone",
       dataSlot: "halftone",
       description:
-        'An absolutely positioned, aria-hidden layer of three dot sizes (no wash). `data-state="visible" | "hidden"`.',
+        'An absolutely positioned, aria-hidden layer: one SVG path of whole ember dots on a 7px grid, measured to its box, that shrink in quarter-pixel steps away from the top-right corner (no wash, no mask). `data-state="visible" | "hidden"`.',
     },
   ],
   a11y: {
@@ -51,17 +51,25 @@ export default defineComponent({
   tags: ["halftone", "dots", "attention", "ember", "light"],
   examples: [
     { name: "HalftoneMinimal", kind: "minimal", title: "Needs you" },
-    { name: "HalftoneFull", kind: "full", title: "Reach and fading out" },
+    {
+      name: "HalftoneFull",
+      kind: "full",
+      title: "Leaves when you decide",
+      description:
+        "Deny or Deploy: the halftone fades, the glyph changes and the label returns to ink, together.",
+    },
     {
       name: "HalftoneComposition",
       kind: "composition",
-      title: "A blocked step",
-      description: "With StatusGlyph and Button: the light leaves when the person decides.",
+      title: "A run waiting on one agent",
+      description:
+        "A smaller `reach` on a run panel; the waiting row carries ember on its glyph and its label.",
     },
   ],
   agentNotes: [
-    "The parent must be `relative isolate` (the halftone is `absolute inset-0 -z-10`), and should round its own corners; the halftone inherits the radius.",
-    "Needs the `kura-dots` utility from Kura's stylesheet.",
+    "The parent must be `relative isolate` (the halftone is `absolute inset-0 -z-10`), and should round its own corners; the halftone inherits the radius and keeps its dots inside it.",
+    "It measures its box on the client (ResizeObserver) and fades in once drawn, so it renders nothing on the server and never cuts a dot at an edge or the rounded corner.",
+    "Smaller boxes need a smaller `reach` (about 0.35–0.45 on a list panel) so the dots stay out of the text.",
     "Toggle `visible` rather than unmounting, so it fades.",
   ],
 });
