@@ -12,7 +12,7 @@ const TRACE =
 
 export function ReasoningMinimal() {
   return (
-    <Reasoning duration={14} className="w-full max-w-lg">
+    <Reasoning duration={14} defaultOpen className="w-full max-w-lg">
       {TRACE}
     </Reasoning>
   );

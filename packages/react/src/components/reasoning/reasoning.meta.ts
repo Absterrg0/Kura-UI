@@ -23,7 +23,7 @@ export default defineComponent({
       type: "boolean",
       default: "false",
       description:
-        "The model is still thinking: the running glyph shows and an elapsed timer ticks. Turning it false settles the label and (with autoCollapse) collapses the trace.",
+        "The model is still thinking: the glyph chases and an elapsed timer ticks. Turning it false settles the label and (with autoCollapse) collapses the trace.",
     },
     {
       name: "duration",
@@ -74,7 +74,7 @@ export default defineComponent({
       name: "Label",
       dataSlot: "reasoning-label",
       description:
-        "The label; preceded by the running StatusGlyph while active, muted when done. Seconds are tabular.",
+        "The label, after a StatusGlyph: running while active, done (a solid disc) after, so the label never moves. Seconds are tabular.",
     },
     {
       name: "Content",
@@ -101,7 +101,7 @@ export default defineComponent({
       name: "ReasoningMinimal",
       kind: "minimal",
       title: "Finished trace",
-      description: "A collapsed “Thought for 14s” trace.",
+      description: "A finished “Thought for 14s” trace, opened with defaultOpen.",
     },
     {
       name: "ReasoningFull",
