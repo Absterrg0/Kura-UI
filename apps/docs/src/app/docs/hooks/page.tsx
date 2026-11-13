@@ -57,8 +57,8 @@ export default function HooksPage() {
                 </>
               )}
               <dt className="text-kura-fg-subtle">Install</dt>
-              <dd className="min-w-0 break-all font-kura-mono text-[13px] text-kura-fg-muted">
-                <C>npx shadcn@latest add {h.registryUrl}</C>
+              <dd className="min-w-0 font-kura-mono text-[13px] text-kura-fg-muted">
+                <C wrap>npx shadcn@latest add {h.registryUrl}</C>
               </dd>
             </dl>
             <CodeBlock

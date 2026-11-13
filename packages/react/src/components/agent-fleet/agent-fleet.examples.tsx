@@ -141,10 +141,10 @@ function initialFleet(): FleetAgent[] {
     },
     {
       id: "middleware",
-      name: "middleware-patcher",
+      name: "edge-patcher",
       role: "Patches src/middleware.ts",
       status: "waiting",
-      activity: "Needs approval to edit src/middleware.ts",
+      activity: "Needs you",
       progress: 0.3,
       startedAt: ago(201),
       tokens: 31_400,

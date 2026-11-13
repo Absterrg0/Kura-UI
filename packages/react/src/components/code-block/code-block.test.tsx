@@ -112,6 +112,15 @@ describe("CodeBlock", () => {
     );
   });
 
+  it("labels the language only beside a filename that has no extension", () => {
+    const { container, rerender } = render(
+      <CodeBlock code="a { color: red }" language="css" filename="composer.css" />,
+    );
+    expect(container.querySelector("[data-slot=code-block-language]")).toBeNull();
+    rerender(<CodeBlock code="pnpm build" language="bash" filename="deploy" />);
+    expect(container.querySelector("[data-slot=code-block-language]")).toHaveTextContent("bash");
+  });
+
   it("examples render without a11y violations", async () => {
     for (const Example of [
       CodeBlockMinimal,

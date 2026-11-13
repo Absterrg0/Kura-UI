@@ -134,6 +134,18 @@ describe("BrowserSession", () => {
     expect(container.innerHTML).toContain("motion-reduce:transition-none");
   });
 
+  it("hangs the highlight tag from the side with more of the frame beside it", () => {
+    const box = (x: number) => ({ x, y: 10, width: 20, height: 10, label: "input[name=otp]" });
+    const { container, rerender } = render(
+      <BrowserSession url="https://x.dev" highlight={box(10)} />,
+    );
+    const tag = () => container.querySelector("[data-slot=browser-session-highlight-label]")!;
+    expect(tag().className).toContain("left-[-1.5px]");
+    rerender(<BrowserSession url="https://x.dev" highlight={box(70)} />);
+    expect(tag().className).toContain("right-[-1.5px]");
+    expect(tag().className).toContain("truncate");
+  });
+
   it("examples render without a11y violations", async () => {
     for (const Example of [
       BrowserSessionMinimal,

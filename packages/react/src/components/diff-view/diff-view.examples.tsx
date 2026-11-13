@@ -105,7 +105,7 @@ index 0e93409..7eda2e2 100644
  
  const PUBLIC_PATHS = ["/login", "/signup", "/api/health"];
 @@ -8,5 +8,5 @@ export async function middleware(request: NextRequest) {
-   if (PUBLIC_PATHS.some((p) => pathname.startsWith(p))) return NextResponse.next();
+   if (PUBLIC_PATHS.includes(pathname)) return NextResponse.next();
  
 -  const session = readSessionCookie(request.headers.get("cookie"));
 +  const session = await auth.getSession({ headers: request.headers });
@@ -123,7 +123,7 @@ const MIDDLEWARE_DIFF = `diff --git a/src/middleware.ts b/src/middleware.ts
  
  const PUBLIC_PATHS = ["/login", "/signup", "/api/health"];
 @@ -8,5 +8,5 @@ export async function middleware(request: NextRequest) {
-   if (PUBLIC_PATHS.some((p) => pathname.startsWith(p))) return NextResponse.next();
+   if (PUBLIC_PATHS.includes(pathname)) return NextResponse.next();
  
 -  const session = readSessionCookie(request.headers.get("cookie"));
 +  const session = await auth.getSession({ headers: request.headers });
@@ -132,7 +132,7 @@ const MIDDLEWARE_DIFF = `diff --git a/src/middleware.ts b/src/middleware.ts
 `;
 
 export function DiffViewMinimal() {
-  return <DiffView diff={MIDDLEWARE_DIFF} className="w-full max-w-2xl" />;
+  return <DiffView diff={MIDDLEWARE_DIFF} className="w-full max-w-3xl" />;
 }
 
 export function DiffViewFull() {

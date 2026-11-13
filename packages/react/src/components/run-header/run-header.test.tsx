@@ -124,6 +124,22 @@ describe("RunHeader", () => {
     setReducedMotion(false);
   });
 
+  it("a bar keeps a slot for a control that does not apply, so stacked runs share columns", () => {
+    const { container } = render(
+      <RunHeader
+        variant="bar"
+        title="Bump the SDK"
+        status="done"
+        onPause={() => {}}
+        onStop={() => {}}
+        shortcuts={false}
+      />,
+    );
+    const controls = container.querySelector("[data-slot=run-header-controls]")!;
+    expect(controls.querySelectorAll("button")).toHaveLength(0);
+    expect(controls.children).toHaveLength(2);
+  });
+
   it("examples render without a11y violations", async () => {
     for (const Example of [RunHeaderMinimal, RunHeaderFull, RunHeaderBar, RunHeaderComposition]) {
       const { container, unmount } = render(<Example />);

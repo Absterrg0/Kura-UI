@@ -2,6 +2,9 @@
 
 import * as React from "react";
 
+const useIsomorphicLayoutEffect =
+  typeof window === "undefined" ? React.useEffect : React.useLayoutEffect;
+
 /**
  * Live elapsed milliseconds since `since` while `running`; frozen (last value) when stopped.
  * Re-renders every `interval` ms (default 1000; use 100 for sub-second timers), on the interval's
@@ -17,7 +20,8 @@ export function useElapsed(
   const origin = since == null ? null : +new Date(since);
   const originRef = React.useRef(origin);
   originRef.current = origin;
-  React.useEffect(() => {
+  // A layout effect, so a timer that restarts never paints the value it stopped at.
+  useIsomorphicLayoutEffect(() => {
     setNow(Date.now());
     if (!running) return;
     let id: ReturnType<typeof setTimeout>;

@@ -139,7 +139,8 @@ export default defineComponent({
     {
       name: "Language",
       dataSlot: "code-block-language",
-      description: "Language badge, shown next to a filename.",
+      description:
+        "Language label, shown beside a filename that has no extension (Dockerfile, Makefile); an extension already says it.",
     },
     {
       name: "Body",

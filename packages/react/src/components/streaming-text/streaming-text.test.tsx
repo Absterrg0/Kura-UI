@@ -118,9 +118,10 @@ describe("StreamingText", () => {
   it("drops blur and the caret loop under reduced motion", () => {
     setReducedMotion(true);
     const { container } = render(<StreamingText text="" streaming />);
-    expect(container.querySelector("[data-slot=streaming-text-caret]")!.className).toContain(
-      "motion-reduce:animate-none",
-    );
+    // The loop is `motion-safe` on the variant itself, so nothing can outrank it back on.
+    const caret = container.querySelector("[data-slot=streaming-text-caret]")!.className;
+    expect(caret).toContain("motion-safe:data-[visible=true]:animate-kura-dot-pulse");
+    expect(caret).not.toMatch(/(^|\s)data-\[visible=true\]:animate-/);
   });
 
   it("examples render without a11y violations", async () => {

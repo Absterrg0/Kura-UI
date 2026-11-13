@@ -22,9 +22,11 @@ export function ApprovalPromptMinimal() {
 export function ApprovalPromptFull() {
   const [decision, setDecision] = React.useState<ApprovalDecision>("pending");
   const [asked] = React.useState(() => Date.now() - 14_000);
+  const prompt = React.useRef<HTMLElement>(null);
   return (
     <div className="flex w-full max-w-lg flex-col gap-3">
       <ApprovalPrompt
+        ref={prompt}
         title="Run the sessions migration on production"
         agent={{ name: "migrator", detail: "for step 4 of the plan" }}
         requestedAt={asked}
@@ -55,7 +57,11 @@ export function ApprovalPromptFull() {
           variant="ghost"
           size="xs"
           className="animate-kura-fade-in self-end"
-          onClick={() => setDecision("pending")}
+          onClick={() => {
+            setDecision("pending");
+            // This key leaves once the prompt is pending again: hand focus to the prompt.
+            prompt.current?.focus();
+          }}
         >
           <RotateCcw /> Ask again
         </Button>

@@ -161,7 +161,7 @@ export default defineComponent({
       "The header is a button (aria-expanded/aria-controls) only when there is something to expand.",
       "Each call has a polite status region (“search_web Running” → “search_web Completed”); the ticking timer is not announced.",
       "Status is conveyed by text for screen readers, not only by colour/icon.",
-      "Collapsed details are inert; JSON panes are keyboard-scrollable regions named “Arguments code” / “Result code”.",
+      "Collapsed details are inert; JSON panes are keyboard-scrollable regions named after the tool: “search_web arguments code”, “search_web result code”.",
     ],
     keyboard: [
       { keys: "Enter / Space", action: "Expand or collapse the details" },

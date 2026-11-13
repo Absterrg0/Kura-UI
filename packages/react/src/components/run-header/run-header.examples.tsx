@@ -114,6 +114,7 @@ export function RunHeaderBar() {
         tokens={{ input: 301_800, output: 25_000 }}
         cost={1.31}
         budget={5}
+        onPause={() => {}}
         onStop={() => {}}
         shortcuts={false}
       />
@@ -128,6 +129,9 @@ export function RunHeaderBar() {
         tokens={{ input: 356_000, output: 31_200 }}
         cost={1.58}
         budget={5}
+        onPause={() => {}}
+        onStop={() => {}}
+        shortcuts={false}
       />
       <RunHeader
         variant="bar"
@@ -140,6 +144,9 @@ export function RunHeaderBar() {
         tokens={{ input: 412_300, output: 38_100 }}
         cost={1.82}
         budget={5}
+        onPause={() => {}}
+        onStop={() => {}}
+        shortcuts={false}
       />
     </div>
   );

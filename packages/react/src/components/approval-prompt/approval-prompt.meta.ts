@@ -101,7 +101,7 @@ export default defineComponent({
       type: "boolean",
       default: "true",
       description:
-        "Bind ⌘/Ctrl+Enter (approve) and Esc (deny) on the document while pending, and show the keys on the buttons. They stand down while typing in a field, inside an open dialog or menu, and when another widget already handled the key. Only one prompt on screen should bind them.",
+        "Bind ⌘/Ctrl+Enter (approve) and Esc (deny) on the document while pending, and show the keys on the buttons. They stand down while the card is scrolled out of view, while typing in a field, inside an open dialog or menu, while a tooltip is open (Esc closes it), and when another widget already handled the key. Only one prompt on screen should bind them.",
     },
     {
       name: "approveLabel",
@@ -177,7 +177,7 @@ export default defineComponent({
       name: "Actions",
       dataSlot: "approval-prompt-actions",
       description:
-        "Keycaps with their shortcuts printed on them: Always allow / Deny (Esc) / Approve (⌘↵, the ink fill); inert once resolved.",
+        "Keycaps with their shortcuts printed on them: Always allow / Deny (Esc) / Approve (Mod+Enter, the ink fill); inert once resolved.",
     },
     {
       name: "Resolution",
@@ -199,12 +199,12 @@ export default defineComponent({
       {
         keys: "Mod+Enter",
         action:
-          "Approve (while pending, when shortcuts is on; not while typing in a field or inside an open dialog or menu)",
+          "Approve (while pending and on screen, when shortcuts is on; not while typing in a field or inside an open dialog or menu)",
       },
       {
         keys: "Escape",
         action:
-          "Deny (while pending, when shortcuts is on; not while typing in a field, inside an open dialog or menu, or when the key closed something else)",
+          "Deny (while pending and on screen, when shortcuts is on; not while typing in a field, inside an open dialog or menu, or when the key closed something else such as a tooltip)",
       },
       { keys: "Tab", action: "Details, Always allow, Deny, Approve" },
     ],

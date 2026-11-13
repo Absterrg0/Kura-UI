@@ -11,10 +11,24 @@ import {
   ComposerTools,
 } from "../composer";
 import { KbdShortcut } from "../kbd-shortcut";
-import { VoiceDictation } from "./voice-dictation";
+import { VoiceDictation, type VoiceDictationStatus } from "./voice-dictation";
 
 export function VoiceDictationMinimal() {
-  return <VoiceDictation simulate onTranscript={(text) => console.log(text)} />;
+  const [status, setStatus] = React.useState<VoiceDictationStatus>("idle");
+  return (
+    <div className="flex min-h-8 items-start gap-2.5 font-kura-sans">
+      <VoiceDictation
+        simulate
+        onStatusChange={setStatus}
+        onTranscript={(text) => console.log(text)}
+      />
+      {status === "idle" && (
+        <span className="py-1.5 text-[13px] text-kura-fg-subtle leading-5">
+          Press the mic and speak
+        </span>
+      )}
+    </div>
+  );
 }
 
 export function VoiceDictationFull() {

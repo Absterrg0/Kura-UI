@@ -1,6 +1,7 @@
 import { createAgent } from "@ui-sdk/react/agent";
 import { describe, expect, it, vi } from "vitest";
 import {
+  act,
   axe,
   fireEvent,
   render,
@@ -94,15 +95,18 @@ describe("ApprovalPrompt", () => {
   it("keeps its keys to itself: not while typing, not inside a dialog, not when the key was taken", () => {
     const onApprove = vi.fn();
     const onDeny = vi.fn();
-    render(
+    const scene = (menu: boolean) => (
       <>
         <textarea aria-label="Message" />
-        <div role="dialog" aria-label="Menu">
-          <button type="button">Close</button>
-        </div>
+        {menu && (
+          <div role="dialog" aria-label="Menu">
+            <button type="button">Close</button>
+          </div>
+        )}
         <ApprovalPrompt title="Run?" onApprove={onApprove} onDeny={onDeny} />
-      </>,
+      </>
     );
+    const { rerender } = render(scene(true));
     // ⌘↵ sends the message being typed; it must not also approve the request.
     fireEvent.keyDown(screen.getByRole("textbox", { name: "Message" }), {
       key: "Enter",
@@ -110,10 +114,49 @@ describe("ApprovalPrompt", () => {
     });
     // Esc closes the menu that has focus; it must not also deny the request.
     fireEvent.keyDown(screen.getByRole("button", { name: "Close" }), { key: "Escape" });
+    // ...and while the menu is open, Esc is its key wherever focus is.
+    fireEvent.keyDown(document, { key: "Escape" });
     expect(onApprove).not.toHaveBeenCalled();
     expect(onDeny).not.toHaveBeenCalled();
+    rerender(scene(false));
     fireEvent.keyDown(document, { key: "Escape" });
     expect(onDeny).toHaveBeenCalledOnce();
+  });
+
+  it("rests its keys while the card is scrolled out of view", () => {
+    // jsdom never reports intersections, so stand in an observer the test can drive.
+    type Entry = Partial<IntersectionObserverEntry>;
+    let report: (entry: Entry) => void = () => {};
+    const Real = globalThis.IntersectionObserver;
+    globalThis.IntersectionObserver = class {
+      constructor(cb: (entries: Entry[]) => void) {
+        report = (entry) => cb([entry]);
+      }
+      observe() {}
+      unobserve() {}
+      disconnect() {}
+    } as unknown as typeof IntersectionObserver;
+    const onApprove = vi.fn();
+    render(<ApprovalPrompt title="Run?" onApprove={onApprove} />);
+    act(() => report({ isIntersecting: false, intersectionRatio: 0 }));
+    fireEvent.keyDown(document, { key: "Enter", ctrlKey: true });
+    expect(onApprove).not.toHaveBeenCalled();
+    act(() => report({ isIntersecting: true, intersectionRatio: 1 }));
+    fireEvent.keyDown(document, { key: "Enter", ctrlKey: true });
+    expect(onApprove).toHaveBeenCalledOnce();
+    globalThis.IntersectionObserver = Real;
+  });
+
+  it("leaves Esc to an open tooltip", () => {
+    const onDeny = vi.fn();
+    render(
+      <>
+        <span role="tooltip">Toggle theme</span>
+        <ApprovalPrompt title="Run?" onDeny={onDeny} />
+      </>,
+    );
+    fireEvent.keyDown(document, { key: "Escape" });
+    expect(onDeny).not.toHaveBeenCalled();
   });
 
   it("keeps focus on the card when the button that had it leaves", async () => {

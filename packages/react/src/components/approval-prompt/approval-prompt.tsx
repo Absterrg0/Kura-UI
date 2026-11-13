@@ -175,9 +175,35 @@ export function ApprovalPrompt({
     onAlwaysAllow?.();
   };
 
+  // A key press can only decide what the person can see: the keys rest while the card is
+  // scrolled out of view (less than half of it on screen, unless it fills half the screen).
+  const [inView, setInView] = React.useState(true);
+  React.useEffect(() => {
+    const el = rootRef.current;
+    if (!el || !shortcuts || typeof IntersectionObserver === "undefined") return;
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry) return;
+        const screen = entry.rootBounds?.height ?? 0;
+        setInView(
+          entry.isIntersecting &&
+            (entry.intersectionRatio >= 0.5 ||
+              (screen > 0 && entry.intersectionRect.height >= screen * 0.5)),
+        );
+      },
+      { threshold: [0, 0.25, 0.5, 0.75, 1] },
+    );
+    io.observe(el);
+    return () => io.disconnect();
+  }, [shortcuts]);
+
   // Page-level keys, so they stand down wherever a key already means something else: while
   // typing, inside an open menu or dialog, or when another widget has taken the press.
-  const keys = { enabled: shortcuts && pending, allowInInputs: false, allowInOverlays: false };
+  const keys = {
+    enabled: shortcuts && pending && inView,
+    allowInInputs: false,
+    allowInOverlays: false,
+  };
   useHotkey(["mod", "enter"], () => approve("keyboard"), keys);
   useHotkey(["escape"], () => deny("keyboard"), keys);
 

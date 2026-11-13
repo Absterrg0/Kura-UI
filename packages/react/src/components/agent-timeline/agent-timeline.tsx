@@ -1,8 +1,9 @@
 "use client";
 
 import * as React from "react";
+import { useElapsed } from "../../hooks/use-elapsed";
 import { cn } from "../../lib/cn";
-import { formatDuration } from "../../lib/format";
+import { formatClock, formatDuration } from "../../lib/format";
 import { type AgentStatus, StatusGlyph } from "../status-glyph";
 
 export type AgentStepStatus = "queued" | "active" | "done" | "failed" | "skipped";
@@ -45,21 +46,13 @@ const spoken: Record<AgentStepStatus, string> = {
 /** @deprecated The shared formatter under its old name. */
 export const formatStepDuration = formatDuration;
 
+/** A step that is still running counts from `startedAt`, or from when it became active. */
 function useLiveDuration(active: boolean, startedAt?: Date | number): number | null {
-  const start = React.useRef<number | null>(null);
-  const [now, setNow] = React.useState<number | null>(null);
-  React.useEffect(() => {
-    if (!active) {
-      start.current = null;
-      setNow(null);
-      return;
-    }
-    start.current = startedAt != null ? +new Date(startedAt) : Date.now();
-    setNow(Date.now());
-    const id = setInterval(() => setNow(Date.now()), 200);
-    return () => clearInterval(id);
-  }, [active, startedAt]);
-  return active && start.current != null && now != null ? now - start.current : null;
+  const began = React.useRef<number | null>(null);
+  if (!active) began.current = null;
+  else if (began.current == null) began.current = Date.now();
+  const elapsed = useElapsed(startedAt ?? began.current, active);
+  return active ? elapsed : null;
 }
 
 const GLYPH: Record<AgentStepStatus, AgentStatus> = {
@@ -146,7 +139,8 @@ function Step({ step, last, small }: { step: AgentTimelineStep; last: boolean; s
               data-slot="agent-timeline-duration"
               className="shrink-0 font-kura-mono text-kura-fg-subtle text-xs tabular-nums"
             >
-              {formatStepDuration(ms)}
+              {/* Still running: a clock, like every live timer. Finished: the duration. */}
+              {step.duration == null && active ? formatClock(ms) : formatDuration(ms)}
             </span>
           )}
         </div>

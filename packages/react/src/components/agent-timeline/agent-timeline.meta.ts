@@ -76,7 +76,8 @@ export default defineComponent({
     {
       name: "Duration",
       dataSlot: "agent-timeline-duration",
-      description: "Mono tabular duration; ticks live for the active step.",
+      description:
+        "Mono tabular figures: a clock (0:42) while the step runs, its duration (42s) once it is done.",
     },
     {
       name: "Description",

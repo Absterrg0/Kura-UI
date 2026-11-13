@@ -438,15 +438,30 @@ export function ModelPicker({
             aria-live="polite"
             className="flex h-12 shrink-0 items-center px-3 text-kura-fg-muted text-xs leading-4 shadow-[inset_0_1px_0_var(--kura-border-subtle)]"
           >
-            <p className="line-clamp-2">
-              {activeModel?.description ?? (activeModel ? activeModel.name : "")}
+            {/* Two lines: what the model is, then what it can do. A capability that does not fit
+                wraps out of sight whole; nothing is cut mid-word. */}
+            <div className="flex min-w-0 flex-1 flex-col">
+              <p className={activeModel?.capabilities?.length ? "truncate" : "line-clamp-2"}>
+                {activeModel?.description ?? (activeModel ? activeModel.name : "")}
+              </p>
               {activeModel?.capabilities?.length ? (
-                <span data-slot="model-picker-capabilities" className="text-kura-fg-subtle">
-                  {" "}
-                  {activeModel.capabilities.map((c) => CAPABILITIES[c].label).join(" · ")}
-                </span>
+                <p
+                  data-slot="model-picker-capabilities"
+                  className="flex h-4 flex-wrap overflow-hidden text-kura-fg-subtle"
+                >
+                  {activeModel.capabilities.map((c, i) => (
+                    <span key={c} className="whitespace-nowrap">
+                      {i > 0 && (
+                        <span aria-hidden className="whitespace-pre">
+                          {" · "}
+                        </span>
+                      )}
+                      {CAPABILITIES[c].label}
+                    </span>
+                  ))}
+                </p>
               ) : null}
-            </p>
+            </div>
           </div>
         )}
       </PopoverContent>

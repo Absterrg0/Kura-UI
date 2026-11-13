@@ -46,7 +46,9 @@ describe("ToolCall", () => {
     const details = document.querySelector("[data-slot=tool-call-details]")!;
     expect(details).not.toHaveAttribute("inert");
     expect(details.textContent).toContain('"n": 2');
-    expect(screen.getByRole("region", { name: "Result code" })).toHaveTextContent('"ok": true');
+    expect(screen.getByRole("region", { name: "search result code" })).toHaveTextContent(
+      '"ok": true',
+    );
   });
 
   it("ticks while running and freezes the measured duration", () => {

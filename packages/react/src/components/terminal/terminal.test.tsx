@@ -127,6 +127,35 @@ describe("Terminal", () => {
     expect(container.querySelector("[data-slot=terminal-elapsed]")).toHaveTextContent("3.0s");
   });
 
+  it("hangs wrapped lines under their text and keeps flags and package names whole", () => {
+    const { container } = render(
+      <Terminal
+        command="npx -y @kura-ui/mcp"
+        lines={["  └  ✓ src/auth/client.test.ts 42ms"]}
+        status="done"
+      />,
+    );
+    const line = container.querySelector<HTMLElement>("[data-slot=terminal-line]")!;
+    // Past the indent and both markers: the continuation starts under "src".
+    expect(line.style.paddingLeft).toBe("7ch");
+    expect(line.style.textIndent).toBe("-7ch");
+    // A path may break after each slash, and the text itself is untouched.
+    expect(line.querySelectorAll("wbr")).toHaveLength(2);
+    expect(line.textContent).toBe("  └  ✓ src/auth/client.test.ts 42ms");
+    const command = container.querySelector("[data-slot=terminal-command]")!;
+    expect([...command.querySelectorAll(".whitespace-nowrap")].map((e) => e.textContent)).toEqual([
+      "-y",
+      "@kura-ui/",
+    ]);
+  });
+
+  it("leaves lines alone when wrapping is off", () => {
+    const { container } = render(<Terminal lines={["  ✓ src/a-b.ts"]} wrap={false} />);
+    const line = container.querySelector<HTMLElement>("[data-slot=terminal-line]")!;
+    expect(line.style.paddingLeft).toBe("");
+    expect(line.querySelector("wbr")).toBeNull();
+  });
+
   it("gives each run its own clock", () => {
     vi.useFakeTimers();
     const { container, rerender } = render(<Terminal command="pnpm test" status="running" />);

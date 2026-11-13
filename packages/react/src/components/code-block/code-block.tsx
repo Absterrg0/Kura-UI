@@ -255,7 +255,8 @@ export function CodeBlock({
               {filename ?? (language !== "text" ? language : "")}
             </span>
           </span>
-          {filename && language !== "text" && (
+          {/* A filename with an extension already says the language; only a bare name needs it. */}
+          {filename && language !== "text" && !/\.[a-z0-9]+$/i.test(filename) && (
             <span
               data-slot="code-block-language"
               className="select-none px-1.5 font-kura-mono text-[11px] text-kura-fg-subtle"

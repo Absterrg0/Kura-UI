@@ -12,9 +12,9 @@ export interface UseHotkeyOptions {
    */
   allowInInputs?: boolean;
   /**
-   * Fire while focus is inside an open dialog, menu or listbox. Default true. Pass false for a
-   * page-level shortcut that must not act behind an overlay (Esc closing a menu should not also
-   * deny a request underneath it).
+   * Fire while focus is inside an open dialog, menu or listbox, and let Esc fire while a tooltip,
+   * menu or dialog is open anywhere. Default true. Pass false for a page-level shortcut that must
+   * not act behind an overlay (Esc closing a tooltip should not also deny a request under it).
    */
   allowInOverlays?: boolean;
   /** Element to listen on. Default `document`. */
@@ -34,6 +34,21 @@ const OVERLAY =
 
 function inOverlay(target: EventTarget | null): boolean {
   return target instanceof Element && target.closest(OVERLAY) != null;
+}
+
+// Things Esc dismisses wherever focus is: an open tooltip, menu or dialog. Libraries often keep
+// these mounted while closed (a hidden popover), so only one that is actually showing counts.
+const DISMISSABLE = '[role="tooltip"],[role="menu"],[role="dialog"],[role="alertdialog"]';
+
+function isShowing(el: Element): boolean {
+  if ((el as HTMLElement).hidden || el.getAttribute("aria-hidden") === "true") return false;
+  return typeof el.checkVisibility === "function" ? el.checkVisibility() : true;
+}
+
+function escapeIsTaken(event: KeyboardEvent): boolean {
+  if (event.key !== "Escape" || typeof document === "undefined") return false;
+  for (const el of document.querySelectorAll(DISMISSABLE)) if (isShowing(el)) return true;
+  return false;
 }
 
 /**
@@ -76,7 +91,7 @@ export function useHotkey(
       // Another widget already took this key (a menu closing on Esc, a composer sending on ⌘↵).
       if (e.defaultPrevented) return;
       if (!inInputs && isEditable(e.target)) return;
-      if (!allowInOverlays && inOverlay(e.target)) return;
+      if (!allowInOverlays && (inOverlay(e.target) || escapeIsTaken(e))) return;
       if (!matchesKeyCombo(e, parts, apple)) return;
       if (preventDefault) e.preventDefault();
       down = true;

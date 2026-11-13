@@ -76,7 +76,8 @@ export default defineComponent({
     {
       name: "Current",
       dataSlot: "checkpoints-current",
-      description: "The word 'Current' after the label.",
+      description:
+        "The word 'Current' after the label; in a narrow row it is read out only, and the filled glyph marks the row.",
     },
     {
       name: "Files",

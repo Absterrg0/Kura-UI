@@ -119,7 +119,7 @@ export default function Home() {
 
       {/* Your agent can install it */}
       <section aria-labelledby="agents" className="px-4 pt-36 md:px-6 md:pt-44">
-        <div className="mx-auto grid max-w-[1180px] items-start gap-12 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:gap-16">
+        <div className="mx-auto grid max-w-[1180px] items-start gap-12 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:items-stretch lg:gap-16">
           <div>
             <h2
               id="agents"
@@ -152,7 +152,8 @@ export default function Home() {
               <ArrowRight className="size-4 transition-transform duration-200 group-hover:translate-x-0.5 motion-reduce:transition-none" />
             </Link>
           </div>
-          <AgentTerminal />
+          {/* Beside the list the terminal takes its height, so the two columns end level. */}
+          <AgentTerminal className="lg:h-full" />
         </div>
       </section>
 

@@ -3,8 +3,10 @@
 import { ChevronRight } from "lucide-react";
 import * as React from "react";
 import { useControllableState } from "../../hooks/use-controllable-state";
+import { useFocusFallback } from "../../hooks/use-focus-fallback";
 import { cn } from "../../lib/cn";
 import { formatClock, formatDuration } from "../../lib/format";
+import { mergeRefs } from "../../lib/merge-refs";
 import { CodeBlock } from "../code-block";
 import { type AgentStatus, StatusGlyph } from "../status-glyph";
 
@@ -129,8 +131,14 @@ export function ToolCall({
   onOpenChange,
   actions,
   className,
+  ref,
   ...props
 }: ToolCallProps) {
+  // Approve and Deny leave with the decision: focus goes to the call's own row.
+  const rootRef = React.useRef<HTMLDivElement>(null);
+  useFocusFallback(rootRef, () =>
+    rootRef.current?.querySelector<HTMLElement>("button[data-slot=tool-call-trigger]"),
+  );
   const [open, setOpen] = useControllableState({
     value: openProp,
     defaultValue: defaultOpen ?? (status === "error" || status === "awaiting-approval"),
@@ -198,10 +206,12 @@ export function ToolCall({
       data-status={status}
       data-variant={variant}
       data-state={hasDetails ? (open ? "open" : "closed") : undefined}
+      tabIndex={-1}
+      ref={mergeRefs(rootRef, ref)}
       className={cn(
-        "flex min-w-0 flex-col font-kura-sans",
+        "flex min-w-0 flex-col font-kura-sans outline-hidden focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-kura-ring",
         inline
-          ? "-mx-1.5 w-fit max-w-full"
+          ? "-mx-1.5 w-fit max-w-full rounded-kura-sm"
           : "overflow-hidden rounded-kura-xl bg-kura-surface shadow-kura-surface",
         className,
       )}
@@ -253,7 +263,7 @@ export function ToolCall({
               {inline && (
                 <span aria-hidden className="kura-leader absolute inset-y-0 left-0 w-[5px]" />
               )}
-              {args !== undefined && <Section label="Arguments" value={args} />}
+              {args !== undefined && <Section tool={name} label="Arguments" value={args} />}
               {error != null && (
                 <div
                   data-slot="tool-call-error"
@@ -262,7 +272,7 @@ export function ToolCall({
                   {error}
                 </div>
               )}
-              {result !== undefined && <Section label="Result" value={result} />}
+              {result !== undefined && <Section tool={name} label="Result" value={result} />}
             </div>
           </div>
         </div>
@@ -283,7 +293,7 @@ export function ToolCall({
   );
 }
 
-function Section({ label, value }: { label: string; value: unknown }) {
+function Section({ tool, label, value }: { tool: string; label: string; value: unknown }) {
   const text = toText(value);
   const json = typeof value !== "string";
   return (
@@ -291,7 +301,8 @@ function Section({ label, value }: { label: string; value: unknown }) {
       <span className="px-2.5 text-kura-fg-subtle text-xs">{label}</span>
       <CodeBlock
         code={text}
-        filename={label}
+        // Names the scroll region after its tool, so two calls on a page stay distinct.
+        filename={`${tool} ${label.toLowerCase()}`}
         language={json ? "json" : "text"}
         header={false}
         wrap

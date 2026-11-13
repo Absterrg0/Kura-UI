@@ -14,8 +14,10 @@ import {
 } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import * as React from "react";
+import { useFocusFallback } from "../../hooks/use-focus-fallback";
 import { useReducedMotion } from "../../hooks/use-reduced-motion";
 import { cn } from "../../lib/cn";
+import { mergeRefs } from "../../lib/merge-refs";
 import { springs } from "../../lib/motion";
 import { StatusGlyph } from "../status-glyph";
 import {
@@ -343,9 +345,18 @@ export function AttachmentList({
   variant = "auto",
   label = "Attachments",
   className,
+  ref,
   ...props
 }: AttachmentListProps) {
   const reduced = useReducedMotion();
+  // A removed file takes its Remove key with it, and "+3" leaves once it has been pressed:
+  // focus goes to what took their place (the next file, the first one just revealed).
+  const listRef = React.useRef<HTMLUListElement>(null);
+  useFocusFallback(listRef, (gap) => {
+    const control = (el: Element | null | undefined) =>
+      el?.querySelector<HTMLElement>("button") ?? null;
+    return control(gap.previous?.nextElementSibling) ?? control(gap.next) ?? control(gap.previous);
+  });
   const [expanded, setExpanded] = React.useState(false);
   const limit = !expanded && typeof max === "number" && items.length > max ? max : items.length;
   const visible = items.slice(0, limit);
@@ -370,8 +381,13 @@ export function AttachmentList({
     <ul
       data-slot="attachment-list"
       aria-label={label}
-      className={cn("flex min-w-0 flex-wrap items-center gap-2", className)}
+      tabIndex={-1}
+      className={cn(
+        "flex min-w-0 flex-wrap items-center gap-2 rounded-kura-lg outline-hidden focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-kura-ring",
+        className,
+      )}
       {...props}
+      ref={mergeRefs(listRef, ref)}
     >
       <AnimatePresence initial={false} mode="popLayout">
         {visible.map((item) => (

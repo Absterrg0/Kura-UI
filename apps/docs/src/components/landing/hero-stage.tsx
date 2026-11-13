@@ -38,19 +38,31 @@ const MIGRATE = [
   ` ${c("1;32", "migrated")} ${c("2", "in 5.1s")}`,
 ];
 
+/**
+ * Prints `lines` one every `every` ms, by the clock rather than by counting ticks, so a slow
+ * frame cannot stretch the run past the time its last line reports. Also says when it began.
+ */
 function useStream(lines: readonly string[], key: string, reduced: boolean, every = 260) {
-  const [n, setN] = React.useState(reduced ? lines.length : 0);
+  const [state, setState] = React.useState<{ n: number; startedAt: number | null }>({
+    n: reduced ? lines.length : 0,
+    startedAt: null,
+  });
   // biome-ignore lint/correctness/useExhaustiveDependencies: `key` restarts the stream
   React.useEffect(() => {
     if (reduced) {
-      setN(lines.length);
+      setState({ n: lines.length, startedAt: null });
       return;
     }
-    setN(0);
-    const id = setInterval(() => setN((v) => (v >= lines.length ? v : v + 1)), every);
+    const startedAt = Date.now();
+    setState({ n: 0, startedAt });
+    const id = setInterval(() => {
+      const n = Math.min(lines.length, Math.floor((Date.now() - startedAt) / every));
+      setState((s) => (s.n === n ? s : { n, startedAt }));
+      if (n >= lines.length) clearInterval(id);
+    }, 40);
     return () => clearInterval(id);
   }, [key, reduced]);
-  return lines.slice(0, n);
+  return { lines: lines.slice(0, state.n), startedAt: state.startedAt };
 }
 
 export function HeroStage({ className }: { className?: string }) {
@@ -89,9 +101,10 @@ export function HeroStage({ className }: { className?: string }) {
     return () => clearTimeout(t);
   }, [pending]);
 
-  const testLines = useStream(TESTS, "tests", reduced);
-  // Six lines at 850ms: the migration takes the 5.1s its last line reports.
-  const migrateLines = useStream(MIGRATE, `migrate-${decision}`, reduced || !approved, 850);
+  // Six lines each: the tests take the 1.84s and the migration the 5.1s their last lines report.
+  const tests = useStream(TESTS, "tests", reduced, 306);
+  const testLines = tests.lines;
+  const migrateLines = useStream(MIGRATE, `migrate-${decision}`, reduced || !approved, 850).lines;
   const migrated = approved && migrateLines.length >= MIGRATE.length;
   const term = approved
     ? {
@@ -104,7 +117,7 @@ export function HeroStage({ className }: { className?: string }) {
         command: "pnpm test src/auth",
         lines: testLines,
         status: testLines.length >= TESTS.length ? ("done" as const) : ("running" as const),
-        startedAt: t0,
+        startedAt: tests.startedAt ?? undefined,
       };
 
   const migrateStatus = pending
@@ -149,6 +162,14 @@ export function HeroStage({ className }: { className?: string }) {
       endedAt: 96_000,
     },
     {
+      id: "patcher",
+      name: "patcher",
+      status: "done",
+      activity: "Patched src/auth/client.ts",
+      startedAt: 0,
+      endedAt: 74_000,
+    },
+    {
       id: "tests",
       name: "test-writer",
       status: "running",
@@ -174,12 +195,11 @@ export function HeroStage({ className }: { className?: string }) {
           ? migrateLines.length / MIGRATE.length
           : undefined,
     },
-    { id: "reviewer", name: "reviewer", status: "queued", activity: "Starts when the tests pass" },
   ];
 
   const spans: TraceSpan[] = [
     { id: "explorer", name: "explorer", kind: "agent", start: 0, end: 96_000, status: "done" },
-    { id: "edit", name: "edit_file", kind: "tool", start: 100_000, end: 174_000, status: "done" },
+    { id: "edit", name: "patcher", kind: "agent", start: 100_000, end: 174_000, status: "done" },
     { id: "test", name: "pnpm test", kind: "tool", start: 178_000, end: 196_000, status: "done" },
     { id: "writer", name: "test-writer", kind: "agent", start: WRITER, status: "running" },
     {
@@ -203,6 +223,8 @@ export function HeroStage({ className }: { className?: string }) {
 
   return (
     <div data-slot="hero-stage" className={cn("flex flex-col gap-3", className)}>
+      {/* On a phone the run header is not shown: the stage still has a heading above the prompt. */}
+      <h2 className="sr-only md:hidden">Migrate session API to @acme/auth: an agent run</h2>
       <div className="hidden min-w-0 md:block max-lg:[&_[data-slot=run-header-model]]:hidden">
         <RunHeader
           title="Migrate session API to @acme/auth"
@@ -266,7 +288,7 @@ export function HeroStage({ className }: { className?: string }) {
         </div>
         <div className="hidden min-w-0 flex-col gap-3 md:col-start-2 md:flex xl:order-3 xl:col-start-auto">
           <div className="min-w-0 md:max-xl:flex md:max-xl:flex-1 md:max-xl:flex-col md:max-xl:[&>*]:flex-1">
-            {/* The height of four agents with one progress rail: a rail leaving does not move the stage. */}
+            {/* The height of four agents with two progress rails: a rail leaving does not move the stage. */}
             <AgentFleet agents={fleet} title="Subagents" className="min-h-[312px]" />
           </div>
           <div className="hidden min-w-0 xl:block">

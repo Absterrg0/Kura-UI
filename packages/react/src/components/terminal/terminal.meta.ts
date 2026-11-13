@@ -105,7 +105,13 @@ export default defineComponent({
       type: "(expanded: boolean) => void",
       description: "Called when “Show all” / “Show last N” is used.",
     },
-    { name: "wrap", type: "boolean", default: "true", description: "Soft-wrap long lines." },
+    {
+      name: "wrap",
+      type: "boolean",
+      default: "true",
+      description:
+        "Soft-wrap long lines: at spaces and after a path's slashes, never at a hyphen, with the continuation hanging under the text (past the line's indent and markers). false scrolls sideways instead.",
+    },
     {
       name: "copyable",
       type: "boolean",

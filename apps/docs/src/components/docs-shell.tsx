@@ -63,10 +63,18 @@ export function Section({
   );
 }
 
-/** Inline code in prose. */
-export function C({ children }: { children: React.ReactNode }) {
+/**
+ * Inline code in prose. A name stays in one piece (`@kura-ui/react` never splits at its hyphen);
+ * pass `wrap` for something long enough to need a second line, like a whole command.
+ */
+export function C({ children, wrap = false }: { children: React.ReactNode; wrap?: boolean }) {
   return (
-    <code className="rounded-[5px] bg-kura-hover px-1 py-px font-kura-mono text-[0.88em] text-kura-fg">
+    <code
+      className={cn(
+        "rounded-[5px] bg-kura-hover px-1 py-px font-kura-mono text-[0.88em] text-kura-fg",
+        wrap ? "[overflow-wrap:anywhere]" : "whitespace-nowrap",
+      )}
+    >
       {children}
     </code>
   );

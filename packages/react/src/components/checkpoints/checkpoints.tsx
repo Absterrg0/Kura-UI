@@ -235,13 +235,17 @@ export function Checkpoints({
                   >
                     {c.label}
                   </span>
+                  {/* In a narrow row the label keeps the room: the tags are still read out, and
+                      the filled glyph and the heavier label mark the current one. */}
                   {c.kind === "manual" && (
-                    <span className="shrink-0 text-[12px] text-kura-fg-subtle">Saved</span>
+                    <span className="sr-only shrink-0 text-[12px] text-kura-fg-subtle @sm:not-sr-only">
+                      Saved
+                    </span>
                   )}
                   {c.current && (
                     <span
                       data-slot="checkpoints-current"
-                      className="shrink-0 text-[12px] text-kura-fg-subtle"
+                      className="sr-only shrink-0 text-[12px] text-kura-fg-subtle @sm:not-sr-only"
                     >
                       Current
                     </span>

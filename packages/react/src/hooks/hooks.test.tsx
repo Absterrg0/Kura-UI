@@ -1,8 +1,10 @@
 import { act, renderHook } from "@testing-library/react";
+import * as React from "react";
 import { describe, expect, it, vi } from "vitest";
-import { fireEvent, setReducedMotion } from "../../test/utils";
+import { fireEvent, render, screen, setReducedMotion, waitFor } from "../../test/utils";
 import { useAudioAnalyser } from "./use-audio-analyser";
 import { useControllableState } from "./use-controllable-state";
+import { useFocusFallback } from "./use-focus-fallback";
 import { useHotkey } from "./use-hotkey";
 import { useMediaRecorder } from "./use-media-recorder";
 import { useReducedMotion } from "./use-reduced-motion";
@@ -94,6 +96,57 @@ describe("useHotkey", () => {
     expect(page).not.toHaveBeenCalled();
     expect(everywhere).toHaveBeenCalledTimes(1);
     dialog.remove();
+  });
+});
+
+function Rows({ ids, onRemove }: { ids: string[]; onRemove: (id: string) => void }) {
+  const root = React.useRef<HTMLUListElement>(null);
+  useFocusFallback(root, (gap) => (gap.next ?? gap.previous)?.querySelector("button"));
+  return (
+    <ul ref={root} tabIndex={-1} aria-label="Queue">
+      {ids.map((id) => (
+        <li key={id}>
+          <button type="button" onClick={() => onRemove(id)}>
+            Remove {id}
+          </button>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+describe("useFocusFallback", () => {
+  it("moves focus to the neighbour when the focused control is removed, then to the root", async () => {
+    let ids = ["a", "b", "c"];
+    const view = () => <Rows ids={ids} onRemove={() => {}} />;
+    const { rerender } = render(view());
+    screen.getByRole("button", { name: "Remove b" }).focus();
+    ids = ["a", "c"];
+    rerender(view());
+    await waitFor(() => expect(screen.getByRole("button", { name: "Remove c" })).toHaveFocus());
+    ids = ["a"];
+    rerender(view());
+    await waitFor(() => expect(screen.getByRole("button", { name: "Remove a" })).toHaveFocus());
+    ids = [];
+    rerender(view());
+    await waitFor(() => expect(screen.getByRole("list", { name: "Queue" })).toHaveFocus());
+  });
+
+  it("leaves a person alone who has already moved on", async () => {
+    let ids = ["a", "b"];
+    const view = () => (
+      <>
+        <Rows ids={ids} onRemove={() => {}} />
+        <input aria-label="Elsewhere" />
+      </>
+    );
+    const { rerender } = render(view());
+    screen.getByRole("button", { name: "Remove b" }).focus();
+    screen.getByRole("textbox", { name: "Elsewhere" }).focus();
+    ids = ["a"];
+    rerender(view());
+    await act(async () => {});
+    expect(screen.getByRole("textbox", { name: "Elsewhere" })).toHaveFocus();
   });
 });
 

@@ -4,8 +4,10 @@ import { createParts } from "@ui-sdk/react/primitive";
 import { Check, ChevronRight, CircleSlash2, FileDiff, RotateCcw, X } from "lucide-react";
 import * as React from "react";
 import { useControllableState } from "../../hooks/use-controllable-state";
+import { useFocusFallback } from "../../hooks/use-focus-fallback";
 import { agentSurface } from "../../lib/agent-surface";
 import { cn } from "../../lib/cn";
+import { mergeRefs } from "../../lib/merge-refs";
 import { Button } from "../button";
 import { type CodeToken, type CodeTokenType, highlightCode } from "../code-block";
 import { IconButton } from "../icon-button";
@@ -254,8 +256,15 @@ export function DiffView({
   className,
   style,
   onKeyDown,
+  ref,
   ...props
 }: DiffViewProps) {
+  // "Accept all" leaves once everything is decided: focus stays in the diff, on a hunk if one
+  // is showing, otherwise on the sheet.
+  const rootRef = React.useRef<HTMLElement>(null);
+  useFocusFallback(rootRef, () =>
+    rootRef.current?.querySelector<HTMLElement>("[data-slot=diff-view-hunk][tabindex='0']"),
+  );
   const files = React.useMemo(
     () => (filesProp ? normalizeFiles(filesProp) : diff ? parseUnifiedDiff(diff) : []),
     [filesProp, diff],
@@ -485,12 +494,14 @@ export function DiffView({
       data-reviewable={reviewable || undefined}
       data-state={allHunks.length === 0 ? "empty" : pendingCount === 0 ? "reviewed" : "pending"}
       className={cn(
-        "@container/diff flex min-w-0 flex-col overflow-clip rounded-kura-xl bg-kura-surface font-kura-sans text-[13px] text-kura-fg shadow-kura-sm",
+        "@container/diff flex min-w-0 flex-col overflow-clip rounded-kura-xl bg-kura-surface font-kura-sans text-[13px] text-kura-fg shadow-kura-sm outline-hidden focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-kura-ring",
         className,
       )}
       style={{ ...syntaxVars, ...style }}
       onKeyDown={handleKeyDown}
+      tabIndex={-1}
       {...props}
+      ref={mergeRefs(rootRef, ref)}
     >
       <div data-slot="diff-view-header" className="flex h-11 shrink-0 items-center gap-3 pr-3 pl-4">
         <span className="flex min-w-0 items-baseline gap-2.5">

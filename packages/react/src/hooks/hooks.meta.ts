@@ -35,7 +35,7 @@ export default [
     notes: [
       "Without a modifier, the shortcut is ignored while typing in inputs unless allowInInputs is true.",
       "A key another handler already took (event.defaultPrevented) is ignored, so a menu closing on Esc does not also fire a page shortcut.",
-      "allowInOverlays: false keeps a page-level shortcut from firing while focus is inside an open dialog, menu or listbox.",
+      "allowInOverlays: false keeps a page-level shortcut from firing while focus is inside an open dialog, menu or listbox, and leaves Esc to an open tooltip, menu or dialog.",
     ],
     example: 'useHotkey(["mod", "enter"], () => submit());',
     tags: ["keyboard", "shortcut", "hotkey"],
@@ -114,5 +114,21 @@ export default [
     example:
       'const ms = useElapsed(run.startedAt, run.status === "running");\n<span>{ms == null ? "—" : formatClock(ms)}</span>',
     tags: ["timer", "elapsed", "agent"],
+  }),
+  defineHook({
+    name: "useFocusFallback",
+    file: "use-focus-fallback",
+    description:
+      "Keeps keyboard focus inside a widget when the control that held it is removed (a Remove key whose row is gone, a Stop key that unmounts), instead of letting it fall to <body>.",
+    signature:
+      "useFocusFallback<T extends HTMLElement>(ref: React.RefObject<T | null>, fallback?: (gap: { next: Element | null; previous: Element | null }) => HTMLElement | null | undefined): void",
+    returns: "void",
+    notes: [
+      "Give the root tabIndex={-1} and a visible focus ring: it receives focus unless `fallback` returns a better place. `fallback` is told what sat on either side of the removed element (`gap.next`, `gap.previous`), so a list can focus the row that took its place.",
+      "Focus only moves when it was really lost (document.activeElement is <body>); a person who already moved elsewhere is left alone.",
+    ],
+    example:
+      "const root = React.useRef<HTMLUListElement>(null);\nuseFocusFallback(root, (gap) => (gap.next ?? gap.previous)?.querySelector<HTMLElement>('button'));\nreturn <ul ref={root} tabIndex={-1}>…</ul>;",
+    tags: ["focus", "a11y", "keyboard"],
   }),
 ];

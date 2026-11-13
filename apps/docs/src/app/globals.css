@@ -68,11 +68,15 @@
 }
 .dark,
 [data-theme="dark"] {
-  --well-on-canvas: var(--kura-surface-sunken);
+  /* The library's sunken tone is two steps under the dark canvas, which is enough inside a
+     sheet and too little on the page: here the well goes a step deeper and its rim a touch
+     brighter, so a one-line command still reads as a well. */
+  --well-on-canvas: #08090a;
+  --well-rim: inset 0 0 0 1px rgb(255 255 255 / 0.035);
 }
 .well {
   background-color: var(--well-on-canvas);
-  box-shadow: var(--kura-elev-sunk);
+  box-shadow: var(--kura-elev-sunk), var(--well-rim, 0 0 #0000);
 }
 
 /*

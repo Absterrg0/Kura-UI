@@ -3,8 +3,10 @@
 import { Globe, Hand, Lock, Play } from "lucide-react";
 import * as React from "react";
 import { useElapsed } from "../../hooks/use-elapsed";
+import { useFocusFallback } from "../../hooks/use-focus-fallback";
 import { cn } from "../../lib/cn";
 import { formatClock } from "../../lib/format";
+import { mergeRefs } from "../../lib/merge-refs";
 import { Button } from "../button";
 import { type AgentStatus, StatusGlyph } from "../status-glyph";
 
@@ -269,8 +271,15 @@ export function BrowserSession({
   onResume,
   layout = "auto",
   className,
+  ref,
   ...props
 }: BrowserSessionProps) {
+  // "Resume agent" hands over to "Take over" and back: focus follows to the key that replaced
+  // the one just pressed, or rests on the session when there is none.
+  const rootRef = React.useRef<HTMLDivElement>(null);
+  useFocusFallback(rootRef, () =>
+    rootRef.current?.querySelector<HTMLElement>("[data-slot=browser-session-header] button"),
+  );
   const frameRef = React.useRef<HTMLDivElement>(null);
   const logRef = React.useRef<HTMLOListElement>(null);
   const scale = useScale(frameRef, viewport?.width);
@@ -320,11 +329,13 @@ export function BrowserSession({
       data-slot="browser-session"
       data-status={status}
       data-layout={layout}
+      tabIndex={-1}
       className={cn(
-        "@container flex min-w-0 flex-col overflow-hidden rounded-kura-xl bg-kura-surface font-kura-sans text-kura-fg shadow-kura-surface",
+        "@container flex min-w-0 flex-col overflow-hidden rounded-kura-xl bg-kura-surface font-kura-sans text-kura-fg shadow-kura-surface outline-hidden focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-kura-ring",
         className,
       )}
       {...props}
+      ref={mergeRefs(rootRef, ref)}
     >
       {/* Status line */}
       <div
@@ -481,11 +492,26 @@ export function BrowserSession({
                     height: `${highlight.height}%`,
                   }}
                 >
-                  {highlight.label && (
-                    <span className="absolute bottom-full left-[-1.5px] mb-1 max-w-[240px] truncate whitespace-nowrap rounded-[4px] bg-kura-accent px-1.5 font-kura-mono text-[11px] text-kura-accent-fg leading-4">
-                      {highlight.label}
-                    </span>
-                  )}
+                  {highlight.label &&
+                    (() => {
+                      // The tag hangs from whichever corner has more of the frame beside it, and
+                      // never runs past the frame's edge: it ends in an ellipsis instead.
+                      const toRight = 100 - highlight.x;
+                      const toLeft = highlight.x + highlight.width;
+                      const room = Math.max(toRight, toLeft) / Math.max(highlight.width, 0.01);
+                      return (
+                        <span
+                          data-slot="browser-session-highlight-label"
+                          className={cn(
+                            "absolute bottom-full mb-1 truncate whitespace-nowrap rounded-[4px] bg-kura-accent px-1.5 font-kura-mono text-[11px] text-kura-accent-fg leading-4",
+                            toRight >= toLeft ? "left-[-1.5px]" : "right-[-1.5px]",
+                          )}
+                          style={{ maxWidth: `min(280px, ${room * 100}%)` }}
+                        >
+                          {highlight.label}
+                        </span>
+                      );
+                    })()}
                 </span>
               )}
               {cursor && ripple != null && <Ripple key={String(ripple)} point={cursor} />}

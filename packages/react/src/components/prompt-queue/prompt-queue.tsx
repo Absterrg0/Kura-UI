@@ -111,12 +111,15 @@ export function PromptQueue({
     if (refocus) focusRow((next[index] ?? next[index - 1])?.id);
   };
 
-  const sendNow = (index: number) => {
+  const sendNow = (index: number, refocus = false) => {
     const it = items[index];
     if (!it) return;
-    setItems(items.filter((_, i) => i !== index));
+    const next = items.filter((_, i) => i !== index);
+    setItems(next);
     setMessage(`Sending “${truncate(it.text)}” now`);
     onSendNow?.(it);
+    // The row leaves with its keys: focus moves to the prompt that took its place.
+    if (refocus) focusRow((next[index] ?? next[index - 1])?.id);
   };
 
   const save = (index: number, text: string) => {
@@ -165,7 +168,10 @@ export function PromptQueue({
       )}
       {...props}
     >
-      <div data-slot="prompt-queue-header" className="flex h-11 shrink-0 items-center gap-2 px-4">
+      <div
+        data-slot="prompt-queue-header"
+        className="flex min-h-11 shrink-0 flex-col justify-center px-4 py-2 @sm:flex-row @sm:items-center @sm:justify-start @sm:gap-2 @sm:py-0"
+      >
         <h3 className="flex shrink-0 items-baseline gap-1.5 font-medium text-[13px]">
           <span id={`${id}-title`}>{title}</span>
           <span className="font-kura-mono font-normal text-[12px] text-kura-fg-subtle tabular-nums">
@@ -214,7 +220,7 @@ export function PromptQueue({
             }}
             onSave={(text) => save(index, text)}
             onRemove={(refocus) => remove(index, refocus)}
-            onSendNow={() => sendNow(index)}
+            onSendNow={() => sendNow(index, true)}
           />
         ))}
       </Reorder.Group>
@@ -378,7 +384,7 @@ function QueueRow({
               onClick={() => onMove(1)}
             />
             <IconButton size="xs" label="Edit" icon={<Pencil />} onClick={onEdit} />
-            <IconButton size="xs" label="Remove" icon={<X />} onClick={() => onRemove(false)} />
+            <IconButton size="xs" label="Remove" icon={<X />} onClick={() => onRemove(true)} />
             {canSend && (
               <Button
                 data-slot="prompt-queue-send"

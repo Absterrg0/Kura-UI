@@ -45,7 +45,8 @@ describe("AgentTimeline", () => {
     const { rerender, container } = render(<AgentTimeline steps={steps} />);
     act(() => vi.advanceTimersByTime(3000));
     const active = container.querySelector("li[data-status=active]")!;
-    expect(active.querySelector("[data-slot=agent-timeline-duration]")).toHaveTextContent("3.0s");
+    // A running step shows a clock, like every other live timer; a finished one a duration.
+    expect(active.querySelector("[data-slot=agent-timeline-duration]")).toHaveTextContent("0:03");
     rerender(
       <AgentTimeline
         steps={[

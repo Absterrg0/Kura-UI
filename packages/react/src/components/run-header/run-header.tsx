@@ -3,9 +3,11 @@
 import { GitBranch, Pause, Play, Square } from "lucide-react";
 import * as React from "react";
 import { useElapsed } from "../../hooks/use-elapsed";
+import { useFocusFallback } from "../../hooks/use-focus-fallback";
 import { useHotkey } from "../../hooks/use-hotkey";
 import { cn } from "../../lib/cn";
 import { formatClock, formatCost, formatTokens } from "../../lib/format";
+import { mergeRefs } from "../../lib/merge-refs";
 import { AgentSigil } from "../agent-sigil";
 import { Button } from "../button";
 import { DotRail } from "../dot-rail";
@@ -146,9 +148,13 @@ export function RunHeader({
   variant = "panel",
   shortcuts = true,
   className,
+  ref,
   ...props
 }: RunHeaderProps) {
   const id = React.useId();
+  // Stop and Pause leave when the run ends: focus stays on the header instead of the page.
+  const rootRef = React.useRef<HTMLElement>(null);
+  useFocusFallback(rootRef);
   const live = LIVE.includes(status);
   const ticking = useElapsed(startedAt, live && endedAt == null);
   const elapsed =
@@ -245,11 +251,13 @@ export function RunHeader({
         data-slot="run-header"
         data-variant="bar"
         data-status={status}
+        tabIndex={-1}
         className={cn(
-          "@container flex h-11 min-w-0 items-center gap-3 rounded-kura-xl bg-kura-surface pr-2 pl-3.5 font-kura-sans text-[13px] text-kura-fg shadow-kura-sm",
+          "@container flex h-11 min-w-0 items-center gap-3 rounded-kura-xl bg-kura-surface pr-2 pl-3.5 font-kura-sans text-[13px] text-kura-fg shadow-kura-sm outline-hidden focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-kura-ring",
           className,
         )}
         {...props}
+        ref={mergeRefs(rootRef, ref)}
       >
         <StatusGlyph status={status} label={null} />
         <div className="flex min-w-0 flex-1 items-center gap-2.5">
@@ -263,7 +271,7 @@ export function RunHeader({
           <span className="hidden text-[12px] @md:inline">
             <StatusLabel status={status} />
           </span>
-          {branchChip && <span className="hidden min-w-0 @3xl:flex">{branchChip}</span>}
+          {branchChip && <span className="hidden min-w-0 @5xl:flex">{branchChip}</span>}
         </div>
         <dl
           data-slot="run-header-stats"
@@ -280,7 +288,7 @@ export function RunHeader({
             </div>
           )}
           {totalTokens != null && (
-            <div className="hidden @2xl:block">
+            <div className="hidden @4xl:block">
               <dt className="sr-only">Tokens</dt>
               <dd className="inline-block min-w-[5ch] text-right">
                 {formatTokens(totalTokens)}
@@ -312,10 +320,20 @@ export function RunHeader({
             </dd>
           </div>
         </dl>
-        {controls && (
+        {/* A bar keeps a slot for each control it was given, also while that control does not
+            apply: stacked runs share columns, and nothing shifts when a run changes state. */}
+        {(actions != null || onPause != null || onResume != null || onStop != null) && (
           <>
-            <span aria-hidden className="h-4 w-px shrink-0 bg-kura-border" />
-            {controls}
+            <span
+              aria-hidden
+              className={cn("h-4 w-px shrink-0 bg-kura-border", !controls && "invisible")}
+            />
+            <div data-slot="run-header-controls" className="flex shrink-0 items-center gap-1.5">
+              {actions}
+              {(onPause != null || onResume != null) &&
+                (pauseButton || <span aria-hidden className="size-7 shrink-0" />)}
+              {onStop != null && (stopButton || <span aria-hidden className="size-7 shrink-0" />)}
+            </div>
           </>
         )}
         {announce}
@@ -357,11 +375,13 @@ export function RunHeader({
       data-slot="run-header"
       data-variant="panel"
       data-status={status}
+      tabIndex={-1}
       className={cn(
-        "@container flex min-w-0 flex-col rounded-kura-xl bg-kura-surface px-[18px] pt-4 pb-3.5 font-kura-sans text-[13px] text-kura-fg leading-5 shadow-kura-sm",
+        "@container flex min-w-0 flex-col rounded-kura-xl bg-kura-surface px-[18px] pt-4 pb-3.5 font-kura-sans text-[13px] text-kura-fg leading-5 shadow-kura-sm outline-hidden focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-kura-ring",
         className,
       )}
       {...props}
+      ref={mergeRefs(rootRef, ref)}
     >
       <div className="flex flex-wrap items-center gap-x-[22px] gap-y-3">
         <div className="flex min-w-[min(100%,15rem)] flex-1 items-center gap-3">
@@ -370,7 +390,7 @@ export function RunHeader({
             <h2
               id={`${id}-title`}
               data-slot="run-header-title"
-              className="truncate font-semibold text-[15px] leading-5 tracking-[-0.015em]"
+              className="line-clamp-2 font-semibold text-[15px] leading-5 tracking-[-0.015em] @sm:line-clamp-1"
             >
               {title}
             </h2>

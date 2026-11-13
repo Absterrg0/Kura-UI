@@ -5,9 +5,11 @@ import { ArrowDown, Check, ChevronsUpDown, Copy } from "lucide-react";
 import * as React from "react";
 import { useControllableState } from "../../hooks/use-controllable-state";
 import { useElapsed } from "../../hooks/use-elapsed";
+import { useFocusFallback } from "../../hooks/use-focus-fallback";
 import { agentSurface } from "../../lib/agent-surface";
 import { cn } from "../../lib/cn";
 import { formatClock, formatDuration } from "../../lib/format";
+import { mergeRefs } from "../../lib/merge-refs";
 import { IconButton } from "../icon-button";
 import { StatusGlyph } from "../status-glyph";
 import { type AnsiColor, AnsiScreen, type AnsiStyle, type ScreenLine } from "./ansi";
@@ -115,27 +117,67 @@ function useScreen(text: string) {
   return cur.screen;
 }
 
+/**
+ * How far a wrapped line hangs, in characters: past its leading spaces and markers ("  └  ✓ ",
+ * "● ", "$ "), so the continuation sits under the text and not under the tick. Capped, so a deep
+ * indent cannot eat a narrow terminal.
+ */
+function hangOf(text: string): number {
+  const lead = /^(?:\s*[^\w\s]{1,2}(?=\s))*\s*/.exec(text);
+  return Math.min(lead ? lead[0].length : 0, 12);
+}
+
+/**
+ * Soft-wrapped output breaks at spaces and after a path's slashes, never at a hyphen: a flag
+ * (`--env`) or a package name (`@kura-ui/mcp`) stays in one piece.
+ */
+function breakable(text: string): React.ReactNode {
+  if (!/[-/]/.test(text)) return text;
+  return text.split(/(\s+)/).map((word, i) => {
+    if (!/[-/]/.test(word)) return word;
+    const pieces = word.match(/[^/]*\/|[^/]+$/g) ?? [word];
+    return pieces.map((piece, j) => (
+      <React.Fragment key={`${i}-${j}`}>
+        {j > 0 && <wbr />}
+        {piece.includes("-") && piece.length <= 32 ? (
+          <span className="whitespace-nowrap">{piece}</span>
+        ) : (
+          piece
+        )}
+      </React.Fragment>
+    ));
+  });
+}
+
 const Row = React.memo(function Row({
   screen,
   line,
   cursor,
+  wrap,
 }: {
   screen: AnsiScreen;
   line: ScreenLine;
   version: number;
   cursor: boolean;
+  wrap: boolean;
 }) {
   const spans = screen.spans(line);
+  const hang = wrap ? hangOf(line.text) : 0;
   return (
-    <div data-slot="terminal-line" className="min-h-5">
+    <div
+      data-slot="terminal-line"
+      className="min-h-5"
+      style={hang ? { paddingLeft: `${hang}ch`, textIndent: `-${hang}ch` } : undefined}
+    >
       {spans.map((s, i) => {
         const { className, style } = spanStyle(s.style);
+        const text = wrap ? breakable(s.text) : s.text;
         return className || style ? (
           <span key={i} className={className} style={style}>
-            {s.text}
+            {text}
           </span>
         ) : (
-          <React.Fragment key={i}>{s.text}</React.Fragment>
+          <React.Fragment key={i}>{text}</React.Fragment>
         );
       })}
       {cursor && <Cursor />}
@@ -187,8 +229,20 @@ export function Terminal({
   actions,
   className,
   style,
+  ref,
   ...props
 }: TerminalProps) {
+  // "Show all lines" swaps for "Show last lines", and a Stop key leaves when the run ends:
+  // focus goes to the control that replaced it, or to the output.
+  const rootRef = React.useRef<HTMLDivElement>(null);
+  useFocusFallback(
+    rootRef,
+    () =>
+      rootRef.current?.querySelector<HTMLElement>(
+        "[data-slot=terminal-collapse], [data-slot=terminal-expand]",
+      ) ?? viewport.current,
+  );
+
   // --- output ---------------------------------------------------------------------------------
   const [streamed, setStreamed] = React.useState("");
   const [streamOpen, setStreamOpen] = React.useState(() => stream != null);
@@ -347,6 +401,7 @@ export function Terminal({
       )}
       style={style}
       {...props}
+      ref={mergeRefs(rootRef, ref)}
     >
       {header && (
         <div data-slot="terminal-header" className="flex h-11 shrink-0 items-center gap-2.5 px-4">
@@ -450,11 +505,23 @@ export function Terminal({
         >
           <div className={wrap ? undefined : "w-max min-w-full"}>
             {command && (
-              <div data-slot="terminal-command" className="min-h-5 text-kura-fg">
+              <div
+                data-slot="terminal-command"
+                className="min-h-5 text-kura-fg"
+                // A wrapped command hangs under its first word, clear of the prompt glyph.
+                style={
+                  wrap
+                    ? {
+                        paddingLeft: `calc(${prompt.length}ch + 0.5rem)`,
+                        textIndent: `calc(-${prompt.length}ch - 0.5rem)`,
+                      }
+                    : undefined
+                }
+              >
                 <span aria-hidden className="mr-2 select-none text-kura-fg-subtle">
                   {prompt}
                 </span>
-                <span className="font-medium">{command}</span>
+                <span className="font-medium">{wrap ? breakable(command) : command}</span>
                 {running && total === 0 && <Cursor />}
               </div>
             )}
@@ -479,6 +546,7 @@ export function Terminal({
                 line={line}
                 version={line.version}
                 cursor={running && i === visible.length - 1 && (total > 0 || !command)}
+                wrap={wrap}
               />
             ))}
             {!command && total === 0 && !running && (

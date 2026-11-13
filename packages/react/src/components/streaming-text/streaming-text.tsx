@@ -67,7 +67,8 @@ export function StreamingText({
           className={cn(
             "ml-[0.3em] inline-block size-[0.44em] -translate-y-[0.06em] rounded-full bg-kura-fg",
             "transition-opacity duration-(--kura-duration-slow) ease-kura-snap",
-            "data-[visible=true]:animate-kura-dot-pulse data-[visible=false]:opacity-0 motion-reduce:animate-none",
+            // motion-safe on the variant itself: a later `motion-reduce:animate-none` loses to it.
+            "motion-safe:data-[visible=true]:animate-kura-dot-pulse data-[visible=false]:opacity-0",
           )}
         />
       )}

@@ -215,5 +215,6 @@ export default defineComponent({
     "Map harness states: in-progress → running; needs approval / input → waiting; interrupted by the user → skipped ('Stopped'); error → failed.",
     "tokens.input should include cache reads if you want the number to match the bill; cost is whatever you computed — the component only formats it.",
     "Use the bar inside dense layouts (above a fleet or transcript) and the panel at the top of a run page.",
+    "In a list of bars pass the same onPause / onResume / onStop to every run: a bar keeps an empty slot for a control that does not apply right now, so the numbers sit in the same columns on every row and nothing shifts when a run changes state.",
   ],
 });

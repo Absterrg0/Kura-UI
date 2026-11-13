@@ -56,7 +56,7 @@ function Field({ value, focused, tall }: { value: string; focused: boolean; tall
     >
       <span>{value}</span>
       {focused && (
-        <span className="ml-px inline-block h-4 w-px translate-y-[3px] animate-kura-pulse bg-kura-fg" />
+        <span className="ml-px inline-block h-4 w-px translate-y-[3px] animate-kura-pulse bg-kura-fg motion-reduce:animate-none" />
       )}
       {!value && !focused && (
         <span className="text-kura-fg-subtle">{tall ? "Add a description" : "Title"}</span>
@@ -352,7 +352,7 @@ export function BrowserSessionPaused() {
       startedAt={startedAt}
       cursor={at(300, 262)}
       cursorLabel="Kura"
-      highlight={box(264, 226, 272, 58, "input[autocomplete=one-time-code]")}
+      highlight={box(264, 226, 272, 58, "input[name=otp]")}
       onResume={() => setPaused(false)}
       onTakeOver={() => setPaused(true)}
       steps={[
