@@ -103,9 +103,10 @@ describe("VoiceDictation", () => {
 
   it("appends the transcript to a composer", async () => {
     vi.useFakeTimers();
-    render(<VoiceDictationInComposer />);
-    fireEvent.click(screen.getByRole("button", { name: "Dictate" }));
-    await act(async () => vi.advanceTimersByTime(4000));
+    render(<VoiceDictationMinimal />);
+    // The example starts listening on mount; stop it once the script has been spoken.
+    await act(async () => vi.advanceTimersByTime(6000));
+    expect(root()).toHaveAttribute("data-status", "listening");
     fireEvent.click(screen.getByRole("button", { name: "Dictate" }));
     await act(async () => vi.advanceTimersByTime(700));
     expect(screen.getByRole("textbox", { name: "Message" })).toHaveValue(
@@ -121,6 +122,21 @@ describe("VoiceDictation", () => {
     await act(async () => vi.advanceTimersByTime(1400));
     const caret = document.querySelector("[data-slot=voice-dictation-transcript] [aria-hidden]");
     expect(caret?.className).toContain("motion-reduce:animate-none");
+  });
+
+  it("autoStart begins listening on mount and cancels on unmount", async () => {
+    vi.useFakeTimers();
+    const onTranscript = vi.fn();
+    const { unmount } = render(
+      <VoiceDictation simulate="hello there" autoStart onTranscript={onTranscript} />,
+    );
+    expect(root()).toHaveAttribute("data-status", "requesting");
+    await act(async () => vi.advanceTimersByTime(600));
+    expect(root()).toHaveAttribute("data-status", "listening");
+    expect(screen.getByRole("button", { name: "Dictate" })).toHaveAttribute("aria-pressed", "true");
+    unmount();
+    await act(async () => vi.advanceTimersByTime(3000));
+    expect(onTranscript).not.toHaveBeenCalled();
   });
 
   it("examples render without a11y violations", async () => {
