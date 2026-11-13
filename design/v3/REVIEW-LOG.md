@@ -30,17 +30,17 @@ and verified by script, but not re-reviewed: the owner closed the loop there and
 
 ### Before and after
 
-| | Before (v2, round 2) | After (v3, final) |
-| --- | --- | --- |
-| Home, dark, 1440 | ![before](shots/before-02-home-dark-1440-gate.jpg) | ![after](shots/after-02-home-dark-1440-gate.jpg) |
-| Home, light, 390 | ![before](shots/before-05-home-light-390-gate.jpg) | ![after](shots/after-05-home-light-390-gate.jpg) |
-| Components index | ![before](shots/before-06-components-dark-1440.jpg) | ![after](shots/after-06-components-dark-1440.jpg) |
+|                      | Before (v2, round 2)                                     | After (v3, final)                                      |
+| -------------------- | -------------------------------------------------------- | ------------------------------------------------------ |
+| Home, dark, 1440     | ![before](shots/before-02-home-dark-1440-gate.jpg)       | ![after](shots/after-02-home-dark-1440-gate.jpg)       |
+| Home, light, 390     | ![before](shots/before-05-home-light-390-gate.jpg)       | ![after](shots/after-05-home-light-390-gate.jpg)       |
+| Components index     | ![before](shots/before-06-components-dark-1440.jpg)      | ![after](shots/after-06-components-dark-1440.jpg)      |
 | Approval prompt page | ![before](shots/before-08-approval-prompt-dark-1440.jpg) | ![after](shots/after-08-approval-prompt-dark-1440.jpg) |
 
 Within v3, the first build (round 1, 8.0 / 7.8) and the last, and the final light theme:
 
-| Round 1 | Final | Final, light |
-| --- | --- | --- |
+| Round 1                                             | Final                                            | Final, light                                            |
+| --------------------------------------------------- | ------------------------------------------------ | ------------------------------------------------------- |
 | ![round 1](shots/round1-02-home-dark-1440-gate.jpg) | ![final](shots/after-02-home-dark-1440-gate.jpg) | ![final light](shots/after-03-home-light-1440-gate.jpg) |
 
 ### What the loop cost, and why
