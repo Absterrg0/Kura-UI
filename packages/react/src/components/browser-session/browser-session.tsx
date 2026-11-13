@@ -1,6 +1,6 @@
 "use client";
 
-import { Globe, Hand, Lock, Play } from "lucide-react";
+import { Hand, Lock, Play } from "lucide-react";
 import * as React from "react";
 import { useElapsed } from "../../hooks/use-elapsed";
 import { useFocusFallback } from "../../hooks/use-focus-fallback";
@@ -42,7 +42,7 @@ export interface BrowserHighlight extends BrowserPoint {
 export interface BrowserSessionProps extends Omit<React.ComponentProps<"div">, "title"> {
   /** The page URL shown in the address bar. */
   url: string;
-  /** The page title shown next to the address bar. */
+  /** The page title, shown quietly after the status in the header (statusText takes its place). */
   title?: string;
   /** Viewport content: a live page, a mock rendered as markup, or anything else. */
   children?: React.ReactNode;
@@ -210,11 +210,11 @@ function StepRow({ step, active }: { step: BrowserStep; active: boolean }) {
       <span className="flex h-5 shrink-0 items-center">
         <StatusGlyph status={step.status} size="sm" label={null} />
       </span>
-      <span className="flex min-w-0 flex-1 flex-col gap-0.5">
+      <span className="flex min-w-0 flex-1 flex-col">
         <span
           className={cn(
-            "text-[13px] leading-5",
-            step.status === "queued" ? "text-kura-fg-muted" : "text-kura-fg",
+            "truncate text-[13px] leading-5",
+            step.status === "queued" ? "text-kura-fg-subtle" : "text-kura-fg",
             step.status === "running" && "font-medium",
             step.status === "skipped" && "text-kura-fg-subtle line-through",
           )}
@@ -225,7 +225,7 @@ function StepRow({ step, active }: { step: BrowserStep; active: boolean }) {
         {step.detail != null && (
           <span
             className={cn(
-              "truncate font-kura-mono text-[11.5px] leading-4",
+              "truncate font-kura-mono text-[12px] leading-5",
               step.status === "failed" ? "text-kura-danger-text" : "text-kura-fg-subtle",
             )}
           >
@@ -233,7 +233,7 @@ function StepRow({ step, active }: { step: BrowserStep; active: boolean }) {
           </span>
         )}
       </span>
-      <span className="flex h-5 shrink-0 items-center font-kura-mono text-[11px] text-kura-fg-subtle">
+      <span className="flex h-5 shrink-0 items-center text-[12px] text-kura-fg-subtle">
         {step.kind}
       </span>
     </li>
@@ -352,9 +352,14 @@ export function BrowserSession({
           >
             {STATUS_TEXT[status]}
           </span>
-          {statusText != null && (
-            <span className="hidden min-w-0 truncate text-kura-fg-subtle @md:inline">
-              {statusText}
+          {(statusText ?? title) != null && (
+            <span
+              data-slot={
+                statusText != null ? "browser-session-status-text" : "browser-session-title"
+              }
+              className="hidden min-w-0 truncate text-kura-fg-subtle @md:inline"
+            >
+              {statusText ?? title}
             </span>
           )}
         </span>
@@ -400,18 +405,8 @@ export function BrowserSession({
         <div data-slot="browser-session-browser" className="flex min-w-0 flex-col">
           <div
             data-slot="browser-session-chrome"
-            className="relative flex h-9 shrink-0 items-center gap-2.5 px-1.5 pb-1.5"
+            className="relative flex h-9 shrink-0 items-center px-1.5 pb-1.5"
           >
-            {title && (
-              <span className="hidden max-w-[34%] min-w-0 items-center gap-2 pl-1 @lg:flex">
-                <Globe
-                  aria-hidden
-                  strokeWidth={1.75}
-                  className="size-3.5 shrink-0 text-kura-fg-subtle"
-                />
-                <span className="truncate font-medium text-[12.5px]">{title}</span>
-              </span>
-            )}
             {/* biome-ignore lint/a11y/useSemanticElements: a fieldset would add form semantics to a read-only address */}
             <div
               data-slot="browser-session-address"

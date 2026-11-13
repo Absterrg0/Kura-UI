@@ -407,7 +407,7 @@ export function Terminal({
         maxLines != null && total > maxLines ? (expanded ? "expanded" : "collapsed") : undefined
       }
       className={cn(
-        "@container/terminal relative flex min-w-0 flex-col overflow-hidden rounded-kura-xl bg-kura-surface font-kura-sans text-kura-fg shadow-kura-sm",
+        "@container/terminal relative flex min-w-0 flex-col overflow-hidden rounded-kura-xl bg-kura-surface font-kura-sans text-kura-fg shadow-kura-surface",
         className,
       )}
       style={style}
@@ -425,7 +425,13 @@ export function Terminal({
           )}
           <span
             data-slot="terminal-title"
-            className="min-w-0 truncate font-semibold text-[13px] tracking-[-0.01em]"
+            className={cn(
+              "min-w-0 truncate",
+              // Without a title the heading is the working directory, and a path reads as mono.
+              title == null && cwd
+                ? "font-kura-mono text-[12.5px]"
+                : "font-semibold text-[13px] tracking-[-0.01em]",
+            )}
           >
             {heading}
           </span>
@@ -548,7 +554,6 @@ export function Terminal({
               >
                 <ChevronsUpDown aria-hidden className="size-3.5" strokeWidth={1.75} />
                 Show all {total} lines
-                <span className="h-px flex-1 bg-kura-border-subtle" />
               </button>
             )}
             {visible.map((line, i) => (

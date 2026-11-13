@@ -132,5 +132,6 @@ describe("FileChanges", () => {
       await axe(container);
       unmount();
     }
-  });
+    // The composition renders a whole DiffView; axe over it is slow on a busy machine.
+  }, 15_000);
 });

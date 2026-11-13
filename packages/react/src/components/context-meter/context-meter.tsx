@@ -241,50 +241,50 @@ function Breakdown({
 }) {
   const tone = TONE[level];
   return (
-    <div className="flex flex-col gap-3">
+    <div className="flex flex-col gap-3.5">
       <div className="flex items-baseline justify-between">
         <span className="font-semibold text-[13px] text-kura-fg tracking-[-0.01em]">
           {label} window
         </span>
-        <span className={cn("font-kura-mono text-xs tabular-nums", tone)}>
+        <span className={cn("font-kura-mono text-[12px] tabular-nums", tone)}>
           {formatTokens(used)} <span className="text-kura-fg-subtle">/ {formatTokens(max)}</span>
         </span>
       </div>
       <DotMatrix segments={segments} max={max} />
-      <ul className="flex flex-col gap-1.5" aria-label="Breakdown">
+      <ul className="flex flex-col gap-1" aria-label="Breakdown">
         {segments.map((s, i) => (
           <li
             key={s.id}
             data-slot="context-meter-segment"
-            className="flex items-center gap-2 text-[13px]"
+            className="flex h-6 items-center gap-2.5 text-[13px]"
           >
             <span
               aria-hidden
               className="size-1.5 shrink-0 rounded-full"
               style={{ background: segmentColor(s, i) }}
             />
-            <span className="min-w-0 flex-1 truncate text-kura-fg-muted">{s.label}</span>
-            <span className="font-kura-mono text-kura-fg text-xs tabular-nums">
+            <span className="min-w-0 flex-1 truncate text-kura-fg">{s.label}</span>
+            <span className="font-kura-mono text-[12px] text-kura-fg-subtle tabular-nums">
               {formatTokens(s.tokens)}
             </span>
-            <span className="w-9 text-right font-kura-mono text-kura-fg-subtle text-xs tabular-nums">
+            <span className="w-9 text-right font-kura-mono text-[12px] text-kura-fg tabular-nums">
               {max > 0 ? `${Math.round((s.tokens / max) * 100)}%` : "–"}
             </span>
           </li>
         ))}
-        <li className="flex items-center gap-2 text-[13px]">
+        <li className="flex h-6 items-center gap-2.5 text-[13px]">
           <span aria-hidden className="size-1.5 shrink-0 rounded-full bg-kura-dot-off" />
           <span className="flex-1 text-kura-fg-subtle">Free</span>
-          <span className="font-kura-mono text-kura-fg-subtle text-xs tabular-nums">
+          <span className="font-kura-mono text-[12px] text-kura-fg-subtle tabular-nums">
             {formatTokens(Math.max(0, max - used))}
           </span>
-          <span className="w-9 text-right font-kura-mono text-kura-fg-subtle text-xs tabular-nums">
+          <span className="w-9 text-right font-kura-mono text-[12px] text-kura-fg-subtle tabular-nums">
             {max > 0 ? `${Math.round((Math.max(0, max - used) / max) * 100)}%` : "–"}
           </span>
         </li>
       </ul>
       {(footer != null || level !== "ok") && (
-        <p className={cn("text-xs leading-relaxed", level === "ok" ? "text-kura-fg-muted" : tone)}>
+        <p className={cn("text-[12.5px] leading-5", level === "ok" ? "text-kura-fg-subtle" : tone)}>
           {footer ??
             (level === "danger"
               ? "Nearly full — the oldest turns will be dropped or summarized."
@@ -336,7 +336,7 @@ export function ContextPanel({
       data-level={level}
       aria-label={`${label} window: ${Math.round(ratio * 100)}% used`}
       className={cn(
-        "flex min-w-0 flex-col rounded-kura-xl bg-kura-surface p-4 font-kura-sans text-kura-fg shadow-kura-sm",
+        "flex min-w-0 flex-col rounded-kura-xl bg-kura-surface px-4 pt-3.5 pb-3 font-kura-sans text-kura-fg shadow-kura-surface",
         className,
       )}
       {...props}

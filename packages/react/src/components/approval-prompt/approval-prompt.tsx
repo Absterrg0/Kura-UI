@@ -55,6 +55,8 @@ export interface ApprovalPromptProps extends Omit<React.ComponentProps<"section"
   requestedAt?: Date | number;
   /** Extra detail behind a “Details” expander (a diff, the full arguments, affected files…). */
   details?: React.ReactNode;
+  /** Start with `details` expanded, e.g. when they hold the diff being approved. Default false. */
+  defaultDetailsOpen?: boolean;
   /** Decision (controlled). */
   decision?: ApprovalDecision;
   /** Initial decision when uncontrolled. Default "pending". */
@@ -115,6 +117,7 @@ export function ApprovalPrompt({
   agent,
   requestedAt,
   details,
+  defaultDetailsOpen = false,
   decision: decisionProp,
   defaultDecision = "pending",
   onDecisionChange,
@@ -136,7 +139,7 @@ export function ApprovalPrompt({
   });
   const pending = decision === "pending";
   const id = React.useId();
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = React.useState(defaultDetailsOpen);
   const [by, setBy] = React.useState<string | null>(null);
   const confirm = agentConfirm ?? (command != null ? `Runs ${command}` : "Approves this request");
   const waited = useElapsed(requestedAt, pending);
@@ -234,7 +237,7 @@ export function ApprovalPrompt({
       ref={mergeRefs(rootRef, ref)}
     >
       {/* The light keeps to the corner: a smaller one in a narrow card, clear of the headline. */}
-      <Halftone visible={pending} className="hidden @md:block" />
+      <Halftone visible={pending} className="bottom-auto hidden h-44 @md:block" />
       <Halftone visible={pending} reach={0.46} className="bottom-auto h-28 @md:hidden" />
 
       <div className="flex flex-col px-[18px] pt-[18px] pb-4">

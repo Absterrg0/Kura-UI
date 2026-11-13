@@ -15,26 +15,29 @@ const CHANGES: FileChange[] = [
 ];
 
 export function FileChangesMinimal() {
-  return <FileChanges files={CHANGES} className="w-full max-w-sm" />;
+  return (
+    <FileChanges
+      files={CHANGES.map((f) =>
+        f.path === "src/routes/account/page.tsx" ? { ...f, state: "editing" as const } : f,
+      )}
+      className="w-full max-w-sm"
+    />
+  );
 }
+
+const DONE = (path: string) => CHANGES.find((f) => f.path === path)!;
 
 /** Snapshots of what the agent has touched, one per step of the run. */
 const STEPS: FileChange[][] = [
-  [{ path: "src/auth/client.ts", status: "M", state: "reading" }],
-  [{ path: "src/auth/client.ts", status: "M", additions: 4, deletions: 6, state: "editing" }],
   [
-    { path: "src/auth/client.ts", status: "M", additions: 13, deletions: 16 },
-    { path: "src/middleware.ts", status: "M", additions: 1, deletions: 1, state: "editing" },
-  ],
-  [
-    { path: "src/auth/client.ts", status: "M", additions: 13, deletions: 16 },
-    { path: "src/middleware.ts", status: "M", additions: 2, deletions: 2 },
+    DONE("src/auth/client.ts"),
+    DONE("src/middleware.ts"),
     { path: "src/auth/types.ts", status: "A", additions: 3, state: "editing" },
   ],
   [
-    { path: "src/auth/client.ts", status: "M", additions: 13, deletions: 16 },
-    { path: "src/middleware.ts", status: "M", additions: 2, deletions: 2 },
-    { path: "src/auth/types.ts", status: "A", additions: 6 },
+    DONE("src/auth/client.ts"),
+    DONE("src/middleware.ts"),
+    DONE("src/auth/types.ts"),
     {
       path: "src/auth/__tests__/login.test.ts",
       status: "M",
@@ -44,11 +47,11 @@ const STEPS: FileChange[][] = [
     },
   ],
   [
-    { path: "src/auth/client.ts", status: "M", additions: 13, deletions: 16 },
-    { path: "src/middleware.ts", status: "M", additions: 2, deletions: 2 },
-    { path: "src/auth/types.ts", status: "A", additions: 6 },
-    { path: "src/auth/__tests__/login.test.ts", status: "M", additions: 7, deletions: 5 },
-    { path: "src/lib/legacy-session.ts", status: "D", deletions: 10 },
+    DONE("src/auth/client.ts"),
+    DONE("src/middleware.ts"),
+    DONE("src/auth/types.ts"),
+    DONE("src/auth/__tests__/login.test.ts"),
+    DONE("src/lib/legacy-session.ts"),
     {
       path: "src/routes/account/page.tsx",
       status: "M",
@@ -65,7 +68,7 @@ export function FileChangesFull() {
   const [selected, setSelected] = React.useState<string | null>("src/auth/client.ts");
   React.useEffect(() => {
     if (step >= STEPS.length - 1) return;
-    const id = setTimeout(() => setStep((s) => s + 1), step === 0 ? 1400 : 1800);
+    const id = setTimeout(() => setStep((s) => s + 1), 2200);
     return () => clearTimeout(id);
   }, [step]);
   return (

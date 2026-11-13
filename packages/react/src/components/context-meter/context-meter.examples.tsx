@@ -2,7 +2,6 @@
 
 import { ArrowUp, Paperclip } from "lucide-react";
 import * as React from "react";
-import { Button } from "../button";
 import { IconButton } from "../icon-button";
 import { ContextMeter, ContextPanel, type ContextSegment } from "./context-meter";
 
@@ -18,40 +17,26 @@ export function ContextMeterMinimal() {
   return <ContextPanel max={200_000} segments={BASE} className="w-full max-w-[320px]" />;
 }
 
+/** Each turn adds about 6k tokens of conversation; watch the window fill past the warning line. */
 export function ContextMeterFull() {
-  const [logs, setLogs] = React.useState(0);
+  const [turns, setTurns] = React.useState(0);
+  React.useEffect(() => {
+    if (turns >= 11) return;
+    const id = setTimeout(() => setTurns((t) => t + 1), turns === 0 ? 1000 : 650);
+    return () => clearTimeout(id);
+  }, [turns]);
   const segments = BASE.map((s) =>
-    s.id === "files" ? { ...s, tokens: s.tokens + logs * 24_000 } : s,
+    s.id === "history" ? { ...s, tokens: s.tokens + turns * 6_200 } : s,
   );
   return (
-    <div className="flex w-full max-w-md flex-col rounded-kura-xl bg-kura-surface shadow-kura-surface">
-      <div className="flex flex-col gap-0.5 px-4 pt-3.5 pb-3">
-        <span className="truncate font-semibold text-[13px] text-kura-fg tracking-[-0.01em]">
-          Auth middleware refactor
-        </span>
-        <span className="text-[12.5px] text-kura-fg-subtle">32 turns · 200k context window</span>
-      </div>
-      <div className="flex flex-wrap items-center justify-between gap-x-3 gap-y-2 px-2.5 pb-2.5">
-        <ContextMeter
-          max={200_000}
-          segments={segments}
-          valueDisplay="tokens"
-          warningAt={0.7}
-          dangerAt={0.9}
-          footer="Files count once per turn; tool definitions are cached."
-        />
-        <div className="flex items-center gap-1.5">
-          {logs > 0 && (
-            <Button variant="ghost" size="sm" onClick={() => setLogs(0)}>
-              Clear
-            </Button>
-          )}
-          <Button variant="secondary" size="sm" onClick={() => setLogs((n) => n + 1)}>
-            <Paperclip /> Attach a log
-          </Button>
-        </div>
-      </div>
-    </div>
+    <ContextPanel
+      max={200_000}
+      segments={segments}
+      warningAt={0.7}
+      dangerAt={0.9}
+      footer="Older turns are summarized at 90%."
+      className="w-full max-w-[320px]"
+    />
   );
 }
 
@@ -63,17 +48,28 @@ const THREADS = [
 
 export function ContextMeterThresholds() {
   return (
-    <ul className="flex w-full max-w-md flex-col">
-      {THREADS.map((t) => (
-        <li
-          key={t.title}
-          className="flex h-10 items-center justify-between gap-4 text-[13px] text-kura-fg"
-        >
-          <span className="min-w-0 truncate">{t.title}</span>
-          <ContextMeter max={128_000} used={t.used} label={t.title} className="shrink-0" />
-        </li>
-      ))}
-    </ul>
+    <section
+      aria-label="Threads"
+      className="flex w-full max-w-sm flex-col rounded-kura-xl bg-kura-surface pb-1.5 shadow-kura-surface"
+    >
+      <div className="flex h-11 items-center gap-2.5 px-4">
+        <span className="font-semibold text-[13px] text-kura-fg tracking-[-0.01em]">Threads</span>
+        <span className="font-kura-mono text-[12px] text-kura-fg-subtle tabular-nums">
+          {THREADS.length}
+        </span>
+      </div>
+      <ul className="flex flex-col">
+        {THREADS.map((t) => (
+          <li
+            key={t.title}
+            className="mx-1.5 flex h-9 items-center justify-between gap-4 rounded-[9px] pr-0.5 pl-2.5 text-[13px] text-kura-fg"
+          >
+            <span className="min-w-0 truncate">{t.title}</span>
+            <ContextMeter max={128_000} used={t.used} label={t.title} className="shrink-0" />
+          </li>
+        ))}
+      </ul>
+    </section>
   );
 }
 

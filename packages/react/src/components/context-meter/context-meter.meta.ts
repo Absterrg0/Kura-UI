@@ -121,9 +121,9 @@ export default defineComponent({
     {
       name: "ContextMeterFull",
       kind: "full",
-      title: "Thread header with a breakdown",
+      title: "Filling up, live",
       description:
-        "A thread card with the meter and its breakdown on hover. Attach logs to watch the numbers roll past the thresholds.",
+        "A ContextPanel as turns arrive: the conversation's dots spread across the hundred, the figures pass the 70% warning threshold, and a footer says what happens at 90%.",
     },
     {
       name: "ContextMeterThresholds",

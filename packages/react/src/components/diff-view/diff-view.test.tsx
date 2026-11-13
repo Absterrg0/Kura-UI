@@ -369,6 +369,19 @@ describe("DiffView", () => {
     expect(screen.getByText("No changes")).toBeInTheDocument();
   });
 
+  it("renders a footer inside the sheet only when given", () => {
+    const { container, rerender } = render(<DiffView diff={TWO_FILES} />);
+    expect(container.querySelector("[data-slot=diff-view-footer]")).toBeNull();
+    rerender(<DiffView diff={TWO_FILES} footer={<button type="button">Apply</button>} />);
+    const footer = container.querySelector("[data-slot=diff-view-footer]")!;
+    expect(container.querySelector("[data-slot=diff-view]")).toContainElement(
+      footer as HTMLElement,
+    );
+    expect(
+      within(footer as HTMLElement).getByRole("button", { name: "Apply" }),
+    ).toBeInTheDocument();
+  });
+
   it("highlights syntax and changed words", () => {
     const { container } = render(
       <DiffView

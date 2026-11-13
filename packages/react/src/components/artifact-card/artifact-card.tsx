@@ -130,7 +130,7 @@ export function ArtifactCard({
           : `${title} ready`;
 
   const titleClass =
-    "min-w-0 truncate text-left font-medium text-kura-fg text-sm leading-5 outline-hidden";
+    "min-w-0 truncate text-left font-medium text-[13px] text-kura-fg leading-5 tracking-[-0.003em] outline-hidden";
   // The open control stretches over the whole card (after: overlay), so the card is one target
   // while the version switcher and actions stay separately clickable above it.
   const stretch =
@@ -216,7 +216,10 @@ export function ArtifactCard({
         compact ? "w-fit max-w-full" : "w-full",
         openable &&
           "hover:bg-kura-raised has-[[data-slot=artifact-card-open]:active]:translate-y-px motion-reduce:has-[[data-slot=artifact-card-open]:active]:translate-y-0",
-        selected && "bg-kura-raised outline-2 outline-kura-border-strong -outline-offset-1",
+        // Selected strengthens the sheet's own hairline (same geometry, drawn on top) instead of
+        // adding a second ring beside it, which would smear on the curve.
+        selected &&
+          "bg-kura-raised shadow-[0_0_0_1px_color-mix(in_oklab,var(--kura-fg)_30%,transparent),var(--kura-elev-surface)]",
         "has-[[data-slot=artifact-card-open]:focus-visible]:outline-2 has-[[data-slot=artifact-card-open]:focus-visible]:outline-solid has-[[data-slot=artifact-card-open]:focus-visible]:outline-kura-ring has-[[data-slot=artifact-card-open]:focus-visible]:outline-offset-2",
         className,
       )}
@@ -227,7 +230,9 @@ export function ArtifactCard({
           data-slot="artifact-card-preview"
           aria-hidden
           inert
-          className="relative mx-1.5 mt-1.5 h-36 overflow-hidden rounded-kura-lg bg-kura-surface-sunken shadow-kura-sunk"
+          // The thumbnail is the top of the card itself, flush to its edges: one object, not a box
+          // inside a box.
+          className="relative h-28 overflow-hidden bg-kura-surface-sunken"
         >
           <div
             className={cn(
@@ -242,7 +247,10 @@ export function ArtifactCard({
 
       <div
         data-slot="artifact-card-header"
-        className={cn("flex min-w-0 items-center gap-3", compact ? "p-2 pr-2.5" : "px-3 py-2.5")}
+        className={cn(
+          "flex min-w-0 items-center gap-3",
+          compact ? "p-2 pr-2.5" : "py-2.5 pr-2 pl-3",
+        )}
       >
         <span
           aria-hidden
@@ -264,7 +272,7 @@ export function ArtifactCard({
           {titleNode}
           <span
             data-slot="artifact-card-meta"
-            className="flex min-w-0 items-center gap-1.5 text-kura-fg-muted text-xs leading-5"
+            className="flex min-w-0 items-center gap-1.5 text-[12.5px] text-kura-fg-subtle leading-5"
           >
             {busy ? (
               <>
@@ -272,7 +280,7 @@ export function ArtifactCard({
                   {statusText ?? (status === "generating" ? "Generating…" : "Updating…")}
                 </span>
                 {pct != null && (
-                  <span className="shrink-0 font-kura-mono text-[11px] text-kura-fg-subtle tabular-nums">
+                  <span className="shrink-0 font-kura-mono text-[12px] text-kura-fg-subtle tabular-nums">
                     {pct}%
                   </span>
                 )}
@@ -300,7 +308,7 @@ export function ArtifactCard({
               disabled={shownVersion <= 1 || busy}
               onClick={() => setVersion(shownVersion - 1)}
             />
-            <span className="min-w-[4.5ch] text-center font-kura-mono text-[11px] tabular-nums">
+            <span className="min-w-[4.5ch] text-center font-kura-mono text-[12px] tabular-nums">
               <span className="sr-only">Version </span>v{shownVersion}
               <span className="text-kura-fg-subtle/70">
                 <span aria-hidden>/</span>
@@ -348,8 +356,9 @@ export function ArtifactCard({
 }
 
 const LINES: Record<ArtifactKind, number[]> = {
-  document: [46, 0, 94, 88, 91, 62, 0, 90, 84],
-  code: [38, 62, 54, 0, 70, 48, 66, 40, 0, 30],
+  // Sized to end on a whole row inside the 112px thumbnail.
+  document: [46, 0, 94, 88, 62, 0, 84],
+  code: [38, 62, 54, 0, 70, 48, 40],
   web: [],
   image: [],
   data: [],
@@ -396,7 +405,7 @@ function PreviewPlaceholder({ kind, busy }: { kind: ArtifactKind; busy: boolean 
     );
   }
   return (
-    <div className={cn("flex flex-col gap-1.5 p-5", pulse)}>
+    <div className={cn("flex flex-col gap-1.5 p-4", pulse)}>
       {LINES[kind].map((w, i) =>
         w === 0 ? (
           <span key={i} className="h-1" />

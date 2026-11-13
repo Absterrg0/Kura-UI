@@ -74,6 +74,8 @@ export interface DiffViewProps extends Omit<React.ComponentProps<"div">, "title"
   actions?: React.ReactNode;
   /** Rendered when there are no files. Default "No changes". */
   empty?: React.ReactNode;
+  /** A footer row inside the sheet, under a hairline: an Apply key, a keyboard legend, a tally. */
+  footer?: React.ReactNode;
 }
 
 const tokenClass: Record<CodeTokenType, string | undefined> = {
@@ -265,6 +267,7 @@ export function DiffView({
   maxHeight,
   actions,
   empty,
+  footer,
   className,
   style,
   onKeyDown,
@@ -506,7 +509,7 @@ export function DiffView({
       data-reviewable={reviewable || undefined}
       data-state={allHunks.length === 0 ? "empty" : pendingCount === 0 ? "reviewed" : "pending"}
       className={cn(
-        "@container/diff flex min-w-0 flex-col overflow-clip rounded-kura-xl bg-kura-surface font-kura-sans text-[13px] text-kura-fg shadow-kura-sm outline-hidden focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-kura-ring",
+        "@container/diff flex min-w-0 flex-col overflow-clip rounded-kura-xl bg-kura-surface font-kura-sans text-[13px] text-kura-fg shadow-kura-surface outline-hidden focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-kura-ring",
         className,
       )}
       style={{ ...syntaxVars, ...style }}
@@ -515,9 +518,12 @@ export function DiffView({
       {...props}
       ref={mergeRefs(rootRef, ref)}
     >
-      <div data-slot="diff-view-header" className="flex h-11 shrink-0 items-center gap-3 pr-3 pl-4">
+      <div
+        data-slot="diff-view-header"
+        className="flex h-11 shrink-0 items-center gap-3 pr-2 pl-3.5"
+      >
         <span className="flex min-w-0 items-baseline gap-2.5">
-          <span id={titleId} className="min-w-[3rem] truncate font-medium tracking-[-0.006em]">
+          <span id={titleId} className="min-w-0 truncate font-semibold tracking-[-0.01em]">
             {title}
           </span>
           <span
@@ -635,7 +641,7 @@ export function DiffView({
               <div
                 data-slot="diff-view-file-header"
                 className={cn(
-                  "sticky top-0 z-[2] flex h-10 items-center gap-2 bg-kura-surface pr-3",
+                  "sticky top-0 z-[2] flex h-10 items-center gap-2 bg-kura-surface pr-2",
                   open && "shadow-[inset_0_-1px_0_var(--kura-border-subtle)]",
                 )}
               >
@@ -648,7 +654,7 @@ export function DiffView({
                   aria-expanded={open}
                   aria-controls={bodyId}
                   onClick={() => setFileCollapsed(file.path, open)}
-                  className="flex h-full min-w-0 flex-1 cursor-pointer items-center gap-2 pl-3 text-left outline-hidden transition-colors duration-(--kura-duration-fast) ease-kura-out hover:bg-kura-hover focus-visible:shadow-[inset_0_0_0_2px_var(--kura-ring)] motion-reduce:transition-none"
+                  className="flex h-full min-w-0 flex-1 cursor-pointer items-center gap-2 pr-1 pl-3.5 text-left outline-hidden transition-colors duration-(--kura-duration-fast) ease-kura-out hover:bg-kura-hover focus-visible:shadow-[inset_0_0_0_2px_var(--kura-ring)] motion-reduce:transition-none"
                 >
                   <ChevronRight
                     aria-hidden
@@ -731,7 +737,7 @@ export function DiffView({
                     {filePending > 0 ? (
                       <Button
                         size="xs"
-                        variant="outline"
+                        variant="secondary"
                         onClick={() => decideFile(file.path, "accepted")}
                         aria-label={`Accept file ${file.path}`}
                       >
@@ -786,6 +792,14 @@ export function DiffView({
           );
         })}
       </div>
+      {footer != null && (
+        <div
+          data-slot="diff-view-footer"
+          className="flex min-h-11 shrink-0 flex-wrap items-center gap-x-3 gap-y-1.5 border-kura-border-subtle border-t py-1.5 pr-2 pl-3.5 text-[12.5px] text-kura-fg-subtle"
+        >
+          {footer}
+        </div>
+      )}
       <span className="sr-only" role="status" aria-live="polite">
         {announcement}
       </span>
@@ -867,7 +881,7 @@ function FileBody({
             <div
               data-slot="diff-view-hunk-header"
               className={cn(
-                "flex h-8 items-center gap-3 bg-kura-surface-sunken pr-3 font-kura-mono text-[12px] text-kura-fg-subtle transition-colors duration-(--kura-duration-fast) ease-kura-out group-focus-within/hunk:bg-kura-accent-subtle/60 motion-reduce:transition-none",
+                "flex h-8 items-center gap-3 bg-kura-surface-sunken pr-1 font-kura-mono text-[12px] text-kura-fg-subtle transition-colors duration-(--kura-duration-fast) ease-kura-out group-focus-within/hunk:bg-kura-accent-subtle/60 motion-reduce:transition-none",
                 k > 0 && "border-kura-border-subtle border-t",
               )}
             >
@@ -920,6 +934,7 @@ function FileBody({
                           size="xs"
                           variant="ghost"
                           aria-label="Reject change"
+                          className="text-kura-fg-subtle"
                           tabIndex={active ? 0 : -1}
                           onClick={() => onDecide(h.id, "rejected")}
                         >
@@ -930,7 +945,7 @@ function FileBody({
                       <Tooltip content="Accept change" shortcut={["a"]}>
                         <Button
                           size="xs"
-                          variant="secondary"
+                          variant="ghost"
                           aria-label="Accept change"
                           tabIndex={active ? 0 : -1}
                           onClick={() => onDecide(h.id, "accepted")}
@@ -1036,7 +1051,7 @@ const Line = React.memo(function Line({
       <span
         aria-hidden
         className={cn(
-          "shrink-0 select-none pr-2 text-right text-kura-fg-muted tabular-nums",
+          "shrink-0 select-none pr-2 text-right text-kura-fg-subtle tabular-nums",
           !settled && add && "bg-kura-success/[0.1]",
           !settled && remove && "bg-kura-danger/[0.09]",
         )}
@@ -1047,7 +1062,7 @@ const Line = React.memo(function Line({
       <span
         aria-hidden
         className={cn(
-          "shrink-0 select-none pr-2 text-right text-kura-fg-muted tabular-nums",
+          "shrink-0 select-none pr-2 text-right text-kura-fg-subtle tabular-nums",
           !settled && add && "bg-kura-success/[0.1]",
           !settled && remove && "bg-kura-danger/[0.09]",
         )}
