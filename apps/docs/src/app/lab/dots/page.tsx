@@ -1,13 +1,15 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { Dots } from "./dots";
+import { ThemedDots } from "./themed";
 
 export const metadata: Metadata = { title: "Lab: dots", robots: { index: false } };
 
-export default async function DotsPage({
-  searchParams,
-}: {
-  searchParams: Promise<{ theme?: string }>;
-}) {
-  const { theme } = await searchParams;
-  return <Dots theme={theme === "light" ? "light" : "dark"} />;
+// The static file holds the dark scene; `?theme=light` is applied once the page is in a browser.
+export default function DotsPage() {
+  return (
+    <Suspense fallback={<Dots />}>
+      <ThemedDots />
+    </Suspense>
+  );
 }
