@@ -1,7 +1,8 @@
 "use client";
 
-import { RotateCcw, Square } from "lucide-react";
 import * as React from "react";
+import { cn } from "../../lib/cn";
+import { AgentSigil } from "../agent-sigil";
 import { Button } from "../button";
 import { ShimmerText } from "../shimmer-text";
 import { StreamingText } from "./streaming-text";
@@ -28,17 +29,12 @@ export function StreamingTextMinimal() {
 }
 
 export function StreamingTextFull() {
-  const [run, setRun] = React.useState(0);
   const [text, setText] = React.useState("");
   const [streaming, setStreaming] = React.useState(true);
-  const [complete, setComplete] = React.useState(false);
+  const [done, setDone] = React.useState(false);
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: `run` restarts the fake stream
   React.useEffect(() => {
     const controller = new AbortController();
-    setText("");
-    setStreaming(true);
-    setComplete(false);
     (async () => {
       let acc = "";
       for await (const token of fakeTokens(ANSWER, controller.signal)) {
@@ -48,34 +44,23 @@ export function StreamingTextFull() {
       if (!controller.signal.aborted) setStreaming(false);
     })();
     return () => controller.abort();
-  }, [run]);
+  }, []);
 
   return (
-    <div className="flex w-full max-w-md flex-col gap-4">
+    <div className="flex w-full max-w-md flex-col gap-3">
       <StreamingText
         text={text}
         streaming={streaming}
         speed={120}
-        animation="blur"
+        animation="fade"
         caret
-        onComplete={() => setComplete(true)}
-        className="min-h-32"
+        onComplete={() => setDone(true)}
+        className="min-h-[104px]"
       />
-      <div className="flex h-6 items-center justify-between">
-        <span className="text-kura-fg-subtle text-xs tabular-nums">
-          {complete ? `Done · ${text.length} characters` : "Receiving tokens…"}
-        </span>
-        {complete && (
-          <Button
-            variant="ghost"
-            size="xs"
-            className="animate-kura-fade-in"
-            onClick={() => setRun((r) => r + 1)}
-          >
-            <RotateCcw /> Replay
-          </Button>
-        )}
-      </div>
+      {/* The row is always laid out, so finishing never moves the text above. */}
+      <p className="h-5 font-kura-mono text-[12px] text-kura-fg-subtle tabular-nums">
+        {done && <span className="animate-kura-fade-in">{text.split(/\s+/).length} words</span>}
+      </p>
     </div>
   );
 }
@@ -98,44 +83,50 @@ export function StreamingTextComposition() {
 
   const { settled, chunks, isStreaming } = useStreamingText({ stream });
   const waiting = !stream;
+  const live = (waiting || isStreaming) && !stopped;
 
   return (
-    <div className="flex w-full max-w-md flex-col gap-3 rounded-kura-xl bg-kura-surface p-4 shadow-kura-sm">
-      <div className="flex h-6 items-center justify-between">
-        <span className="font-medium text-kura-fg text-sm">Assistant</span>
-        {(waiting || isStreaming) && !stopped && (
+    <div className="flex w-full max-w-md gap-3">
+      <AgentSigil name="Kura" />
+      <div className="flex min-w-0 flex-1 flex-col gap-1.5">
+        <div className="flex h-[30px] items-center justify-between gap-3">
+          <span className="font-medium text-[13px] text-kura-fg">Kura</span>
+          {/* Laid out even when hidden, so the header never shifts. */}
           <Button
             variant="ghost"
             size="xs"
+            className={cn(!live && "invisible")}
+            aria-hidden={!live || undefined}
+            tabIndex={live ? undefined : -1}
             onClick={() => {
               controller.current?.abort();
               setStopped(true);
             }}
           >
-            <Square className="fill-current" /> Stop
+            Stop
           </Button>
+        </div>
+        {waiting ? (
+          <p role="status" className="text-[15px] leading-relaxed">
+            <ShimmerText>Thinking…</ShimmerText>
+          </p>
+        ) : (
+          <p
+            aria-busy={isStreaming || undefined}
+            className="whitespace-pre-wrap text-[15px] text-kura-fg leading-relaxed"
+          >
+            {settled}
+            {chunks.map((c) => (
+              <span
+                key={c.id}
+                className="transition-opacity duration-(--kura-duration-slow) starting:opacity-0"
+              >
+                {c.text}
+              </span>
+            ))}
+          </p>
         )}
       </div>
-      {waiting ? (
-        <p role="status" className="text-[15px] leading-relaxed">
-          <ShimmerText>Thinking…</ShimmerText>
-        </p>
-      ) : (
-        <p
-          aria-busy={isStreaming || undefined}
-          className="whitespace-pre-wrap text-[15px] text-kura-fg leading-relaxed"
-        >
-          {settled}
-          {chunks.map((c) => (
-            <span
-              key={c.id}
-              className="transition-opacity duration-(--kura-duration-slow) starting:opacity-0"
-            >
-              {c.text}
-            </span>
-          ))}
-        </p>
-      )}
     </div>
   );
 }
