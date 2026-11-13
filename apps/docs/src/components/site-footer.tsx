@@ -47,16 +47,26 @@ export function SiteFooter() {
             <div key={col.title} className="flex flex-col gap-3">
               <p className="font-medium text-kura-fg">{col.title}</p>
               <ul className="flex flex-col gap-2">
-                {col.links.map((l) => (
-                  <li key={l.href}>
-                    <Link
-                      href={l.href}
-                      className="rounded-sm text-kura-fg-muted outline-hidden transition-colors hover:text-kura-fg focus-visible:shadow-kura-focus"
-                    >
-                      {l.label}
-                    </Link>
-                  </li>
-                ))}
+                {col.links.map((l) => {
+                  const className =
+                    "rounded-sm text-kura-fg-muted outline-hidden transition-colors hover:text-kura-fg focus-visible:shadow-kura-focus";
+                  // A file (llms.txt, the registry JSON) or another site is a plain link: Next
+                  // would try to prefetch it as a page and log a 404 for each one.
+                  const page = l.href.startsWith("/") && !/\.[a-z]+$/.test(l.href);
+                  return (
+                    <li key={l.href}>
+                      {page ? (
+                        <Link href={l.href} className={className}>
+                          {l.label}
+                        </Link>
+                      ) : (
+                        <a href={l.href} className={className}>
+                          {l.label}
+                        </a>
+                      )}
+                    </li>
+                  );
+                })}
               </ul>
             </div>
           ))}

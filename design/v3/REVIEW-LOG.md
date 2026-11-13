@@ -1,5 +1,63 @@
 # v3 review log — the dot language (council method)
 
+## Summary
+
+**Result: Fable 5.2 at 9.5 and Opus 5.5 at 9.5 after eleven rounds.** Opus listed no must-fix in
+rounds 10 and 11. Fable listed two one-line must-fixes in round 11; both were fixed in `5abde57`
+and verified by script, but not re-reviewed: the owner closed the loop there and shipped it.
+
+### What changed
+
+- **A look with rules.** The v2 site ("Raycast-grade dark", 7.9 at best) was rejected for having
+  no opinions. v3 is the dot language: agents emit tokens, so everything stateful or measured is
+  drawn in dots. Status is a 5×5 glyph, every agent has a sigil, progress and traces are rails of
+  dots, facts hang on dotted leaders, buttons are keycaps, and ember means one thing only: a
+  person is needed. It leaves the screen once they decide.
+- **The whole library on it.** All 43 components and the docs site were rebuilt on those seven
+  rules and on Vercel's UI SDK, so an agent can read and operate the same controls a person does.
+- **A hero that is a real run.** One agent run waiting on a high-risk approval, composed from
+  live components that share one clock. Approving or denying moves the stage 0px at every width,
+  with and without reduced motion, and every panel agrees on the numbers.
+- **Keyboard and screen readers.** A visible ring on every Tab stop in both themes; focus never
+  falls to `<body>` when a pressed control leaves; page-level keys stand down while typing,
+  behind a modal, under a tooltip and while their card is off screen; axe is clean at every level
+  on all 48 pages.
+- **Phones.** No page scrolls sideways at any width; no overlay leaves the screen; labels wrap or
+  give way in a set order instead of being cut to a few letters.
+- **Guards that stay.** `packages/react/test/focus-ring.test.ts` (a ring that can actually draw),
+  `packages/react/test/focus-fallback.test.tsx` (focus after a control leaves) and
+  `design/v3/overflow.mjs` (every page, five widths).
+
+### Before and after
+
+| | Before (v2, round 2) | After (v3, final) |
+| --- | --- | --- |
+| Home, dark, 1440 | ![before](shots/before-02-home-dark-1440-gate.jpg) | ![after](shots/after-02-home-dark-1440-gate.jpg) |
+| Home, light, 390 | ![before](shots/before-05-home-light-390-gate.jpg) | ![after](shots/after-05-home-light-390-gate.jpg) |
+| Components index | ![before](shots/before-06-components-dark-1440.jpg) | ![after](shots/after-06-components-dark-1440.jpg) |
+| Approval prompt page | ![before](shots/before-08-approval-prompt-dark-1440.jpg) | ![after](shots/after-08-approval-prompt-dark-1440.jpg) |
+
+Within v3, the first build (round 1, 8.0 / 7.8) and the last, and the final light theme:
+
+| Round 1 | Final | Final, light |
+| --- | --- | --- |
+| ![round 1](shots/round1-02-home-dark-1440-gate.jpg) | ![final](shots/after-02-home-dark-1440-gate.jpg) | ![final light](shots/after-03-home-light-1440-gate.jpg) |
+
+### What the loop cost, and why
+
+Rounds 1 to 4 fixed what was plainly wrong (invisible focus rings, a hero that jumped, clocks a
+second apart). From round 5 the scores moved a tenth at a time, because each round the reviewers
+looked somewhere new (touch, short screens, spoken text) and found a few small, real defects.
+Three of the fixes caused regressions that each cost a round: inline code that could not wrap
+(round 6), the Composer's character hint (rounds 8 to 10), and a Ctrl+K guard that was too broad
+(round 11). The overflow sweep and the focus tests exist so those cannot come back unseen.
+
+One thing no reviewer could see: the Cloudflare Pages build had failed on every commit since the
+rebuild, because the lab page read `?theme=` on the server and a static export cannot prerender
+that. Fixed in `777d3dc`, before deploying.
+
+### Scores by round
+
 Two review-only reviewers per round: **Fable 5.2 (high effort)** and **Opus 5.5 (extra-high
 effort)**. Fixed 14-shot set (`design/v3/shots.mjs`), scored on the 14-category rubric
 (`RUBRIC.md`) against `DIRECTION.md`. A round passes when **both** score ≥ 9.5 with no Must-fix.

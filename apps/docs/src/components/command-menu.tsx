@@ -88,7 +88,9 @@ export function CommandMenu({
 
   const go = (href: string) => {
     setOpen(false);
-    router.push(href);
+    // A file (llms.txt) is opened by the browser; only pages go through the router.
+    if (/\.[a-z]+$/.test(href)) window.location.assign(href);
+    else router.push(href);
   };
 
   return (
