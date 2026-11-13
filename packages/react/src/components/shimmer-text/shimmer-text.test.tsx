@@ -1,11 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { axe, render, screen, setReducedMotion } from "../../../test/utils";
 import { ShimmerText } from "./shimmer-text";
-import {
-  ShimmerTextFull,
-  ShimmerTextInToolStep,
-  ShimmerTextMinimal,
-} from "./shimmer-text.examples";
+import { ShimmerTextFull, ShimmerTextInMessage, ShimmerTextMinimal } from "./shimmer-text.examples";
 
 describe("ShimmerText", () => {
   it("renders readable text with a data-slot", () => {
@@ -46,7 +42,7 @@ describe("ShimmerText", () => {
   });
 
   it("examples render without a11y violations", async () => {
-    for (const Example of [ShimmerTextMinimal, ShimmerTextFull, ShimmerTextInToolStep]) {
+    for (const Example of [ShimmerTextMinimal, ShimmerTextFull, ShimmerTextInMessage]) {
       const { container, unmount } = render(<Example />);
       await axe(container);
       unmount();

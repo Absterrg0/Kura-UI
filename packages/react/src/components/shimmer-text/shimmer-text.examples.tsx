@@ -1,42 +1,51 @@
 "use client";
 
 import * as React from "react";
-import { Button } from "../button";
-import { StatusGlyph } from "../status-glyph";
+import { Message, MessageAvatar } from "../message";
 import { ShimmerText } from "./shimmer-text";
 
 export function ShimmerTextMinimal() {
-  return <ShimmerText>Thinking…</ShimmerText>;
+  return <ShimmerText className="text-[15px]">Thinking…</ShimmerText>;
 }
 
 export function ShimmerTextFull() {
   const [active, setActive] = React.useState(true);
+  React.useEffect(() => {
+    const id = setTimeout(() => setActive(false), 3600);
+    return () => clearTimeout(id);
+  }, []);
   return (
-    <div className="flex flex-col items-center gap-4">
-      <ShimmerText as="p" active={active} duration={2.4} spread={24} className="text-lg">
-        {active ? "Searching 24 sources…" : "Searched 24 sources"}
-      </ShimmerText>
-      <Button variant="secondary" size="sm" onClick={() => setActive((a) => !a)}>
-        {active ? "Finish" : "Restart"}
-      </Button>
-    </div>
+    <ShimmerText as="p" active={active} duration={2.4} spread={24} className="text-[15px]">
+      {active ? "Searching 24 sources…" : "Searched 24 sources"}
+    </ShimmerText>
   );
 }
 
-export function ShimmerTextInToolStep() {
+export function ShimmerTextInMessage() {
   const [done, setDone] = React.useState(false);
   React.useEffect(() => {
     const id = setTimeout(() => setDone(true), 3200);
     return () => clearTimeout(id);
   }, []);
   return (
-    <div className="flex w-72 items-center gap-2.5 rounded-kura-lg bg-kura-surface px-3 py-2.5 text-sm shadow-kura-sm">
-      <StatusGlyph status={done ? "done" : "running"} label={null} />
-      <span role="status" aria-live="polite">
+    <Message
+      from="assistant"
+      name="Kura"
+      avatar={<MessageAvatar name="Kura" />}
+      status={done ? "idle" : "streaming"}
+      className="max-w-md"
+    >
+      <span role="status" className="text-[13px]">
         <ShimmerText active={!done}>
           {done ? "Read package.json" : "Reading package.json…"}
         </ShimmerText>
       </span>
-    </div>
+      {done && (
+        <p className="animate-kura-fade-in">
+          You’re on React 19.2 and Next 16, so <code>useOptimistic</code> is available without a
+          canary build.
+        </p>
+      )}
+    </Message>
   );
 }
