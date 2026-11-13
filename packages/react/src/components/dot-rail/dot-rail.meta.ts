@@ -6,7 +6,7 @@ export default defineComponent({
   category: "feedback",
   status: "beta",
   description:
-    "Progress as a row of dots: lit dots for what is done, faint dots for what is left, a pulsing lead dot while it moves. Also draws spans on a time axis.",
+    "Progress as a row of whole dots: lit dots for what is done, faint dots for what is left, the next dot pulsing while it moves. Also draws spans on a time axis.",
   whenToUse: [
     "Show determinate progress of a run, a step or a subagent (Kura never uses solid progress bars).",
     "Draw a span on a shared time axis: give it `start` and `value` and stack several rails (this is how trace-waterfall draws spans).",
@@ -56,10 +56,20 @@ export default defineComponent({
     {
       name: "DotRail",
       dataSlot: "dot-rail",
-      description: "Root: the full row of faint dots. `data-tone`, `data-live`.",
+      description: "Root: sizes the rail (full width, one pitch tall). `data-tone`, `data-live`.",
     },
     { name: "Lit", dataSlot: "dot-rail-lit", description: "The lit run, snapped to whole dots." },
-    { name: "Head", dataSlot: "dot-rail-head", description: "The pulsing lead dot when `live`." },
+    {
+      name: "Track",
+      dataSlot: "dot-rail-track",
+      description: "The unlit dots: the widest run of whole dots that fits the root.",
+    },
+    {
+      name: "Head",
+      dataSlot: "dot-rail-head",
+      description:
+        "When `live`, the dot being filled: the first unlit dot, pulsing at the lit size.",
+    },
   ],
   a11y: {
     role: "progressbar",
@@ -67,14 +77,27 @@ export default defineComponent({
       "With `label` it is a progressbar (aria-valuemin 0, aria-valuemax 100, aria-valuenow). Without `label` it is decorative and hidden; put the number in text next to it.",
       "Lit and unlit dots differ in brightness, not only colour.",
     ],
-    reducedMotion: "The lead dot stops pulsing and the lit run changes length without easing.",
+    reducedMotion:
+      "The lead dot stops pulsing and rests at half strength; the lit run changes length without easing.",
   },
   dependencies: { npm: [], kura: [] },
   related: ["status-glyph", "trace-waterfall", "agent-fleet", "run-header", "context-meter"],
   tags: ["progress", "dots", "meter", "span", "timeline"],
   examples: [
     { name: "DotRailMinimal", kind: "minimal", title: "Progress" },
-    { name: "DotRailFull", kind: "full", title: "Tones, live and spans" },
+    {
+      name: "DotRailFull",
+      kind: "full",
+      title: "Steps of a run",
+      description:
+        "Ink while running, muted when finished, ember only where a person is needed; a StatusGlyph and a number beside each rail.",
+    },
+    {
+      name: "DotRailSpans",
+      kind: "variant",
+      title: "Spans on one axis",
+      description: "`start` and `value` place each step on a shared time axis, like a trace.",
+    },
     {
       name: "DotRailComposition",
       kind: "composition",
