@@ -109,6 +109,12 @@ export default defineComponent({
       type: "React.ReactNode",
       description: "Rendered when there are no files. Default an icon + “No changes”.",
     },
+    {
+      name: "footer",
+      type: "React.ReactNode",
+      description:
+        "A row inside the sheet under a hairline (`diff-view-footer`), for what acts on the review: an Apply key, a keyboard legend, a tally. Keep it to one line.",
+    },
   ],
   parts: [
     {
@@ -152,6 +158,11 @@ export default defineComponent({
       dataSlot: "diff-view-line",
       description:
         '`data-kind="context" | "add" | "remove"`: old and new line numbers, sign, highlighted code with word-level change marks.',
+    },
+    {
+      name: "Footer",
+      dataSlot: "diff-view-footer",
+      description: "Optional `footer` row, separated from the files by the sheet's one hairline.",
     },
   ],
   a11y: {
@@ -200,7 +211,7 @@ export default defineComponent({
       kind: "full",
       title: "Review session",
       description:
-        "The agent's whole migration (4 files, 9 hunks) with controlled review state, a scrolling body, pinned file headers and a keyboard legend. Try j, k, a, r, u.",
+        "The agent's whole migration (4 files, 9 hunks) with controlled review state, a scrolling body, pinned file headers and a keyboard legend in the footer. Try j, k, a, r, u.",
     },
     {
       name: "DiffViewStructured",
@@ -212,7 +223,7 @@ export default defineComponent({
       name: "DiffViewComposition",
       kind: "composition",
       title: "Apply accepted changes",
-      description: "A footer bar with a Button acts on the accepted hunks.",
+      description: "The `footer` holds an Apply key that acts on the accepted hunks.",
     },
   ],
   agentNotes: [

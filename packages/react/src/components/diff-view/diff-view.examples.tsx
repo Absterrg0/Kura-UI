@@ -143,37 +143,38 @@ export function DiffViewFull() {
   const accepted = decisions.filter((d) => d === "accepted").length;
   const rejected = decisions.length - accepted;
   return (
-    <div className="flex w-full max-w-3xl flex-col gap-3">
-      <DiffView
-        title="Review changes"
-        diff={AUTH_MIGRATION_DIFF}
-        review={review}
-        onReviewChange={setReview}
-        maxHeight={620}
-      />
-      <div className="flex flex-wrap items-center gap-x-3 gap-y-2 px-1 text-[12px] text-kura-fg-subtle">
-        <span className="flex items-center gap-1.5">
-          <Kbd size="sm">J</Kbd>
-          <Kbd size="sm">K</Kbd>
-          <span>move</span>
-        </span>
-        <span className="flex items-center gap-1.5">
-          <Kbd size="sm">A</Kbd>
-          <span>accept</span>
-        </span>
-        <span className="flex items-center gap-1.5">
-          <Kbd size="sm">R</Kbd>
-          <span>reject</span>
-        </span>
-        <span className="flex items-center gap-1.5">
-          <Kbd size="sm">U</Kbd>
-          <span>undo</span>
-        </span>
-        <span className="ml-auto whitespace-nowrap font-kura-mono tabular-nums">
-          {accepted} accepted · {rejected} rejected
-        </span>
-      </div>
-    </div>
+    <DiffView
+      title="Review changes"
+      diff={AUTH_MIGRATION_DIFF}
+      review={review}
+      onReviewChange={setReview}
+      maxHeight={560}
+      className="w-full max-w-3xl"
+      footer={
+        <>
+          <span className="flex items-center gap-1.5">
+            <Kbd size="sm">J</Kbd>
+            <Kbd size="sm">K</Kbd>
+            move
+          </span>
+          <span className="flex items-center gap-1.5">
+            <Kbd size="sm">A</Kbd>
+            accept
+          </span>
+          <span className="flex items-center gap-1.5">
+            <Kbd size="sm">R</Kbd>
+            reject
+          </span>
+          <span className="flex items-center gap-1.5">
+            <Kbd size="sm">U</Kbd>
+            undo
+          </span>
+          <span className="ml-auto whitespace-nowrap pr-1.5 font-kura-mono text-[12px] tabular-nums">
+            {accepted} accepted · {rejected} rejected
+          </span>
+        </>
+      }
+    />
   );
 }
 
@@ -229,28 +230,29 @@ export function DiffViewComposition() {
   const [applied, setApplied] = React.useState<number | null>(null);
   const accepted = Object.values(review).filter((d) => d === "accepted").length;
   return (
-    <div className="flex w-full max-w-3xl flex-col gap-3">
-      <DiffView
-        title="kura/auth-client"
-        diff={MIDDLEWARE_DIFF}
-        review={review}
-        onReviewChange={(next) => {
-          setReview(next);
-          setApplied(null);
-        }}
-      />
-      <div className="flex items-center justify-between gap-3 rounded-kura-xl bg-kura-surface py-2 pr-2 pl-3.5 shadow-kura-sm">
-        <span className="text-[13px] text-kura-fg-muted" role="status">
-          {applied != null
-            ? `Applied ${applied} ${applied === 1 ? "change" : "changes"} to kura/auth-client`
-            : accepted > 0
-              ? `${accepted} accepted ${accepted === 1 ? "change" : "changes"} ready`
-              : "Accept changes to apply them"}
-        </span>
-        <Button size="sm" disabled={accepted === 0} onClick={() => setApplied(accepted)}>
-          Apply changes
-        </Button>
-      </div>
-    </div>
+    <DiffView
+      title="kura/auth-client"
+      diff={MIDDLEWARE_DIFF}
+      review={review}
+      onReviewChange={(next) => {
+        setReview(next);
+        setApplied(null);
+      }}
+      className="w-full max-w-3xl"
+      footer={
+        <>
+          <span role="status" className="min-w-0 flex-1 truncate">
+            {applied != null
+              ? `Applied ${applied} ${applied === 1 ? "change" : "changes"} to kura/auth-client`
+              : accepted > 0
+                ? `${accepted} accepted ${accepted === 1 ? "change" : "changes"} ready`
+                : "Nothing accepted yet"}
+          </span>
+          <Button size="sm" disabled={accepted === 0} onClick={() => setApplied(accepted)}>
+            Apply changes
+          </Button>
+        </>
+      }
+    />
   );
 }
