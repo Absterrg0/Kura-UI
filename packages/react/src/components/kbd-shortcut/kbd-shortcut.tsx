@@ -74,7 +74,8 @@ export function KbdShortcut({
       data-pressed={pressed}
       data-bound={!!onTrigger && enabled}
       className={cn(
-        "group inline-flex items-center gap-1.5 font-kura-sans text-kura-fg-subtle text-xs",
+        // Baseline, not centre: the label and the letters on the keys sit on one line of text.
+        "group inline-flex items-baseline gap-1.5 font-kura-sans text-kura-fg-subtle text-xs",
         className,
       )}
       {...props}
