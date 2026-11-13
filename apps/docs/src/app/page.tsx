@@ -1,16 +1,18 @@
 import { ArrowRight } from "lucide-react";
 import Link from "next/link";
 import type * as React from "react";
+import { CtaLink } from "@/components/cta-link";
 import { AgentDemo } from "@/components/landing/agent-demo";
 import { AgentTerminal } from "@/components/landing/agent-terminal";
 import { BuiltRight } from "@/components/landing/built-right";
 import { CtaBand } from "@/components/landing/cta-band";
 import { EmberLight } from "@/components/landing/ember-light";
 import { FeatureBento } from "@/components/landing/feature-bento";
+import { HeroField } from "@/components/landing/hero-field";
 import { HeroStage } from "@/components/landing/hero-stage";
 import { InstallChip } from "@/components/landing/install-chip";
-import { siteButton } from "@/components/site-button";
-import { catalog } from "@/lib/catalog";
+import { Reveal } from "@/components/reveal";
+import { catalog, components } from "@/lib/catalog";
 
 // The four things generated from each component's manifest (the paragraph above them and the
 // transcript beside them say what a manifest holds).
@@ -52,8 +54,10 @@ export default function Home() {
       {/* Hero */}
       <section
         aria-labelledby="hero-title"
-        className="relative px-4 pt-14 md:px-6 md:pt-14 lg:pt-12"
+        className="relative px-4 pt-14 md:px-6 md:pt-20 lg:pt-24"
       >
+        {/* Reaches up under the glass nav, so the nav has something to frost. */}
+        <HeroField anchorId="hero-title" className="-top-[84px] h-[760px]" />
         <div className="relative z-10 mx-auto flex max-w-3xl flex-col items-center text-center">
           <h1
             id="hero-title"
@@ -65,17 +69,9 @@ export default function Home() {
             Open-source React components for agent runs, plans, terminals, diffs and approvals. Copy
             them into your app, or let your coding agent install them.
           </p>
-          <div className="flex w-full flex-col items-center gap-3 pt-9 sm:w-auto sm:flex-row">
-            <Link href="/components" className={siteButton({ className: "w-full sm:w-auto" })}>
-              Browse components
-            </Link>
-            <Link
-              href="/docs"
-              className={siteButton({ variant: "dark", className: "w-full sm:w-auto" })}
-            >
-              Get started
-            </Link>
-          </div>
+          <CtaLink href="/components" ring meta={components.length} className="mt-9">
+            Browse components
+          </CtaLink>
           <InstallChip command={install} className="mt-5" />
         </div>
 
@@ -165,7 +161,9 @@ export default function Home() {
             The parts that usually get skipped are done for you, and checked in CI for every
             component.
           </SectionHead>
-          <BuiltRight />
+          <Reveal>
+            <BuiltRight />
+          </Reveal>
         </div>
       </section>
 

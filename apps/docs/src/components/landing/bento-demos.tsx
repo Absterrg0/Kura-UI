@@ -13,9 +13,11 @@ import {
   MessageAvatar,
   MessageCopyButton,
   MessageFeedback,
+  MessageList,
 } from "@kura-ui/react/message";
 import { PromptQueue, type QueuedPrompt } from "@kura-ui/react/prompt-queue";
 import { Reasoning } from "@kura-ui/react/reasoning";
+import { StreamingText } from "@kura-ui/react/streaming-text";
 import { ToolCall } from "@kura-ui/react/tool-call";
 import * as React from "react";
 import { examples } from "@/generated/examples";
@@ -33,6 +35,7 @@ export function QueueDemo() {
   ]);
   return (
     <PromptQueue
+      className="h-full"
       items={items}
       onItemsChange={setItems}
       onSendNow={(item) => setItems((list) => list.filter((i) => i.id !== item.id))}
@@ -42,8 +45,8 @@ export function QueueDemo() {
 }
 
 export function CheckpointsDemo() {
-  const [checkpoints] = React.useState<Checkpoint[]>(() => {
-    const ago = (s: number) => Date.now() - s * 1000;
+  const initial = React.useMemo<Checkpoint[]>(() => {
+    const ago = (sec: number) => Date.now() - sec * 1000;
     return [
       {
         id: "c3",
@@ -62,8 +65,23 @@ export function CheckpointsDemo() {
       },
       { id: "c1", label: "Before the auth refactor", at: ago(690), kind: "manual" },
     ];
-  });
-  return <Checkpoints checkpoints={checkpoints} onRestore={() => {}} />;
+  }, []);
+  const [checkpoints, setCheckpoints] = React.useState(initial);
+  // Restoring takes a moment (the workspace is rewritten), then that point is the current one and
+  // the later ones are gone. A demo: after a while the agent's work comes back.
+  const restore = async (id: string) => {
+    await new Promise((r) => setTimeout(r, 900));
+    setCheckpoints((list) => {
+      const i = list.findIndex((c) => c.id === id);
+      return list.slice(i).map((c) => ({ ...c, current: c.id === id }));
+    });
+  };
+  React.useEffect(() => {
+    if (checkpoints.length === initial.length) return;
+    const t = setTimeout(() => setCheckpoints(initial), 9_000);
+    return () => clearTimeout(t);
+  }, [checkpoints, initial]);
+  return <Checkpoints checkpoints={checkpoints} onRestore={restore} className="h-full" />;
 }
 
 const FILES: FileChange[] = [
@@ -82,7 +100,7 @@ const FILES: FileChange[] = [
 ];
 
 export function FilesDemo() {
-  return <FileChanges files={FILES} defaultSelectedPath="src/auth/client.ts" />;
+  return <FileChanges files={FILES} defaultSelectedPath="src/auth/client.ts" className="h-full" />;
 }
 
 export function ToolsDemo() {
@@ -125,7 +143,7 @@ export function ToolsDemo() {
 export function BrowserDemo() {
   const Example = examples["browser-session"]?.BrowserSessionMinimal;
   return Example ? (
-    <div className="[&>[data-slot=browser-session]]:max-w-none">
+    <div className="flex [&>[data-slot=browser-session]]:max-w-none [&>[data-slot=browser-session]]:flex-1">
       <Example />
     </div>
   ) : null;
@@ -146,7 +164,7 @@ export function VoiceDemo() {
     return () => clearTimeout(id);
   }, [current]);
   return (
-    <div className="flex items-center gap-6 px-1">
+    <div className="sheet flex h-full items-center gap-6 rounded-kura-xl p-5">
       <AgentOrb
         state={current.state}
         analyser={analyser}
@@ -170,42 +188,146 @@ export function VoiceDemo() {
 const ANSWER =
   "The session fixture still returns the old token shape, so refresh() rejects it. Updating the fixture fixes the test; nothing else reads that field.";
 
-/** A turn of conversation: what was asked, how the agent thought, what it answered and from where. */
+// Canned replies for the demo: picked by what was asked, else in turn.
+const REPLIES: { match: RegExp; thought: string; text: string }[] = [
+  {
+    match: /fix|update|change|patch/i,
+    thought: "The fixture is the only place that builds a session by hand.",
+    text: "Done in two lines: the fixture now returns { token, refreshToken, expiresAt }, the shape the auth client expects. The login test passes again, 30 of 30.",
+  },
+  {
+    match: /other|else|anywhere|break/i,
+    thought: "Searched for every read of session.token across src and tests.",
+    text: "Nothing else breaks. Three files read the session, and all three go through the auth client, which already returns the new shape.",
+  },
+  {
+    match: /.*/,
+    thought: "Rechecked the diff of the refactor against the test's setup.",
+    text: "Good question. The refactor changed what refresh() accepts, not what it returns, so the only casualty is code that builds a session by hand. Today that is just this fixture.",
+  },
+];
+
+interface Turn {
+  id: number;
+  from: "user" | "assistant";
+  text: string;
+  thought?: string;
+  status: "thinking" | "streaming" | "done";
+}
+
+/** A turn of conversation, and a composer that works: send a follow-up and the agent answers. */
 export function ConversationDemo() {
   const [rating, setRating] = React.useState<"up" | "down" | null>(null);
+  const [turns, setTurns] = React.useState<Turn[]>([]);
+  const nextId = React.useRef(0);
+  const timer = React.useRef<ReturnType<typeof setTimeout> | null>(null);
+  const live = turns.find((t) => t.status !== "done");
+  React.useEffect(
+    () => () => {
+      if (timer.current) clearTimeout(timer.current);
+    },
+    [],
+  );
+
+  const send = ({ text }: { text: string }) => {
+    const q = text.trim();
+    if (!q) return;
+    const reply = REPLIES.find((r) => r.match.test(q)) ?? REPLIES[REPLIES.length - 1]!;
+    const id = ++nextId.current;
+    setTurns((t) => [
+      ...t,
+      { id: id * 2, from: "user", text: q, status: "done" },
+      {
+        id: id * 2 + 1,
+        from: "assistant",
+        text: reply.text,
+        thought: reply.thought,
+        status: "thinking",
+      },
+    ]);
+    timer.current = setTimeout(() => {
+      setTurns((t) => t.map((x) => (x.id === id * 2 + 1 ? { ...x, status: "streaming" } : x)));
+    }, 1_400);
+  };
+  const stop = () => {
+    if (timer.current) clearTimeout(timer.current);
+    setTurns((t) => t.map((x) => (x.status === "done" ? x : { ...x, status: "done" })));
+  };
+  const finish = (id: number) =>
+    setTurns((t) => t.map((x) => (x.id === id ? { ...x, status: "done" } : x)));
+
   return (
-    <div className="flex flex-col gap-4">
-      <Message from="user">Why did the login test start failing after the refactor?</Message>
-      <Message
-        from="assistant"
-        avatar={<MessageAvatar name="Kura" />}
-        actions={
-          <MessageActions visibility="always">
-            <MessageCopyButton text={ANSWER} />
-            <MessageFeedback value={rating} onValueChange={setRating} />
-          </MessageActions>
-        }
-      >
-        <Reasoning duration={9}>
-          The refactor moved refresh() onto the auth client. The test builds its session by hand, so
-          it never got the new token field.
-        </Reasoning>
-        <p>
-          The session fixture still returns the old token shape, so <code>refresh()</code> rejects
-          it
-          <Citation
-            index={1}
-            source={{
-              url: "https://github.com/acme/web/blob/main/src/auth/__tests__/login.test.ts",
-              title: "src/auth/__tests__/login.test.ts",
-              siteName: "acme/web",
-              snippet: "const session = { token: 'tok_expired', expiresAt: 0 }",
-            }}
-          />
-          . Updating the fixture fixes the test; nothing else reads that field.
-        </p>
-      </Message>
-      <Composer placeholder="Ask a follow-up…" />
+    <div className="sheet flex h-[440px] max-h-[440px] min-h-0 flex-col overflow-hidden rounded-kura-xl">
+      <MessageList className="min-h-0 flex-1" contentClassName="flex flex-col gap-5 px-4 pt-4 pb-2">
+        <Message from="user">Why did the login test start failing after the refactor?</Message>
+        <Message
+          from="assistant"
+          avatar={<MessageAvatar name="Kura" />}
+          actions={
+            <MessageActions visibility="always">
+              <MessageCopyButton text={ANSWER} />
+              <MessageFeedback value={rating} onValueChange={setRating} />
+            </MessageActions>
+          }
+        >
+          <Reasoning duration={9}>
+            The refactor moved refresh() onto the auth client. The test builds its session by hand,
+            so it never got the new token field.
+          </Reasoning>
+          <p>
+            The session fixture still returns the old token shape, so <code>refresh()</code> rejects
+            it
+            <Citation
+              index={1}
+              source={{
+                url: "https://github.com/acme/web/blob/main/src/auth/__tests__/login.test.ts",
+                title: "src/auth/__tests__/login.test.ts",
+                siteName: "acme/web",
+                snippet: "const session = { token: 'tok_expired', expiresAt: 0 }",
+              }}
+            />
+            . Updating the fixture fixes the test; nothing else reads that field.
+          </p>
+        </Message>
+        {turns.map((t) =>
+          t.from === "user" ? (
+            <Message key={t.id} from="user">
+              {t.text}
+            </Message>
+          ) : (
+            <Message
+              key={t.id}
+              from="assistant"
+              avatar={<MessageAvatar name="Kura" />}
+              status={t.status === "done" ? "idle" : "streaming"}
+            >
+              <Reasoning
+                active={t.status === "thinking"}
+                duration={t.status === "thinking" ? undefined : 1}
+              >
+                {t.thought}
+              </Reasoning>
+              {t.status !== "thinking" && (
+                <StreamingText
+                  text={t.text}
+                  streaming={t.status === "streaming"}
+                  onComplete={() => finish(t.id)}
+                  className="text-[14px]"
+                />
+              )}
+            </Message>
+          ),
+        )}
+      </MessageList>
+      <div className="p-2 pt-1">
+        <Composer
+          placeholder="Ask a follow-up…"
+          onSubmit={send}
+          onStop={stop}
+          status={live ? (live.status === "thinking" ? "submitted" : "streaming") : "idle"}
+          accept={false}
+        />
+      </div>
     </div>
   );
 }

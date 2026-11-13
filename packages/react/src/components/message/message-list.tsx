@@ -99,7 +99,7 @@ export function MessageList({
           if (e.deltaY < 0) stuck.current = false;
         }}
         data-slot="message-list-viewport"
-        className="min-h-0 flex-1 overflow-y-auto overscroll-contain outline-hidden [scrollbar-gutter:stable] [scrollbar-width:thin] focus-visible:shadow-[inset_0_0_0_2px_var(--kura-ring)]"
+        className="min-h-0 flex-1 overflow-y-auto outline-hidden [scrollbar-gutter:stable] [scrollbar-width:thin] focus-visible:shadow-[inset_0_0_0_2px_var(--kura-ring)]"
       >
         <div
           ref={content}

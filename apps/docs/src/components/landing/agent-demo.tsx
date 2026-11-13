@@ -55,6 +55,17 @@ export function AgentDemo({ className }: { className?: string }) {
   const agentRef = React.useRef<ReturnType<typeof createAgent> | null>(null);
   const root = React.useRef<HTMLDivElement>(null);
   const run = React.useRef(0);
+  // The agent's pointer: where it is, whether it is pressing, and what it says it is doing.
+  const [cursor, setCursor] = React.useState<{
+    x: number;
+    y: number;
+    on: boolean;
+    press: number;
+    note?: string;
+    flip?: boolean;
+  }>({ x: 0, y: 0, on: false, press: 0 });
+  // The component the agent is reading or acting on, ringed while it does.
+  const [focus, setFocus] = React.useState<"diff" | "prompt" | "both" | null>(null);
 
   // The agent may not approve: its press stops here until the person uses the prompt themselves.
   askRef.current = () =>
@@ -82,6 +93,31 @@ export function AgentDemo({ className }: { className?: string }) {
     const live = () => id === run.current;
     const wait = (ms: number) => new Promise((r) => setTimeout(r, reduced ? 0 : ms));
     const print = (...next: string[]) => live() && setLines((l) => [...l, ...next]);
+    // Glide the pointer to an element inside the demo, then press it.
+    const point = async (el: Element | null | undefined, note?: string) => {
+      const box = root.current?.getBoundingClientRect();
+      if (!el || !box || reduced) return;
+      const r = el.getBoundingClientRect();
+      setCursor((c) => ({
+        ...c,
+        on: true,
+        note,
+        x: r.left - box.left + r.width / 2,
+        y: r.top - box.top + r.height / 2,
+        // Near the right edge the name tag hangs to the left of the pointer instead.
+        flip: r.left - box.left + r.width / 2 > box.width - 190,
+      }));
+      await wait(720);
+    };
+    const press = async () => {
+      if (reduced) return;
+      setCursor((c) => ({ ...c, press: c.press + 1 }));
+      await wait(240);
+    };
+    const hunk = (i: number, label: string) =>
+      root.current
+        ?.querySelectorAll("[data-slot=diff-view-hunk]")
+        [i]?.querySelector(`button[aria-label="${label}"]`);
 
     setReview({});
     decided.current = "pending";
@@ -89,10 +125,13 @@ export function AgentDemo({ className }: { className?: string }) {
     settle.current?.();
     setLines([]);
     setState("running");
+    setFocus(null);
+    setCursor((cur) => ({ ...cur, on: false, note: undefined }));
     await wait(500);
 
     print(`${c("36", "›")} agent.snapshot()`);
-    await wait(450);
+    if (live()) setFocus("both");
+    await wait(650);
     const seen = agent.snapshot().filter((e) => e.label === DIFF || e.label?.startsWith(PROMPT));
     // Each entry on two short lines (what it is and its value, then what can be done to it),
     // so the transcript reads whole on a phone.
@@ -103,14 +142,20 @@ export function AgentDemo({ className }: { className?: string }) {
       );
     }
     await wait(900);
+    if (live()) setFocus(null);
 
-    for (const [action, change] of [
-      ["accept", "src/auth/session.ts change 1"],
-      ["reject", "src/auth/session.ts change 2"],
-    ] as const) {
+    for (const [i, [action, change]] of (
+      [
+        ["accept", "src/auth/session.ts change 1"],
+        ["reject", "src/auth/session.ts change 2"],
+      ] as const
+    ).entries()) {
       if (!live()) return;
       print("", `${c("36", "›")} ${action} ${dim(`"${change.replace("src/auth/", "")}"`)}`);
-      await wait(350);
+      setFocus("diff");
+      await point(hunk(i, action === "accept" ? "Accept change" : "Reject change"), action);
+      if (!live()) return;
+      await press();
       const r = await agent.act({ steps: [{ ref: DIFF, action, args: [change] }] });
       print(
         r.ok
@@ -122,10 +167,21 @@ export function AgentDemo({ className }: { className?: string }) {
 
     if (!live()) return;
     print("", `${c("36", "›")} press ${dim('"Deploy"')}`);
+    setFocus("prompt");
+    const deploy = [
+      ...(root.current?.querySelectorAll("[data-slot=approval-prompt-actions] button") ?? []),
+    ].find((b) => b.textContent?.trim().startsWith("Deploy"));
+    await point(deploy, "press");
+    if (!live()) return;
+    await press();
+    // The press stops at the confirm step: the pointer steps back and waits with the person.
+    setCursor((cur) => ({ ...cur, note: "waiting for you", x: cur.x - 40, y: cur.y + 38 }));
     // "Deploy" alone also matches the prompt's title, so take the button's ref from the snapshot.
     const button = agent.snapshot().find((e) => e.component === "button" && e.label === "Deploy");
     await agent.act({ steps: [{ ref: button?.ref ?? "Deploy", action: "press" }] });
     if (!live()) return;
+    setFocus(null);
+    setCursor((cur) => ({ ...cur, on: false }));
     const outcome = decided.current as ApprovalDecision;
     print(
       outcome === "approved" || outcome === "always"
@@ -208,26 +264,86 @@ export function AgentDemo({ className }: { className?: string }) {
         </dl>
       </div>
       <div className="flex min-w-0 flex-col gap-3">
-        <DiffView
-          title={DIFF}
-          diff={PATCH}
-          review={review}
-          onReviewChange={setReview}
-          collapseReviewed={false}
-          autoAdvance={false}
-        />
-        <ApprovalPrompt
-          title={PROMPT}
-          agent={{ name: "Kura" }}
-          command="vercel deploy --prebuilt"
-          description="Ships the reviewed patch to a preview URL."
-          agentConfirm="Deploys the reviewed patch to a preview URL"
-          decision={decision}
-          onDecisionChange={decide}
-          approveLabel="Deploy"
-          shortcuts={false}
-        />
+        <div
+          data-agent-focus={focus === "diff" || focus === "both" || undefined}
+          className="agent-focus rounded-kura-xl"
+        >
+          <DiffView
+            title={DIFF}
+            diff={PATCH}
+            review={review}
+            onReviewChange={setReview}
+            collapseReviewed={false}
+            autoAdvance={false}
+          />
+        </div>
+        <div
+          data-agent-focus={focus === "prompt" || focus === "both" || undefined}
+          className="agent-focus rounded-kura-xl"
+        >
+          <ApprovalPrompt
+            title={PROMPT}
+            agent={{ name: "Kura" }}
+            command="vercel deploy --prebuilt"
+            description="Ships the reviewed patch to a preview URL."
+            agentConfirm="Deploys the reviewed patch to a preview URL"
+            decision={decision}
+            onDecisionChange={decide}
+            approveLabel="Deploy"
+            shortcuts={false}
+          />
+        </div>
       </div>
+      <AgentCursor {...cursor} />
+    </div>
+  );
+}
+
+/**
+ * The agent's pointer: an ink arrow with its name on a tag, gliding between the controls it uses.
+ * Each press sends a ring of dots out from the tip.
+ */
+function AgentCursor({
+  x,
+  y,
+  on,
+  press,
+  note,
+  flip,
+}: {
+  x: number;
+  y: number;
+  on: boolean;
+  press: number;
+  note?: string;
+  flip?: boolean;
+}) {
+  return (
+    <div
+      aria-hidden
+      data-slot="agent-cursor"
+      className="pointer-events-none absolute top-0 left-0 z-20 transition-[transform,opacity] duration-700 ease-[cubic-bezier(0.65,0,0.25,1)] motion-reduce:hidden"
+      style={{ transform: `translate(${x}px, ${y}px)`, opacity: on ? 1 : 0 }}
+    >
+      {press > 0 && <span key={press} className="agent-cursor-ripple" />}
+      <svg
+        viewBox="0 0 16 20"
+        className="-mt-px -ml-px h-5 w-4 drop-shadow-[0_2px_3px_rgb(0_0_0/0.35)]"
+      >
+        <path
+          d="M1 1 L1 15.5 L4.9 11.9 L7.6 18 L10.2 16.9 L7.6 10.9 L13 10.9 Z"
+          fill="var(--kura-fg)"
+          stroke="var(--kura-canvas)"
+          strokeWidth="1.3"
+          strokeLinejoin="round"
+        />
+      </svg>
+      <span className={cn("absolute top-4 inline-flex", flip ? "right-1.5" : "left-3.5")}>
+        <span className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-full bg-kura-ink py-[3px] pr-2 pl-1.5 font-kura-mono text-[11px] text-kura-fg-inverted shadow-kura-popover">
+          <span className="size-1.5 rounded-full bg-kura-fg-inverted/80" />
+          Kura{note ? <span className="opacity-60">· {note}</span> : null}
+        </span>
+      </span>
     </div>
   );
 }

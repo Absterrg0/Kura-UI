@@ -2,14 +2,12 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { GITHUB_URL } from "@/lib/catalog";
 import { cn } from "@/lib/cn";
 
 export const NAV = [
   { href: "/components", label: "Components" },
   { href: "/docs", label: "Docs" },
-  { href: "/agents", label: "For agents" },
-  { href: GITHUB_URL, label: "GitHub", external: true },
+  { href: "/agents", label: "Agents" },
 ] as const;
 
 export function useIsActive() {
@@ -22,7 +20,7 @@ export function NavLinks() {
   return (
     <nav aria-label="Main" className="hidden items-center md:flex">
       {NAV.map((l) => {
-        const active = !("external" in l) && isActive(l.href);
+        const active = isActive(l.href);
         return (
           <Link
             key={l.href}

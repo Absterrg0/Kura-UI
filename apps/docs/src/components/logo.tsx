@@ -6,7 +6,7 @@ const K = ["10010", "10100", "11000", "10100", "10010"];
 /** The Kura mark: an ember tile with a white K set in dots, the library's language in one glyph. */
 export function LogoMark({ className }: { className?: string }) {
   return (
-    <svg viewBox="0 0 32 32" aria-hidden className={cn("size-6", className)}>
+    <svg viewBox="0 0 32 32" aria-hidden className={cn("block size-6 shrink-0", className)}>
       <rect width="32" height="32" rx="9" fill="var(--kura-ember)" />
       {K.flatMap((row, y) =>
         [...row].map((on, x) =>
@@ -23,7 +23,7 @@ export function Logo({ className }: { className?: string }) {
   return (
     <span className={cn("inline-flex items-center gap-2.5", className)}>
       <LogoMark />
-      <span className="font-semibold text-[15.5px] tracking-[-0.02em]">Kura</span>
+      <span className="font-semibold text-[16px] leading-none tracking-[-0.025em]">Kura</span>
     </span>
   );
 }

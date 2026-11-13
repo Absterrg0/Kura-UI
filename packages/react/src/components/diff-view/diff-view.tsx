@@ -591,7 +591,7 @@ export function DiffView({
         data-slot="diff-view-body"
         className={cn(
           "min-h-0 flex-1",
-          maxHeight != null && "overflow-y-auto overscroll-contain [scrollbar-width:thin]",
+          maxHeight != null && "overflow-y-auto [scrollbar-width:thin]",
         )}
         style={maxHeight != null ? { maxHeight } : undefined}
       >

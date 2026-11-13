@@ -1,8 +1,9 @@
 "use client";
 
 import type { CatalogCategory } from "@kura/catalog-types";
-import { useHotkey } from "@kura-ui/react/hooks";
+import { useHotkey, useIsApplePlatform } from "@kura-ui/react/hooks";
 import { Kbd } from "@kura-ui/react/kbd";
+import { Tooltip } from "@kura-ui/react/tooltip";
 import { Command } from "cmdk";
 import {
   Anchor,
@@ -86,6 +87,26 @@ export function CommandMenu({
   });
   useHotkey(["/"], () => show(true));
 
+  const apple = useIsApplePlatform();
+  // Which of the shortcut's keys are down right now, so the keycaps in the nav press with them.
+  const [held, setHeld] = React.useState({ mod: false, k: false });
+  React.useEffect(() => {
+    const sync = (e: KeyboardEvent) => {
+      const mod = apple ? e.metaKey : e.ctrlKey;
+      const k = e.type === "keydown" ? mod && e.key.toLowerCase() === "k" : false;
+      setHeld((h) => (h.mod === mod && h.k === k ? h : { mod, k }));
+    };
+    const clear = () => setHeld({ mod: false, k: false });
+    window.addEventListener("keydown", sync);
+    window.addEventListener("keyup", sync);
+    window.addEventListener("blur", clear);
+    return () => {
+      window.removeEventListener("keydown", sync);
+      window.removeEventListener("keyup", sync);
+      window.removeEventListener("blur", clear);
+    };
+  }, [apple]);
+
   const go = (href: string) => {
     setOpen(false);
     // A file (llms.txt) is opened by the browser; only pages go through the router.
@@ -95,17 +116,33 @@ export function CommandMenu({
 
   return (
     <>
-      <button
-        type="button"
-        onClick={() => show(true)}
-        data-testid="search-trigger"
-        className="group flex size-9 cursor-pointer items-center justify-center gap-2 rounded-[9px] text-[13px] text-kura-fg-subtle outline-hidden transition-colors hover:text-kura-fg focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-kura-ring max-md:hover:bg-kura-hover md:h-8 md:w-auto md:justify-start md:bg-kura-surface-sunken md:pr-1.5 md:pl-2.5 md:shadow-kura-sunk lg:w-52"
-      >
-        <Search className="size-4 md:size-3.5" />
-        <span className="hidden flex-1 truncate whitespace-nowrap text-left md:block">Search</span>
-        <span className="sr-only md:hidden">Search components</span>
-        <Kbd keys={["mod", "k"]} size="sm" className="hidden md:inline-flex" />
-      </button>
+      <Tooltip content="Search" side="bottom">
+        <button
+          type="button"
+          onClick={() => show(true)}
+          data-testid="search-trigger"
+          aria-label="Search"
+          aria-keyshortcuts={apple ? "Meta+K" : "Control+K"}
+          className="group/search flex h-8 cursor-pointer items-center gap-1 rounded-[9px] px-2 text-kura-fg-subtle outline-hidden transition-colors duration-150 hover:bg-kura-hover hover:text-kura-fg focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-kura-ring max-md:size-9 max-md:justify-center max-md:px-0"
+        >
+          <Search className="size-4 md:mr-1 md:size-3.5" />
+          {/* The keys themselves: each one goes down while it is held, so the shortcut teaches itself. */}
+          <Kbd
+            aria-hidden
+            pressed={held.mod}
+            className="hidden h-[22px] min-w-[26px] text-[11.5px] md:inline-flex group-hover/search:text-kura-fg-muted"
+          >
+            {apple ? "⌘" : "Ctrl"}
+          </Kbd>
+          <Kbd
+            aria-hidden
+            pressed={held.k}
+            className="hidden h-[22px] min-w-[22px] text-[11.5px] md:inline-flex group-hover/search:text-kura-fg-muted"
+          >
+            K
+          </Kbd>
+        </button>
+      </Tooltip>
       <Dialog.Root open={open} onOpenChange={show}>
         <Dialog.Portal>
           <Dialog.Overlay className="fixed inset-0 z-50 bg-kura-canvas/80 data-[state=closed]:animate-kura-fade-out data-[state=open]:animate-kura-fade-in" />
@@ -158,7 +195,7 @@ export function CommandMenu({
                     { href: "/components", label: "All components", icon: LayoutGrid },
                     {
                       href: "/agents",
-                      label: "For agents: MCP, llms.txt, CLI",
+                      label: "Agents: MCP, llms.txt, CLI",
                       icon: SquareTerminal,
                     },
                     { href: "/llms.txt", label: "llms.txt", icon: FileText },

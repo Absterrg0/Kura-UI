@@ -507,7 +507,7 @@ export function Terminal({
           tabIndex={0}
           onScroll={onScroll}
           className={cn(
-            "h-full overflow-y-auto overscroll-contain px-3.5 py-3 font-kura-mono text-[12.5px] text-kura-fg-muted leading-5 outline-hidden [scrollbar-width:thin] [tab-size:4]",
+            "h-full overflow-y-auto px-3.5 py-3 font-kura-mono text-[12.5px] text-kura-fg-muted leading-5 outline-hidden [scrollbar-width:thin] [tab-size:4]",
             "focus-visible:shadow-[inset_0_0_0_2px_var(--kura-ring)]",
             // Wrap at spaces; only a token longer than the line (a path, a hash) breaks inside.
             wrap ? "whitespace-pre-wrap [overflow-wrap:anywhere]" : "whitespace-pre",

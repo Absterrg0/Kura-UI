@@ -100,3 +100,310 @@
 .shiki code {
   display: grid;
 }
+
+/*
+ * The floating nav: frosted glass. The page reads through it, softened, and the sheet's ring
+ * still draws its edge.
+ */
+.glass {
+  background-color: color-mix(in oklab, var(--kura-surface) 68%, transparent);
+  box-shadow: var(--kura-elev-surface);
+  -webkit-backdrop-filter: blur(18px) saturate(1.5);
+  backdrop-filter: blur(18px) saturate(1.5);
+}
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .glass {
+    background-color: var(--color-chrome);
+  }
+}
+
+/* A dot arrow in a hovered or focused group: a wave of light runs through its columns. */
+.dot-arrow {
+  transition: transform 260ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.dot-arrow circle {
+  transform-box: fill-box;
+  transform-origin: center;
+}
+:is(.group\/cta, .group):is(:hover, :focus-visible) .dot-arrow {
+  transform: translateX(2px);
+}
+:is(.group\/cta, .group):is(:hover, :focus-visible) .dot-arrow circle {
+  animation: dot-wave 900ms cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  animation-delay: calc(var(--i) * 90ms);
+}
+@keyframes dot-wave {
+  0%,
+  60%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  25% {
+    opacity: 0.35;
+    transform: scale(0.6);
+  }
+}
+
+/*
+ * The hero's call to action wears a dotted rim, and a short run of lit dots travels it: the
+ * status glyph's "running" light at button scale.
+ */
+.cta-ring rect {
+  x: 1px;
+  y: 1px;
+  width: calc(100% - 2px);
+  height: calc(100% - 2px);
+  fill: none;
+  stroke-linecap: round;
+  stroke-width: 1.7;
+}
+.cta-ring-base {
+  stroke: var(--kura-faint);
+  stroke-dasharray: 0 2;
+  transition: stroke 200ms;
+}
+.cta-ring:hover .cta-ring-base {
+  stroke: var(--kura-fg-subtle);
+}
+.cta-ring-tail,
+.cta-ring-head {
+  stroke: var(--kura-fg);
+  animation: cta-ring-run 5.5s linear infinite;
+}
+.cta-ring-tail {
+  opacity: 0.4;
+  stroke-dasharray: 0 2 0 2 0 2 0 2 0 2 0 2 0 2 0 2 0 184;
+}
+.cta-ring-head {
+  stroke-dasharray: 0 2 0 2 0 2 0 194;
+  stroke-dashoffset: -10;
+  animation-name: cta-ring-run-head;
+}
+@keyframes cta-ring-run {
+  to {
+    stroke-dashoffset: -200;
+  }
+}
+@keyframes cta-ring-run-head {
+  from {
+    stroke-dashoffset: -10;
+  }
+  to {
+    stroke-dashoffset: -210;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .cta-ring-tail,
+  .cta-ring-head {
+    display: none;
+  }
+  :is(.group\/cta, .group):is(:hover, :focus-visible) .dot-arrow,
+  :is(.group\/cta, .group):is(:hover, :focus-visible) .dot-arrow circle {
+    animation: none;
+    transform: none;
+  }
+}
+
+/*
+ * The theme switch: the new theme spreads out from the toggle as a disc whose leading edge is a
+ * band of halftone dots. ThemeToggle sets --vt-x/--vt-y (the button) and --vt-max (the farthest
+ * corner) and marks <html data-theme-vt> for the length of the transition.
+ */
+@property --vt-r {
+  syntax: "<length>";
+  inherits: false;
+  initial-value: 0px;
+}
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation: none;
+  mix-blend-mode: normal;
+}
+html[data-theme-vt]::view-transition-new(root) {
+  --vt-band: 160px;
+  -webkit-mask-image:
+    radial-gradient(
+      circle at var(--vt-x) var(--vt-y),
+      #000 var(--vt-r),
+      transparent calc(var(--vt-r) + 0.5px)
+    ),
+    radial-gradient(circle at center, #000 2.3px, transparent 2.8px),
+    radial-gradient(
+      circle at var(--vt-x) var(--vt-y),
+      #000 calc(var(--vt-r) + var(--vt-band)),
+      transparent calc(var(--vt-r) + var(--vt-band) + 0.5px)
+    );
+  mask-image:
+    radial-gradient(
+      circle at var(--vt-x) var(--vt-y),
+      #000 var(--vt-r),
+      transparent calc(var(--vt-r) + 0.5px)
+    ),
+    radial-gradient(circle at center, #000 2.3px, transparent 2.8px),
+    radial-gradient(
+      circle at var(--vt-x) var(--vt-y),
+      #000 calc(var(--vt-r) + var(--vt-band)),
+      transparent calc(var(--vt-r) + var(--vt-band) + 0.5px)
+    );
+  -webkit-mask-size:
+    100% 100%,
+    8px 8px,
+    100% 100%;
+  mask-size:
+    100% 100%,
+    8px 8px,
+    100% 100%;
+  -webkit-mask-repeat: no-repeat, repeat, no-repeat;
+  mask-repeat: no-repeat, repeat, no-repeat;
+  -webkit-mask-composite: source-over, source-in, source-over;
+  mask-composite: add, intersect, add;
+  animation: theme-spread 1s cubic-bezier(0.55, 0.05, 0.25, 1) forwards;
+}
+@keyframes theme-spread {
+  from {
+    --vt-r: -160px;
+  }
+  to {
+    --vt-r: var(--vt-max);
+  }
+}
+
+/*
+ * The hero stage comes in panel by panel once it is in view (`--d` orders them), and the
+ * approval prompt waits, dimmed, until the replayed run reaches the step that asks.
+ */
+@media (prefers-reduced-motion: no-preference) {
+  .stage-reveal [data-reveal] {
+    opacity: 0;
+    transform: translateY(18px) scale(0.985);
+    filter: blur(6px);
+    transition:
+      opacity 700ms cubic-bezier(0.2, 0.8, 0.2, 1),
+      transform 900ms cubic-bezier(0.2, 0.8, 0.2, 1),
+      filter 700ms cubic-bezier(0.2, 0.8, 0.2, 1);
+    transition-delay: calc(var(--d, 0) * 90ms);
+  }
+  .stage-reveal[data-entered="true"] [data-reveal] {
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+  .stage-reveal[data-entered="true"] .stage-ask[data-asked="false"] {
+    opacity: 0.38;
+    filter: grayscale(1) blur(1.5px);
+    transform: scale(0.985);
+  }
+  .stage-reveal[data-entered="true"] .stage-ask[data-asked="true"] {
+    animation: stage-ask 700ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+}
+@keyframes stage-ask {
+  0% {
+    transform: scale(0.985);
+  }
+  45% {
+    transform: scale(1.012);
+  }
+  100% {
+    transform: none;
+  }
+}
+
+/* Sections further down rise in as they arrive: see <Reveal>. */
+@media (prefers-reduced-motion: no-preference) {
+  [data-reveal-group] [data-reveal-item] {
+    opacity: 0;
+    transform: translateY(22px);
+    filter: blur(5px);
+    transition:
+      opacity 700ms cubic-bezier(0.2, 0.8, 0.2, 1),
+      transform 900ms cubic-bezier(0.2, 0.8, 0.2, 1),
+      filter 700ms cubic-bezier(0.2, 0.8, 0.2, 1);
+    transition-delay: calc(var(--d, 0) * 80ms);
+  }
+  [data-reveal-group][data-in="true"] [data-reveal-item] {
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+}
+
+/* The agent demo: the component the agent is reading or using wears a dotted ring meanwhile. */
+.agent-focus {
+  position: relative;
+}
+.agent-focus::after {
+  content: "";
+  position: absolute;
+  inset: -6px;
+  border-radius: 20px;
+  pointer-events: none;
+  background-image: radial-gradient(
+    circle at center,
+    var(--kura-fg-subtle) 0.9px,
+    transparent 1.3px
+  );
+  background-size: 6px 6px;
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#000 0 0) content-box exclude,
+    linear-gradient(#000 0 0);
+  padding: 2px;
+  opacity: 0;
+  transition: opacity 300ms;
+}
+.agent-focus[data-agent-focus]::after {
+  opacity: 1;
+}
+/* Each press: a ring of dots spreading from the pointer's tip. */
+.agent-cursor-ripple {
+  position: absolute;
+  left: -14px;
+  top: -14px;
+  width: 28px;
+  height: 28px;
+  border-radius: 9999px;
+  background-image: radial-gradient(circle at center, var(--kura-fg) 0.9px, transparent 1.3px);
+  background-size: 5px 5px;
+  -webkit-mask: radial-gradient(circle, transparent 45%, #000 47%, #000 62%, transparent 64%);
+  mask: radial-gradient(circle, transparent 45%, #000 47%, #000 62%, transparent 64%);
+  animation: agent-ripple 520ms cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+}
+@keyframes agent-ripple {
+  from {
+    transform: scale(0.3);
+    opacity: 1;
+  }
+  to {
+    transform: scale(1.6);
+    opacity: 0;
+  }
+}
+
+/* "Built right": a light running round a ring of dots (the running glyph, larger). */
+.ring-chase {
+  opacity: 0.2;
+  animation: ring-chase 1.2s linear infinite;
+  animation-delay: calc(var(--k) * 100ms - 1.2s);
+}
+@keyframes ring-chase {
+  0% {
+    opacity: 1;
+  }
+  35% {
+    opacity: 0.45;
+  }
+  70%,
+  100% {
+    opacity: 0.2;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ring-chase {
+    animation: none;
+  }
+}

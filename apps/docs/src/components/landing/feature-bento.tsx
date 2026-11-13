@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type * as React from "react";
 import { cn } from "@/lib/cn";
+import { Reveal } from "../reveal";
 import {
   BrowserDemo,
   CheckpointsDemo,
@@ -78,11 +79,16 @@ const FEATURES: Feature[] = [
 
 export function FeatureBento() {
   return (
-    <div className="grid gap-x-4 gap-y-12 md:grid-cols-2 lg:grid-cols-12 lg:gap-y-14">
-      {FEATURES.map((f) => {
+    <Reveal className="grid gap-x-4 gap-y-12 md:grid-cols-2 lg:grid-cols-12 lg:gap-y-14">
+      {FEATURES.map((f, i) => {
         const Demo = f.demo;
         return (
-          <figure key={f.slug} className={cn("flex min-w-0 flex-col gap-4", f.span)}>
+          <figure
+            key={f.slug}
+            data-reveal-item
+            style={{ "--d": i } as React.CSSProperties}
+            className={cn("flex min-w-0 flex-col gap-4", f.span)}
+          >
             <figcaption className="flex flex-col gap-0.5 px-0.5">
               <h3 className="font-semibold text-[15px] tracking-[-0.01em]">
                 <Link
@@ -94,12 +100,13 @@ export function FeatureBento() {
               </h3>
               <p className="text-[14px] text-kura-fg-muted leading-relaxed">{f.body}</p>
             </figcaption>
-            <div className="min-w-0">
+            {/* Every demo in a row stretches to the row's height, so the row ends on one line. */}
+            <div className="flex min-w-0 flex-1 flex-col [&>*]:flex-1">
               {Demo ? <Demo /> : <LiveExample slug={f.slug} name={f.example ?? ""} lazy />}
             </div>
           </figure>
         );
       })}
-    </div>
+    </Reveal>
   );
 }

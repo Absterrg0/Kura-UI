@@ -391,10 +391,7 @@ export function FileChanges({
           data-slot="file-changes-rows"
           role={isTree ? "tree" : "listbox"}
           aria-label={typeof title === "string" ? title : "Changed files"}
-          className={cn(
-            "pb-1.5",
-            maxHeight != null && "overflow-y-auto overscroll-contain [scrollbar-width:thin]",
-          )}
+          className={cn("pb-1.5", maxHeight != null && "overflow-y-auto [scrollbar-width:thin]")}
           style={maxHeight != null ? { maxHeight } : undefined}
         >
           {rows.map((row, index) => {

@@ -5,7 +5,9 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Dialog } from "radix-ui";
 import * as React from "react";
+import { GITHUB_URL } from "@/lib/catalog";
 import { cn } from "@/lib/cn";
+import { GithubIcon } from "./icons";
 import { Logo } from "./logo";
 import { NAV, useIsActive } from "./nav-links";
 import { siteButton } from "./site-button";
@@ -56,7 +58,7 @@ export function MobileNav({ groups }: { groups: NavGroup[] }) {
                 <li key={l.href}>
                   <Link
                     href={l.href}
-                    aria-current={!("external" in l) && isActive(l.href) ? "page" : undefined}
+                    aria-current={isActive(l.href) ? "page" : undefined}
                     className="flex h-11 items-center font-medium text-[17px] tracking-[-0.01em] outline-hidden focus-visible:shadow-kura-focus aria-[current=page]:text-kura-fg [&:not([aria-current])]:text-kura-fg-muted"
                   >
                     {l.label}
@@ -90,6 +92,13 @@ export function MobileNav({ groups }: { groups: NavGroup[] }) {
             <Link href="/docs" className={siteButton({ className: "flex-1" })}>
               Get started
             </Link>
+            <a
+              href={GITHUB_URL}
+              aria-label="Kura UI on GitHub"
+              className="inline-flex size-11 items-center justify-center rounded-lg text-kura-fg-muted outline-hidden hover:bg-kura-hover hover:text-kura-fg focus-visible:shadow-kura-focus"
+            >
+              <GithubIcon className="size-[18px]" />
+            </a>
             <ThemeToggle size="md" />
           </div>
         </Dialog.Content>

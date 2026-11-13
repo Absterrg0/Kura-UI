@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { CtaLink } from "../cta-link";
 import { LogoMark } from "../logo";
 import { siteButton } from "../site-button";
 import { EmberLight } from "./ember-light";
@@ -27,12 +28,15 @@ export function CtaBand({ install }: { install: string }) {
           grows.
         </p>
         <div className="flex w-full flex-col items-center gap-3 pt-2 sm:w-auto sm:flex-row">
-          <Link href="/components" className={siteButton({ className: "w-full sm:w-auto" })}>
+          <CtaLink href="/components" className="w-full sm:w-auto">
             Browse components
-          </Link>
+          </CtaLink>
           <Link
             href="/docs"
-            className={siteButton({ variant: "dark", className: "w-full sm:w-auto" })}
+            className={siteButton({
+              variant: "dark",
+              className: "h-11 w-full rounded-[12px] px-5 text-[14.5px] sm:w-auto",
+            })}
           >
             Get started
           </Link>

@@ -530,7 +530,7 @@ export function BrowserSession({
               // biome-ignore lint/a11y/noNoninteractiveTabindex: a scrollable region must be keyboard-reachable
               tabIndex={0}
               className={cn(
-                "overflow-y-auto overscroll-contain outline-hidden focus-visible:shadow-[inset_0_0_0_2px_var(--kura-ring)]",
+                "overflow-y-auto outline-hidden focus-visible:shadow-[inset_0_0_0_2px_var(--kura-ring)]",
                 side && "absolute inset-0",
                 !side && "max-h-56",
                 auto && "@3xl:absolute @3xl:inset-0 @3xl:max-h-none",
