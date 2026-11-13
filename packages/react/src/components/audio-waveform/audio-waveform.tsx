@@ -169,12 +169,19 @@ export function AudioWaveform({
       const hoverX = hoverRef.current;
 
       // A bar is a column of dots on a square grid: loudness lights more of them.
-      const rows = Math.max(1, Math.floor((usable + barGap) / step));
+      let rows = Math.max(1, Math.floor((usable + barGap) / step));
+      // Mirrored columns light an odd number of dots, so every column shares one grid: a dot on
+      // the centre line and pairs above and below it, never a column shifted by half a step.
+      if (align === "center" && rows % 2 === 0) rows -= 1;
+      // Rows sit on whole pixels, so every dot renders the same.
+      const middle = Math.round(h / 2 - radius) + radius;
+      const bottom = Math.floor(h - 1 - barWidth) + radius;
       const bar = (x: number, v: number, alpha: number) => {
-        const lit = Math.min(rows, Math.max(minBarHeight > 0 ? 1 : 0, Math.round(v * rows)));
+        let lit = Math.min(rows, Math.max(minBarHeight > 0 ? 1 : 0, Math.round(v * rows)));
+        if (align === "center" && lit > 0 && lit % 2 === 0) lit = Math.min(rows, lit + 1);
         if (lit === 0) return;
         const cx = x + radius;
-        const first = align === "bottom" ? h - 1 - radius : h / 2 + ((lit - 1) * step) / 2;
+        const first = align === "bottom" ? bottom : middle + ((lit - 1) * step) / 2;
         ctx.globalAlpha = alpha;
         ctx.beginPath();
         for (let k = 0; k < lit; k++) {
@@ -196,7 +203,7 @@ export function AudioWaveform({
       if (isStatic) {
         const values = resample(peaks ?? [], count);
         if (variant === "line") {
-          drawEnvelope(ctx, values, w, h, minBarHeight);
+          drawEnvelope(ctx, values, w, h, minBarHeight, barWidth, step);
           if (playedX !== null) {
             ctx.save();
             ctx.globalCompositeOperation = "destination-in";
@@ -224,13 +231,13 @@ export function AudioWaveform({
       // Live.
       const f = frame;
       if (variant === "line") {
-        // The oscilloscope trace is a line of dots too.
-        const lw = 2;
+        // The oscilloscope trace is a line of dots too, the matrix's dots at the matrix's pitch.
+        const lw = barWidth;
         ctx.globalAlpha = 1;
         ctx.lineWidth = lw;
         ctx.lineJoin = "round";
         ctx.lineCap = "round";
-        ctx.setLineDash?.([0.01, 5]);
+        ctx.setLineDash?.([0.01, step]);
         ctx.beginPath();
         const data = f?.waveform;
         const points = Math.min(160, Math.max(24, Math.floor(w / 4)));
@@ -241,7 +248,7 @@ export function AudioWaveform({
         let px = 0;
         let py = h / 2;
         for (let i = 0; i <= points; i++) {
-          const x = (i / points) * w;
+          const x = lw / 2 + (i / points) * (w - lw);
           const idx = data ? Math.floor((i / points) * (data.length - 1)) : 0;
           const v = data ? (data[idx] ?? 0) : 0;
           // taper the ends so the line breathes out of a flat baseline
@@ -276,7 +283,8 @@ export function AudioWaveform({
       for (let i = 0; i < count + 1; i++) {
         const v = hist[hist.length - 1 - i] ?? 0;
         const x = Math.round(w - barWidth - i * step - shift + step);
-        if (x + barWidth < 0) break;
+        // Whole dots only: a column leaves before it would be cut by the edge.
+        if (x < 0) break;
         if (x > w - barWidth) continue;
         const edge = x < fade ? Math.max(0, x / fade) : 1;
         bar(x, v, 0.08 + 0.92 * edge * edge);
@@ -462,21 +470,23 @@ function drawEnvelope(
   w: number,
   h: number,
   min: number,
+  dot: number,
+  pitch: number,
 ) {
   const n = values.length;
   if (!n) return;
   const mid = h / 2;
-  const amp = (v: number) => Math.max(min / 2, (v * (h - 4)) / 2);
+  const amp = (v: number) => Math.max(min / 2, (v * (h - 2 * dot)) / 2);
   ctx.globalAlpha = 1;
-  ctx.lineWidth = 2;
+  ctx.lineWidth = dot;
   ctx.lineCap = "round";
   ctx.lineJoin = "round";
-  ctx.setLineDash?.([0.01, 5]);
+  ctx.setLineDash?.([0.01, pitch]);
   // The envelope's upper and lower edge, each a line of dots.
   for (const side of [-1, 1]) {
     ctx.beginPath();
     for (let i = 0; i < n; i++) {
-      const x = 1 + (i / Math.max(1, n - 1)) * (w - 2);
+      const x = dot / 2 + (i / Math.max(1, n - 1)) * (w - dot);
       const y = mid + side * amp(values[i] ?? 0);
       if (i === 0) ctx.moveTo(x, y);
       else ctx.lineTo(x, y);

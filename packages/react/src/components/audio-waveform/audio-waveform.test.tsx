@@ -12,6 +12,7 @@ import { AudioWaveform, peaksFromSamples } from "./audio-waveform";
 import {
   AudioWaveformFull,
   AudioWaveformMinimal,
+  AudioWaveformVariants,
   AudioWaveformVoiceNote,
 } from "./audio-waveform.examples";
 
@@ -56,6 +57,23 @@ describe("AudioWaveform", () => {
     expect(slider).not.toHaveAttribute("data-scrubbing");
   });
 
+  it("plays and pauses the voice note", async () => {
+    vi.useFakeTimers();
+    try {
+      render(<AudioWaveformVoiceNote />);
+      const slider = screen.getByRole("slider", { name: "Seek voice note" });
+      expect(slider).toHaveAttribute("aria-valuenow", "0");
+      fireEvent.click(screen.getByRole("button", { name: "Play voice note" }));
+      act(() => vi.advanceTimersByTime(7000));
+      expect(slider).toHaveAttribute("aria-valuenow", "50");
+      fireEvent.click(screen.getByRole("button", { name: "Pause voice note" }));
+      act(() => vi.advanceTimersByTime(3000));
+      expect(slider).toHaveAttribute("aria-valuenow", "50");
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
   it("computes normalised peaks from samples", () => {
     expect(peaksFromSamples([0, 0.5, -0.25, 0.25], 2)).toEqual([1, 0.5]);
     expect(peaksFromSamples([], 3)).toEqual([0, 0, 0]);
@@ -73,7 +91,12 @@ describe("AudioWaveform", () => {
   });
 
   it("examples render without a11y violations", async () => {
-    for (const Example of [AudioWaveformMinimal, AudioWaveformFull, AudioWaveformVoiceNote]) {
+    for (const Example of [
+      AudioWaveformMinimal,
+      AudioWaveformFull,
+      AudioWaveformVariants,
+      AudioWaveformVoiceNote,
+    ]) {
       const { container, unmount } = render(<Example />);
       await act(async () => {});
       await axe(container);
