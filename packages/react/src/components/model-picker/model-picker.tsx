@@ -436,12 +436,13 @@ export function ModelPicker({
           <div
             data-slot="model-picker-details"
             aria-live="polite"
-            className="flex h-12 shrink-0 items-center px-3 text-kura-fg-muted text-xs leading-4 shadow-[inset_0_1px_0_var(--kura-border-subtle)]"
+            className="flex h-[68px] shrink-0 items-center px-3 text-kura-fg-muted text-xs leading-4 shadow-[inset_0_1px_0_var(--kura-border-subtle)]"
           >
-            {/* Two lines: what the model is, then what it can do. A capability that does not fit
-                wraps out of sight whole; nothing is cut mid-word. */}
+            {/* What the model is, on up to two lines, then what it can do. The strip keeps one
+                height for every model, so moving through the list never shifts it; a capability
+                that does not fit wraps out of sight whole. */}
             <div className="flex min-w-0 flex-1 flex-col">
-              <p className={activeModel?.capabilities?.length ? "truncate" : "line-clamp-2"}>
+              <p className="line-clamp-2 text-pretty">
                 {activeModel?.description ?? (activeModel ? activeModel.name : "")}
               </p>
               {activeModel?.capabilities?.length ? (

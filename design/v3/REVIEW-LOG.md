@@ -7,13 +7,13 @@ effort)**. Fixed 14-shot set (`design/v3/shots.mjs`), scored on the 14-category 
 History before v3: the v2 direction ("Raycast-grade dark") reached 7.3 (R1) and 7.9 (R2) with one
 reviewer (`design/v2/REVIEW-LOG.md`). The owner then rejected the look itself; v3 replaces it.
 
-| Round | Fable 5.2 | Opus 5.5 | Notes                                                                                                                                                                                                         |
-| ----- | --------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| R1    | 8.0       | 7.8      | First full build on the dot language (commit 519f6c7). Identity lands (brand 9.0 from both); focus rings, mobile docs and loose edges hold it back.                                                           |
-| R2    | 8.8*      | 8.5      | Commit 87f0d7b. Round-1 list largely closed. *Live checks were cut short: the docs dev server hit its 2-hour limit mid-review, so focus, 390px pages and motion are provisional.                              |
-| R3    | 9.1       | 8.9      | Commit e505f88. Fully verified live (48 pages, 192 axe runs, Tab walks, approve/deny at three widths). A decision now moves 0px; four to five small must-fixes remain.                                        |
-| R4    | 9.2       | 9.2      | Commit d5d3374. Fully verified live. All round-3 must-fixes closed except the hero clocks (live values still a second apart). New: approval shortcuts leak from other widgets; terminals break words.         |
-| R5    | 9.3       | 9.4      | Commit a6b1fec. Fully verified live. Every round-4 must-fix closed, no regressions. Left: focus lost when a pressed control unmounts, approval keys acting while the prompt is off screen, small phone seams. |
+| Round | Fable 5.2 | Opus 5.5 | Notes                                                                                                                                                                                                                         |
+| ----- | --------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| R1    | 8.0       | 7.8      | First full build on the dot language (commit 519f6c7). Identity lands (brand 9.0 from both); focus rings, mobile docs and loose edges hold it back.                                                                           |
+| R2    | 8.8*      | 8.5      | Commit 87f0d7b. Round-1 list largely closed. *Live checks were cut short: the docs dev server hit its 2-hour limit mid-review, so focus, 390px pages and motion are provisional.                                              |
+| R3    | 9.1       | 8.9      | Commit e505f88. Fully verified live (48 pages, 192 axe runs, Tab walks, approve/deny at three widths). A decision now moves 0px; four to five small must-fixes remain.                                                        |
+| R4    | 9.2       | 9.2      | Commit d5d3374. Fully verified live. All round-3 must-fixes closed except the hero clocks (live values still a second apart). New: approval shortcuts leak from other widgets; terminals break words.                         |
+| R5    | 9.3       | 9.4      | Commit a6b1fec. Fully verified live. Every round-4 must-fix closed, no regressions. Left: focus lost when a pressed control unmounts, approval keys acting while the prompt is off screen, small phone seams.                 |
 | R6    | 9.3       | 9.3      | Commit 3423ff9. Fully verified live. Round-5 items closed, but one fix regressed: inline code that never wraps makes ten component pages scroll sideways. PromptQueue still loses focus in two cases and is cramped on touch. |
 
 ---
@@ -355,23 +355,23 @@ Both reviewers ran everything live: the round-5 claims one by one, Tab walks (12
 themes), axe on 48 pages × 4 configurations (0 serious/critical), approve and deny at five widths,
 reduced motion, ⌘K, 390px full pages of all 48 pages.
 
-| # | Category | Fable 5.2 | Opus 5.5 |
-| --- | --- | --- | --- |
-| 1 | Visual hierarchy | 9.5 | 9.5 |
-| 2 | Typography | 9.4 | 9.4 |
-| 3 | Colour & state semantics | 9.6 | 9.6 |
-| 4 | Layout & spacing | 9.2 | 9.2 |
-| 5 | Consistency | 9.4 | 9.4 |
-| 6 | Brand distinctiveness | 9.7 | 9.7 |
-| 7 | Clarity & density | 9.5 | 9.3 |
-| 8 | Interaction states | 9.3 | 9.4 |
-| 9 | Light/dark parity | 9.6 | 9.6 |
-| 10 | Craft & polish | 9.1 | 9.0 |
-| 11 | Accessibility | 9.3 | 9.3 |
-| 12 | Responsive | 9.0 | 8.9 |
-| 13 | Motion | 9.4 | 9.6 |
-| 14 | Copy | 9.5 | 9.5 |
-| | **OVERALL** | **9.3** | **9.3** |
+| #   | Category                 | Fable 5.2 | Opus 5.5 |
+| --- | ------------------------ | --------- | -------- |
+| 1   | Visual hierarchy         | 9.5       | 9.5      |
+| 2   | Typography               | 9.4       | 9.4      |
+| 3   | Colour & state semantics | 9.6       | 9.6      |
+| 4   | Layout & spacing         | 9.2       | 9.2      |
+| 5   | Consistency              | 9.4       | 9.4      |
+| 6   | Brand distinctiveness    | 9.7       | 9.7      |
+| 7   | Clarity & density        | 9.5       | 9.3      |
+| 8   | Interaction states       | 9.3       | 9.4      |
+| 9   | Light/dark parity        | 9.6       | 9.6      |
+| 10  | Craft & polish           | 9.1       | 9.0      |
+| 11  | Accessibility            | 9.3       | 9.3      |
+| 12  | Responsive               | 9.0       | 8.9      |
+| 13  | Motion                   | 9.4       | 9.6      |
+| 14  | Copy                     | 9.5       | 9.5      |
+|     | **OVERALL**              | **9.3**   | **9.3**  |
 
 ### Round-5 verification
 

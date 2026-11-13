@@ -608,7 +608,11 @@ export function DiffView({
           const [dir, base] = splitPath(file.path);
           const bodyId = `diff-${fileIndex}-${base.replace(/[^\w-]/g, "")}`;
           return (
-            <section
+            // A named group, not a landmark: a diff of twenty files should not add twenty regions
+            // to the page, and two diffs of the same file must not collide.
+            // biome-ignore lint/a11y/useSemanticElements: a fieldset would add form semantics to a file of code
+            <div
+              role="group"
               key={`${file.oldPath ?? ""}→${file.path}`}
               data-slot="diff-view-file"
               data-status={file.status}
@@ -756,7 +760,7 @@ export function DiffView({
                   />
                 )}
               </div>
-            </section>
+            </div>
           );
         })}
       </div>

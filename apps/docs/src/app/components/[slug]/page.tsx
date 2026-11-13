@@ -291,7 +291,7 @@ export default async function ComponentPage({ params }: { params: Promise<{ slug
                       )}
                       {p.default ?? "—"}
                     </td>
-                    <td className="text-[14px] text-kura-fg-muted leading-relaxed md:py-3.5 md:pl-4">
+                    <td className="min-w-0 text-[14px] text-kura-fg-muted leading-relaxed [overflow-wrap:anywhere] md:py-3.5 md:pl-4">
                       <Prose>{p.description}</Prose>
                     </td>
                   </tr>

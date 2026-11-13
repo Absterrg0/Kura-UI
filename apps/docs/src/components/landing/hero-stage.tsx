@@ -42,14 +42,14 @@ const MIGRATE = [
  * Prints `lines` one every `every` ms, by the clock rather than by counting ticks, so a slow
  * frame cannot stretch the run past the time its last line reports. Also says when it began.
  */
-function useStream(lines: readonly string[], key: string, reduced: boolean, every = 260) {
+function useStream(lines: readonly string[], key: string, instant: boolean, every = 260) {
   const [state, setState] = React.useState<{ n: number; startedAt: number | null }>({
-    n: reduced ? lines.length : 0,
+    n: instant ? lines.length : 0,
     startedAt: null,
   });
   // biome-ignore lint/correctness/useExhaustiveDependencies: `key` restarts the stream
   React.useEffect(() => {
-    if (reduced) {
+    if (instant) {
       setState({ n: lines.length, startedAt: null });
       return;
     }
@@ -61,7 +61,7 @@ function useStream(lines: readonly string[], key: string, reduced: boolean, ever
       if (n >= lines.length) clearInterval(id);
     }, 40);
     return () => clearInterval(id);
-  }, [key, reduced]);
+  }, [key, instant]);
   return { lines: lines.slice(0, state.n), startedAt: state.startedAt };
 }
 
@@ -102,9 +102,12 @@ export function HeroStage({ className }: { className?: string }) {
   }, [pending]);
 
   // Six lines each: the tests take the 1.84s and the migration the 5.1s their last lines report.
+  // Under reduced motion the test run that plays on load is simply there. The migration is the
+  // consequence of a decision, so it always takes its time: its output arriving is content, and
+  // every clock on the stage counts the same 5.1 seconds.
   const tests = useStream(TESTS, "tests", reduced, 306);
   const testLines = tests.lines;
-  const migrateLines = useStream(MIGRATE, `migrate-${decision}`, reduced || !approved, 850).lines;
+  const migrateLines = useStream(MIGRATE, `migrate-${decision}`, !approved, 850).lines;
   const migrated = approved && migrateLines.length >= MIGRATE.length;
   const term = approved
     ? {

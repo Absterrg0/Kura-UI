@@ -268,7 +268,8 @@ export function RunHeader({
           >
             {title}
           </h2>
-          <span className="hidden text-[12px] @md:inline">
+          {/* The glyph already says the state; the word joins it once the title has its room. */}
+          <span className="hidden text-[12px] @lg:inline">
             <StatusLabel status={status} />
           </span>
           {branchChip && <span className="hidden min-w-0 @5xl:flex">{branchChip}</span>}

@@ -17,6 +17,8 @@ export function AgentTerminal({ className }: { className?: string }) {
     "",
     `${dot} kura · search_components ${c("2", '("review agent edits per hunk")')}`,
     `  ${tree}  diff-view, file-changes`,
+    `${dot} kura · get_component ${c("2", '("diff-view")')}`,
+    `  ${tree}  when to use it, props, keyboard map, examples`,
     `${dot} kura · search_components ${c("2", '("stream command output")')}`,
     `  ${tree}  terminal`,
     `${dot} Bash ${c("2", "(npx @kura-ui/cli add diff-view terminal)")}`,
@@ -28,7 +30,8 @@ export function AgentTerminal({ className }: { className?: string }) {
     `${dot} Bash ${c("2", "(pnpm tsc --noEmit)")}`,
     `  ${tree}  ${c("32", "✓")} No type errors`,
     "",
-    `${dot} Added a review page with ${c("36", "<DiffView />")} and ${c("36", "<Terminal />")}.`,
+    // Non-breaking spaces: a tag never splits at the space before its slash.
+    `${dot} Added a review page with ${c("36", "<DiffView\u00a0/>")} and ${c("36", "<Terminal\u00a0/>")}.`,
   ];
   return (
     <Terminal

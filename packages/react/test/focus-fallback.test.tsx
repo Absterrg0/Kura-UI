@@ -109,6 +109,36 @@ describe("focus stays in the widget when the pressed control leaves", () => {
     expect(rows()).toHaveLength(1);
   });
 
+  it("PromptQueue: Move down keeps the key in hand, and the last prompt leaves a place to stand", async () => {
+    render(
+      <PromptQueue
+        defaultItems={[
+          { id: "a", text: "First" },
+          { id: "b", text: "Second" },
+        ]}
+      />,
+    );
+    const user = userEvent.setup();
+    const rows = () => [...document.querySelectorAll<HTMLElement>("[data-slot=prompt-queue-item]")];
+    // Reordering re-inserts the row; the key that was pressed gets its focus back.
+    rows()[0]!.querySelector<HTMLElement>("button[aria-label='Move down']")!.focus();
+    await user.keyboard("{Enter}");
+    await waitFor(() => expect(rows()[1]).toHaveAttribute("aria-label", "2 of 2: First"));
+    // "First" is now last: its Move down key keeps focus and reads as unavailable.
+    const key = () => rows()[1]!.querySelector<HTMLElement>("button[aria-label='Move down']");
+    await waitFor(() => expect(key()).toHaveFocus());
+    expect(key()).toHaveAttribute("aria-disabled", "true");
+    // Remove both: when the queue is empty, focus rests on the status line it leaves behind.
+    for (let i = 0; i < 2; i++) {
+      rows()[0]!.querySelector<HTMLElement>("button[aria-label=Remove]")!.focus();
+      await user.keyboard("{Enter}");
+      await waitFor(() => expect(document.activeElement).not.toBe(document.body));
+    }
+    expect(rows()).toHaveLength(0);
+    expect(document.activeElement).toHaveAttribute("role", "status");
+    expect(document.activeElement).toHaveTextContent("0 queued");
+  });
+
   it("RunHeader: Stop leaves with the run, the header keeps focus", async () => {
     render(<Run />);
     await press(/Stop/);

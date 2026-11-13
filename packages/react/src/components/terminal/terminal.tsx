@@ -123,20 +123,31 @@ function useScreen(text: string) {
  * indent cannot eat a narrow terminal.
  */
 function hangOf(text: string): number {
-  const lead = /^(?:\s*[^\w\s]{1,2}(?=\s))*\s*/.exec(text);
+  // A marker is one or two symbols ("✓", "└", "$"), or a one- or two-letter status column in
+  // front of a path (the "M" of `git status --short`).
+  const lead = /^(?:\s*(?:[^\w\s]{1,2}|[A-Z]{1,2}(?=\s+\S*[/.]))(?=\s))*\s*/.exec(text);
   return Math.min(lead ? lead[0].length : 0, 12);
 }
 
 /**
- * Soft-wrapped output breaks at spaces and after a path's slashes, never at a hyphen: a flag
- * (`--env`) or a package name (`@kura-ui/mcp`) stays in one piece.
+ * Where a long word may break: after each slash of a path (a URL keeps its scheme and host
+ * together), and, in a long piece of code, before a dot or after an opening bracket or a comma.
+ */
+function piecesOf(word: string): string[] {
+  const parts = word.match(/[^/]*:\/\/[^/]*\/?|[^/]*\/|[^/]+$/g) ?? [word];
+  if (word.length <= 24 || !word.includes("(")) return parts;
+  return parts.flatMap((part) => part.split(/(?=\.[A-Za-z_$])|(?<=[(,])/).filter(Boolean));
+}
+
+/**
+ * Soft-wrapped output breaks at spaces and at the joints of a long word, never at a hyphen: a
+ * flag (`--env`) or a package name (`@kura-ui/mcp`) stays in one piece.
  */
 function breakable(text: string): React.ReactNode {
-  if (!/[-/]/.test(text)) return text;
+  if (!/[-/(]/.test(text)) return text;
   return text.split(/(\s+)/).map((word, i) => {
-    if (!/[-/]/.test(word)) return word;
-    const pieces = word.match(/[^/]*\/|[^/]+$/g) ?? [word];
-    return pieces.map((piece, j) => (
+    if (!/[-/(]/.test(word)) return word;
+    return piecesOf(word).map((piece, j) => (
       <React.Fragment key={`${i}-${j}`}>
         {j > 0 && <wbr />}
         {piece.includes("-") && piece.length <= 32 ? (

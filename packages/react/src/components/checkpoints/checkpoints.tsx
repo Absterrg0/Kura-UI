@@ -257,7 +257,14 @@ export function Checkpoints({
                         {c.filesChanged} {c.filesChanged === 1 ? "file" : "files"}
                       </span>
                     )}
-                    <span className="grid w-16 justify-items-end [grid-template-areas:'cell'] @sm:w-[5.5rem]">
+                    <span
+                      className={cn(
+                        "grid w-16 justify-items-end [grid-template-areas:'cell'] @sm:w-[5.5rem]",
+                        // On a phone a restorable row shows only the Restore key here, so the cell
+                        // is the key's width and the label keeps the rest.
+                        !c.current && onRestore && !open && "@max-sm:[@media(hover:none)]:w-6",
+                      )}
+                    >
                       <time
                         dateTime={now != null ? new Date(at).toISOString() : undefined}
                         title={now != null ? new Date(at).toLocaleString() : undefined}
@@ -266,7 +273,7 @@ export function Checkpoints({
                           !c.current &&
                             onRestore &&
                             !open &&
-                            "group-hover/cp:opacity-0 group-focus-within/cp:opacity-0 [@media(hover:none)]:opacity-0",
+                            "group-hover/cp:opacity-0 group-focus-within/cp:opacity-0 [@media(hover:none)]:opacity-0 @max-sm:[@media(hover:none)]:sr-only",
                         )}
                       >
                         {now != null ? formatAgo(now - at) : ""}

@@ -91,7 +91,21 @@ export function PromptQueue({
     requestAnimationFrame(() => rows.current.get(rowId)?.focus());
   };
 
-  const move = (index: number, by: -1 | 1) => {
+  // After a prompt leaves: the one that took its place, or, when it was the last, the status
+  // line the empty queue leaves behind (so the next Tab goes on to whatever follows the queue).
+  const emptyRef = React.useRef<HTMLSpanElement>(null);
+  const focusEmpty = React.useRef(false);
+  const focusAfter = (next: readonly QueuedPrompt[], index: number) => {
+    if (next.length === 0) focusEmpty.current = true;
+    else focusRow((next[index] ?? next[index - 1])?.id);
+  };
+  const count = items.length;
+  React.useEffect(() => {
+    if (count === 0 && focusEmpty.current) emptyRef.current?.focus();
+    focusEmpty.current = false;
+  }, [count]);
+
+  const move = (index: number, by: -1 | 1, fromKey = false) => {
     const to = index + by;
     if (to < 0 || to >= items.length) return;
     const next = items.slice();
@@ -100,6 +114,19 @@ export function PromptQueue({
     next.splice(to, 0, it);
     setItems(next);
     setMessage(`Moved to position ${to + 1} of ${items.length}`);
+    // Reordering re-inserts the row, which blurs the key that was pressed: give it focus back,
+    // so the same key can be pressed again (at the end of the list it stays focused, dimmed).
+    if (fromKey) {
+      requestAnimationFrame(() => {
+        const row = rows.current.get(it.id);
+        const key = row?.querySelector<HTMLElement>(
+          `button[aria-label="${by === 1 ? "Move down" : "Move up"}"]`,
+        );
+        // The row first: its keys only show (and can only take focus) while focus is inside it.
+        row?.focus();
+        key?.focus();
+      });
+    }
   };
 
   const remove = (index: number, refocus: boolean) => {
@@ -108,7 +135,7 @@ export function PromptQueue({
     const next = items.filter((_, i) => i !== index);
     setItems(next);
     setMessage(`Removed “${truncate(it.text)}”. ${next.length} queued.`);
-    if (refocus) focusRow((next[index] ?? next[index - 1])?.id);
+    if (refocus) focusAfter(next, index);
   };
 
   const sendNow = (index: number, refocus = false) => {
@@ -119,7 +146,7 @@ export function PromptQueue({
     setMessage(`Sending “${truncate(it.text)}” now`);
     onSendNow?.(it);
     // The row leaves with its keys: focus moves to the prompt that took its place.
-    if (refocus) focusRow((next[index] ?? next[index - 1])?.id);
+    if (refocus) focusAfter(next, index);
   };
 
   const save = (index: number, text: string) => {
@@ -134,7 +161,7 @@ export function PromptQueue({
 
   if (items.length === 0) {
     return (
-      <span role="status" className="sr-only">
+      <span ref={emptyRef} role="status" tabIndex={-1} className="sr-only">
         {message}
       </span>
     );
@@ -212,7 +239,7 @@ export function PromptQueue({
               if (el) rows.current.set(item.id, el);
               else rows.current.delete(item.id);
             }}
-            onMove={(by) => move(index, by)}
+            onMove={(by, fromKey) => move(index, by, fromKey)}
             onEdit={() => setEditingId(item.id)}
             onCancelEdit={() => {
               setEditingId(null);
@@ -247,7 +274,8 @@ interface QueueRowProps {
   editing: boolean;
   canSend: boolean;
   rowRef: (el: HTMLElement | null) => void;
-  onMove: (by: -1 | 1) => void;
+  /** `fromKey` is true when a Move key was pressed, so focus can return to that key. */
+  onMove: (by: -1 | 1, fromKey?: boolean) => void;
   onEdit: () => void;
   onCancelEdit: () => void;
   onSave: (text: string) => void;
@@ -308,6 +336,8 @@ function QueueRow({
       data-state={editing ? "editing" : dragging ? "dragging" : undefined}
       className={cn(
         "group/item relative mx-1.5 flex min-w-0 rounded-[9px] bg-transparent outline-hidden",
+        // On a phone the tapped row opens: its keys take a line of their own under the text.
+        "pointer-coarse:@max-md:flex-wrap",
         "focus-visible:shadow-[inset_0_0_0_2px_var(--kura-ring)]",
         !editing && "min-h-8 items-center gap-1 pr-1 pl-1 hover:bg-kura-hover",
         editing && "bg-kura-hover p-1.5",
@@ -367,21 +397,21 @@ function QueueRow({
           )}
           <span
             data-slot="prompt-queue-actions"
-            className="hidden shrink-0 items-center gap-0.5 group-focus-within/item:flex group-hover/item:flex [@media(hover:none)]:flex"
+            className="hidden shrink-0 items-center gap-0.5 group-focus-within/item:flex group-hover/item:flex pointer-coarse:@max-md:basis-full pointer-coarse:@max-md:justify-end pointer-coarse:@max-md:pb-1"
           >
             <IconButton
               size="xs"
               label="Move up"
               icon={<ArrowUp />}
               disabled={index === 0}
-              onClick={() => onMove(-1)}
+              onClick={() => onMove(-1, true)}
             />
             <IconButton
               size="xs"
               label="Move down"
               icon={<ArrowDown />}
               disabled={index === count - 1}
-              onClick={() => onMove(1)}
+              onClick={() => onMove(1, true)}
             />
             <IconButton size="xs" label="Edit" icon={<Pencil />} onClick={onEdit} />
             <IconButton size="xs" label="Remove" icon={<X />} onClick={() => onRemove(true)} />

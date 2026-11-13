@@ -24,7 +24,8 @@ export default defineComponent({
       name: "title",
       type: "React.ReactNode",
       required: true,
-      description: 'What the run is doing, e.g. "Migrate session API to @acme/auth". Truncates.',
+      description:
+        'What the run is doing, e.g. "Migrate session API to @acme/auth". The panel wraps it to two lines in a narrow container; the bar keeps it on one line and ends it in an ellipsis.',
     },
     {
       name: "agent",

@@ -15,7 +15,13 @@ export default function HooksPage() {
       <div className="max-w-[46rem]">
         <PageHeader
           title="Hooks"
-          description="The hooks Kura components are built on, exported for your own parts of the interface. Import them from @kura-ui/react/hooks, or add one with the shadcn CLI."
+          description={
+            <>
+              The hooks Kura components are built on, exported for your own parts of the interface.
+              Import them from <span className="whitespace-nowrap">@kura-ui/react/hooks</span>, or
+              add one with the shadcn CLI.
+            </>
+          }
         />
         <nav aria-label="On this page" className="flex flex-wrap gap-x-5 gap-y-1.5 pb-4">
           {catalog.hooks.map((h) => (

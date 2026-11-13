@@ -12,8 +12,9 @@ import { InstallChip } from "@/components/landing/install-chip";
 import { siteButton } from "@/components/site-button";
 import { catalog } from "@/lib/catalog";
 
+// The four things generated from each component's manifest (the paragraph above them and the
+// transcript beside them say what a manifest holds).
 const AGENT_SURFACES = [
-  ["Typed manifests", "When to use it, every prop, anatomy, keyboard map."],
   ["shadcn registry", "Every component is an item your agent adds by URL."],
   ["MCP server", "Search, read and install from inside the agent's loop."],
   ["CLI", "kura list, search, info and add, all with --json."],

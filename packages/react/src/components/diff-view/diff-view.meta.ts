@@ -127,7 +127,7 @@ export default defineComponent({
       name: "File",
       dataSlot: "diff-view-file",
       description:
-        '`<section aria-label={path}>` with `data-status="added" | "modified" | "deleted" | "renamed"` and `data-state="open" | "closed"`.',
+        '`<div role="group" aria-label={path}>` (a named group, not a landmark) with `data-status="added" | "modified" | "deleted" | "renamed"` and `data-state="open" | "closed"`.',
     },
     {
       name: "FileHeader",

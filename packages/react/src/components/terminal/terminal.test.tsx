@@ -149,6 +149,27 @@ describe("Terminal", () => {
     ]);
   });
 
+  it("breaks long words at their joints: a URL after its host, code before a dot", () => {
+    const { container } = render(
+      <Terminal
+        lines={[
+          "  ➜ Local: http://localhost:3000/dashboard",
+          '   expect(next.refreshToken).toBe("tok_next")',
+          " M src/auth/client.ts",
+        ]}
+      />,
+    );
+    const [url, code, status] = [
+      ...container.querySelectorAll<HTMLElement>("[data-slot=terminal-line]"),
+    ];
+    // The scheme and host stay together: the only break is after the host's slash.
+    expect(url!.innerHTML).toContain("http://localhost:3000/<wbr>dashboard");
+    // Code may break after "(" and before ".method", never mid-identifier.
+    expect(code!.innerHTML).toContain("expect(<wbr>next<wbr>.refreshToken)<wbr>.toBe(<wbr>");
+    // `git status --short`: the continuation hangs under the path, past the status letter.
+    expect(status!.style.paddingLeft).toBe("3ch");
+  });
+
   it("leaves lines alone when wrapping is off", () => {
     const { container } = render(<Terminal lines={["  ✓ src/a-b.ts"]} wrap={false} />);
     const line = container.querySelector<HTMLElement>("[data-slot=terminal-line]")!;

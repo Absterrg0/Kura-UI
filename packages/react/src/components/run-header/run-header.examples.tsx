@@ -60,7 +60,7 @@ export function RunHeaderFull() {
   return (
     <RunHeader
       className="w-full max-w-3xl"
-      title="Migrate session API to @acme/auth"
+      title="Move session refresh to the edge"
       agent="Kura"
       model="claude-opus-5-5"
       branch="kura/auth-client"
@@ -92,7 +92,7 @@ export function RunHeaderBar() {
     <div className="flex w-full max-w-3xl flex-col gap-2">
       <RunHeader
         variant="bar"
-        title="Migrate session API to @acme/auth"
+        title="Roll out @acme/auth to staging"
         status="running"
         branch="kura/auth-client"
         startedAt={t - 8 * 60_000 - 42_000}
@@ -190,7 +190,7 @@ export function RunHeaderComposition() {
     <div className="flex w-full max-w-3xl flex-col gap-2">
       <RunHeader
         variant="bar"
-        title="Migrate session API to @acme/auth"
+        title="Migrate the login tests to @acme/auth"
         status="running"
         branch="kura/auth-client"
         startedAt={startedAt}
