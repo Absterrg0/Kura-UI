@@ -25,7 +25,7 @@ const VERSIONS = [
 
 export function MessageMinimal() {
   return (
-    <div className="flex w-full max-w-xl flex-col gap-4">
+    <div className="flex w-full max-w-xl flex-col gap-5">
       <Message from="user">How do I make a like button feel instant?</Message>
       <Message from="assistant">
         Render the new count optimistically and reconcile when the request finishes.
@@ -40,7 +40,7 @@ export function MessageFull() {
   const [failed, setFailed] = React.useState(false);
   const text = VERSIONS[version - 1]!;
   return (
-    <div className="flex w-full max-w-xl flex-col gap-4">
+    <div className="flex w-full max-w-xl flex-col gap-5">
       <Message
         from="user"
         actions={
@@ -88,7 +88,7 @@ export function MessageStates() {
     ),
   );
   return (
-    <div className="flex w-full max-w-xl flex-col gap-4">
+    <div className="flex w-full max-w-xl flex-col gap-5">
       <Message
         from="assistant"
         name="Kura"
@@ -166,7 +166,7 @@ export function MessageThread() {
   };
 
   return (
-    <div className="flex h-[440px] w-full max-w-xl flex-col overflow-hidden rounded-kura-xl bg-kura-surface shadow-kura-sm">
+    <div className="flex h-[440px] w-full max-w-xl flex-col overflow-hidden rounded-kura-xl bg-kura-surface shadow-kura-surface">
       <MessageList className="flex-1" contentClassName="px-5">
         {turns.map((turn) => (
           <Message
@@ -204,8 +204,7 @@ export function MessageThread() {
           </Message>
         )}
       </MessageList>
-      <div className="flex items-center justify-between gap-3 px-4 py-3 shadow-[inset_0_1px_0_var(--kura-border-subtle)]">
-        <span className="text-kura-fg-subtle text-xs">Scroll up while it streams.</span>
+      <div className="flex items-center justify-end px-2 py-2 shadow-[inset_0_1px_0_var(--kura-border-subtle)]">
         <Button size="sm" onClick={ask} disabled={waiting || streaming !== null}>
           Ask a follow-up <ArrowUp />
         </Button>
