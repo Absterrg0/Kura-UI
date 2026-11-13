@@ -11,28 +11,62 @@ import {
   Moon,
   Palette,
   Play,
-  Rocket,
   Square,
   Sun,
   Workflow,
 } from "lucide-react";
 import * as React from "react";
-import { Button } from "../button";
-import { KbdShortcut } from "../kbd-shortcut";
 import { CommandPalette, type CommandPaletteItem, CommandPaletteTrigger } from "./command-palette";
 
 export function CommandPaletteMinimal() {
   return (
-    <div className="w-72">
+    <div className="w-full max-w-[560px]">
       <CommandPalette
-        // Opened by its trigger only. Leave `hotkey` out to get the default ⌘K on the one palette
-        // that owns it, and give the trigger the same `shortcut` to print it.
+        // In place and always shown. Leave `inline` out for the ⌘K dialog.
+        inline
         hotkey={null}
-        trigger={<CommandPaletteTrigger shortcut={null} />}
         items={[
-          { id: "new", label: "New chat", icon: <MessageSquarePlus /> },
-          { id: "search", label: "Search files", icon: <FileSearch /> },
-          { id: "deploy", label: "Deploy preview", icon: <Rocket /> },
+          {
+            id: "run",
+            label: "Run agent",
+            description: "on the current task",
+            icon: <Play />,
+            group: "Agent",
+            shortcut: ["mod", "enter"],
+          },
+          {
+            id: "stop",
+            label: "Stop agent",
+            icon: <Square />,
+            group: "Agent",
+            shortcut: ["mod", "."],
+          },
+          {
+            id: "new",
+            label: "New chat",
+            icon: <MessageSquarePlus />,
+            group: "Agent",
+            shortcut: ["mod", "shift", "o"],
+          },
+          { id: "repo", label: "Add repository", icon: <FolderGit2 />, group: "Context" },
+          {
+            id: "files",
+            label: "Search files",
+            icon: <FileSearch />,
+            group: "Context",
+            shortcut: ["mod", "p"],
+          },
+          {
+            id: "theme",
+            label: "Change theme…",
+            icon: <Palette />,
+            group: "Settings",
+            children: [
+              { id: "light", label: "Light", icon: <Sun /> },
+              { id: "dark", label: "Dark", icon: <Moon /> },
+              { id: "system", label: "System", icon: <Monitor /> },
+            ],
+          },
         ]}
       />
     </div>
@@ -146,20 +180,18 @@ function buildItems(log: (s: string) => void): CommandPaletteItem[] {
 
 export function CommandPaletteFull() {
   const [open, setOpen] = React.useState(false);
-  const [last, setLast] = React.useState("Nothing run yet");
+  const [last, setLast] = React.useState("");
   const [recent, setRecent] = React.useState<string[]>(["context-repo", "run-agent"]);
   const items = React.useMemo(() => buildItems(setLast), []);
   return (
-    <div className="flex flex-col items-center gap-3">
-      <Button variant="secondary" onClick={() => setOpen(true)}>
-        Open palette
-      </Button>
+    <div className="flex w-72 flex-col items-center gap-3">
       <CommandPalette
         items={items}
         open={open}
         onOpenChange={setOpen}
-        // One palette per shortcut: this one answers to ⌘J.
+        // One palette per shortcut: this one answers to ⌘J, and its trigger prints that.
         hotkey={["mod", "j"]}
+        trigger={<CommandPaletteTrigger placeholder="Run a command…" shortcut={["mod", "j"]} />}
         recent={recent}
         onRecentChange={setRecent}
         recentLimit={3}
@@ -167,8 +199,7 @@ export function CommandPaletteFull() {
         emptyMessage="No commands match"
         label="Agent commands"
       />
-      <KbdShortcut keys={["mod", "j"]} label="or press" className="pointer-coarse:hidden" />
-      <p className="text-kura-fg-subtle text-xs" aria-live="polite">
+      <p className="min-h-4 text-kura-fg-subtle text-xs" aria-live="polite">
         {last}
       </p>
     </div>

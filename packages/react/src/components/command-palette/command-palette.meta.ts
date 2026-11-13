@@ -87,18 +87,26 @@ export default defineComponent({
       default: '"Command palette"',
       description: "Accessible dialog title (visually hidden).",
     },
+    {
+      name: "inline",
+      type: "boolean",
+      default: "false",
+      description:
+        "Render in place and always shown (a launcher page, a settings panel) instead of as a modal dialog. open/trigger do not apply; hotkey focuses the search field; running an item resets it to the root page.",
+    },
   ],
   parts: [
     {
       name: "CommandPalette",
       dataSlot: "command-palette",
       description:
-        "Modal dialog surface (opaque raised surface over a dimming scrim, origin-top pop). data-page = current nested page id.",
+        "The palette sheet: a modal dialog over a dimming scrim (origin-top pop), or an in-place sheet with `inline` (data-inline). data-page = current nested page id.",
     },
     {
       name: "CommandPaletteSearch",
       dataSlot: "command-palette-search",
-      description: "Search row with breadcrumbs for nested pages.",
+      description:
+        "56px search row: a search icon, or a back key and the page trail on a nested page.",
     },
     {
       name: "CommandPaletteGroup",
@@ -109,7 +117,7 @@ export default defineComponent({
       name: "CommandPaletteItem",
       dataSlot: "command-palette-item",
       description:
-        "role=option row: icon, label, description, shortcut or chevron. data-active, data-disabled.",
+        "role=option 40px row: 16px icon, 14px label, a muted description on the same line, then the shortcut as keycaps, a chevron for a page, or ↵ on the active row. data-active, data-disabled.",
     },
     {
       name: "CommandPaletteLoading",
@@ -119,7 +127,8 @@ export default defineComponent({
     {
       name: "CommandPaletteFooter",
       dataSlot: "command-palette-footer",
-      description: "Result count and the Enter action (Run / Open).",
+      description:
+        "Key hints: ↑↓ navigate, ↵ select (or open), Esc close (⌫ back on a page). The result count is a polite live region. Hidden on touch screens.",
     },
     {
       name: "CommandPaletteTrigger",
@@ -145,10 +154,10 @@ export default defineComponent({
   a11y: {
     role: "dialog > combobox + listbox",
     notes: [
-      "A modal ui-sdk dialog with a visually hidden title; focus moves to the search input on open and returns to the trigger on close.",
+      "A modal ui-sdk dialog with a visually hidden title; focus moves to the search input on open and returns to the trigger on close. With `inline` it is a plain region and never takes focus by itself.",
       "The input is a combobox using aria-activedescendant, so screen readers read the highlighted option while focus stays in the field.",
       "The listbox is aria-busy while loading; the footer's result count is a polite live region.",
-      "Nested pages are announced through the input's label (“Search Change theme…”) and shown as breadcrumbs.",
+      "Nested pages are announced through the input's label (“Search Change theme…”) and shown as a trail after a Back button.",
     ],
     keyboard: [
       { keys: "Mod+K", action: "Toggle the palette (configurable)" },
@@ -156,7 +165,7 @@ export default defineComponent({
       { keys: "Home / End", action: "First / last item (empty query)" },
       { keys: "Enter", action: "Run the item or open its page" },
       { keys: "Backspace (empty query) / Escape", action: "Go back one page" },
-      { keys: "Escape (root page)", action: "Close" },
+      { keys: "Escape (root page)", action: "Close (inline: clear the query)" },
     ],
     reducedMotion: "The dialog and overlay fade without scale; skeleton rows stop pulsing.",
   },
@@ -164,13 +173,19 @@ export default defineComponent({
   related: ["slash-command-menu", "model-picker", "kbd-shortcut", "prompt-suggestions"],
   tags: ["command-palette", "cmdk", "search", "launcher", "keyboard", "actions", "menu", "agent"],
   examples: [
-    { name: "CommandPaletteMinimal", kind: "minimal", title: "With a trigger" },
+    {
+      name: "CommandPaletteMinimal",
+      kind: "minimal",
+      title: "Groups, icons and shortcuts",
+      description:
+        "Shown in place with `inline`, so you can try it here: type to filter, ↑↓ and ↵, and “Change theme…” opens a page.",
+    },
     {
       name: "CommandPaletteFull",
       kind: "full",
-      title: "Agent actions, recents and nested pages",
+      title: "The ⌘J dialog: recents and nested pages",
       description:
-        "Controlled open state, its own shortcut (Mod+J, because Mod+K is the docs search on this page), recents, a nested “Switch agent…” page and an async “Run workflow…” page.",
+        "A modal palette opened by its trigger or Mod+J (Mod+K is the docs search on this page), with controlled open state, recents, a nested “Switch agent…” page and an async “Run workflow…” page.",
     },
     {
       name: "CommandPaletteAsyncSearch",
@@ -181,7 +196,9 @@ export default defineComponent({
     },
   ],
   agentNotes: [
-    "Mount one palette near the app root; it portals itself. Only one instance should bind ⌘K — pass hotkey={null} to others.",
+    "Mount one palette near the app root; it portals itself. Use `inline` only to show it in place (a launcher page); the ⌘K palette is the dialog.",
+    "Items without a `shortcut` show ↵ while highlighted; give the ones that have a real binding their keys so the palette teaches them.",
+    "Mount one dialog palette per app. Only one instance should bind ⌘K — pass hotkey={null} to others.",
     "Use `children` for static sub-pages and `loadChildren` for fetched ones (the loading state is automatic).",
     "Persist recents with recent/onRecentChange (e.g. localStorage); recents resolve ids anywhere in the item tree.",
     "Shortcuts on items are display-only; bind them with useHotkey so they also work when the palette is closed.",
