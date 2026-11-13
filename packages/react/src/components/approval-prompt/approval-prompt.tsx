@@ -190,7 +190,9 @@ export function ApprovalPrompt({
       )}
       {...props}
     >
-      <Halftone visible={pending} />
+      {/* The light keeps to the corner: a smaller one in a narrow card, clear of the headline. */}
+      <Halftone visible={pending} className="hidden @md:block" />
+      <Halftone visible={pending} reach={0.46} className="bottom-auto h-28 @md:hidden" />
 
       <div className="flex flex-col px-[18px] pt-[18px] pb-4">
         <p

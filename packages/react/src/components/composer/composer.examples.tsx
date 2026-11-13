@@ -78,7 +78,7 @@ function ToolToggle({
       type="button"
       aria-pressed={pressed}
       onClick={() => onPressedChange(!pressed)}
-      className="inline-flex h-8 cursor-pointer items-center gap-1.5 rounded-kura-lg px-2.5 font-medium text-[13px] text-kura-fg-muted outline-hidden transition-[background-color,color,box-shadow] duration-(--kura-duration-fast) ease-kura-out hover:bg-kura-hover hover:text-kura-fg focus-visible:shadow-kura-focus aria-pressed:bg-kura-active aria-pressed:text-kura-fg aria-pressed:shadow-[inset_0_0_0_1px_var(--kura-border-subtle)] [&_svg]:size-3.5"
+      className="inline-flex h-8 cursor-pointer items-center gap-1.5 rounded-[9px] px-2.5 font-medium text-[13px] text-kura-fg-muted outline-hidden transition-colors duration-(--kura-duration-fast) ease-kura-snap hover:bg-kura-hover hover:text-kura-fg focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-kura-ring aria-pressed:bg-kura-active aria-pressed:text-kura-fg [&_svg]:size-3.5"
     >
       {icon}
       {children}

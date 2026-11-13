@@ -432,7 +432,7 @@ export function ModelPicker({
             );
           })}
         </div>
-        {showDetails && (
+        {showDetails && flat.length > 0 && (
           <div
             data-slot="model-picker-details"
             aria-live="polite"

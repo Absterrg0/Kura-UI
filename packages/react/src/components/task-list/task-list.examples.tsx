@@ -290,7 +290,7 @@ export function TaskListComposition() {
           </span>
           <span className="ml-auto font-kura-mono text-[12px] text-kura-fg-subtle">output</span>
         </div>
-        <pre className="m-0 min-h-40 flex-1 overflow-auto bg-kura-surface-sunken px-3.5 py-3 font-kura-mono text-[12px] text-kura-fg-muted leading-5">
+        <pre className="m-0 min-h-40 flex-1 whitespace-pre-wrap bg-kura-surface-sunken px-3.5 py-3 font-kura-mono text-[12px] text-kura-fg-muted leading-5 [overflow-wrap:anywhere]">
           {lines.join("\n")}
         </pre>
       </div>

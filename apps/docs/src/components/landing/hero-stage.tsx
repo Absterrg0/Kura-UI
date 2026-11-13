@@ -57,6 +57,16 @@ export function HeroStage({ className }: { className?: string }) {
   const reduced = useReducedMotion();
   const [decision, setDecision] = React.useState<ApprovalDecision>("pending");
   const [t0] = React.useState(() => Date.now());
+  // One clock for the whole scene, in ms since the run began: it started 7m 18s ago, the
+  // test-writer 94s ago, and the migrator asked 14s ago. Every panel reads from these.
+  const RUN = t0 - (7 * 60_000 + 18_000);
+  const ASKED = 7 * 60_000 + 18_000 - 14_000;
+  const WRITER = 7 * 60_000 + 18_000 - 94_000;
+  const [decidedAt, setDecidedAt] = React.useState<number | null>(null);
+  const decide = (next: ApprovalDecision) => {
+    setDecidedAt(next === "pending" ? null : Date.now() - RUN);
+    setDecision(next);
+  };
   const pending = decision === "pending";
   const approved = decision === "approved" || decision === "always";
 
@@ -71,7 +81,10 @@ export function HeroStage({ className }: { className?: string }) {
   // The stage is a demo: after a decision has played out, quietly ask again.
   React.useEffect(() => {
     if (pending) return;
-    const t = setTimeout(() => setDecision("pending"), 12_000);
+    const t = setTimeout(() => {
+      setDecidedAt(null);
+      setDecision("pending");
+    }, 20_000);
     return () => clearTimeout(t);
   }, [pending]);
 
@@ -109,14 +122,14 @@ export function HeroStage({ className }: { className?: string }) {
       status: migrateStatus,
       // One line in every state, so the plan keeps its height when a decision lands.
       detail: pending ? "Needs you" : decision === "denied" ? "Denied by you" : "Approved by you",
-      startedAt: approved && !migrated ? t0 : undefined,
+      startedAt: approved && !migrated && decidedAt != null ? RUN + decidedAt : undefined,
       durationMs: migrated ? 5_100 : undefined,
     },
     {
       id: "preview",
       title: "Deploy a preview",
       status: moveOn ? "running" : "queued",
-      startedAt: moveOn ? t0 : undefined,
+      startedAt: moveOn && decidedAt != null ? RUN + decidedAt + (migrated ? 5_100 : 0) : undefined,
     },
     { id: "pr", title: "Open a pull request", status: "queued" },
   ];
@@ -171,20 +184,22 @@ export function HeroStage({ className }: { className?: string }) {
     },
     { id: "edit", name: "edit_file", kind: "tool", start: 112_000, end: 186_000, status: "done" },
     { id: "test", name: "pnpm test", kind: "tool", start: 190_000, end: 208_000, status: "done" },
-    {
-      id: "writer",
-      name: "test-writer",
-      kind: "agent",
-      start: 212_000,
-      end: approved || decision === "denied" ? undefined : 420_000,
-      status: "running",
-    },
+    { id: "writer", name: "test-writer", kind: "agent", start: WRITER, status: "running" },
     {
       id: "migrate",
       name: "migrate",
       kind: "tool",
-      start: 425_000,
-      end: pending || !approved ? 432_000 : migrated ? 470_000 : undefined,
+      // Waiting since it asked; once decided it either runs for the 5.1s the terminal reports,
+      // or is skipped at the moment of the "no".
+      start: approved && decidedAt != null ? decidedAt : ASKED,
+      end:
+        decidedAt == null
+          ? undefined
+          : approved
+            ? migrated
+              ? decidedAt + 5_100
+              : undefined
+            : decidedAt,
       status: migrateStatus,
     },
   ];
@@ -198,7 +213,7 @@ export function HeroStage({ className }: { className?: string }) {
           model="claude-opus-5-5"
           branch="kura/auth-client"
           status={pending ? "waiting" : "running"}
-          startedAt={t0 - 7 * 60_000 - 18_000}
+          startedAt={RUN}
           tokens={{ input: 312_000, output: 27_400 }}
           cost={1.63}
           budget={5}
@@ -209,7 +224,7 @@ export function HeroStage({ className }: { className?: string }) {
       </div>
       {/* Phone: prompt, terminal, plan. Tablet: prompt and terminal beside plan and subagents.
           Desktop: the full three columns. The prompt never gets less than half the row. */}
-      <div className="grid items-start gap-3 md:grid-cols-[minmax(0,1fr)_minmax(0,320px)] xl:grid-cols-[330px_minmax(0,1fr)_320px]">
+      <div className="grid items-start gap-3 md:grid-cols-[minmax(0,1fr)_minmax(0,320px)] xl:grid-cols-[330px_minmax(0,1fr)_320px] xl:items-stretch xl:[&>div>div:last-child>*]:flex-1 xl:[&>div>div:last-child]:flex xl:[&>div>div:last-child]:flex-1 xl:[&>div>div:last-child]:flex-col">
         <div className="flex min-w-0 flex-col gap-3 md:row-span-2 xl:order-2 xl:row-span-1">
           <div className="min-w-0">
             <ApprovalPrompt
@@ -224,7 +239,7 @@ export function HeroStage({ className }: { className?: string }) {
               ]}
               risk="high"
               decision={decision}
-              onDecisionChange={setDecision}
+              onDecisionChange={decide}
               approveLabel="Run migration"
             />
           </div>
@@ -238,9 +253,8 @@ export function HeroStage({ className }: { className?: string }) {
               exitCode={term.status === "done" ? 0 : null}
               duration={term.status === "done" ? (approved ? 5_100 : 1_840) : undefined}
               maxHeight={196}
-              wrap={false}
               copyable={false}
-              className="[&_[data-slot=terminal-output]]:min-h-[176px]"
+              className="[&_[data-slot=terminal-output]]:min-h-[196px]"
             />
           </div>
         </div>
@@ -249,7 +263,7 @@ export function HeroStage({ className }: { className?: string }) {
             <TaskList title="Plan" items={tasks} collapseCompleted={false} />
           </div>
           <div className="hidden min-w-0 xl:block">
-            <TraceWaterfall spans={spans} startedAt={t0 - 7 * 60_000 - 18_000} />
+            <TraceWaterfall spans={spans} startedAt={RUN} />
           </div>
         </div>
         <div className="hidden min-w-0 flex-col gap-3 md:col-start-2 md:flex xl:order-3 xl:col-start-auto">

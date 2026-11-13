@@ -32,7 +32,7 @@ const keyVariants = {
 } as const;
 
 const keySizes = {
-  sm: "h-[18px] min-w-[18px] px-1 text-[10.5px]",
+  sm: "h-[18px] min-w-[18px] px-1 text-[11px]",
   md: "h-[22px] min-w-[22px] px-1.5 text-xs",
 } as const;
 

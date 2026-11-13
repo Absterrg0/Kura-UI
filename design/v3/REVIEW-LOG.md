@@ -11,6 +11,7 @@ reviewer (`design/v2/REVIEW-LOG.md`). The owner then rejected the look itself; v
 | ----- | --------- | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | R1    | 8.0       | 7.8      | First full build on the dot language (commit 519f6c7). Identity lands (brand 9.0 from both); focus rings, mobile docs and loose edges hold it back.                              |
 | R2    | 8.8*      | 8.5      | Commit 87f0d7b. Round-1 list largely closed. *Live checks were cut short: the docs dev server hit its 2-hour limit mid-review, so focus, 390px pages and motion are provisional. |
+| R3    | 9.1       | 8.9      | Commit e505f88. Fully verified live (48 pages, 192 axe runs, Tab walks, approve/deny at three widths). A decision now moves 0px; four to five small must-fixes remain.           |
 
 ---
 
@@ -145,3 +146,69 @@ Hero at 1440 and its 768–1279 recut; approve/deny choreography; ember discipli
 page and resolved states; dot primitives, AgentOrb, AudioWaveform; AgentFleet, Checkpoints,
 TaskList, Terminal, FileChanges, Composer; nav (≥1024), footer, closing call to action, "Built
 right", the install table; ⌘K layout with a resetting query; 390px home; sentence-case titles.
+
+---
+
+## Round 3 — commit e505f88
+
+The server ran for the whole review window, so nothing is provisional. Fable: Tab walk on 10
+pages in both themes, axe on 48 pages × 4 configurations, hero at three widths, the agent demo
+played through, ⌘K, 390px full pages of every component. Opus: Tab walk on all 47 pages, the same
+axe matrix, measured heights through approve and deny, layout shift, 36 component pages.
+
+| #   | Category                 | Fable 5.2 | Opus 5.5 |
+| --- | ------------------------ | --------- | -------- |
+| 1   | Visual hierarchy         | 9.2       | 9.1      |
+| 2   | Typography               | 9.1       | 9.0      |
+| 3   | Colour & state semantics | 9.2       | 9.3      |
+| 4   | Layout & spacing         | 9.0       | 8.8      |
+| 5   | Consistency              | 9.0       | 8.8      |
+| 6   | Brand distinctiveness    | 9.5       | 9.4      |
+| 7   | Clarity & density        | 9.0       | 9.0      |
+| 8   | Interaction states       | 9.0       | 8.9      |
+| 9   | Light/dark parity        | 9.3       | 9.3      |
+| 10  | Craft & polish           | 8.8       | 8.7      |
+| 11  | Accessibility            | 8.7       | 8.6      |
+| 12  | Responsive               | 8.9       | 8.9      |
+| 13  | Motion                   | 9.3       | 9.2      |
+| 14  | Copy                     | 9.1       | 8.9      |
+|     | **OVERALL**              | **9.1**   | **8.9**  |
+
+### Round-2 verification
+
+All seven round-2 must-fixes verified fixed (site focus, the two axe failures, whole index
+cards, no reflow on a decision — measured 0px at 1440, 1024 and 390 —, the BrowserSession
+halftone, nav/props/browser mock), except the hero Trace, which is "partly": durations and dot
+kinds landed, but the rail now touches them. No regressions.
+
+### Must-fix (merged, ranked)
+
+1. **Every docs code well has a second, invisible tab stop** (both): Shiki puts `tabindex="0"`
+   on its `<pre>`; the wrapper hides that outline. **⌘K drops focus to `<body>` on close**
+   (Fable).
+2. **Pressed toggles lose their focus ring** in two copy-paste examples (Opus).
+3. **One serious axe failure at 390** (both): a hand-rolled scrolling `<pre>` in a TaskList
+   example.
+4. **Hero Trace** (both): the rail and the now-line run into the durations; names shrink to ~6
+   characters when narrow; its numbers contradict the Plan, Terminal and Subagents.
+5. **A native blue × in the Components filter** in light (Fable).
+6. **ApprovalPrompt halftone runs under text at 390** (Fable).
+
+### Polish (merged)
+
+Terminals hard-clip at 390 (hero, install transcript); the agent demo shifts on phones while it
+plays; the filter is silently scoped to the active tab; ⌘ in prose where keys print Ctrl; 10.5px
+keycap text; ModelPicker empty state; two titles promise icons that are gone; green Lucide checks
+in a Spinner example; ToolCall examples still pass kind icons; ragged hero column bottoms; the
+category row is cut at 390; diff lines end flush on the sheet edge; ThinkingIndicator is still a
+generic typing indicator; ⌘K says "Getting started" where the sidebar says "Introduction"; copy
+has no failure path; the hero re-asks after 12s.
+
+### Verified good (do not touch)
+
+Hero at every width and its decision choreography (zero movement, ember leaves, 0 animations
+under reduced motion); ember discipline; the components index; the component page template at
+390; desktop TraceWaterfall; AgentFleet, TaskList, FileChanges, DiffView review flow, Checkpoints,
+PromptQueue, ContextPanel, StatusGlyph, DotRail, Halftone, AgentOrb, AudioWaveform; Composer's
+ring; ModelPicker; ⌘K layout and ranking; mobile nav; nav, footer, "Built right", the install
+table, the closing call to action; light wells; no horizontal overflow and one h1 on all pages.

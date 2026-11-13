@@ -156,11 +156,11 @@ function barTone(span: TraceSpan, selected: boolean): string {
   return span.kind === "agent" ? "text-kura-fg-muted" : "text-kura-fg-subtle";
 }
 
-// Narrow panels put each row's duration at the end of its rail, so the track stops short of it.
-const TRACK = "absolute inset-y-0 left-3 right-[54px] @sm:right-5";
-// The time axis never gets less than about half the panel: spans are the point of a trace.
+// In a narrow panel (under 24rem) a span is two lines: its name and duration, then its rail at
+// the full width of the panel. From 24rem up, name and rail share one row.
+const TRACK = "absolute inset-y-0 left-4 right-4 @sm:left-3 @sm:right-5";
 const GRID =
-  "grid grid-cols-[minmax(0,46%)_1fr] @sm:grid-cols-[minmax(150px,50%)_1fr] @lg:grid-cols-[minmax(176px,46%)_1fr] @3xl:grid-cols-[minmax(300px,40%)_1fr]";
+  "grid grid-cols-1 @sm:grid-cols-[minmax(150px,50%)_1fr] @lg:grid-cols-[minmax(176px,46%)_1fr] @3xl:grid-cols-[minmax(300px,40%)_1fr]";
 
 function Text({ children, tone }: { children: React.ReactNode; tone?: "danger" }) {
   return (
@@ -466,7 +466,7 @@ export function TraceWaterfall({
               "sticky top-0 z-20 h-7 bg-kura-surface text-[11.5px] text-kura-fg-subtle",
             )}
           >
-            <div className="flex items-center justify-between px-4">
+            <div className="hidden items-center justify-between px-4 @sm:flex">
               <span>Span</span>
               <span className="hidden @md:inline">Duration</span>
             </div>
@@ -483,8 +483,9 @@ export function TraceWaterfall({
                       className={cn(
                         "absolute top-1/2 -translate-y-1/2 whitespace-nowrap font-kura-mono tabular-nums",
                         i === 0 ? "" : "-translate-x-1/2",
-                        // Narrow containers keep only the first and last labels.
-                        i > 0 && !lastLabel && "hidden @lg:inline",
+                        // A short track (name and rail side by side, under 32rem) keeps only the
+                        // first and last labels; the stacked narrow layout has room for all.
+                        i > 0 && !lastLabel && "@sm:@max-lg:hidden",
                         // Keep the outermost label inside the track.
                         i === ticks.length - 1 && "-translate-x-full",
                       )}
@@ -506,7 +507,10 @@ export function TraceWaterfall({
 
           <div className="relative">
             {/* Grid lines and the "now" marker, under the rows. */}
-            <div aria-hidden className={cn(GRID, "pointer-events-none absolute inset-0 z-0")}>
+            <div
+              aria-hidden
+              className={cn(GRID, "pointer-events-none absolute inset-0 z-0 hidden @sm:grid")}
+            >
               <div />
               <div className="relative">
                 <div className={TRACK}>
@@ -572,13 +576,13 @@ export function TraceWaterfall({
                       }}
                       className={cn(
                         GRID,
-                        "relative h-8 cursor-default transition-colors duration-(--kura-duration-fast) ease-kura-snap",
+                        "relative cursor-default pt-1 pb-1.5 transition-colors duration-(--kura-duration-fast) ease-kura-snap @sm:h-8 @sm:py-0",
                         "group-focus-visible/item:shadow-[inset_0_0_0_2px_var(--kura-ring)]",
                         selected ? "bg-kura-active" : "hover:bg-kura-hover",
                       )}
                     >
                       <div
-                        className="flex min-w-0 items-center gap-1.5 pr-3.5"
+                        className="flex h-6 min-w-0 items-center gap-1.5 pr-4 @sm:h-auto @sm:pr-3.5"
                         style={{ paddingLeft: `${(flat ? 16 : 10) + depth * 16}px` }}
                       >
                         {hasKids ? (
@@ -638,7 +642,7 @@ export function TraceWaterfall({
                         <span
                           data-slot="trace-waterfall-duration"
                           className={cn(
-                            "hidden min-w-[5ch] shrink-0 text-right font-kura-mono text-[12px] tabular-nums @sm:inline",
+                            "min-w-[5ch] shrink-0 text-right font-kura-mono text-[12px] tabular-nums",
                             span.status === "running"
                               ? "text-kura-fg-muted"
                               : "text-kura-fg-subtle",
@@ -650,7 +654,7 @@ export function TraceWaterfall({
                           , {KIND_LABEL[span.kind]}, {STATUS_WORD[span.status]}
                         </span>
                       </div>
-                      <div className="relative">
+                      <div className="relative h-3.5 @sm:h-auto">
                         <div className={TRACK}>
                           {/* The time axis for this row: faint dots, lit where the span ran. */}
                           <span className="kura-dots absolute inset-x-0 top-1/2 h-1.5 -translate-y-1/2" />
@@ -680,13 +684,6 @@ export function TraceWaterfall({
                             />
                           )}
                         </div>
-                        {/* Narrow panels: the duration sits at the end of the rail. */}
-                        <span
-                          aria-hidden
-                          className="absolute top-1/2 right-3.5 -translate-y-1/2 font-kura-mono text-[11.5px] text-kura-fg-subtle tabular-nums @sm:hidden"
-                        >
-                          {span.status === "queued" ? "" : formatDuration(dur)}
-                        </span>
                       </div>
                     </div>
                     {details != null && (

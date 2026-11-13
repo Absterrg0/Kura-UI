@@ -25,5 +25,6 @@ function get() {
 /** Server-side syntax highlighting in Kura's inks. */
 export async function highlight(code: string, lang = "tsx"): Promise<string> {
   const h = await get();
-  return h.codeToHtml(code.trimEnd(), { lang, theme: "kura-ink" });
+  // Shiki would add tabindex="0" to its <pre>; the pane around it is already the tab stop.
+  return h.codeToHtml(code.trimEnd(), { lang, theme: "kura-ink", tabindex: false });
 }

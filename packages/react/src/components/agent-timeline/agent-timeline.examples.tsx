@@ -1,6 +1,6 @@
 "use client";
 
-import { FileText, RotateCcw, Terminal } from "lucide-react";
+import { RotateCcw } from "lucide-react";
 import * as React from "react";
 import { Button } from "../button";
 import { ToolCall } from "../tool-call";
@@ -147,7 +147,6 @@ export function AgentTimelineWithTools() {
               <ToolCall
                 variant="inline"
                 name="read_file"
-                icon={<FileText />}
                 status="success"
                 duration={120}
                 args={{ path: "src/date.test.ts" }}
@@ -162,7 +161,6 @@ export function AgentTimelineWithTools() {
               <ToolCall
                 variant="inline"
                 name="run_command"
-                icon={<Terminal />}
                 status="running"
                 args={{ command: "TZ=Pacific/Auckland pnpm test date" }}
               />

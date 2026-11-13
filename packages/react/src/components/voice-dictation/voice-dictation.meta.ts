@@ -148,7 +148,7 @@ export default defineComponent({
       name: "VoiceDictationFull",
       kind: "full",
       title: "Toggle or hold, hotkey and collected notes",
-      description: "Switch modes, use ⌘⇧D, and watch final transcripts collect below.",
+      description: "Switch modes, use the shortcut, and watch final transcripts collect below.",
     },
     {
       name: "VoiceDictationInComposer",

@@ -1,8 +1,9 @@
 "use client";
 
-import { Check, FileText, FolderGit2, HardDrive, ListTodo, RotateCw } from "lucide-react";
+import { FileText, FolderGit2, HardDrive, ListTodo, RotateCw } from "lucide-react";
 import * as React from "react";
 import { Button } from "../button";
+import { StatusGlyph } from "../status-glyph";
 import { Spinner } from "./spinner";
 
 export function SpinnerMinimal() {
@@ -144,7 +145,7 @@ export function SpinnerSourcesList() {
                 {source.status === "syncing" ? (
                   <Spinner size="sm" label={null} />
                 ) : (
-                  <Check aria-hidden className="size-3.5 text-kura-success-text" />
+                  <StatusGlyph status="done" size="sm" label={null} />
                 )}
                 {source.status === "syncing" ? "Indexing…" : "Up to date"}
               </span>

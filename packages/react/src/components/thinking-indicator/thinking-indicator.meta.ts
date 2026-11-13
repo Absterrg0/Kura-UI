@@ -6,7 +6,7 @@ export default defineComponent({
   category: "feedback",
   status: "beta",
   description:
-    "Compact AI “thinking” indicators — three dots, a pulsing dot, or cycling status text — inside a polite live region.",
+    "Compact “thinking” indicators in the dot language: a light running along a row of dots, one pulsing dot, or cycling status text, in a polite live region.",
   whenToUse: [
     "The assistant has received a prompt but not produced its first token yet.",
     "A pending assistant message bubble or a placeholder row in a chat list.",
@@ -25,7 +25,7 @@ export default defineComponent({
       type: '"dots" | "pulse" | "text"',
       default: '"dots"',
       description:
-        "dots: three bouncing dots (staggered). pulse: a breathing dot with an expanding ring. text: cycling status lines with no shape.",
+        "dots: five dots with a light running along them (the chasing glyph laid out straight). pulse: one dot pulsing like the leading dot of a live rail. text: cycling status lines beside the pulsing dot.",
     },
     {
       name: "size",
@@ -82,7 +82,7 @@ export default defineComponent({
     ],
     keyboard: [],
     reducedMotion:
-      "Loops stop. Dots show three static dots of rising opacity and the pulse is a still dot; text lines swap without travel.",
+      "Loops stop. The row holds with its first three dots lit and the pulse is a still dot; text lines swap without travel.",
   },
   dependencies: { npm: [], kura: ["shimmer-text"] },
   related: ["shimmer-text", "agent-orb", "streaming-text", "message", "run-header"],
@@ -93,7 +93,7 @@ export default defineComponent({
       name: "ThinkingIndicatorFull",
       kind: "full",
       title: "Every variant and size",
-      description: "dots and pulse at sm/md/lg, cycling text, and a muted recolour.",
+      description: "Dots and pulse at sm/md/lg, cycling text, and a muted recolour.",
     },
     {
       name: "ThinkingIndicatorInMessage",

@@ -77,7 +77,7 @@ export function PromptQueueFull() {
             </span>
           </>
         ) : (
-          "Hover a prompt, or focus it and use Alt+↑/↓, Enter, Delete and ⌘↵."
+          "Hover a prompt, or focus it and use Alt+↑/↓, Enter, Delete and Mod+Enter."
         )}
       </p>
     </div>

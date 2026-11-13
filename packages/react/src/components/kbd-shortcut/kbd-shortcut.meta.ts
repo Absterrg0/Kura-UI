@@ -6,10 +6,10 @@ export default defineComponent({
   category: "primitives",
   status: "beta",
   description:
-    "Labelled keyboard-shortcut hint (“Send ⌘↵”) that can also bind the shortcut and light its keys while pressed.",
+    "Labelled keyboard-shortcut hint (“Send” and its keys, ⌘ on Apple and Ctrl elsewhere) that can also bind the shortcut and light its keys while pressed.",
   whenToUse: [
-    "Hints under or inside a prompt composer: “⌘↵ to send”, “Esc to stop”.",
-    "Advertise and bind a global shortcut in one element (e.g. ⌘K for search, ⌘J to toggle a panel).",
+    "Hints under or inside a prompt composer: “Send”, “New line”, “Stop”, each with its keys.",
+    "Advertise and bind a global shortcut in one element (e.g. Mod+K for search, Mod+J to toggle a panel).",
     "Empty states and onboarding that teach shortcuts.",
   ],
   whenNotToUse: [

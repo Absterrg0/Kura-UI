@@ -1,6 +1,6 @@
 "use client";
 
-import { FileText, Globe, RotateCcw, Terminal } from "lucide-react";
+import { RotateCcw } from "lucide-react";
 import * as React from "react";
 import { Button } from "../button";
 import { ToolCall, type ToolCallStatus } from "./tool-call";
@@ -47,7 +47,6 @@ export function ToolCallFull() {
       <ToolCall
         name="search_web"
         title={status === "success" ? "Searched the web" : "Searching the web"}
-        icon={<Globe />}
         status={status}
         args={{ query: "react useOptimistic rollback", max_results: 2 }}
         result={status === "success" ? RESULT : undefined}
@@ -75,15 +74,9 @@ export function ToolCallStates() {
   return (
     <div className="flex w-full max-w-lg flex-col gap-2">
       <ToolCall name="list_files" status="pending" args={{ dir: "src/components" }} />
-      <ToolCall
-        name="run_tests"
-        icon={<Terminal />}
-        status="running"
-        args={{ filter: "message" }}
-      />
+      <ToolCall name="run_tests" status="running" args={{ filter: "message" }} />
       <ToolCall
         name="read_file"
-        icon={<FileText />}
         status="success"
         duration={96}
         args={{ path: "README.md" }}
@@ -109,7 +102,6 @@ export function ToolCallInline() {
         variant="inline"
         name="fetch_url"
         title="Read react.dev"
-        icon={<Globe />}
         status="success"
         duration={640}
         args={{ url: "https://react.dev/reference/react/useOptimistic" }}
@@ -126,7 +118,6 @@ export function ToolCallApproval() {
     <ToolCall
       name="run_command"
       title="Run a shell command"
-      icon={<Terminal />}
       status={status}
       args={{ command: "pnpm db:migrate --env production" }}
       result={status === "success" ? "Applied 3 migrations." : undefined}

@@ -27,14 +27,14 @@ export function VoiceDictationFull() {
   return (
     <div className="flex w-full max-w-md flex-col gap-4">
       <div className="flex items-center justify-between gap-3">
-        <div className="flex rounded-kura-md bg-kura-surface-sunken p-0.5 text-xs shadow-kura-xs">
+        <div className="flex rounded-[9px] bg-kura-surface-sunken p-0.5 text-xs shadow-kura-sunk">
           {(["toggle", "hold"] as const).map((m) => (
             <button
               key={m}
               type="button"
               aria-pressed={mode === m}
               onClick={() => setMode(m)}
-              className="cursor-pointer rounded-kura-sm px-2.5 py-1 text-kura-fg-muted capitalize outline-hidden transition-colors duration-(--kura-duration-fast) focus-visible:shadow-kura-focus aria-pressed:bg-kura-surface aria-pressed:text-kura-fg aria-pressed:shadow-kura-xs"
+              className="cursor-pointer rounded-[7px] px-2.5 py-1 text-kura-fg-muted capitalize outline-hidden transition-colors duration-(--kura-duration-fast) focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-kura-ring aria-pressed:bg-kura-raised aria-pressed:text-kura-fg aria-pressed:shadow-kura-raised"
             >
               {m}
             </button>

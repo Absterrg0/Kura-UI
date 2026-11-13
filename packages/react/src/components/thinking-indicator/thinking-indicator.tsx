@@ -7,19 +7,11 @@ import { ShimmerText } from "../shimmer-text";
 export type ThinkingIndicatorVariant = "dots" | "pulse" | "text";
 export type ThinkingIndicatorSize = "sm" | "md" | "lg";
 
-const CSS = `
-@keyframes kura-ti-dot {
-  0%, 60%, 100% { transform: translateY(0); opacity: 0.3; }
-  30% { transform: translateY(-40%); opacity: 1; }
-}
-@keyframes kura-ti-ring { from { transform: scale(1); opacity: 0.55; } to { transform: scale(2.8); opacity: 0; } }
-@keyframes kura-ti-breathe { 0%, 100% { transform: scale(0.82); } 50% { transform: scale(1); } }
-`;
-
 const SIZE: Record<ThinkingIndicatorSize, string> = {
-  sm: "[--ti-dot:4px] [--ti-gap:3px]",
-  md: "[--ti-dot:6px] [--ti-gap:4px]",
-  lg: "[--ti-dot:8px] [--ti-gap:5px]",
+  // Dots on the same pitch as a rail: 3px dots 6px apart, and up.
+  sm: "[--ti-dot:3px] [--ti-gap:3px]",
+  md: "[--ti-dot:4px] [--ti-gap:4px]",
+  lg: "[--ti-dot:5px] [--ti-gap:5px]",
 };
 
 const TEXT_SIZE: Record<ThinkingIndicatorSize, string> = {
@@ -46,41 +38,36 @@ export interface ThinkingIndicatorProps extends Omit<React.ComponentProps<"span"
 
 const motion = "motion-reduce:animate-none";
 
+/** A short row of dots with a light running along it: the chasing glyph, laid out straight. */
 function Dots() {
   return (
     <span data-slot="thinking-indicator-shape" className="inline-flex items-center gap-(--ti-gap)">
-      {[0, 1, 2].map((i) => (
+      {[0, 1, 2, 3, 4].map((i) => (
         <span
           key={i}
           className={cn(
-            "size-(--ti-dot) rounded-full bg-current [animation:kura-ti-dot_1.3s_cubic-bezier(0.45,0,0.55,1)_infinite]",
+            "size-(--ti-dot) rounded-full bg-current opacity-20 animate-kura-chase",
             motion,
-            i === 0 && "motion-reduce:opacity-40",
-            i === 1 && "motion-reduce:opacity-70",
+            // Held still, the first three stay lit.
+            i < 3 && "motion-reduce:opacity-100",
           )}
-          style={{ animationDelay: `${i * 0.15}s` }}
+          style={{ animationDelay: `${i * 120}ms` }}
         />
       ))}
     </span>
   );
 }
 
+/** One dot that pulses, like the leading dot of a live rail. */
 function Pulse() {
   return (
     <span
       data-slot="thinking-indicator-shape"
-      className="relative inline-flex size-[calc(var(--ti-dot)*2.6)] items-center justify-center"
+      className="inline-flex size-[calc(var(--ti-dot)*2)] items-center justify-center"
     >
       <span
         className={cn(
-          "absolute size-(--ti-dot) rounded-full bg-current [animation:kura-ti-ring_1.6s_cubic-bezier(0.23,1,0.32,1)_infinite]",
-          motion,
-          "motion-reduce:opacity-0",
-        )}
-      />
-      <span
-        className={cn(
-          "size-[calc(var(--ti-dot)*1.25)] rounded-full bg-current [animation:kura-ti-breathe_1.6s_cubic-bezier(0.77,0,0.175,1)_infinite]",
+          "size-[calc(var(--ti-dot)*1.25)] rounded-full bg-current animate-kura-dot-pulse",
           motion,
         )}
       />
@@ -89,8 +76,9 @@ function Pulse() {
 }
 
 /**
- * Compact AI "thinking" indicators — dots, a pulsing dot, or cycling status text — wrapped in
- * a polite live region. Shapes use `currentColor` (the blue accent by default); restyle with a text-colour
+ * Compact AI "thinking" indicators in the dot language — a row of dots with a light running
+ * along it, one pulsing dot, or cycling status text — wrapped in
+ * a polite live region. Shapes use `currentColor` (ink by default); restyle with a text-colour
  * class. CSS-only animation; everything settles to a still glyph under reduced motion.
  */
 export function ThinkingIndicator({
@@ -131,9 +119,6 @@ export function ThinkingIndicator({
       )}
       {...props}
     >
-      <style href="kura-thinking-indicator" precedence="kura">
-        {CSS}
-      </style>
       {shape && (
         <>
           <span aria-hidden className="contents">

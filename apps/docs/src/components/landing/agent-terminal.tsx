@@ -13,8 +13,7 @@ export function AgentTerminal({ className }: { className?: string }) {
     `${c("32", "✓")} Added stdio MCP server ${c("1", "kura")} to .mcp.json`,
     "",
     `${c("2", "$")} claude`,
-    `${c("1", ">")} add per-hunk review for the agent's edits, and a terminal`,
-    `  for its test runs`,
+    `${c("1", ">")} add per-hunk review for the agent's edits, and a terminal for its test runs`,
     "",
     `${dot} kura · search_components ${c("2", '("review agent edits per hunk")')}`,
     `  ${tree}  diff-view, file-changes`,
@@ -41,7 +40,6 @@ export function AgentTerminal({ className }: { className?: string }) {
       exitCode={0}
       duration={2_140}
       maxHeight={640}
-      wrap={false}
     />
   );
 }

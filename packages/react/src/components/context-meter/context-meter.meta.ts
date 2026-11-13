@@ -130,7 +130,7 @@ export default defineComponent({
       kind: "state",
       title: "Thresholds",
       description:
-        "ok, filling-up and nearly-full meters in a list of threads, each labelled by its thread.",
+        "Ok, filling-up and nearly-full meters in a list of threads, each labelled by its thread.",
     },
     {
       name: "ContextMeterInComposer",

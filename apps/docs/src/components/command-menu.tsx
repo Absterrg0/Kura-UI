@@ -62,13 +62,22 @@ export function CommandMenu({
 }) {
   const [open, setOpen] = React.useState(false);
   const [query, setQuery] = React.useState("");
+  const inputRef = React.useRef<HTMLInputElement>(null);
+  // Whatever had focus when the palette opened gets it back when it closes.
+  const opener = React.useRef<HTMLElement | null>(null);
+  const show = (next: boolean | ((o: boolean) => boolean)) =>
+    setOpen((o) => {
+      const value = typeof next === "function" ? next(o) : next;
+      if (value && !o) opener.current = document.activeElement as HTMLElement | null;
+      return value;
+    });
   const router = useRouter();
   // Each time the palette opens it starts empty.
   React.useEffect(() => {
     if (!open) setQuery("");
   }, [open]);
-  useHotkey(["mod", "k"], () => setOpen((o) => !o));
-  useHotkey(["/"], () => setOpen(true));
+  useHotkey(["mod", "k"], () => show((o) => !o));
+  useHotkey(["/"], () => show(true));
 
   const go = (href: string) => {
     setOpen(false);
@@ -79,7 +88,7 @@ export function CommandMenu({
     <>
       <button
         type="button"
-        onClick={() => setOpen(true)}
+        onClick={() => show(true)}
         data-testid="search-trigger"
         className="group flex size-9 cursor-pointer items-center justify-center gap-2 rounded-[9px] text-[13px] text-kura-fg-subtle outline-hidden transition-colors hover:text-kura-fg focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-kura-ring max-md:hover:bg-kura-hover md:h-8 md:w-auto md:justify-start md:bg-kura-surface-sunken md:pr-1.5 md:pl-2.5 md:shadow-kura-sunk lg:w-52"
       >
@@ -88,11 +97,19 @@ export function CommandMenu({
         <span className="sr-only md:hidden">Search components</span>
         <Kbd keys={["mod", "k"]} size="sm" className="hidden md:inline-flex" />
       </button>
-      <Dialog.Root open={open} onOpenChange={setOpen}>
+      <Dialog.Root open={open} onOpenChange={show}>
         <Dialog.Portal>
           <Dialog.Overlay className="fixed inset-0 z-50 bg-kura-canvas/80 data-[state=closed]:animate-kura-fade-out data-[state=open]:animate-kura-fade-in" />
           <Dialog.Content
             aria-describedby={undefined}
+            onOpenAutoFocus={(e) => {
+              e.preventDefault();
+              inputRef.current?.focus();
+            }}
+            onCloseAutoFocus={(e) => {
+              e.preventDefault();
+              opener.current?.focus();
+            }}
             className="fixed top-[14vh] left-1/2 z-50 w-[min(640px,calc(100vw-32px))] -translate-x-1/2 origin-top overflow-hidden rounded-kura-xl bg-kura-surface shadow-kura-popover data-[state=closed]:animate-kura-pop-out data-[state=open]:animate-kura-pop-in"
           >
             <Dialog.Title className="sr-only">Search Kura UI</Dialog.Title>
@@ -106,7 +123,7 @@ export function CommandMenu({
                 <Search className="size-4 text-kura-fg-subtle" />
                 {/* focus: the caret is the indicator (the one text field of a dialog) */}
                 <Command.Input
-                  autoFocus
+                  ref={inputRef}
                   value={query}
                   onValueChange={setQuery}
                   placeholder="Find a component, hook or page…"
@@ -121,7 +138,7 @@ export function CommandMenu({
                 </Command.Empty>
                 <Command.Group heading="Pages">
                   {[
-                    { href: "/docs", label: "Getting started", icon: BookOpen },
+                    { href: "/docs", label: "Introduction", icon: BookOpen },
                     { href: "/docs/wiring-events", label: "Wiring agent events", icon: Workflow },
                     { href: "/docs/hooks", label: "Hooks", icon: Anchor },
                     { href: "/components", label: "All components", icon: LayoutGrid },

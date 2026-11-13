@@ -211,7 +211,7 @@ export default defineComponent({
   ],
   agentNotes: [
     "Keep one RunHeader mounted for the life of a run and update props; pass startedAt from the server so reloads keep the right clock, and endedAt once it finishes.",
-    "Set shortcuts={false} on every RunHeader except the one for the focused run, otherwise ⌘. stops all of them.",
+    "Set shortcuts={false} on every RunHeader except the one for the focused run, otherwise the Stop shortcut stops all of them.",
     "Map harness states: in-progress → running; needs approval / input → waiting; interrupted by the user → skipped ('Stopped'); error → failed.",
     "tokens.input should include cache reads if you want the number to match the bill; cost is whatever you computed — the component only formats it.",
     "Use the bar inside dense layouts (above a fleet or transcript) and the panel at the top of a run page.",

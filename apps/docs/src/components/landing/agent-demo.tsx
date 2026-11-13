@@ -168,7 +168,7 @@ export function AgentDemo({ className }: { className?: string }) {
       <div className="flex min-h-0 flex-col">
         {/* The terminal takes the height the right column leaves it, so the two columns end level. */}
         <Terminal
-          className="min-h-[220px] w-full flex-1"
+          className="min-h-[330px] w-full flex-1 lg:min-h-[220px]"
           title="in-app assistant"
           command={"createAgent({ allow: askThePerson })"}
           lines={lines}

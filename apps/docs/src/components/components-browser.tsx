@@ -16,27 +16,31 @@ export function ComponentsBrowser({
   const [category, setCategory] = React.useState("all");
   const [query, setQuery] = React.useState("");
   const q = query.trim().toLowerCase();
-  const shown = cards.filter(
-    (c) =>
-      (category === "all" || c.category === category) &&
-      (!q || `${c.title} ${c.slug} ${c.description}`.toLowerCase().includes(q)),
+  // A search looks across every category: typing "diff" on the Voice tab still finds Diff view.
+  const shown = cards.filter((c) =>
+    q
+      ? `${c.title} ${c.slug} ${c.description}`.toLowerCase().includes(q)
+      : category === "all" || c.category === category,
   );
   const tabs = [{ id: "all", title: "All" }, ...categories];
   return (
     <div className="flex flex-col gap-8">
       <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-        <fieldset className="-mx-5 flex min-w-0 gap-1 overflow-x-auto px-5 [scrollbar-width:none] md:mx-0 md:px-0">
+        <fieldset className="flex min-w-0 flex-wrap gap-1">
           <legend className="sr-only">Category</legend>
           {tabs.map((t) => (
             <button
               key={t.id}
               type="button"
-              aria-pressed={category === t.id}
-              onClick={() => setCategory(t.id)}
+              aria-pressed={!q && category === t.id}
+              onClick={() => {
+                setCategory(t.id);
+                setQuery("");
+              }}
               className={cn(
-                "h-8 shrink-0 cursor-pointer rounded-lg px-3 text-[14px] outline-hidden transition-colors duration-150 focus-visible:shadow-kura-focus",
-                category === t.id
-                  ? "bg-kura-hover font-medium text-kura-fg shadow-[inset_0_0_0_1px_var(--kura-border)]"
+                "h-8 shrink-0 cursor-pointer rounded-[9px] px-3 text-[13.5px] outline-hidden transition-colors duration-150 focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-kura-ring",
+                !q && category === t.id
+                  ? "bg-kura-raised font-medium text-kura-fg shadow-kura-raised"
                   : "text-kura-fg-muted hover:text-kura-fg",
               )}
             >
@@ -55,7 +59,7 @@ export function ComponentsBrowser({
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder="Filter"
-            className="well h-9 w-full rounded-[9px] pr-3 pl-8.5 text-[13.5px] text-kura-fg outline-hidden placeholder:text-kura-fg-subtle focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-kura-ring"
+            className="well h-9 w-full appearance-none rounded-[9px] pr-3 pl-8.5 text-[13.5px] text-kura-fg outline-hidden placeholder:text-kura-fg-subtle [&::-webkit-search-cancel-button]:hidden [&::-webkit-search-decoration]:hidden focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-kura-ring"
           />
         </label>
       </div>

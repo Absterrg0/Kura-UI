@@ -942,6 +942,8 @@ function HunkLines({ label, children }: { label: string; children: React.ReactNo
     if (!el || typeof ResizeObserver === "undefined") return;
     const check = () => setOverflows(el.scrollWidth > el.clientWidth + 1);
     check();
+    // Mono metrics change when the web font arrives; measure again then.
+    document.fonts?.ready.then(check).catch(() => {});
     const ro = new ResizeObserver(check);
     ro.observe(el);
     if (el.firstElementChild) ro.observe(el.firstElementChild);
@@ -1029,8 +1031,10 @@ const Line = React.memo(function Line({
       {(add || remove) && <span className="sr-only">{add ? "added: " : "removed: "}</span>}
       <span
         className={cn(
-          "min-w-0 flex-1 pr-4",
-          wrap ? "whitespace-pre-wrap [overflow-wrap:anywhere]" : "whitespace-pre",
+          "pr-4",
+          wrap
+            ? "min-w-0 flex-1 whitespace-pre-wrap [overflow-wrap:anywhere]"
+            : "flex-none whitespace-pre",
           struck && "line-through decoration-kura-fg-subtle/70",
         )}
       >

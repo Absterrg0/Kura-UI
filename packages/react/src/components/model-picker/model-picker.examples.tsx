@@ -120,7 +120,7 @@ export function ModelPickerFull() {
         align="center"
         placeholder="Choose a model"
         searchPlaceholder="Search by name, provider or capability…"
-        emptyMessage="No model has that capability"
+        emptyMessage="No models match"
         showDetails
       />
       <p className="text-kura-fg-subtle text-xs" aria-live="polite">

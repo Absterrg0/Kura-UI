@@ -10,7 +10,7 @@ export default defineComponent({
   whenToUse: [
     "The empty state of a chat or agent: show 3–6 example prompts the user can start from.",
     "Follow-up suggestions under an answer (“Make it shorter”, “Add sources”) using the chips variant.",
-    "Onboarding that teaches what the assistant can do, with icons and one-line descriptions.",
+    "Onboarding that teaches what the assistant can do, with a title and a one-line description per prompt.",
   ],
   whenNotToUse: [
     "Commands typed inline in the prompt — use slash-command-menu.",
@@ -95,7 +95,7 @@ export default defineComponent({
     {
       name: "PromptSuggestionsFull",
       kind: "full",
-      title: "Cards with icons and refresh",
+      title: "Cards with descriptions and refresh",
       description: "Swap the set to see items leave and stagger back in.",
     },
     {

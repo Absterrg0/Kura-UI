@@ -18,19 +18,28 @@ export function CopyButton({
   fetchUrl?: string;
 }) {
   const [copied, setCopied] = React.useState(false);
+  const [failed, setFailed] = React.useState(false);
   const timer = React.useRef<ReturnType<typeof setTimeout>>(undefined);
   React.useEffect(() => () => clearTimeout(timer.current), []);
   return (
     <IconButton
-      label={copied ? "Copied" : label}
+      label={failed ? "Couldn't copy" : copied ? "Copied" : label}
       size="xs"
       className={cn("text-kura-fg-subtle", className)}
       onClick={async () => {
-        const text = fetchUrl ? await (await fetch(fetchUrl)).text() : (value ?? "");
-        await navigator.clipboard.writeText(text);
-        setCopied(true);
+        try {
+          const text = fetchUrl ? await (await fetch(fetchUrl)).text() : (value ?? "");
+          await navigator.clipboard.writeText(text);
+          setCopied(true);
+        } catch {
+          // The browser refused (no permission, insecure context): say so in the label.
+          setFailed(true);
+        }
         clearTimeout(timer.current);
-        timer.current = setTimeout(() => setCopied(false), 1400);
+        timer.current = setTimeout(() => {
+          setCopied(false);
+          setFailed(false);
+        }, 1400);
       }}
       icon={
         <span className="relative size-3.5">
