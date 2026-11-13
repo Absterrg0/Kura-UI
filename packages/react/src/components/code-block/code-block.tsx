@@ -1,6 +1,6 @@
 "use client";
 
-import { Check, ChevronsDownUp, ChevronsUpDown, Copy, FileCode2, WrapText } from "lucide-react";
+import { Check, ChevronsDownUp, ChevronsUpDown, Copy, WrapText } from "lucide-react";
 import * as React from "react";
 import { useControllableState } from "../../hooks/use-controllable-state";
 import { cn } from "../../lib/cn";
@@ -89,7 +89,7 @@ const syntaxVars = {
   "--kura-code-punctuation": "var(--kura-syntax-punctuation, var(--kura-fg-subtle))",
 } as React.CSSProperties;
 
-const LINE_HEIGHT = 22;
+const LINE_HEIGHT = 20;
 
 function useLines(code: string, language: string, diff: boolean, streaming: boolean): Line[] {
   // While streaming, only complete lines are tokenized; the tail is plain text. Memoized on the
@@ -245,21 +245,38 @@ export function CodeBlock({
       {header && (
         <div
           data-slot="code-block-header"
-          className="flex h-11 shrink-0 items-center gap-2 pr-2 pl-4"
+          className="flex h-11 shrink-0 items-center gap-2 pr-1.5 pl-4"
         >
-          <span className="flex min-w-0 flex-1 items-center gap-2 font-kura-sans text-[13px] text-kura-fg-muted">
-            {filename && (
-              <FileCode2 aria-hidden className="size-3.5 shrink-0 text-kura-fg-subtle" />
+          {/* A path reads as a path: mono, the folder dimmed and the file name in ink. A bare
+              language label stays quiet. */}
+          <span
+            data-slot="code-block-title"
+            className="flex min-w-0 flex-1 items-baseline font-kura-mono text-[12.5px]"
+          >
+            {filename ? (
+              <>
+                {filename.includes("/") && (
+                  <span className="min-w-0 shrink-[999] truncate text-kura-fg-subtle [direction:rtl]">
+                    <span className="[direction:ltr] [unicode-bidi:isolate]">
+                      {filename.slice(0, filename.lastIndexOf("/") + 1)}
+                    </span>
+                  </span>
+                )}
+                <span className="min-w-0 truncate text-kura-fg">
+                  {filename.slice(filename.lastIndexOf("/") + 1)}
+                </span>
+              </>
+            ) : (
+              <span className="truncate text-[12px] text-kura-fg-subtle">
+                {language !== "text" ? language : ""}
+              </span>
             )}
-            <span data-slot="code-block-title" className="truncate">
-              {filename ?? (language !== "text" ? language : "")}
-            </span>
           </span>
           {/* A filename with an extension already says the language; only a bare name needs it. */}
           {filename && language !== "text" && !/\.[a-z0-9]+$/i.test(filename) && (
             <span
               data-slot="code-block-language"
-              className="select-none px-1.5 font-kura-mono text-[11px] text-kura-fg-subtle"
+              className="select-none px-1.5 font-kura-mono text-[12px] text-kura-fg-subtle"
             >
               {language}
             </span>
@@ -337,7 +354,7 @@ export function CodeBlock({
           // biome-ignore lint/a11y/noNoninteractiveTabindex: scrollable code must be keyboard-scrollable
           tabIndex={0}
           className={cn(
-            "overflow-x-auto py-3 leading-[22px] outline-hidden [scrollbar-width:thin]",
+            "overflow-x-auto py-3 leading-5 outline-hidden [scrollbar-width:thin]",
             "focus-visible:shadow-[inset_0_0_0_2px_var(--kura-ring)]",
           )}
         >

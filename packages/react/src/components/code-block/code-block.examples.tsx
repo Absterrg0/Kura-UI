@@ -1,15 +1,17 @@
 "use client";
 
-import { Play, RotateCcw } from "lucide-react";
+import { Play } from "lucide-react";
 import * as React from "react";
 import { Button } from "../button";
 import { CodeBlock } from "./code-block";
 
 const SNIPPET = `import { StreamingText } from "@kura-ui/react/streaming-text";
 
-export function Answer({ stream }: { stream: AsyncIterable<string> }) {
+type Props = { stream: AsyncIterable<string> };
+
+export function Answer({ stream }: Props) {
   // Bursty tokens are evened out into a calm cadence.
-  return <StreamingText stream={stream} speed={90} className="max-w-prose" />;
+  return <StreamingText stream={stream} speed={90} />;
 }`;
 
 const ROUTE = `import { anthropic } from "@ai-sdk/anthropic";
@@ -37,8 +39,8 @@ const TIMEOUT_MS = 12_000;`;
 
 const DIFF = `@@ -4,7 +4,8 @@ export function Answer() {
    const [open, setOpen] = React.useState(false);
--  const items = data.filter((d) => d.visible);
-+  const items = React.useMemo(() => data.filter((d) => d.visible), [data]);
+-  const items = data.filter(isVisible);
++  const items = React.useMemo(() => data.filter(isVisible), [data]);
 +  const reduced = useReducedMotion();
    return (
 -    <List items={items} animate />
@@ -83,11 +85,8 @@ export function CodeBlockDiff() {
 }
 
 export function CodeBlockStreaming() {
-  const [run, setRun] = React.useState(0);
   const [length, setLength] = React.useState(0);
-  // biome-ignore lint/correctness/useExhaustiveDependencies: `run` restarts the fake stream
   React.useEffect(() => {
-    setLength(0);
     let n = 0;
     const id = setInterval(() => {
       n = Math.min(SNIPPET.length, n + 2 + Math.floor(Math.random() * 7));
@@ -95,22 +94,16 @@ export function CodeBlockStreaming() {
       if (n >= SNIPPET.length) clearInterval(id);
     }, 45);
     return () => clearInterval(id);
-  }, [run]);
-  const done = length >= SNIPPET.length;
+  }, []);
   return (
-    <div className="flex w-full max-w-xl flex-col items-end gap-2">
-      <CodeBlock
-        code={SNIPPET.slice(0, length)}
-        language="tsx"
-        filename="answer.tsx"
-        streaming={!done}
-        lineNumbers
-        className="w-full"
-      />
-      <Button variant="secondary" size="sm" onClick={() => setRun((r) => r + 1)}>
-        <RotateCcw /> Replay
-      </Button>
-    </div>
+    <CodeBlock
+      code={SNIPPET.slice(0, length)}
+      language="tsx"
+      filename="components/answer.tsx"
+      streaming={length < SNIPPET.length}
+      lineNumbers
+      className="w-full max-w-xl"
+    />
   );
 }
 
