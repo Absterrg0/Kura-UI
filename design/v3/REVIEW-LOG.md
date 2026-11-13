@@ -18,6 +18,7 @@ reviewer (`design/v2/REVIEW-LOG.md`). The owner then rejected the look itself; v
 | R7    | 9.4       | 9.4      | Commit 790728c. Fully verified live. All round-6 must-fixes closed, no regressions, sweeps clean (overflow, axe at every level, rings). Left: one Composer example crushed on phones, the docs Replay key over previews at 390, two stale manifest lines.                          |
 | R8    | 9.4       | 9.5      | Commit 149cc9b. Fully verified live. All round-7 must-fixes closed, no regressions. Opus is at the bar with one must-fix; Fable has four: a ModelPicker popover that can leave a short viewport, the Composer count on phones, phrases inside keycaps, two manifests naming Radix. |
 | R9    | 9.5       | 9.5      | Commit ba72162. Fully verified live. Both at the bar; every round-8 claim holds. Not passed yet: three must-fixes remain (SlashCommandMenu and CommandPalette can leave a short viewport; the Composer count hides in a roomy toolbar on phones).                                  |
+| R10   | 9.5       | 9.5      | Commit 7d62878. Fully verified live. **Opus: no must-fix (seat passed).** Fable: every round-9 claim holds; two must-fixes left (over the limit, a phone Composer shows nothing; the CommandPalette page prints shortcuts that collide with the site's ⌘K). |
 
 ---
 
@@ -598,3 +599,65 @@ runs on radix-ui and cmdk; moving it to ui-sdk is plumbing nobody sees.
 ModelPicker's fit rule, DiffView's rename header, the Keys renderer, InstallChip and wrapping
 shell blocks, TaskList's two-line titles, hero choreography and clocks, the overflow guard, focus
 rings and hand-offs, approval key scoping, the mobile nav, ember discipline, reduced motion.
+
+## Round 10 — commit 7d62878
+
+Both reviewers ran everything live: the round-9 claims (54 and 24 SlashCommandMenu opens, the
+palette at eight viewport heights, the Composer hint at eleven widths), a sideways-scroll sweep
+(0 of 48 pages at four widths), axe on 48 pages × 4 configurations (0 serious/critical), Tab
+walks on 7 pages in both themes (614 stops per theme, none without a ring), approve and deny at
+three widths with and without reduced motion, every overlay at 390×667 and 1440×600.
+
+| # | Category | Fable 5.2 | Opus 5.5 |
+| --- | --- | --- | --- |
+| 1 | Visual hierarchy | 9.6 | 9.6 |
+| 2 | Typography | 9.6 | 9.5 |
+| 3 | Colour & state semantics | 9.6 | 9.6 |
+| 4 | Layout & spacing | 9.6 | 9.5 |
+| 5 | Consistency | 9.5 | 9.5 |
+| 6 | Brand distinctiveness | 9.7 | 9.7 |
+| 7 | Clarity & density | 9.6 | 9.5 |
+| 8 | Interaction states | 9.3 | 9.5 |
+| 9 | Light/dark parity | 9.6 | 9.6 |
+| 10 | Craft & polish | 9.5 | 9.5 |
+| 11 | Accessibility | 9.4 | 9.5 |
+| 12 | Responsive | 9.5 | 9.5 |
+| 13 | Motion | 9.6 | 9.6 |
+| 14 | Copy | 9.4 | 9.5 |
+| | **OVERALL** | **9.5** | **9.5** |
+
+### Round-9 verification
+
+All fixed, no regressions: SlashCommandMenu inside the viewport with its highlighted command
+visible at every size tried; CommandPalette 16px short of the bottom edge at any height; the
+Composer hint measures its own room (the count is back in a roomy toolbar, no overlaps at eleven
+widths); the squeezed ModelPicker trigger keeps the end of the name; one-sided diff counts;
+whole-dot leaders; no code block scrolls on the four docs pages; the smaller copy items.
+
+### Must-fix
+
+Opus: **none.**
+
+Fable:
+
+1. **Composer: over the limit, a phone toolbar shows nothing.** The hint has no room and steps
+   out, so Send goes disabled with no visible reason (from 540px up the count shows in red).
+2. **CommandPalette page: printed shortcuts that do not open their palette.** The Full example
+   binds and prints Ctrl+K, which the site search owns; with the example palette open, Ctrl+K
+   stacks the site palette on top of it; two more examples print a key they do not bind.
+
+### Polish (merged)
+
+The field's spoken description is doubled while the hint is hidden; two Composer copy
+mismatches (an example titled "over limit" shows "close to", and a quoted description uses
+3,400 where "close" starts at 3,600); SlashCommandMenu with `auto` changes side as the list
+filters, and measures the layout viewport rather than the visual one (on-screen keyboard);
+DiffView's spoken counts say "1 additions"; the CommandPalette trigger prints a key on touch;
+"…t 5.5" in the model trigger at 360px.
+
+### Verified good (do not touch)
+
+Overlay fit rules (SlashCommandMenu, CommandPalette, ModelPicker), the hint as its own size
+container, end-of-name truncation, DiffView counts and rename header, whole-dot leaders, the docs
+code blocks, hero choreography and clocks, the overflow guard, focus rings and hand-offs,
+approval key scoping, ember discipline, reduced motion, the mobile hero stack.
