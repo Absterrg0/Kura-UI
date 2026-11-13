@@ -76,14 +76,7 @@ export function PromptQueueFull() {
               Interrupted Kura and sent: <span className="text-kura-fg-muted">{steered}</span>
             </span>
           </>
-        ) : (
-          <>
-            <span className="pointer-coarse:hidden">
-              Hover a prompt, or focus it and use Alt+↑/↓, Enter, Delete and ⌘/Ctrl+Enter.
-            </span>
-            <span className="hidden pointer-coarse:inline">Tap a prompt for its keys.</span>
-          </>
-        )}
+        ) : null}
       </p>
     </div>
   );
