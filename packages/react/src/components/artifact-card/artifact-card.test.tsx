@@ -124,7 +124,13 @@ describe("ArtifactCard", () => {
   it("respects reduced motion", () => {
     setReducedMotion(true);
     const { container } = render(
-      <ArtifactCard title="Plan" status="generating" variant="preview" onOpen={() => {}} />,
+      <ArtifactCard
+        title="Plan"
+        status="generating"
+        progress={0.4}
+        variant="preview"
+        onOpen={() => {}}
+      />,
     );
     const root = container.querySelector("[data-slot=artifact-card]")!;
     expect(root.className).toContain("motion-reduce:transition-none");
@@ -134,6 +140,14 @@ describe("ArtifactCard", () => {
     expect(head.className).toContain("motion-reduce:animate-none");
     expect(container.querySelector("[data-slot=status-glyph][data-status=running]")).not.toBeNull();
     setReducedMotion(false);
+  });
+
+  it("draws no rail while progress is unknown, and still announces a progressbar", () => {
+    const { container } = render(<ArtifactCard title="Plan" status="generating" />);
+    const bar = screen.getByRole("progressbar", { name: "Generating Plan" });
+    expect(bar).toHaveAttribute("data-slot", "artifact-card-progress");
+    expect(bar).toHaveClass("sr-only");
+    expect(container.querySelector("[data-slot=dot-rail-head]")).toBeNull();
   });
 
   it("examples render without a11y violations", async () => {

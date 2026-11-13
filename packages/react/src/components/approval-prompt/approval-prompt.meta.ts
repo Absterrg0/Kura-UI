@@ -101,7 +101,7 @@ export default defineComponent({
       type: "boolean",
       default: "true",
       description:
-        "Bind ⌘/Ctrl+Enter (approve) and Esc (deny) on the document while pending, and show the keys on the buttons. Only one prompt on screen should bind them.",
+        "Bind ⌘/Ctrl+Enter (approve) and Esc (deny) on the document while pending, and show the keys on the buttons. They stand down while typing in a field, inside an open dialog or menu, and when another widget already handled the key. Only one prompt on screen should bind them.",
     },
     {
       name: "approveLabel",
@@ -191,15 +191,20 @@ export default defineComponent({
     notes: [
       "A <section> labelled by the title and described by the description, so screen-reader users land on the whole request.",
       "Buttons expose their shortcuts with aria-keyshortcuts; keycaps are also rendered visually.",
-      "The resolution is a status region, so the decision is announced; the action row becomes inert and hidden.",
+      "The resolution is a status region, so the decision is announced; the action row becomes inert and hidden. If one of its buttons had focus, focus moves to the card itself (tabindex -1, with a visible ring) instead of dropping to the page.",
       "Risk is conveyed in text (“High risk”), not only colour. No dark patterns: Deny is as prominent as Approve.",
       "Agent-ready (ui-sdk): createAgent lists the prompt by its title with value = the decision and one action, deny. Approve and Always allow are buttons marked data-agent-confirm, so an agent's press waits for the person, who is told what will run.",
     ],
     keyboard: [
-      { keys: "Mod+Enter", action: "Approve (while pending, when shortcuts is on)" },
+      {
+        keys: "Mod+Enter",
+        action:
+          "Approve (while pending, when shortcuts is on; not while typing in a field or inside an open dialog or menu)",
+      },
       {
         keys: "Escape",
-        action: "Deny (while pending, when shortcuts is on; not while typing in an input)",
+        action:
+          "Deny (while pending, when shortcuts is on; not while typing in a field, inside an open dialog or menu, or when the key closed something else)",
       },
       { keys: "Tab", action: "Details, Always allow, Deny, Approve" },
     ],

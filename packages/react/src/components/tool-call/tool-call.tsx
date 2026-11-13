@@ -4,7 +4,7 @@ import { ChevronRight } from "lucide-react";
 import * as React from "react";
 import { useControllableState } from "../../hooks/use-controllable-state";
 import { cn } from "../../lib/cn";
-import { formatDuration } from "../../lib/format";
+import { formatClock, formatDuration } from "../../lib/format";
 import { CodeBlock } from "../code-block";
 import { type AgentStatus, StatusGlyph } from "../status-glyph";
 
@@ -172,7 +172,7 @@ export function ToolCall({
           data-slot="tool-call-elapsed"
           className="shrink-0 font-kura-mono text-kura-fg-subtle text-xs tabular-nums"
         >
-          {formatDuration(elapsed)}
+          {status === "running" ? formatClock(elapsed) : formatDuration(elapsed)}
         </span>
       )}
       {hasDetails && (
@@ -216,8 +216,10 @@ export function ToolCall({
           onClick={() => setOpen(!open)}
           className={cn(
             headerClass,
-            "cursor-pointer transition-[background-color,box-shadow] duration-(--kura-duration-fast) ease-kura-out hover:bg-kura-hover focus-visible:shadow-[inset_0_0_0_2px_var(--kura-ring)]",
-            inline && "focus-visible:shadow-kura-focus",
+            "cursor-pointer transition-[background-color,box-shadow] duration-(--kura-duration-fast) ease-kura-out hover:bg-kura-hover",
+            inline
+              ? "focus-visible:shadow-kura-focus"
+              : "focus-visible:shadow-[inset_0_0_0_2px_var(--kura-ring)]",
           )}
         >
           {headerContent}

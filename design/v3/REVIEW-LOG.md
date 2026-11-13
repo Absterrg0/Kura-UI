@@ -7,11 +7,12 @@ effort)**. Fixed 14-shot set (`design/v3/shots.mjs`), scored on the 14-category 
 History before v3: the v2 direction ("Raycast-grade dark") reached 7.3 (R1) and 7.9 (R2) with one
 reviewer (`design/v2/REVIEW-LOG.md`). The owner then rejected the look itself; v3 replaces it.
 
-| Round | Fable 5.2 | Opus 5.5 | Notes                                                                                                                                                                            |
-| ----- | --------- | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| R1    | 8.0       | 7.8      | First full build on the dot language (commit 519f6c7). Identity lands (brand 9.0 from both); focus rings, mobile docs and loose edges hold it back.                              |
-| R2    | 8.8*      | 8.5      | Commit 87f0d7b. Round-1 list largely closed. *Live checks were cut short: the docs dev server hit its 2-hour limit mid-review, so focus, 390px pages and motion are provisional. |
-| R3    | 9.1       | 8.9      | Commit e505f88. Fully verified live (48 pages, 192 axe runs, Tab walks, approve/deny at three widths). A decision now moves 0px; four to five small must-fixes remain.           |
+| Round | Fable 5.2 | Opus 5.5 | Notes                                                                                                                                                                                                 |
+| ----- | --------- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| R1    | 8.0       | 7.8      | First full build on the dot language (commit 519f6c7). Identity lands (brand 9.0 from both); focus rings, mobile docs and loose edges hold it back.                                                   |
+| R2    | 8.8*      | 8.5      | Commit 87f0d7b. Round-1 list largely closed. *Live checks were cut short: the docs dev server hit its 2-hour limit mid-review, so focus, 390px pages and motion are provisional.                      |
+| R3    | 9.1       | 8.9      | Commit e505f88. Fully verified live (48 pages, 192 axe runs, Tab walks, approve/deny at three widths). A decision now moves 0px; four to five small must-fixes remain.                                |
+| R4    | 9.2       | 9.2      | Commit d5d3374. Fully verified live. All round-3 must-fixes closed except the hero clocks (live values still a second apart). New: approval shortcuts leak from other widgets; terminals break words. |
 
 ---
 
@@ -212,3 +213,67 @@ under reduced motion); ember discipline; the components index; the component pag
 PromptQueue, ContextPanel, StatusGlyph, DotRail, Halftone, AgentOrb, AudioWaveform; Composer's
 ring; ModelPicker; ⌘K layout and ranking; mobile nav; nav, footer, "Built right", the install
 table, the closing call to action; light wells; no horizontal overflow and one h1 on all pages.
+
+---
+
+## Round 4 — commit d5d3374
+
+Both reviewers ran everything live: Tab walks (12 and 7+ pages, both themes), axe on 48 pages × 4
+configurations (0 serious/critical after re-running two transient streaming-text hits), approve
+and deny at 1440, 1024 and 390, reduced motion, ⌘K, 390px full pages.
+
+| #   | Category                 | Fable 5.2 | Opus 5.5 |
+| --- | ------------------------ | --------- | -------- |
+| 1   | Visual hierarchy         | 9.4       | 9.3      |
+| 2   | Typography               | 9.3       | 9.2      |
+| 3   | Colour & state semantics | 9.5       | 9.3      |
+| 4   | Layout & spacing         | 9.1       | 9.1      |
+| 5   | Consistency              | 9.3       | 9.1      |
+| 6   | Brand distinctiveness    | 9.6       | 9.5      |
+| 7   | Clarity & density        | 9.3       | 9.2      |
+| 8   | Interaction states       | 8.8       | 9.3      |
+| 9   | Light/dark parity        | 9.5       | 9.4      |
+| 10  | Craft & polish           | 9.1       | 8.9      |
+| 11  | Accessibility            | 9.1       | 9.3      |
+| 12  | Responsive               | 9.2       | 9.0      |
+| 13  | Motion                   | 9.4       | 9.3      |
+| 14  | Copy                     | 9.1       | 9.2      |
+|     | **OVERALL**              | **9.2**   | **9.2**  |
+
+### Round-3 verification
+
+Fixed: the second tab stop in code wells; ⌘K focus return; pressed toggles; the TaskList axe
+failure; the native blue ×; the halftone under text at 390; the stacked narrow Trace (no
+collision, readable names). Partly: the hero's numbers — finished durations agree, live ones are
+a second apart about 75% of the time. No regressions except terminals, which now wrap but break
+words mid-word.
+
+### Must-fix (merged, ranked)
+
+1. **Approval keys fire from other widgets** (Fable): Ctrl+Enter in the bento Composer also
+   approves the hero's migration; Esc closing the mobile nav denies it.
+2. **ApprovalPrompt drops focus to `<body>` after a keyboard decision** (Fable): the actions row
+   goes inert while it holds focus.
+3. **Hero clocks disagree** (both): the Trace rounds where clocks floor; the Terminal's clock
+   never resets for the second command; "5.1s" plays in about 3.1s.
+4. **Terminals split words mid-word** (both): `break-all`, visible on the home page at 1440.
+5. **Three manifest sentences contradict the direction** (Fable): "blue default", "AI signal
+   colour", "use a progress bar".
+6. **Needs-you labels truncate at 390** (both): "Paused fo…", "Nee…".
+
+### Polish (merged)
+
+Hero at 768–1279 has a 39px gap and a short right column; at 1440 the stretched Context sheet is
+~40% empty; a live duration is shown three ways (clock, duration, decimal seconds); Trace shows no
+glyph for skipped or paused spans; install transcript at 390 starts scrolled; the agent demo
+terminal clips and grows a few px on phones; ArtifactCard preview cuts a line through its
+letters; a dead Stop key in the hero; three sub-11px labels; Spinner pulses under reduced motion
+while the glyph holds still; two ⌘ glyphs left in manifests; an unlabelled row in a
+ThinkingIndicator example; an off-centre VoiceDictation example; a demo diff line 19px too long.
+
+### Verified good (do not touch)
+
+Hero decision choreography (0px at three widths), ember discipline, the stacked narrow Trace,
+focus rings on every stop, ⌘K, the components filter and its empty state, mobile nav, DiffView
+review flow, the whole component set in both themes, home sections at 1440 and 390, axe clean on
+all 48 pages, one h1 and no horizontal overflow everywhere.

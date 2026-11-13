@@ -127,6 +127,19 @@ describe("Terminal", () => {
     expect(container.querySelector("[data-slot=terminal-elapsed]")).toHaveTextContent("3.0s");
   });
 
+  it("gives each run its own clock", () => {
+    vi.useFakeTimers();
+    const { container, rerender } = render(<Terminal command="pnpm test" status="running" />);
+    act(() => vi.advanceTimersByTime(4000));
+    rerender(<Terminal command="pnpm test" status="done" exitCode={0} />);
+    act(() => vi.advanceTimersByTime(20_000));
+    // A second command starts from zero, not from when the first one began.
+    rerender(<Terminal command="pnpm db:migrate" status="running" />);
+    act(() => vi.advanceTimersByTime(2000));
+    expect(container.querySelector("[data-slot=terminal-elapsed]")).toHaveTextContent("0:02");
+    expect(screen.getByRole("status")).toHaveTextContent("pnpm db:migrate running");
+  });
+
   it("collapses to the last lines and expands (controlled callback)", async () => {
     const user = userEvent.setup();
     const onExpandedChange = vi.fn();

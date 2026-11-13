@@ -30,10 +30,12 @@ export default [
     description:
       "Bind a keyboard shortcut on document (or a target). `mod` = ⌘ on Apple, Ctrl elsewhere. Exact modifier matching.",
     signature:
-      "useHotkey(keys: readonly KeyName[] | null, handler: (e: KeyboardEvent) => void, options?: { enabled?: boolean; preventDefault?: boolean; allowInInputs?: boolean; target?: EventTarget | null; onKeyUp?: (e: KeyboardEvent) => void }): void",
+      "useHotkey(keys: readonly KeyName[] | null, handler: (e: KeyboardEvent) => void, options?: { enabled?: boolean; preventDefault?: boolean; allowInInputs?: boolean; allowInOverlays?: boolean; target?: EventTarget | null; onKeyUp?: (e: KeyboardEvent) => void }): void",
     returns: "void",
     notes: [
       "Without a modifier, the shortcut is ignored while typing in inputs unless allowInInputs is true.",
+      "A key another handler already took (event.defaultPrevented) is ignored, so a menu closing on Esc does not also fire a page shortcut.",
+      "allowInOverlays: false keeps a page-level shortcut from firing while focus is inside an open dialog, menu or listbox.",
     ],
     example: 'useHotkey(["mod", "enter"], () => submit());',
     tags: ["keyboard", "shortcut", "hotkey"],

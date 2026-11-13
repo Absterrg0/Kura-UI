@@ -19,9 +19,10 @@ describe("Spinner", () => {
     expect(screen.queryByRole("status")).toBeNull();
   });
 
-  it("pulses instead of spinning under reduced motion", () => {
+  it("holds still under reduced motion, like a running status glyph", () => {
     const { container } = render(<Spinner />);
-    expect(container.innerHTML).toContain("motion-reduce:animate-kura-pulse");
+    expect(container.innerHTML).toContain("motion-reduce:animate-none");
+    expect(container.innerHTML).not.toContain("animate-kura-pulse");
   });
 
   it("examples are accessible", async () => {

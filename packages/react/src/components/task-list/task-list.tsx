@@ -229,7 +229,7 @@ const { Root: TaskListRoot } = createParts(agentSurface("task-list", []), {
 
 /**
  * The agent's plan as a todo list (Claude Code TodoWrite style): a header with "3 of 7" and a
- * segmented progress bar, one row per task with a status glyph, a shimmering title for the running
+ * dot rail, one row per task with a status glyph, a shimmering title for the running
  * task, live and final durations in mono, details for failures, nested sub-tasks, and the finished
  * head of the plan folded into a "Completed (n)" row.
  */

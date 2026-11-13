@@ -63,7 +63,7 @@ export default defineComponent({
       name: "progress",
       type: "number",
       description:
-        "Completion 0–1 while busy: a determinate bar plus a mono percentage. Omit for an indeterminate sweep.",
+        "Completion 0–1 while busy: a dot rail plus a mono percentage. Omit when it is unknown: the icon tile shows the running glyph and no rail is drawn.",
     },
     { name: "icon", type: "React.ReactNode", description: "Replaces the kind icon (lucide)." },
     {
@@ -173,7 +173,7 @@ export default defineComponent({
       name: "Progress",
       dataSlot: "artifact-card-progress",
       description:
-        "2px role=progressbar at the bottom edge (of the preview, or of the compact card) while busy.",
+        "role=progressbar while busy: a dot rail under the header when `progress` is known; with unknown progress it is announced only, and nothing is drawn.",
     },
   ],
   a11y: {
@@ -234,7 +234,8 @@ export default defineComponent({
     "Drive `selected` from the id of the artifact open in your panel, so the card the user is looking at is marked.",
     'Use variant="compact" inside message text and lists (it sizes to content — give it a width like w-full or max-w-sm when stacking); use "preview" when there is room for a thumbnail.',
     'For images pass preview={<img src={url} alt="" className="size-full object-cover" />} — the thumbnail is decorative, the title carries the name.',
-    "Pass `progress` only when you really know it (e.g. sections written / planned); otherwise leave it out for the indeterminate sweep.",
+    "Pass `progress` only when you really know it (e.g. sections written / planned); otherwise leave it out: the icon tile shows the running glyph and no rail is drawn.",
+    "The preview well is 144px tall and clips. Give a text excerpt whole lines (a fixed line-height and `line-clamp-2` per paragraph) so nothing is cut through its letters.",
     "Map Anthropic/OpenAI canvas or artifact tool calls (create → generating, update/rewrite → updating with versions + 1) onto one card per artifact id.",
   ],
 });

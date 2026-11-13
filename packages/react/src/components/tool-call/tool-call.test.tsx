@@ -54,7 +54,8 @@ describe("ToolCall", () => {
     const { rerender, container } = render(<ToolCall name="t" status="running" />);
     expect(container.querySelector("[data-slot=status-glyph][data-status=running]")).not.toBeNull();
     act(() => vi.advanceTimersByTime(1500));
-    expect(container.querySelector("[data-slot=tool-call-elapsed]")).toHaveTextContent("1.5s");
+    // Still running: a clock, like every live timer. Finished: the measured duration.
+    expect(container.querySelector("[data-slot=tool-call-elapsed]")).toHaveTextContent("0:01");
     rerender(<ToolCall name="t" status="success" />);
     act(() => vi.advanceTimersByTime(3000));
     expect(container.querySelector("[data-slot=tool-call-elapsed]")).toHaveTextContent("1.5s");
@@ -83,6 +84,10 @@ describe("ToolCall", () => {
     expect(formatDuration(1530)).toBe("1.5s");
     expect(formatDuration(65_000)).toBe("1m 05s");
     expect(formatDuration(18_000)).toBe("18s");
+    // Floors, like a clock: a duration never reads ahead of the timer it came from.
+    expect(formatDuration(999)).toBe("990ms");
+    expect(formatDuration(9_990)).toBe("9.9s");
+    expect(formatDuration(18_900)).toBe("18s");
   });
 
   it("stops the chasing light under reduced motion", () => {

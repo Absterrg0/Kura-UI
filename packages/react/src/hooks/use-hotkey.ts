@@ -11,6 +11,12 @@ export interface UseHotkeyOptions {
    * combo contains a modifier (so "/" does not hijack typing but "mod+k" still works).
    */
   allowInInputs?: boolean;
+  /**
+   * Fire while focus is inside an open dialog, menu or listbox. Default true. Pass false for a
+   * page-level shortcut that must not act behind an overlay (Esc closing a menu should not also
+   * deny a request underneath it).
+   */
+  allowInOverlays?: boolean;
   /** Element to listen on. Default `document`. */
   target?: EventTarget | null;
   /** Also report key-up so UIs can show a pressed state. */
@@ -23,6 +29,13 @@ function isEditable(target: EventTarget | null): boolean {
   return tag === "INPUT" || tag === "TEXTAREA" || tag === "SELECT" || target.isContentEditable;
 }
 
+const OVERLAY =
+  '[role="dialog"],[role="alertdialog"],[role="menu"],[role="listbox"],[aria-modal="true"]';
+
+function inOverlay(target: EventTarget | null): boolean {
+  return target instanceof Element && target.closest(OVERLAY) != null;
+}
+
 /**
  * Bind a keyboard shortcut. `keys` uses `mod` for ⌘/Ctrl: `useHotkey(["mod", "enter"], send)`.
  * SSR-safe; the listener is attached after mount and the latest handler is always used.
@@ -32,7 +45,14 @@ export function useHotkey(
   handler: (event: KeyboardEvent) => void,
   options: UseHotkeyOptions = {},
 ): void {
-  const { enabled = true, preventDefault = true, allowInInputs, target, onKeyUp } = options;
+  const {
+    enabled = true,
+    preventDefault = true,
+    allowInInputs,
+    allowInOverlays = true,
+    target,
+    onKeyUp,
+  } = options;
   const handlerRef = useRef(handler);
   handlerRef.current = handler;
   const keyUpRef = useRef(onKeyUp);
@@ -53,7 +73,10 @@ export function useHotkey(
 
     const onDown = (event: Event) => {
       const e = event as KeyboardEvent;
+      // Another widget already took this key (a menu closing on Esc, a composer sending on ⌘↵).
+      if (e.defaultPrevented) return;
       if (!inInputs && isEditable(e.target)) return;
+      if (!allowInOverlays && inOverlay(e.target)) return;
       if (!matchesKeyCombo(e, parts, apple)) return;
       if (preventDefault) e.preventDefault();
       down = true;
@@ -70,5 +93,5 @@ export function useHotkey(
       el.removeEventListener("keydown", onDown);
       el.removeEventListener("keyup", onUp);
     };
-  }, [combo, enabled, preventDefault, allowInInputs, target]);
+  }, [combo, enabled, preventDefault, allowInInputs, allowInOverlays, target]);
 }

@@ -69,7 +69,7 @@ export interface BrowserSessionProps extends Omit<React.ComponentProps<"div">, "
   steps?: readonly BrowserStep[];
   /** Id of the step being executed. Default: the first running step. */
   activeStep?: string;
-  /** Session state. browsing (blue), paused for the human (amber), done, failed. Default "browsing". */
+  /** Session state: browsing, paused for a person (the ember glyph and label), done, failed. Default "browsing". */
   status?: "browsing" | "paused" | "done" | "failed";
   /** Override the status line, e.g. "Paused — enter the 2FA code". */
   statusText?: React.ReactNode;
@@ -157,7 +157,7 @@ function Cursor({ point, label }: { point: BrowserPoint; label?: string }) {
         />
       </svg>
       {label && (
-        <span className="absolute top-[15px] left-[11px] whitespace-nowrap rounded-[5px] bg-kura-accent px-1.5 py-px font-medium text-[10.5px] text-kura-accent-fg leading-4 shadow-kura-xs">
+        <span className="absolute top-[15px] left-[11px] whitespace-nowrap rounded-[5px] bg-kura-accent px-1.5 py-px font-medium text-[11px] text-kura-accent-fg leading-4 shadow-kura-xs">
           {label}
         </span>
       )}
@@ -335,7 +335,7 @@ export function BrowserSession({
         <span className="flex min-w-0 items-baseline gap-2 text-[13px]">
           <span
             className={cn(
-              "min-w-0 truncate font-medium @md:shrink-0",
+              "shrink-0 whitespace-nowrap font-medium",
               status === "paused" && "text-kura-ember-text",
             )}
           >
@@ -356,7 +356,7 @@ export function BrowserSession({
         {elapsed != null && (
           <span
             data-slot="browser-session-elapsed"
-            className="min-w-[4.5ch] text-right font-kura-mono text-[12px] text-kura-fg-subtle tabular-nums"
+            className="hidden min-w-[4.5ch] text-right font-kura-mono text-[12px] text-kura-fg-subtle tabular-nums @sm:inline"
           >
             {formatClock(elapsed)}
           </span>
@@ -369,7 +369,11 @@ export function BrowserSession({
         )}
         {status === "paused" && onResume && (
           <Button variant="primary" size="xs" onClick={onResume} className="-mr-1">
-            <Play strokeWidth={1.75} /> Resume agent
+            <Play strokeWidth={1.75} />
+            {/* The name stays "Resume agent"; a narrow header prints the first word only. */}
+            <span>
+              Resume <span className="sr-only @sm:not-sr-only">agent</span>
+            </span>
           </Button>
         )}
       </div>
@@ -478,7 +482,7 @@ export function BrowserSession({
                   }}
                 >
                   {highlight.label && (
-                    <span className="absolute bottom-full left-[-1.5px] mb-1 max-w-[240px] truncate whitespace-nowrap rounded-[4px] bg-kura-accent px-1.5 font-kura-mono text-[10.5px] text-kura-accent-fg leading-4">
+                    <span className="absolute bottom-full left-[-1.5px] mb-1 max-w-[240px] truncate whitespace-nowrap rounded-[4px] bg-kura-accent px-1.5 font-kura-mono text-[11px] text-kura-accent-fg leading-4">
                       {highlight.label}
                     </span>
                   )}

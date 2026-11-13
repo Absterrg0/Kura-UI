@@ -8,6 +8,7 @@ import { useElapsed } from "../../hooks/use-elapsed";
 import { useHotkey } from "../../hooks/use-hotkey";
 import { cn } from "../../lib/cn";
 import { formatClock } from "../../lib/format";
+import { mergeRefs } from "../../lib/merge-refs";
 import { AgentSigil } from "../agent-sigil";
 import { Button } from "../button";
 import { Halftone } from "../halftone";
@@ -126,6 +127,7 @@ export function ApprovalPrompt({
   alwaysAllowLabel = "Always allow",
   agentConfirm,
   className,
+  ref,
   ...props
 }: ApprovalPromptProps) {
   const [decision, setDecisionState] = useControllableState<ApprovalDecision>({
@@ -138,8 +140,21 @@ export function ApprovalPrompt({
   const [by, setBy] = React.useState<string | null>(null);
   const confirm = agentConfirm ?? (command != null ? `Runs ${command}` : "Approves this request");
   const waited = useElapsed(requestedAt, pending);
+  const rootRef = React.useRef<HTMLElement>(null);
+  const actionsRef = React.useRef<HTMLDivElement>(null);
+  // The buttons leave with the decision. If one of them had focus, the card takes it, so the
+  // keyboard stays where the person was instead of falling back to the top of the page.
+  const keepFocus = React.useRef(false);
+  React.useEffect(() => {
+    if (pending) return;
+    if (keepFocus.current || actionsRef.current?.contains(document.activeElement)) {
+      rootRef.current?.focus({ preventScroll: true });
+    }
+    keepFocus.current = false;
+  }, [pending]);
 
   const setDecision = (next: ApprovalDecision, source = "pointer") => {
+    keepFocus.current = actionsRef.current?.contains(document.activeElement) ?? false;
     setBy(source);
     setDecisionState(next);
     onDecisionChange?.(next, { source });
@@ -160,11 +175,11 @@ export function ApprovalPrompt({
     onAlwaysAllow?.();
   };
 
-  useHotkey(["mod", "enter"], () => approve("keyboard"), { enabled: shortcuts && pending });
-  useHotkey(["escape"], () => deny("keyboard"), {
-    enabled: shortcuts && pending,
-    allowInInputs: false,
-  });
+  // Page-level keys, so they stand down wherever a key already means something else: while
+  // typing, inside an open menu or dialog, or when another widget has taken the press.
+  const keys = { enabled: shortcuts && pending, allowInInputs: false, allowInOverlays: false };
+  useHotkey(["mod", "enter"], () => approve("keyboard"), keys);
+  useHotkey(["escape"], () => deny("keyboard"), keys);
 
   const who = by === "agent" ? "an agent" : "you";
   const outcome =
@@ -184,11 +199,13 @@ export function ApprovalPrompt({
       aria-describedby={description != null ? `${id}-desc` : undefined}
       data-slot="approval-prompt"
       data-risk={risk}
+      tabIndex={-1}
       className={cn(
-        "@container relative isolate flex flex-col overflow-hidden rounded-kura-xl bg-kura-surface font-kura-sans text-[13px] text-kura-fg leading-5 shadow-kura-surface",
+        "@container relative isolate flex flex-col overflow-hidden rounded-kura-xl bg-kura-surface font-kura-sans text-[13px] text-kura-fg leading-5 shadow-kura-surface outline-hidden focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-kura-ring",
         className,
       )}
       {...props}
+      ref={mergeRefs(rootRef, ref)}
     >
       {/* The light keeps to the corner: a smaller one in a narrow card, clear of the headline. */}
       <Halftone visible={pending} className="hidden @md:block" />
@@ -319,6 +336,7 @@ export function ApprovalPrompt({
         className="relative mt-auto flex min-h-14 items-center border-kura-border-subtle border-t px-[18px] py-2.5"
       >
         <div
+          ref={actionsRef}
           data-slot="approval-prompt-actions"
           inert={!pending || undefined}
           aria-hidden={!pending || undefined}

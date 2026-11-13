@@ -19,8 +19,8 @@ const RING: readonly (readonly [number, number])[] = [
 
 /**
  * The Kura spinner: a ring of dots with a light chasing round it (the same motion as a running
- * status glyph). Inherits `currentColor`. Under reduced motion the light rests on a quarter of the
- * ring and the whole ring pulses gently instead.
+ * status glyph). Inherits `currentColor`. Under reduced motion it holds still, as the glyph does:
+ * the light rests on a quarter of the ring.
  */
 export function Spinner({ size = "md", label = "Loading", className, ...props }: SpinnerProps) {
   return (
@@ -32,7 +32,7 @@ export function Spinner({ size = "md", label = "Loading", className, ...props }:
       {...props}
     >
       {label && <span className="sr-only">{label}</span>}
-      <svg aria-hidden viewBox="0 0 15 15" className="size-full motion-reduce:animate-kura-pulse">
+      <svg aria-hidden viewBox="0 0 15 15" className="size-full">
         {RING.map(([x, y], i) => (
           <circle
             key={`${x}-${y}`}

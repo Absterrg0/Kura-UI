@@ -110,7 +110,7 @@ function Meter({ value, label, kind }: { value: number; label: string; kind: "sp
             <span
               key={i}
               className={cn(
-                "font-kura-mono text-[10px] leading-none",
+                "font-kura-mono text-[11px] leading-none",
                 i <= value ? "text-kura-fg-muted" : "text-kura-border-strong",
               )}
             >

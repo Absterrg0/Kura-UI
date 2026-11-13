@@ -20,7 +20,7 @@ const PATCH = `diff --git a/src/auth/session.ts b/src/auth/session.ts
 --- a/src/auth/session.ts
 +++ b/src/auth/session.ts
 @@ -12,4 +12,4 @@ export async function refresh(token: string) {
--  const res = await fetch("/api/v1/session", { method: "POST" });
+-  const res = await fetch("/v1/session", { method: "POST" });
 +  const res = await auth.refresh(token);
    if (!res.ok) throw new SessionError(res.status);
 @@ -31,3 +31,3 @@ export function expiresIn(s: Session) {
@@ -60,7 +60,7 @@ export function AgentDemo({ className }: { className?: string }) {
   askRef.current = () =>
     new Promise<boolean>((resolve) => {
       setState("waiting");
-      setLines((l) => [...l, `  ${dim("needs a person: waiting on the prompt")}`]);
+      setLines((l) => [...l, `  ${dim("waiting for a person on the prompt")}`]);
       settle.current = () => {
         settle.current = null;
         resolve(false);
@@ -94,9 +94,12 @@ export function AgentDemo({ className }: { className?: string }) {
     print(`${c("36", "›")} agent.snapshot()`);
     await wait(450);
     const seen = agent.snapshot().filter((e) => e.label === DIFF || e.label?.startsWith(PROMPT));
+    // Each entry on two short lines (what it is and its value, then what can be done to it),
+    // so the transcript reads whole on a phone.
     for (const e of seen) {
       print(
-        `  ${c("1", e.component.padEnd(16))}${String(e.value ?? "").padEnd(16)}${dim(e.actions.length > 3 ? `${e.actions.slice(0, 3).join(" ")} …` : e.actions.join(" "))}`,
+        `  ${c("1", e.component.padEnd(18))}${String(e.value ?? "")}`,
+        `    ${dim(e.actions.length > 3 ? `${e.actions.slice(0, 3).join(" ")} …` : e.actions.join(" "))}`,
       );
     }
     await wait(900);
@@ -106,7 +109,7 @@ export function AgentDemo({ className }: { className?: string }) {
       ["reject", "src/auth/session.ts change 2"],
     ] as const) {
       if (!live()) return;
-      print("", `${c("36", "›")} ${action} ${dim(`"${change}"`)}`);
+      print("", `${c("36", "›")} ${action} ${dim(`"${change.replace("src/auth/", "")}"`)}`);
       await wait(350);
       const r = await agent.act({ steps: [{ ref: DIFF, action, args: [change] }] });
       print(
@@ -168,9 +171,10 @@ export function AgentDemo({ className }: { className?: string }) {
       <div className="flex min-h-0 flex-col">
         {/* The terminal takes the height the right column leaves it, so the two columns end level. */}
         <Terminal
-          className="min-h-[330px] w-full flex-1 lg:min-h-[220px]"
+          className="min-h-[416px] w-full flex-1 lg:min-h-[220px]"
           title="in-app assistant"
-          command={"createAgent({ allow: askThePerson })"}
+          command={"createAgent({ allow: askPerson })"}
+          maxHeight={364}
           lines={lines}
           status={
             state === "running" || state === "waiting"
@@ -179,7 +183,6 @@ export function AgentDemo({ className }: { className?: string }) {
                 ? "idle"
                 : "done"
           }
-          wrap={false}
           actions={
             <Button
               variant="ghost"

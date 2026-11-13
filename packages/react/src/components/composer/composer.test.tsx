@@ -185,11 +185,12 @@ describe("Composer", () => {
     expect(document.querySelector("[data-slot=composer]")).toHaveAttribute("data-disabled", "true");
   });
 
-  it("under reduced motion the pending ring pulses instead of chasing", () => {
+  it("under reduced motion the pending ring holds still instead of chasing", () => {
     setReducedMotion(true);
     render(<Composer status="submitted" defaultValue="x" />);
     const ring = document.querySelector("[data-slot=composer-submit-pending] svg")!;
-    expect(ring.getAttribute("class")).toContain("motion-reduce:animate-kura-pulse");
+    expect(ring.innerHTML).toContain("motion-reduce:animate-none");
+    expect(ring.outerHTML).not.toContain("animate-kura-pulse");
     expect(screen.getByRole("button", { name: "Stop generating" })).toBeInTheDocument();
   });
 

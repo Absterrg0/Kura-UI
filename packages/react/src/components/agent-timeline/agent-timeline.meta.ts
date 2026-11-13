@@ -15,7 +15,7 @@ export default defineComponent({
   whenNotToUse: [
     "A single tool invocation — use tool-call.",
     "Free-form model thinking — use reasoning.",
-    "Generic (non-agent) wizards or checkout steppers — use a regular stepper; the active state here uses the AI signal colour.",
+    "Generic (non-agent) wizards or checkout steppers — use a regular stepper; the states here are agent states (running, waiting on a person, failed).",
   ],
   props: [
     {

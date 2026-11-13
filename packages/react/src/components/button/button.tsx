@@ -13,7 +13,7 @@ export interface ButtonProps extends Omit<React.ComponentProps<"button">, "onCli
    * busy until it settles.
    */
   onClick?: (event: React.MouseEvent<HTMLElement>, details?: { source: string }) => unknown;
-  /** `primary` = ink (default call to action); `accent` = the AI signal colour, use at most once per view. */
+  /** `primary` = the ink fill (default call to action). `accent` draws the same: Kura has no accent colour. */
   variant?: ButtonVariant;
   size?: ButtonSize;
   /**

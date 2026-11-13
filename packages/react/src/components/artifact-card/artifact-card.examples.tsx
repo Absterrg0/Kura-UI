@@ -75,14 +75,18 @@ export function ArtifactCardFull() {
           </>
         }
         preview={
-          <div className="flex flex-col gap-2 p-5 text-[11px] text-kura-fg-muted leading-relaxed">
-            {PLAN.slice(0, visible).map((line, i) =>
+          // The well is 144px tall and clips: a title and two clamped paragraphs end on a whole line.
+          <div className="flex flex-col gap-2 p-5 text-[11px] text-kura-fg-muted leading-[18px]">
+            {PLAN.slice(0, Math.min(visible, 3)).map((line, i) =>
               i === 0 ? (
-                <p key={line} className="font-semibold text-[13px] text-kura-fg tracking-tight">
+                <p
+                  key={line}
+                  className="truncate font-semibold text-[13px] text-kura-fg leading-5 tracking-tight"
+                >
                   {line}
                 </p>
               ) : (
-                <p key={line} className="animate-kura-fade-in">
+                <p key={line} className="line-clamp-2 animate-kura-fade-in">
                   {line}
                 </p>
               ),

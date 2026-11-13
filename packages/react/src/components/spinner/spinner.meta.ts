@@ -37,14 +37,14 @@ export default defineComponent({
       'With a label it renders role="status" containing visually hidden label text; with label={null} it is aria-hidden.',
     ],
     reducedMotion:
-      "The light rests on a quarter of the ring and the whole ring gently pulses in opacity instead.",
+      "Holds still, like a running status glyph: the light rests on a quarter of the ring.",
   },
   dependencies: { npm: [], kura: [] },
   related: ["button", "shimmer-text", "thinking-indicator"],
   tags: ["loading", "spinner", "busy", "progress", "indeterminate"],
   examples: [
     { name: "SpinnerMinimal", kind: "minimal", title: "Default" },
-    { name: "SpinnerFull", kind: "full", title: "Sizes and colors" },
+    { name: "SpinnerFull", kind: "full", title: "Three sizes, alone and inline" },
     {
       name: "SpinnerSourcesList",
       kind: "composition",

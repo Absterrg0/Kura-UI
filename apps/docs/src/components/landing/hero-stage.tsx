@@ -64,7 +64,8 @@ export function HeroStage({ className }: { className?: string }) {
   const WRITER = 7 * 60_000 + 18_000 - 94_000;
   const [decidedAt, setDecidedAt] = React.useState<number | null>(null);
   const decide = (next: ApprovalDecision) => {
-    setDecidedAt(next === "pending" ? null : Date.now() - RUN);
+    // Snapped to the trace's quarter-second tick, so its clock and the terminal's turn together.
+    setDecidedAt(next === "pending" ? null : Math.round((Date.now() - RUN) / 250) * 250);
     setDecision(next);
   };
   const pending = decision === "pending";
@@ -89,18 +90,21 @@ export function HeroStage({ className }: { className?: string }) {
   }, [pending]);
 
   const testLines = useStream(TESTS, "tests", reduced);
-  const migrateLines = useStream(MIGRATE, `migrate-${decision}`, reduced || !approved, 520);
+  // Six lines at 850ms: the migration takes the 5.1s its last line reports.
+  const migrateLines = useStream(MIGRATE, `migrate-${decision}`, reduced || !approved, 850);
   const migrated = approved && migrateLines.length >= MIGRATE.length;
   const term = approved
     ? {
         command: "pnpm db:migrate --env production",
         lines: migrateLines,
         status: migrated ? ("done" as const) : ("running" as const),
+        startedAt: decidedAt != null ? RUN + decidedAt : undefined,
       }
     : {
         command: "pnpm test src/auth",
         lines: testLines,
         status: testLines.length >= TESTS.length ? ("done" as const) : ("running" as const),
+        startedAt: t0,
       };
 
   const migrateStatus = pending
@@ -170,20 +174,13 @@ export function HeroStage({ className }: { className?: string }) {
           ? migrateLines.length / MIGRATE.length
           : undefined,
     },
+    { id: "reviewer", name: "reviewer", status: "queued", activity: "Starts when the tests pass" },
   ];
 
   const spans: TraceSpan[] = [
-    { id: "plan", name: "plan", kind: "llm", start: 0, end: 9_800, status: "done" },
-    {
-      id: "explorer",
-      name: "explorer",
-      kind: "agent",
-      start: 12_000,
-      end: 108_000,
-      status: "done",
-    },
-    { id: "edit", name: "edit_file", kind: "tool", start: 112_000, end: 186_000, status: "done" },
-    { id: "test", name: "pnpm test", kind: "tool", start: 190_000, end: 208_000, status: "done" },
+    { id: "explorer", name: "explorer", kind: "agent", start: 0, end: 96_000, status: "done" },
+    { id: "edit", name: "edit_file", kind: "tool", start: 100_000, end: 174_000, status: "done" },
+    { id: "test", name: "pnpm test", kind: "tool", start: 178_000, end: 196_000, status: "done" },
     { id: "writer", name: "test-writer", kind: "agent", start: WRITER, status: "running" },
     {
       id: "migrate",
@@ -219,13 +216,13 @@ export function HeroStage({ className }: { className?: string }) {
           budget={5}
           progress={{ done, total: tasks.length }}
           shortcuts={false}
-          onStop={() => {}}
         />
       </div>
       {/* Phone: prompt, terminal, plan. Tablet: prompt and terminal beside plan and subagents.
           Desktop: the full three columns. The prompt never gets less than half the row. */}
-      <div className="grid items-start gap-3 md:grid-cols-[minmax(0,1fr)_minmax(0,320px)] xl:grid-cols-[330px_minmax(0,1fr)_320px] xl:items-stretch xl:[&>div>div:last-child>*]:flex-1 xl:[&>div>div:last-child]:flex xl:[&>div>div:last-child]:flex-1 xl:[&>div>div:last-child]:flex-col">
-        <div className="flex min-w-0 flex-col gap-3 md:row-span-2 xl:order-2 xl:row-span-1">
+      <div className="grid items-start gap-3 md:grid-cols-[minmax(0,1fr)_minmax(0,320px)] md:grid-rows-[auto_1fr] md:items-stretch xl:grid-cols-[330px_minmax(0,1fr)_320px] xl:grid-rows-none xl:[&>div>div:last-child>*]:flex-1 xl:[&>div>div:last-child]:flex xl:[&>div>div:last-child]:flex-1 xl:[&>div>div:last-child]:flex-col">
+        {/* Two columns on a tablet: the terminal and the subagents take up the slack, so both end level. */}
+        <div className="flex min-w-0 flex-col gap-3 md:row-span-2 md:[&>div:last-child>*]:flex-1 md:[&>div:last-child]:flex md:[&>div:last-child]:flex-1 md:[&>div:last-child]:flex-col xl:order-2 xl:row-span-1">
           <div className="min-w-0">
             <ApprovalPrompt
               title="Run the sessions migration on production"
@@ -250,6 +247,7 @@ export function HeroStage({ className }: { className?: string }) {
               command={term.command}
               lines={term.lines}
               status={term.status}
+              startedAt={term.startedAt}
               exitCode={term.status === "done" ? 0 : null}
               duration={term.status === "done" ? (approved ? 5_100 : 1_840) : undefined}
               maxHeight={196}
@@ -267,8 +265,9 @@ export function HeroStage({ className }: { className?: string }) {
           </div>
         </div>
         <div className="hidden min-w-0 flex-col gap-3 md:col-start-2 md:flex xl:order-3 xl:col-start-auto">
-          <div className="min-w-0">
-            <AgentFleet agents={fleet} title="Subagents" className="min-h-[254px]" />
+          <div className="min-w-0 md:max-xl:flex md:max-xl:flex-1 md:max-xl:flex-col md:max-xl:[&>*]:flex-1">
+            {/* The height of four agents with one progress rail: a rail leaving does not move the stage. */}
+            <AgentFleet agents={fleet} title="Subagents" className="min-h-[312px]" />
           </div>
           <div className="hidden min-w-0 xl:block">
             <ContextPanel
@@ -279,6 +278,7 @@ export function HeroStage({ className }: { className?: string }) {
                 { id: "tools", label: "Tool results", tokens: 38_400 },
                 { id: "files", label: "Files", tokens: 17_600 },
               ]}
+              footer="Older turns are summarized at 90%."
             />
           </div>
         </div>

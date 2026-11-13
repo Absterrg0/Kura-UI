@@ -244,7 +244,7 @@ export default defineComponent({
       { keys: "Mod+V", action: "Paste text, or attach pasted files/images" },
     ],
     reducedMotion:
-      "The send/stop icon swap and attachment enter/exit become plain fades (no scale); the pending ring stops chasing and pulses instead.",
+      "The send/stop icon swap and attachment enter/exit become plain fades (no scale); the pending ring stops chasing and holds still.",
   },
   dependencies: {
     npm: ["lucide-react", "motion"],

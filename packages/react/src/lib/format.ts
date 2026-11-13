@@ -6,10 +6,11 @@
 
 export function formatDuration(ms: number): string {
   if (!Number.isFinite(ms) || ms < 0) return "0ms";
-  if (ms < 1000) return `${Math.round(ms / 10) * 10}ms`;
+  // Floors throughout, like a clock: a duration never reads ahead of the timer it came from.
+  if (ms < 1000) return `${Math.floor(ms / 10) * 10}ms`;
   // One decimal while it matters, whole seconds from ten up.
-  if (ms < 9950) return `${(ms / 1000).toFixed(1)}s`;
-  const s = Math.round(ms / 1000);
+  if (ms < 10_000) return `${(Math.floor(ms / 100) / 10).toFixed(1)}s`;
+  const s = Math.floor(ms / 1000);
   if (s < 60) return `${s}s`;
   if (s < 3600) return `${Math.floor(s / 60)}m ${String(s % 60).padStart(2, "0")}s`;
   return `${Math.floor(s / 3600)}h ${String(Math.floor((s % 3600) / 60)).padStart(2, "0")}m`;

@@ -66,6 +66,35 @@ describe("useHotkey", () => {
     fireEvent.keyDown(document, { key: "Escape" });
     expect(handler).not.toHaveBeenCalled();
   });
+
+  it("leaves a key alone once another handler has taken it", () => {
+    const handler = vi.fn();
+    renderHook(() => useHotkey(["escape"], handler));
+    const menu = document.createElement("div");
+    menu.addEventListener("keydown", (e) => e.preventDefault());
+    document.body.append(menu);
+    fireEvent.keyDown(menu, { key: "Escape" });
+    expect(handler).not.toHaveBeenCalled();
+    fireEvent.keyDown(document, { key: "Escape" });
+    expect(handler).toHaveBeenCalledTimes(1);
+    menu.remove();
+  });
+
+  it("can stand down while focus is inside a dialog, menu or listbox", () => {
+    const page = vi.fn();
+    const everywhere = vi.fn();
+    renderHook(() => useHotkey(["mod", "enter"], page, { allowInOverlays: false }));
+    renderHook(() => useHotkey(["mod", "enter"], everywhere, { preventDefault: false }));
+    const dialog = document.createElement("div");
+    dialog.setAttribute("role", "dialog");
+    const button = document.createElement("button");
+    dialog.append(button);
+    document.body.append(dialog);
+    fireEvent.keyDown(button, { key: "Enter", ctrlKey: true });
+    expect(page).not.toHaveBeenCalled();
+    expect(everywhere).toHaveBeenCalledTimes(1);
+    dialog.remove();
+  });
 });
 
 describe("useAudioAnalyser", () => {

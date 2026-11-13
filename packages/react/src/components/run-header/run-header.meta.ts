@@ -194,7 +194,7 @@ export default defineComponent({
       kind: "full",
       title: "Live run",
       description:
-        "Steps advance, tokens and spend climb against a $5 budget, the run waits for approval, then completes and offers Open PR. Pause, Resume and Stop work (⌘. and ⌘⇧P).",
+        "Steps advance, tokens and spend climb against a $5 budget, the run waits for approval, then completes and offers Open PR. Pause, Resume and Stop work (Mod+. and Mod+Shift+P).",
     },
     {
       name: "RunHeaderBar",

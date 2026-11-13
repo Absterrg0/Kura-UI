@@ -161,7 +161,7 @@ export function Citation({
         }
         className={cn(
           // A citation is a small keycap with the source number printed on it.
-          "relative -top-[0.1em] mr-px ml-1 inline-flex h-[1.35em] min-w-[1.35em] items-center justify-center gap-1 rounded-[5px] bg-kura-raised px-[0.35em] align-middle font-kura-mono font-medium text-[0.7em] text-kura-fg-muted tabular-nums leading-none no-underline shadow-kura-key outline-hidden",
+          "relative -top-[0.1em] mr-px ml-1 inline-flex h-[1.35em] min-w-[1.35em] items-center justify-center gap-1 rounded-[5px] bg-kura-raised px-[0.35em] align-middle font-kura-mono font-medium text-[max(0.72em,11px)] text-kura-fg-muted tabular-nums leading-none no-underline shadow-kura-key outline-hidden",
           "transition-[background-color,color] duration-(--kura-duration-fast) ease-kura-snap hover:bg-kura-raised-hover hover:text-kura-fg focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-kura-ring focus-visible:outline-offset-1 data-open:bg-kura-raised-hover data-open:text-kura-fg",
           className,
         )}

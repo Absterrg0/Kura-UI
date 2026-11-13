@@ -37,14 +37,13 @@ export function ThinkingIndicatorFull() {
           </React.Fragment>
         ))}
       </div>
-      <div className="flex flex-col gap-3 border-kura-border-subtle border-t pt-5">
+      <div className="border-kura-border-subtle border-t pt-5">
         <ThinkingIndicator
           variant="text"
           label="Researching"
           messages={["Searching the web…", "Reading 4 files…", "Comparing 12 sources…"]}
           interval={2200}
         />
-        <ThinkingIndicator variant="dots" size="sm" className="text-kura-fg-subtle" />
       </div>
     </div>
   );

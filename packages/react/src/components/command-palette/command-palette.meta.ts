@@ -169,7 +169,7 @@ export default defineComponent({
       kind: "full",
       title: "Agent actions, recents and nested pages",
       description:
-        "Controlled open state, ⌘K, recents, a nested “Switch agent…” page and an async “Run workflow…” page.",
+        "Controlled open state, Mod+K, recents, a nested “Switch agent…” page and an async “Run workflow…” page.",
     },
     {
       name: "CommandPaletteAsyncSearch",

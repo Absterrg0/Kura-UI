@@ -91,6 +91,42 @@ describe("ApprovalPrompt", () => {
     setApplePlatform(false);
   });
 
+  it("keeps its keys to itself: not while typing, not inside a dialog, not when the key was taken", () => {
+    const onApprove = vi.fn();
+    const onDeny = vi.fn();
+    render(
+      <>
+        <textarea aria-label="Message" />
+        <div role="dialog" aria-label="Menu">
+          <button type="button">Close</button>
+        </div>
+        <ApprovalPrompt title="Run?" onApprove={onApprove} onDeny={onDeny} />
+      </>,
+    );
+    // ⌘↵ sends the message being typed; it must not also approve the request.
+    fireEvent.keyDown(screen.getByRole("textbox", { name: "Message" }), {
+      key: "Enter",
+      ctrlKey: true,
+    });
+    // Esc closes the menu that has focus; it must not also deny the request.
+    fireEvent.keyDown(screen.getByRole("button", { name: "Close" }), { key: "Escape" });
+    expect(onApprove).not.toHaveBeenCalled();
+    expect(onDeny).not.toHaveBeenCalled();
+    fireEvent.keyDown(document, { key: "Escape" });
+    expect(onDeny).toHaveBeenCalledOnce();
+  });
+
+  it("keeps focus on the card when the button that had it leaves", async () => {
+    const user = userEvent.setup();
+    render(<ApprovalPrompt title="Run?" command="ls" />);
+    const approve = screen.getByRole("button", { name: /Approve/ });
+    approve.focus();
+    await user.keyboard("{Enter}");
+    const card = document.querySelector("[data-slot=approval-prompt]");
+    expect(card).toHaveAttribute("data-decision", "approved");
+    expect(card).toHaveFocus();
+  });
+
   it("offers always-allow only when handled, and is controllable", async () => {
     const user = userEvent.setup();
     const { rerender } = render(<ApprovalPrompt title="Run?" />);

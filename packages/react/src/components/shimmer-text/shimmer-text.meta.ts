@@ -14,7 +14,7 @@ export default defineComponent({
   ],
   whenNotToUse: [
     "Long paragraphs or body text — the sweep hurts legibility beyond a short phrase.",
-    "Determinate progress (uploads, token budgets) — use a progress bar or context-meter.",
+    "Determinate progress (uploads, token budgets) — use dot-rail or context-meter.",
     "Streaming the model's answer itself — use streaming-text.",
     "A standalone animated dot/orb indicator — use thinking-indicator or agent-orb.",
   ],

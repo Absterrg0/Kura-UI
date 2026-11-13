@@ -177,18 +177,23 @@ export function AgentFleet({
           </span>
         </h3>
         {summary.length > 0 && (
+          // One line of whole counts: a count that does not fit wraps out of sight, never mid-word.
           <p
             data-slot="agent-fleet-summary"
-            className="ml-auto hidden min-w-0 truncate text-[12px] text-kura-fg-subtle @xs:block"
+            className="ml-auto hidden h-[18px] min-w-0 flex-wrap justify-end overflow-hidden text-[12px] text-kura-fg-subtle leading-[18px] @xs:flex"
           >
             {summary.map((s, i) => (
-              <React.Fragment key={s.status}>
-                {i > 0 && <span aria-hidden> · </span>}
-                <span className={cn("whitespace-nowrap", s.tone)}>
+              <span key={s.status} className="whitespace-nowrap">
+                {i > 0 && (
+                  <span aria-hidden className="whitespace-pre">
+                    {" · "}
+                  </span>
+                )}
+                <span className={s.tone}>
                   <span className="font-kura-mono tabular-nums">{counts.get(s.status)}</span>{" "}
                   {s.word}
                 </span>
-              </React.Fragment>
+              </span>
             ))}
           </p>
         )}
@@ -326,6 +331,8 @@ function AgentRow({
       className={cn(
         "min-w-0 truncate font-medium text-[13px]",
         (agent.status === "done" || agent.status === "skipped") && "text-kura-fg-muted",
+        // In a tight row the name gives way first when the agent is waiting on a person.
+        compact && agent.status === "waiting" && "min-w-[7ch] shrink-[1000]",
       )}
     >
       {agent.name}
@@ -356,7 +363,7 @@ function AgentRow({
         selectable && "cursor-pointer focus-visible:shadow-[inset_0_0_0_2px_var(--kura-ring)]",
         selected && "bg-kura-active hover:bg-kura-active",
         compact
-          ? "grid h-9 grid-cols-[22px_auto_minmax(0,1fr)_auto] items-center gap-x-2.5"
+          ? "flex h-9 items-center gap-x-2.5"
           : "grid grid-cols-[30px_minmax(0,1fr)_auto] items-center gap-x-3 gap-y-0.5 py-[9px]",
       )}
     >
@@ -369,7 +376,14 @@ function AgentRow({
       {compact ? (
         <>
           {name}
-          <span className="min-w-0 text-[12.5px]">{activity}</span>
+          <span
+            className={cn(
+              "min-w-0 text-[12.5px]",
+              agent.status === "waiting" ? "flex-[1_1_auto]" : "flex-1",
+            )}
+          >
+            {activity}
+          </span>
           {numbers}
         </>
       ) : (

@@ -14,11 +14,7 @@ import { KbdShortcut } from "../kbd-shortcut";
 import { VoiceDictation } from "./voice-dictation";
 
 export function VoiceDictationMinimal() {
-  return (
-    <div className="w-full max-w-md">
-      <VoiceDictation simulate onTranscript={(text) => console.log(text)} />
-    </div>
-  );
+  return <VoiceDictation simulate onTranscript={(text) => console.log(text)} />;
 }
 
 export function VoiceDictationFull() {

@@ -20,11 +20,11 @@ export function AgentTerminal({ className }: { className?: string }) {
     `${dot} kura · search_components ${c("2", '("stream command output")')}`,
     `  ${tree}  terminal`,
     `${dot} Bash ${c("2", "(npx @kura-ui/cli add diff-view terminal)")}`,
-    `  ${tree}  ${c("32", "✓")} components/kura/diff-view/diff-view.tsx`,
-    `     ${c("32", "✓")} components/kura/terminal/terminal.tsx`,
+    `  ${tree}  ${c("32", "✓")} components/kura/diff-view`,
+    `     ${c("32", "✓")} components/kura/terminal`,
     `${dot} Edit ${c("2", "(app/review/page.tsx)")}`,
-    `  ${tree}  ${c("32", "+ <DiffView diff={patch} onReviewChange={save} />")}`,
-    `     ${c("32", "+ <Terminal stream={run.stdout} />")}`,
+    `  ${tree}  ${c("32", "+ <DiffView diff={patch} />")}`,
+    `     ${c("32", "+ <Terminal stream={stdout} />")}`,
     `${dot} Bash ${c("2", "(pnpm tsc --noEmit)")}`,
     `  ${tree}  ${c("32", "✓")} No type errors`,
     "",
@@ -39,7 +39,8 @@ export function AgentTerminal({ className }: { className?: string }) {
       status="done"
       exitCode={0}
       duration={2_140}
-      maxHeight={640}
+      // The whole transcript, at any width: nothing to scroll back through.
+      maxHeight={2000}
     />
   );
 }

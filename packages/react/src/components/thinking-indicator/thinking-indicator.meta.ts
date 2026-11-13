@@ -93,7 +93,7 @@ export default defineComponent({
       name: "ThinkingIndicatorFull",
       kind: "full",
       title: "Every variant and size",
-      description: "Dots and pulse at sm/md/lg, cycling text, and a muted recolour.",
+      description: "Every variant at sm, md and lg, and a label that cycles through messages.",
     },
     {
       name: "ThinkingIndicatorInMessage",
@@ -103,7 +103,7 @@ export default defineComponent({
     },
   ],
   agentNotes: [
-    'Recolour with a text class (`className="text-kura-fg-subtle"`); shapes use currentColor. Keep the blue default when it means “the model is working”; use a neutral grey for secondary, low-priority activity.',
+    'Recolour with a text class (`className="text-kura-fg-subtle"`); shapes use currentColor. Keep the default ink when it means “the model is working”; use the subtle ink for secondary, low-priority activity.',
     "Replace the indicator with the streamed message once the first token arrives; do not show both.",
     "For real progress, pass one message and update it (`messages={[step]}`) — each change is announced. For ambient variety, pass several and let them cycle.",
     "Keep messages short (≤ 5 words) and end with an ellipsis.",

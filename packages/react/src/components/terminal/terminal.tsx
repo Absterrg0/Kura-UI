@@ -239,8 +239,12 @@ export function Terminal({
   const total = rows.length;
 
   // --- timing ---------------------------------------------------------------------------------
+  // Each run has its own clock: it restarts when a run begins or the command changes mid-run.
   const runStart = React.useRef<number | null>(null);
-  if (running && runStart.current == null) runStart.current = Date.now();
+  const lastRun = React.useRef<{ running: boolean; command?: string }>({ running: false });
+  if (running && (!lastRun.current.running || lastRun.current.command !== command))
+    runStart.current = Date.now();
+  lastRun.current = { running, command };
   const since = startedAt ?? runStart.current;
   const elapsed = useElapsed(since, running, 1000);
   const shownDuration = duration ?? (status === "done" || status === "failed" ? elapsed : null);
@@ -313,9 +317,11 @@ export function Terminal({
   // --- announcements (only on finish, never per line) -----------------------------------------
   const [announcement, setAnnouncement] = React.useState("");
   const prevStatus = React.useRef(status);
+  const prevCommand = React.useRef(command);
   React.useEffect(() => {
-    if (prevStatus.current === status) return;
+    if (prevStatus.current === status && prevCommand.current === command) return;
     prevStatus.current = status;
+    prevCommand.current = command;
     const what = command ?? "Command";
     if (status === "running") setAnnouncement(`${what} running`);
     else if (status === "done")
@@ -437,7 +443,8 @@ export function Terminal({
           className={cn(
             "h-full overflow-y-auto overscroll-contain px-3.5 py-3 font-kura-mono text-[12.5px] text-kura-fg-muted leading-5 outline-hidden [scrollbar-width:thin] [tab-size:4]",
             "focus-visible:shadow-[inset_0_0_0_2px_var(--kura-ring)]",
-            wrap ? "whitespace-pre-wrap break-all" : "whitespace-pre",
+            // Wrap at spaces; only a token longer than the line (a path, a hash) breaks inside.
+            wrap ? "whitespace-pre-wrap [overflow-wrap:anywhere]" : "whitespace-pre",
           )}
           style={{ maxHeight }}
         >

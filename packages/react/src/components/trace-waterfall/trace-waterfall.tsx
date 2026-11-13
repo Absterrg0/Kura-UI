@@ -5,7 +5,7 @@ import * as React from "react";
 import { useControllableState } from "../../hooks/use-controllable-state";
 import { useElapsed } from "../../hooks/use-elapsed";
 import { cn } from "../../lib/cn";
-import { formatCost, formatDuration, formatTokens } from "../../lib/format";
+import { formatClock, formatCost, formatDuration, formatTokens } from "../../lib/format";
 import { AgentSigil } from "../agent-sigil";
 import { type AgentStatus, StatusGlyph } from "../status-glyph";
 
@@ -418,7 +418,7 @@ export function TraceWaterfall({
               ·
             </span>
             <span className={cn("min-w-[6ch] text-right", anyRunning && "text-kura-fg-muted")}>
-              {formatDuration(total)}
+              {anyRunning ? formatClock(total) : formatDuration(total)}
             </span>
             {hasTokens && (
               <>
@@ -533,10 +533,11 @@ export function TraceWaterfall({
                 const open = hasKids && !collapsed.has(span.id);
                 const selected = selectedId === span.id;
                 const dur = end - span.start;
-                const showGlyph =
-                  span.status === "running" ||
-                  span.status === "failed" ||
-                  span.status === "waiting";
+                // Done is the quiet default; every other state says so with its glyph.
+                const showGlyph = span.status !== "done" && span.status !== "queued";
+                // Still counting: a clock, like every other live timer. Finished: a duration.
+                const ticking =
+                  span.end == null && (span.status === "running" || span.status === "waiting");
                 const details = selected
                   ? (renderDetails?.(span) ?? <Details span={span} end={end} />)
                   : null;
@@ -648,7 +649,11 @@ export function TraceWaterfall({
                               : "text-kura-fg-subtle",
                           )}
                         >
-                          {span.status === "queued" ? "—" : formatDuration(dur)}
+                          {span.status === "queued"
+                            ? "—"
+                            : ticking
+                              ? formatClock(dur)
+                              : formatDuration(dur)}
                         </span>
                         <span className="sr-only">
                           , {KIND_LABEL[span.kind]}, {STATUS_WORD[span.status]}

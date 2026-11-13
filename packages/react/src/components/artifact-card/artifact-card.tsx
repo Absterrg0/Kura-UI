@@ -179,18 +179,28 @@ export function ArtifactCard({
   }
 
   // Known progress is a rail of dots; unknown progress is the chasing glyph in the icon tile.
-  const progressBar = busy && (
-    <DotRail
-      data-slot="artifact-card-progress"
-      label={`${status === "generating" ? "Generating" : "Updating"} ${title}`}
-      aria-valuemin={pct == null ? undefined : 0}
-      aria-valuemax={pct == null ? undefined : 100}
-      aria-valuenow={pct ?? undefined}
-      value={(pct ?? 0) / 100}
-      live
-      className={cn("pointer-events-none mx-3 mb-2.5 w-auto", pct == null && "sr-only")}
-    />
-  );
+  const progressLabel = `${status === "generating" ? "Generating" : "Updating"} ${title}`;
+  const progressBar =
+    busy &&
+    (pct == null ? (
+      <span
+        data-slot="artifact-card-progress"
+        role="progressbar"
+        aria-label={progressLabel}
+        className="sr-only"
+      />
+    ) : (
+      <DotRail
+        data-slot="artifact-card-progress"
+        label={progressLabel}
+        aria-valuemin={0}
+        aria-valuemax={100}
+        aria-valuenow={pct}
+        value={pct / 100}
+        live
+        className="pointer-events-none mx-3 mb-2.5 w-auto"
+      />
+    ));
 
   return (
     <div

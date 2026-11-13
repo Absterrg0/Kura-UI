@@ -135,6 +135,20 @@ describe("TraceWaterfall", () => {
     expect(screen.getAllByRole("treeitem")).toHaveLength(4);
   });
 
+  it("marks every state but done with its glyph", () => {
+    render(
+      <TraceWaterfall
+        spans={[
+          { id: "a", name: "plan", kind: "llm", start: 0, end: 900, status: "done" },
+          { id: "b", name: "migrate", kind: "tool", start: 900, end: 900, status: "skipped" },
+          { id: "c", name: "deploy", kind: "tool", start: 900, end: 1400, status: "failed" },
+        ]}
+      />,
+    );
+    const glyphs = [...document.querySelectorAll("[role=treeitem] [data-slot=status-glyph]")];
+    expect(glyphs.map((g) => g.getAttribute("data-status"))).toEqual(["skipped", "failed"]);
+  });
+
   it("grows running spans live from startedAt", () => {
     vi.useFakeTimers();
     const startedAt = Date.now() - 5_000;
@@ -146,7 +160,8 @@ describe("TraceWaterfall", () => {
     );
     act(() => vi.advanceTimersByTime(1_000));
     const item = screen.getByRole("treeitem");
-    expect(item.querySelector("[data-slot=trace-waterfall-duration]")).toHaveTextContent("6.0s");
+    // A span that is still counting shows a clock, like every other live timer.
+    expect(item.querySelector("[data-slot=trace-waterfall-duration]")).toHaveTextContent("0:06");
     expect(document.querySelector("[data-slot=trace-waterfall-now]")).toBeInTheDocument();
   });
 
