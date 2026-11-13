@@ -97,7 +97,12 @@ export default defineComponent({
   related: ["icon-button", "popover", "kbd"],
   tags: ["tooltip", "hint", "label", "hover", "overlay"],
   examples: [
-    { name: "TooltipMinimal", kind: "minimal", title: "Basic" },
+    {
+      name: "TooltipMinimal",
+      kind: "minimal",
+      title: "A label with its shortcut",
+      description: "Starts open (`defaultOpen`); hover or focus the key to see it come and go.",
+    },
     { name: "TooltipFull", kind: "full", title: "Shortcut, sides and shared provider" },
     {
       name: "TooltipEditorToolbar",
