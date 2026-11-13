@@ -14,6 +14,7 @@ reviewer (`design/v2/REVIEW-LOG.md`). The owner then rejected the look itself; v
 | R3    | 9.1       | 8.9      | Commit e505f88. Fully verified live (48 pages, 192 axe runs, Tab walks, approve/deny at three widths). A decision now moves 0px; four to five small must-fixes remain.                                        |
 | R4    | 9.2       | 9.2      | Commit d5d3374. Fully verified live. All round-3 must-fixes closed except the hero clocks (live values still a second apart). New: approval shortcuts leak from other widgets; terminals break words.         |
 | R5    | 9.3       | 9.4      | Commit a6b1fec. Fully verified live. Every round-4 must-fix closed, no regressions. Left: focus lost when a pressed control unmounts, approval keys acting while the prompt is off screen, small phone seams. |
+| R6    | 9.3       | 9.3      | Commit 3423ff9. Fully verified live. Round-5 items closed, but one fix regressed: inline code that never wraps makes ten component pages scroll sideways. PromptQueue still loses focus in two cases and is cramped on touch. |
 
 ---
 
@@ -347,3 +348,66 @@ card after a keyboard decision, focus return from ⌘K/Popover/CommandPalette/Mo
 every stop, 0 running animations under reduced motion on every other page, ember discipline, the
 stacked narrow Trace, AgentFleet layouts, DiffView per-hunk flow, home at 390, the components
 index and docs pages, axe clean on all 48 pages.
+
+## Round 6 — commit 3423ff9
+
+Both reviewers ran everything live: the round-5 claims one by one, Tab walks (12 and 8 pages, both
+themes), axe on 48 pages × 4 configurations (0 serious/critical), approve and deny at five widths,
+reduced motion, ⌘K, 390px full pages of all 48 pages.
+
+| # | Category | Fable 5.2 | Opus 5.5 |
+| --- | --- | --- | --- |
+| 1 | Visual hierarchy | 9.5 | 9.5 |
+| 2 | Typography | 9.4 | 9.4 |
+| 3 | Colour & state semantics | 9.6 | 9.6 |
+| 4 | Layout & spacing | 9.2 | 9.2 |
+| 5 | Consistency | 9.4 | 9.4 |
+| 6 | Brand distinctiveness | 9.7 | 9.7 |
+| 7 | Clarity & density | 9.5 | 9.3 |
+| 8 | Interaction states | 9.3 | 9.4 |
+| 9 | Light/dark parity | 9.6 | 9.6 |
+| 10 | Craft & polish | 9.1 | 9.0 |
+| 11 | Accessibility | 9.3 | 9.3 |
+| 12 | Responsive | 9.0 | 8.9 |
+| 13 | Motion | 9.4 | 9.6 |
+| 14 | Copy | 9.5 | 9.5 |
+| | **OVERALL** | **9.3** | **9.3** |
+
+### Round-5 verification
+
+Fixed: focus fallback on RunHeader, DiffView, Terminal, BrowserSession, AttachmentList, ToolCall
+and "Ask again" (ring after keyboard, none after a click); approval keys off screen and under a
+tooltip; AgentTimeline clock; carets under reduced motion; the highlight tag; terminal hanging
+indents, whole flags and package names; CodeBlock language label; DiffView examples; RunHeader
+bar columns and two-line phone title; PromptQueue hint; hero counts, clocks, levels and 0px
+movement; the dark well; the install section. Partly: PromptQueue focus (fine while a row
+remains). Regressed: inline code in prose (see must-fix 1).
+
+### Must-fix (merged, ranked)
+
+1. **Component pages scroll sideways** (both; regression): `C` is `whitespace-nowrap` and every
+   backticked span in a manifest goes through it, so a long type or statement cannot wrap.
+   diff-view and file-changes overflow from 1440 down; eight pages at 390.
+2. **PromptQueue drops focus** (both): removing or sending the last prompt, and the Move down
+   key every time.
+3. **PromptQueue rows are unreadable on touch** (Opus): all five actions show on every row, so
+   the text keeps one to nine characters.
+4. **Hero clocks disagree under reduced motion** (Fable): the migration lands at once and its
+   span ends in the future.
+
+### Polish (merged)
+
+Terminal splits a URL after its scheme and code mid-identifier, and `git status` rows hang under
+the status letter; ModelPicker's description is cut mid-word; the hooks lede splits a package
+name; `<DiffView />` splits at its space in the phone transcript; the RunHeader manifest still
+says the title truncates; duplicate landmark names on two example pages; Checkpoints labels cut
+by a few px beside a wide time cell on touch; a RunHeader bar title cut by 8px beside a status
+label that repeats the glyph; the install section's terminal is padded with empty space (Opus)
+where round 5 asked for level columns (Fable).
+
+### Verified good (do not touch)
+
+`useFocusFallback` and its wiring, approval key scoping, hero choreography and numbers at five
+widths, AgentTimeline clock, RunHeader bar columns, terminal hanging indents, rings on every stop
+in both themes, axe clean, BrowserSession tag, CodeBlock labels, the dark well, home at 390 and
+768, ember discipline.
