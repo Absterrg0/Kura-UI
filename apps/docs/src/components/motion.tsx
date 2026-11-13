@@ -87,3 +87,25 @@ export function StaggerItem({
     </Tag>
   );
 }
+
+/** One element fading up on load, after `delay` seconds. */
+export function Rise({
+  delay = 0,
+  className,
+  children,
+}: {
+  delay?: number;
+  className?: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <motion.div
+      className={className}
+      initial={{ opacity: 0, y: 16 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ ...enter, delay }}
+    >
+      {children}
+    </motion.div>
+  );
+}

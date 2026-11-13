@@ -6,12 +6,11 @@ import { AgentDemo } from "@/components/landing/agent-demo";
 import { AgentTerminal } from "@/components/landing/agent-terminal";
 import { BuiltRight } from "@/components/landing/built-right";
 import { CtaBand } from "@/components/landing/cta-band";
-import { EmberLight } from "@/components/landing/ember-light";
 import { FeatureBento } from "@/components/landing/feature-bento";
-import { HeroField } from "@/components/landing/hero-field";
+import { HeroGlyph } from "@/components/landing/hero-glyph";
 import { HeroStage } from "@/components/landing/hero-stage";
 import { InstallChip } from "@/components/landing/install-chip";
-import { Stagger, StaggerItem } from "@/components/motion";
+import { Rise, Stagger, StaggerItem } from "@/components/motion";
 import { catalog, components } from "@/lib/catalog";
 
 // The four things generated from each component's manifest (the paragraph above them and the
@@ -52,44 +51,44 @@ export default function Home() {
   return (
     <div className="overflow-x-clip">
       {/* Hero */}
-      <section
-        aria-labelledby="hero-title"
-        className="relative px-4 pt-14 md:px-6 md:pt-20 lg:pt-24"
-      >
-        {/* Reaches up under the glass nav, so the nav has something to frost. */}
-        <HeroField anchorId="hero-title" className="-top-[84px] h-[760px]" />
-        <Stagger
-          onLoad
-          gap={0.08}
-          className="relative z-10 mx-auto flex max-w-3xl flex-col items-center text-center"
-        >
-          <StaggerItem>
-            <h1
-              id="hero-title"
-              className="font-semibold text-[42px] leading-[1.02] tracking-[-0.035em] text-balance sm:text-[56px] lg:text-[72px]"
-            >
-              Components for agent interfaces.
-            </h1>
-          </StaggerItem>
-          <StaggerItem>
-            <p className="max-w-[40rem] pt-6 text-[16px] sm:text-[17px] text-kura-fg-muted leading-relaxed text-pretty md:text-[18px]">
-              Open-source React components for agent runs, plans, terminals, diffs and approvals.
-              Copy them into your app, or let your coding agent install them.
-            </p>
-          </StaggerItem>
-          <StaggerItem className="pt-9">
-            <CtaLink href="/components" meta={components.length}>
-              Browse components
-            </CtaLink>
-          </StaggerItem>
-          <StaggerItem className="max-w-full pt-5">
-            <InstallChip command={install} />
-          </StaggerItem>
-        </Stagger>
+      <section aria-labelledby="hero-title" className="px-4 pt-10 md:px-6 md:pt-14 lg:pt-16">
+        <div className="mx-auto grid max-w-[1180px] items-center gap-10 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,0.85fr)] lg:gap-8">
+          <Stagger onLoad gap={0.08} className="flex flex-col items-start">
+            <StaggerItem>
+              <p className="flex flex-wrap items-center gap-x-2.5 gap-y-1 font-kura-mono text-[12.5px] text-kura-fg-subtle [&>span]:whitespace-nowrap">
+                <span>{components.length} components</span>
+                <span aria-hidden className="kura-leader hidden h-[5px] w-6 sm:block" />
+                <span>React 19 · Tailwind v4</span>
+                <span aria-hidden className="kura-leader hidden h-[5px] w-6 sm:block" />
+                <span>MIT</span>
+              </p>
+            </StaggerItem>
+            <StaggerItem>
+              <h1
+                id="hero-title"
+                className="pt-6 font-semibold text-[46px] leading-[0.98] tracking-[-0.045em] text-balance sm:text-[64px] lg:text-[80px]"
+              >
+                Components for agent interfaces.
+              </h1>
+            </StaggerItem>
+            <StaggerItem>
+              <p className="max-w-[33rem] pt-7 text-[17px] text-kura-fg-muted leading-relaxed text-pretty md:text-[18px]">
+                Runs, plans, terminals, diffs and approvals for React, drawn in one language of
+                dots. Copy them in, or let your coding agent install them.
+              </p>
+            </StaggerItem>
+            <StaggerItem className="flex flex-wrap items-center gap-3 pt-9">
+              <CtaLink href="/components">Browse components</CtaLink>
+              <InstallChip command="npm i @kura-ui/react" className="min-h-11 items-center py-0" />
+            </StaggerItem>
+          </Stagger>
+          <Rise delay={0.3} className="flex justify-center lg:justify-end">
+            <HeroGlyph className="max-w-[460px]" />
+          </Rise>
+        </div>
 
         <div className="relative isolate mx-auto mt-20 max-w-[1180px] md:mt-24">
-          {/* The ember rises with the stage, never ahead of it. */}
-          <HeroStage backdrop={<EmberLight className="-top-[150px] -z-10" />} />
+          <HeroStage />
         </div>
       </section>
 

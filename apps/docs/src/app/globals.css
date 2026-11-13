@@ -296,18 +296,6 @@ html[data-theme-vt]::view-transition-new(root) {
   }
 }
 
-/* The hero's dot field fades up under the headline (the rest of the load is motion/react). */
-@media (prefers-reduced-motion: no-preference) {
-  [data-slot="hero-field"] {
-    animation: field-in 1400ms 200ms ease-out both;
-  }
-}
-@keyframes field-in {
-  from {
-    opacity: 0;
-  }
-}
-
 /*
  * Scrollbars: a thin pill on a clear track, shown only while the pointer is over something that
  * scrolls, or for a moment after it scrolls (<ScrollbarActivity> sets [data-scrollbar]). The

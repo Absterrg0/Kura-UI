@@ -198,6 +198,8 @@ export function CommandMenu({
     };
   }, [apple]);
   const mod = apple ? "⌘" : "Ctrl";
+  const placeholder =
+    page === "shortcuts" ? "Search shortcuts…" : "Search components, pages and commands…";
 
   return (
     <>
@@ -286,11 +288,7 @@ export function CommandMenu({
                   ref={inputRef}
                   value={query}
                   onValueChange={setQuery}
-                  placeholder={
-                    page === "shortcuts"
-                      ? "Search shortcuts…"
-                      : "Search components, pages and commands…"
-                  }
+                  placeholder={placeholder}
                   className="h-full flex-1 bg-transparent text-[15px] outline-hidden placeholder:text-kura-fg-subtle"
                 />
               </div>
