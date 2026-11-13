@@ -338,7 +338,8 @@ function AgentCursor({
           strokeLinejoin="round"
         />
       </svg>
-      <span className={cn("absolute top-4 inline-flex", flip ? "right-1.5" : "left-3.5")}>
+      {/* Near the right edge (the prompt's keys) the tag rises above the pointer, clear of them. */}
+      <span className={cn("absolute inline-flex", flip ? "right-1 bottom-4" : "top-4 left-3.5")}>
         <span className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-full bg-kura-ink py-[3px] pr-2 pl-1.5 font-kura-mono text-[11px] text-kura-fg-inverted shadow-kura-popover">
           <span className="size-1.5 rounded-full bg-kura-fg-inverted/80" />
           Kura{note ? <span className="opacity-60">· {note}</span> : null}

@@ -86,6 +86,12 @@ Layout inside a sheet: an 11-unit header (44px, title 13px/600, no rule under it
 with a 9px-radius hover fill inset 6px from the sheet's edge, wells inset 6px. Lists have no
 dividers. A hairline is allowed only to separate a footer of actions from content.
 
+A row, everywhere (task lists, checkpoints, the fleet, timelines, tool calls, traces): a 16px
+glyph column and a 10px gap; one primary line, 13px/20px ink; at most one secondary line,
+12.5px ink-3; at most two figures, Geist Mono 12px ink-3, right-aligned on the primary line's
+baseline. Rows are 36px (32px when nested, starting where the parent's title starts). Never a
+third tier of grey, never a tag beside a label that a glyph or a figure could carry.
+
 ---
 
 ## 4. Dots
