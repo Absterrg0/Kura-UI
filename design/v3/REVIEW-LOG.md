@@ -19,6 +19,7 @@ reviewer (`design/v2/REVIEW-LOG.md`). The owner then rejected the look itself; v
 | R8    | 9.4       | 9.5      | Commit 149cc9b. Fully verified live. All round-7 must-fixes closed, no regressions. Opus is at the bar with one must-fix; Fable has four: a ModelPicker popover that can leave a short viewport, the Composer count on phones, phrases inside keycaps, two manifests naming Radix. |
 | R9    | 9.5       | 9.5      | Commit ba72162. Fully verified live. Both at the bar; every round-8 claim holds. Not passed yet: three must-fixes remain (SlashCommandMenu and CommandPalette can leave a short viewport; the Composer count hides in a roomy toolbar on phones).                                  |
 | R10   | 9.5       | 9.5      | Commit 7d62878. Fully verified live. **Opus: no must-fix (seat passed).** Fable: every round-9 claim holds; two must-fixes left (over the limit, a phone Composer shows nothing; the CommandPalette page prints shortcuts that collide with the site's ⌘K).                        |
+| R11   | 9.5       | 9.5      | Commit a3e72d8. Fully verified live. **Opus: no must-fix, a second time.** Fable: every round-10 claim holds; two one-line must-fixes in the docs site (Ctrl+K swallowed while a non-modal popover is open; the hero announces "migrator done" five seconds early). |
 
 ---
 
@@ -661,3 +662,61 @@ Overlay fit rules (SlashCommandMenu, CommandPalette, ModelPicker), the hint as i
 container, end-of-name truncation, DiffView counts and rename header, whole-dot leaders, the docs
 code blocks, hero choreography and clocks, the overflow guard, focus rings and hand-offs,
 approval key scoping, ember discipline, reduced motion, the mobile hero stack.
+
+## Round 11 — commit a3e72d8
+
+Both reviewers ran everything live: the round-10 claims (the over-limit Composer at ten widths,
+the palette keys, the slash menu's side at twelve positions), a sideways-scroll sweep (0 of 48
+pages at up to seven configurations), axe (240 page runs, 0 serious/critical), Tab walks (616 to
+662 stops per theme, none without a ring), approve and deny at three widths with and without
+reduced motion, every overlay at 390×667 and 1440×600, about 60 phone screenshots.
+
+| # | Category | Fable 5.2 | Opus 5.5 |
+| --- | --- | --- | --- |
+| 1 | Visual hierarchy | 9.6 | 9.6 |
+| 2 | Typography | 9.6 | 9.5 |
+| 3 | Colour & state semantics | 9.6 | 9.6 |
+| 4 | Layout & spacing | 9.6 | 9.5 |
+| 5 | Consistency | 9.5 | 9.5 |
+| 6 | Brand distinctiveness | 9.7 | 9.7 |
+| 7 | Clarity & density | 9.6 | 9.5 |
+| 8 | Interaction states | 9.4 | 9.5 |
+| 9 | Light/dark parity | 9.6 | 9.6 |
+| 10 | Craft & polish | 9.5 | 9.5 |
+| 11 | Accessibility | 9.4 | 9.6 |
+| 12 | Responsive | 9.6 | 9.6 |
+| 13 | Motion | 9.6 | 9.6 |
+| 14 | Copy | 9.5 | 9.5 |
+| | **OVERALL** | **9.5** | **9.5** |
+
+### Round-10 verification
+
+All fixed: the over-limit count is red and on screen at every width from 320 to 1440 (two rows
+on phones, no overlaps); the description is said once; the states example and its copy; the
+palette binds what it prints and the site search no longer stacks on it; the slash menu keeps
+its side while the list filters; DiffView's spoken counts.
+
+### Must-fix
+
+Opus: **none.**
+
+Fable (both in the docs site, both one line):
+
+1. **Ctrl+K is swallowed while a Popover or ModelPicker is open** (a side effect of round 10's
+   guard, which matches any `role="dialog"`; Kura's non-modal popovers carry that role).
+2. **The hero tells screen readers "migrator done" as soon as you approve**, five seconds before
+   it is true: for one render the migration's lines are still those of the pending state.
+
+### Polish (merged)
+
+The library palette's own hotkey can open over another modal; AgentFleet does not repeat an
+identical announcement; between 540 and 600px the over-limit count drops its limit; two code
+comments still say "amber"; mixed punctuation in an example's state labels; key hints inside the
+palette on touch; a docs-only comment in copy-paste code; the slash menu follows a field that
+has scrolled off screen.
+
+### Verified good (do not touch)
+
+The Composer's over-limit wrap and single description, the slash menu's side rule, palette keys,
+DiffView counts, hero choreography and clocks, overlay fit rules, the overflow guard, focus rings
+and hand-offs, phone compositions, ember discipline.
