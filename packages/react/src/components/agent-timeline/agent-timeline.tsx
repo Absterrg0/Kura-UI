@@ -69,12 +69,18 @@ function Node({ status, small }: { status: AgentStepStatus; small: boolean }) {
       aria-hidden
       data-slot="agent-timeline-node"
       data-status={status}
-      className="relative z-10 grid shrink-0 place-items-center"
+      className="relative z-10 flex h-5 w-4 shrink-0 items-center justify-center"
     >
       <StatusGlyph status={GLYPH[status]} size={small ? "sm" : "md"} label={null} />
     </span>
   );
 }
+
+// The spine: one column of fine dots between two glyphs, lit behind the agent.
+const spine = {
+  "--kura-dots-pitch": "5px",
+  "--kura-dots-r": "0.85px",
+} as React.CSSProperties;
 
 function Step({ step, last, small }: { step: AgentTimelineStep; last: boolean; small: boolean }) {
   const active = step.status === "active";
@@ -87,45 +93,35 @@ function Step({ step, last, small }: { step: AgentTimelineStep; last: boolean; s
       data-slot="agent-timeline-step"
       data-status={step.status}
       aria-current={active ? "step" : undefined}
-      className={cn("relative flex gap-3", !last && (small ? "pb-3" : "pb-5"))}
+      className={cn("relative flex gap-2.5", !last && (small ? "pb-3" : "pb-4"))}
     >
       {!last && (
-        // A column of dots between two glyphs; they light as the agent moves past the step.
         <span
           aria-hidden
           data-slot="agent-timeline-connector"
           data-filled={filled}
-          className={cn(
-            "kura-dots absolute w-1.5",
-            small ? "top-[21px] bottom-0 left-[3.5px]" : "top-[25px] bottom-0 left-[4.5px]",
-          )}
+          className="kura-dots absolute top-[21px] bottom-[1px] left-[5.5px] w-[5px]"
+          style={spine}
         >
           <span
             className={cn(
               "kura-dots absolute inset-x-0 top-0 text-kura-fg-subtle transition-[height] duration-(--kura-duration-slower) ease-kura-snap motion-reduce:transition-none",
               filled ? "h-full" : "h-0",
             )}
-            style={{ "--kura-dots-color": "currentColor" } as React.CSSProperties}
+            style={{ ...spine, "--kura-dots-color": "currentColor" } as React.CSSProperties}
           />
         </span>
       )}
-      <span className={cn("flex shrink-0 items-start", small ? "pt-[2.5px]" : "pt-[4.5px]")}>
-        <Node status={step.status} small={small} />
-      </span>
-      <div className="flex min-w-0 flex-1 flex-col gap-1">
-        <div
-          className={cn(
-            "flex items-baseline gap-3",
-            small ? "min-h-[18px] text-[13px]" : "min-h-6 text-sm",
-          )}
-        >
+      <Node status={step.status} small={small} />
+      <div className="flex min-w-0 flex-1 flex-col gap-0.5">
+        <div className="flex min-h-5 items-baseline gap-3 text-[13px] leading-5">
           <span
             data-slot="agent-timeline-title"
             className={cn(
               "min-w-0 flex-1 transition-colors duration-(--kura-duration-base)",
-              step.status === "queued" && "text-kura-fg-muted",
-              step.status === "active" && "font-medium text-kura-fg",
-              step.status === "done" && "text-kura-fg",
+              step.status === "queued" && "text-kura-fg-subtle",
+              step.status === "active" && "text-kura-fg",
+              step.status === "done" && "text-kura-fg-muted",
               step.status === "failed" && "text-kura-fg",
               step.status === "skipped" &&
                 "text-kura-fg-subtle line-through decoration-kura-border-strong",
@@ -137,7 +133,10 @@ function Step({ step, last, small }: { step: AgentTimelineStep; last: boolean; s
           {ms != null && (
             <span
               data-slot="agent-timeline-duration"
-              className="shrink-0 font-kura-mono text-kura-fg-subtle text-xs tabular-nums"
+              className={cn(
+                "shrink-0 font-kura-mono text-[12px] tabular-nums",
+                active ? "text-kura-fg-muted" : "text-kura-fg-subtle",
+              )}
             >
               {/* Still running: a clock, like every live timer. Finished: the duration. */}
               {step.duration == null && active ? formatClock(ms) : formatDuration(ms)}
@@ -148,8 +147,8 @@ function Step({ step, last, small }: { step: AgentTimelineStep; last: boolean; s
           <p
             data-slot="agent-timeline-description"
             className={cn(
-              "text-kura-fg-muted leading-relaxed",
-              small ? "text-xs" : "text-[13px]",
+              "text-kura-fg-subtle",
+              small ? "text-[12px] leading-[17px]" : "text-[12.5px] leading-[18px]",
               step.status === "failed" && "text-kura-danger-text",
             )}
           >

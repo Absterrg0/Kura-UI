@@ -1,17 +1,22 @@
 "use client";
 
-import { RotateCcw } from "lucide-react";
 import * as React from "react";
-import { Button } from "../button";
 import { ToolCall } from "../tool-call";
 import { AgentTimeline, type AgentTimelineStep } from "./agent-timeline";
 
 export function AgentTimelineMinimal() {
   return (
     <AgentTimeline
-      className="w-full max-w-md"
+      className="w-full max-w-md rounded-kura-xl bg-kura-surface p-4 shadow-kura-surface"
       steps={[
         { id: "read", title: "Read the failing test", status: "done", duration: 1200 },
+        {
+          id: "cause",
+          title: "Find the cause",
+          status: "done",
+          duration: 4800,
+          description: "parseDate() ignores the TZ offset",
+        },
         { id: "fix", title: "Patch the date parser", status: "active" },
         { id: "verify", title: "Re-run the test suite", status: "queued" },
       ]}
@@ -59,9 +64,6 @@ function stepsAt(cursor: number, startedAt: number | undefined): AgentTimelineSt
 export function AgentTimelineFull() {
   const [cursor, setCursor] = React.useState(0);
   const [startedAt, setStartedAt] = React.useState<number>();
-  const [run, setRun] = React.useState(0);
-
-  // biome-ignore lint/correctness/useExhaustiveDependencies: `run` replays the plan
   React.useEffect(() => {
     let i = 0;
     setCursor(0);
@@ -77,32 +79,24 @@ export function AgentTimelineFull() {
     };
     next();
     return () => clearTimeout(id);
-  }, [run]);
+  }, []);
 
-  const done = cursor >= PLAN.length;
   return (
-    <div className="flex w-full max-w-md flex-col gap-4 rounded-kura-xl bg-kura-surface p-4 shadow-kura-sm">
-      <div className="flex items-start justify-between gap-3">
-        <div className="flex min-w-0 flex-col gap-0.5">
-          <h3 className="font-medium text-kura-fg text-sm tracking-[-0.01em]">
-            Migrate to the new auth client
-          </h3>
-          <p className="text-kura-fg-subtle text-xs tabular-nums">
-            {done ? "Finished" : "Running"} · {Math.min(cursor, PLAN.length)} of {PLAN.length} steps
-          </p>
-        </div>
-        {done && (
-          <Button
-            variant="secondary"
-            size="xs"
-            className="animate-kura-fade-in"
-            onClick={() => setRun((r) => r + 1)}
-          >
-            <RotateCcw /> Replay
-          </Button>
-        )}
+    <div className="flex w-full max-w-md flex-col rounded-kura-xl bg-kura-surface shadow-kura-surface">
+      <div className="flex h-11 items-center gap-3 px-4">
+        <h3 className="truncate font-semibold text-[13px] text-kura-fg tracking-[-0.01em]">
+          Migrate to the new auth client
+        </h3>
+        <span className="shrink-0 font-kura-mono text-[12px] text-kura-fg-subtle tabular-nums">
+          {Math.min(cursor, PLAN.length)} of {PLAN.length}
+        </span>
       </div>
-      <AgentTimeline steps={stepsAt(cursor, startedAt)} label="Migration plan" size="md" />
+      <AgentTimeline
+        className="px-4 pb-4"
+        steps={stepsAt(cursor, startedAt)}
+        label="Migration plan"
+        size="md"
+      />
     </div>
   );
 }
@@ -111,7 +105,7 @@ export function AgentTimelineStates() {
   return (
     <AgentTimeline
       size="sm"
-      className="w-full max-w-sm"
+      className="w-full max-w-sm rounded-kura-xl bg-kura-surface p-4 shadow-kura-surface"
       steps={[
         { id: "1", title: "Install dependencies", status: "done", duration: 8300 },
         { id: "2", title: "Generate types", status: "skipped", description: "Already up to date" },
@@ -130,12 +124,15 @@ export function AgentTimelineStates() {
 
 export function AgentTimelineWithTools() {
   return (
-    <div className="flex w-full max-w-lg flex-col gap-4 rounded-kura-xl bg-kura-surface p-4 shadow-kura-sm">
-      <div className="flex items-baseline justify-between">
-        <h3 className="font-medium text-kura-fg text-sm">Fix flaky date test</h3>
-        <span className="font-kura-mono text-kura-fg-subtle text-xs tabular-nums">2/3</span>
+    <div className="flex w-full max-w-lg flex-col rounded-kura-xl bg-kura-surface shadow-kura-surface">
+      <div className="flex h-11 items-center gap-3 px-4">
+        <h3 className="font-semibold text-[13px] text-kura-fg tracking-[-0.01em]">
+          Fix flaky date test
+        </h3>
+        <span className="font-kura-mono text-[12px] text-kura-fg-subtle tabular-nums">1 of 3</span>
       </div>
       <AgentTimeline
+        className="px-4 pb-4"
         label="Fix flaky date test"
         steps={[
           {
