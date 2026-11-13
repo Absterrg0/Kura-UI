@@ -30,7 +30,7 @@ export function AgentOrbFull() {
         {states.map((s) => (
           <Button
             key={s}
-            size="sm"
+            size="xs"
             variant={s === state ? "secondary" : "ghost"}
             role="radio"
             aria-checked={s === state}

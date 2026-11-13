@@ -66,8 +66,8 @@ export default defineComponent({
       name: "TooltipProvider",
       description: "Optional shared provider so moving between tooltips skips the delay.",
     },
-    { name: "TooltipRoot", description: "Radix Root, for fully custom compositions." },
-    { name: "TooltipTrigger", description: "Radix Trigger." },
+    { name: "TooltipRoot", description: "The ui-sdk Root, for fully custom compositions." },
+    { name: "TooltipTrigger", description: "The ui-sdk Trigger." },
     {
       name: "TooltipContent",
       dataSlot: "tooltip-content",

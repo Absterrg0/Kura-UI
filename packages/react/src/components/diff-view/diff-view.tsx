@@ -650,17 +650,27 @@ export function DiffView({
                     data-slot="diff-view-path"
                     className="flex min-w-0 items-baseline font-kura-mono text-[12.5px]"
                   >
+                    {/* A rename shows where the file came from when there is room; in a narrow
+                        header the word "Renamed" says it and the new name keeps the line. */}
                     {file.status === "renamed" && file.oldPath && (
                       <>
-                        <span className="min-w-0 truncate text-kura-fg-subtle">{file.oldPath}</span>
-                        <span aria-hidden className="shrink-0 px-1.5 text-kura-fg-subtle">
+                        <span className="sr-only">{file.oldPath} renamed to </span>
+                        <span
+                          aria-hidden
+                          className="hidden min-w-0 shrink-[999] truncate text-kura-fg-subtle @[24rem]/diff:inline"
+                        >
+                          {file.oldPath}
+                        </span>
+                        <span
+                          aria-hidden
+                          className="hidden shrink-0 px-1.5 text-kura-fg-subtle @[24rem]/diff:inline"
+                        >
                           →
                         </span>
-                        <span className="sr-only"> renamed to </span>
                       </>
                     )}
                     {/* The directory truncates first (from the left); the file name keeps priority. */}
-                    {!(file.status === "renamed" && file.oldPath) && dir && (
+                    {dir && (
                       <span className="hidden min-w-0 shrink-[999] truncate text-kura-fg-subtle [direction:rtl] @[24rem]/diff:inline">
                         <span className="[direction:ltr] [unicode-bidi:isolate]">{dir}</span>
                       </span>
@@ -672,7 +682,7 @@ export function DiffView({
                           "text-kura-fg-muted line-through decoration-kura-fg-subtle/60",
                       )}
                     >
-                      {file.status === "renamed" && file.oldPath ? file.path : base}
+                      {base}
                     </span>
                   </span>
                   {file.status !== "modified" && (

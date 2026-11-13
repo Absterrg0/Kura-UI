@@ -227,7 +227,12 @@ export function FileChangesComposition() {
         onSelect={setSelected}
         viewToggle={false}
       />
-      <DiffView title={selected.split("/").pop()} files={current} reviewable={false} wrap />
+      <DiffView
+        title={selected.split("/").pop()}
+        files={current}
+        reviewable={false}
+        maxHeight={440}
+      />
     </div>
   );
 }

@@ -501,7 +501,11 @@ export function ComposerToolbar({ className, ...props }: ComposerToolbarProps) {
   return (
     <div
       data-slot="composer-toolbar"
-      className={cn("flex min-h-12 items-center justify-between gap-2 p-2 pt-1", className)}
+      // A size container: the hint in it shortens itself in a narrow toolbar.
+      className={cn(
+        "@container flex min-h-12 items-center justify-between gap-2 p-2 pt-1",
+        className,
+      )}
       {...props}
     />
   );
@@ -617,7 +621,7 @@ export function ComposerHint({
         "inline-flex select-none items-center gap-1.5 text-xs text-kura-fg-subtle tabular-nums",
         "transition-[opacity,color] duration-(--kura-duration-base) ease-kura-out",
         // Hidden, it takes no room either: the tools beside it keep the whole toolbar.
-        !visible && "pointer-events-none w-0 overflow-hidden opacity-0",
+        !visible && "pointer-events-none -mr-2 w-0 overflow-hidden opacity-0",
         level === "near" && "text-kura-fg",
         level === "over" && "text-kura-danger-text",
         className,
@@ -627,7 +631,16 @@ export function ComposerHint({
       {maxLength !== undefined && resolved === "characters" && (
         <AttachmentProgressRing progress={Math.min(1, ratio)} className="size-[13px]" />
       )}
-      <span aria-hidden>{label}</span>
+      {maxLength !== undefined && resolved === "characters" ? (
+        // Against a limit the ring already shows how full it is: in a narrow toolbar the limit
+        // goes first, then the count, so the hint never lands on a tool. (Read out in full below.)
+        <span aria-hidden className="hidden @[20rem]:inline">
+          {nf.format(length)}
+          <span className="hidden @[23rem]:inline"> / {nf.format(maxLength)}</span>
+        </span>
+      ) : (
+        <span aria-hidden>{label}</span>
+      )}
       {maxLength !== undefined && (
         <span className="sr-only">
           {level === "over"

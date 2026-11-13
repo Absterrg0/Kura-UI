@@ -127,7 +127,8 @@ function Row({ item, depth, selectedId, onSelect }: RowProps) {
           <span
             data-slot="task-list-title"
             className={cn(
-              "min-w-0 truncate text-[13px] leading-5 transition-colors duration-(--kura-duration-base)",
+              // A step's title is what the row is about: it wraps to a second line before it is cut.
+              "line-clamp-2 min-w-0 text-[13px] leading-5 transition-colors duration-(--kura-duration-base)",
               textColor(status),
               status === "skipped" && "line-through decoration-kura-border-strong",
               depth > 0 && "text-[12.5px]",

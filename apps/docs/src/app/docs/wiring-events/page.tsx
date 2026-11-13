@@ -39,14 +39,26 @@ interface RunState {
 function reduce(state: RunState, e: RunEvent): RunState {
   switch (e.type) {
     case "run.started":
-      return { ...state, title: e.title, model: e.model, startedAt: e.at, status: "running" };
+      return {
+        ...state,
+        title: e.title,
+        model: e.model,
+        startedAt: e.at,
+        status: "running",
+      };
     case "plan.updated":
       return {
         ...state,
-        tasks: e.steps.map((s) => state.tasks.find((t) => t.id === s.id) ?? { ...s, status: "queued" }),
+        tasks: e.steps.map((s) => {
+          const known = state.tasks.find((t) => t.id === s.id);
+          return known ?? { ...s, status: "queued" };
+        }),
       };
     case "step.started":
-      return { ...state, tasks: patch(state.tasks, e.id, { status: "running", startedAt: e.at }) };
+      return {
+        ...state,
+        tasks: patch(state.tasks, e.id, { status: "running", startedAt: e.at }),
+      };
     case "step.finished": {
       const started = state.tasks.find((t) => t.id === e.id)?.startedAt;
       return {
@@ -63,7 +75,11 @@ function reduce(state: RunState, e: RunEvent): RunState {
     case "approval.requested":
       return { ...state, status: "waiting", approval: e };
     case "usage":
-      return { ...state, tokens: { input: e.input, output: e.output }, cost: e.cost };
+      return {
+        ...state,
+        tokens: { input: e.input, output: e.output },
+        cost: e.cost,
+      };
   }
 }
 
@@ -77,7 +93,12 @@ import { RunHeader } from "@kura-ui/react/run-header";
 import { TaskList } from "@kura-ui/react/task-list";
 import { Terminal } from "@kura-ui/react/terminal";
 
-export function RunView({ run, send }: { run: RunState; send: (msg: ClientMessage) => void }) {
+interface RunViewProps {
+  run: RunState;
+  send: (msg: ClientMessage) => void;
+}
+
+export function RunView({ run, send }: RunViewProps) {
   return (
     <div className="grid gap-3">
       <RunHeader
@@ -108,7 +129,10 @@ export function RunView({ run, send }: { run: RunState; send: (msg: ClientMessag
               }
             />
           )}
-          <Terminal lines={run.output} status={run.status === "running" ? "running" : "done"} />
+          <Terminal
+            lines={run.output}
+            status={run.status === "running" ? "running" : "done"}
+          />
         </div>
       </div>
     </div>

@@ -388,6 +388,32 @@ describe("DiffView", () => {
     setReducedMotion(false);
   });
 
+  it("a renamed file keeps its new name; where it came from steps aside first", () => {
+    const { container } = render(
+      <DiffView
+        files={[
+          {
+            path: "src/auth/session-store.ts",
+            oldPath: "src/auth/session.ts",
+            status: "renamed",
+            hunks: [],
+          },
+        ]}
+      />,
+    );
+    const path = container.querySelector("[data-slot=diff-view-path]")!;
+    // Read out in full; shown only when the header has room for it.
+    expect(path).toHaveTextContent("src/auth/session.ts renamed to");
+    const old = [...path.querySelectorAll("[aria-hidden]")].find(
+      (el) => el.textContent === "src/auth/session.ts",
+    )!;
+    expect(old.className).toContain("hidden");
+    expect(old.className).toContain("shrink-[999]");
+    // The new file name is its own piece, after the directory that truncates before it.
+    expect(path.lastElementChild).toHaveTextContent("session-store.ts");
+    expect(path.lastElementChild?.textContent).toBe("session-store.ts");
+  });
+
   it("examples render without a11y violations", async () => {
     for (const Example of [
       DiffViewMinimal,

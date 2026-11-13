@@ -5,29 +5,41 @@ import { CodeBlock } from "@/components/code-block";
 import { CopyButton } from "@/components/copy-button";
 import { C, DocsShell, Prose, Section } from "@/components/docs-shell";
 import { ExamplePreview } from "@/components/example-preview";
+import { InstallChip } from "@/components/landing/install-chip";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/tabs";
 import { components, getComponent } from "@/lib/catalog";
 
 /** "Mod+Enter", "J / K", "Enter / Space" → keycaps, alternatives separated by a slash. */
 function Keys({ value }: { value: string }) {
-  const alternatives = value.split(/\s+\/\s+/);
+  // A slash inside brackets, as in "ArrowDown (j / k)", stays with its key.
+  const alternatives = value.split(/\s+\/\s+(?![^(]*\))/);
   return (
     <span className="inline-flex flex-wrap items-center gap-1.5">
-      {alternatives.map((combo, i) => (
-        <span key={combo} className="inline-flex items-center gap-1.5">
-          {i > 0 && <span className="text-[12px] text-kura-fg-subtle">or</span>}
-          <span className="inline-flex items-center gap-[3px]">
-            {combo.split("+").map((key) => (
-              <kbd
-                key={key}
-                className="inline-flex h-[20px] min-w-[20px] items-center justify-center rounded-[5px] bg-kura-surface px-1.5 font-kura-sans font-medium text-[11px] text-kura-fg-muted shadow-kura-key"
-              >
-                {key.trim()}
-              </kbd>
-            ))}
+      {alternatives.map((alternative, i) => {
+        const [, combo = alternative, note] = /^(.*?)\s*(\([^)]*\))?$/.exec(alternative) ?? [];
+        // "Space, then arrows, then Space" is a sentence, not a key: it is set as words.
+        const phrase = combo.includes(",") || combo.trim().split(/\s+/).length > 2;
+        return (
+          <span key={alternative} className="inline-flex flex-wrap items-center gap-1.5">
+            {i > 0 && <span className="text-[12px] text-kura-fg-subtle">or</span>}
+            {phrase ? (
+              <span className="text-[13px] text-kura-fg-muted">{combo}</span>
+            ) : (
+              <span className="inline-flex items-center gap-[3px]">
+                {combo.split("+").map((key) => (
+                  <kbd
+                    key={key}
+                    className="inline-flex h-[20px] min-w-[20px] items-center justify-center whitespace-nowrap rounded-[5px] bg-kura-surface px-1.5 font-kura-sans font-medium text-[11px] text-kura-fg-muted shadow-kura-key"
+                  >
+                    {key.trim()}
+                  </kbd>
+                ))}
+              </span>
+            )}
+            {note && <span className="text-[12px] text-kura-fg-subtle">{note}</span>}
           </span>
-        </span>
-      ))}
+        );
+      })}
     </span>
   );
 }
@@ -106,17 +118,7 @@ export default async function ComponentPage({ params }: { params: Promise<{ slug
             <Prose>{c.description}</Prose>
           </p>
           <div className="flex flex-wrap items-center gap-x-2 gap-y-3 pt-2">
-            <span className="well inline-flex h-9 min-w-0 max-w-full items-center gap-2 rounded-kura-lg pr-1 pl-3.5 font-kura-mono text-[12.5px] text-kura-fg-muted">
-              <span aria-hidden className="select-none text-kura-fg-subtle">
-                $
-              </span>
-              <span className="min-w-0 truncate">{c.install.shadcn}</span>
-              <CopyButton
-                value={c.install.shadcn}
-                label="Copy install command"
-                className="shrink-0"
-              />
-            </span>
+            <InstallChip command={c.install.shadcn} />
             <span className={`${quiet} pr-1`}>
               Copy for agents
               <CopyButton fetchUrl={`/components/${c.slug}.md`} label="Copy markdown" />

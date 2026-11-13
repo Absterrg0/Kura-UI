@@ -325,7 +325,9 @@ export function ModelPicker({
         sideOffset={6}
         data-slot="model-picker-content"
         aria-label="Choose a model"
-        className="flex w-[340px] flex-col overflow-hidden p-0 [--list-height:var(--available-height)]"
+        // Never taller than the room around the trigger: the list shrinks and scrolls, the search
+        // row and the details strip stay on screen.
+        className="flex max-h-(--available-height) w-[340px] flex-col overflow-hidden p-0"
         initialFocus={() => (showSearch ? inputRef.current : listRef.current)}
         onKeyDown={showSearch ? undefined : onKeyDown}
       >
@@ -358,7 +360,7 @@ export function ModelPicker({
           aria-label="Models"
           tabIndex={showSearch ? -1 : 0}
           aria-activedescendant={!showSearch && active ? optionId(active) : undefined}
-          className="max-h-[min(20rem,var(--list-height,20rem))] scroll-py-1 overflow-y-auto overscroll-contain p-1 outline-hidden [scrollbar-width:thin]"
+          className="max-h-80 min-h-0 shrink scroll-py-1 overflow-y-auto overscroll-contain p-1 outline-hidden [scrollbar-width:thin]"
         >
           {flat.length === 0 && (
             <div className="px-3 py-6 text-center text-[13px] text-kura-fg-subtle">

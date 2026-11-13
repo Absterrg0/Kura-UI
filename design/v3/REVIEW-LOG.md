@@ -7,15 +7,15 @@ effort)**. Fixed 14-shot set (`design/v3/shots.mjs`), scored on the 14-category 
 History before v3: the v2 direction ("Raycast-grade dark") reached 7.3 (R1) and 7.9 (R2) with one
 reviewer (`design/v2/REVIEW-LOG.md`). The owner then rejected the look itself; v3 replaces it.
 
-| Round | Fable 5.2 | Opus 5.5 | Notes                                                                                                                                                                                                                                                     |
-| ----- | --------- | -------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| R1    | 8.0       | 7.8      | First full build on the dot language (commit 519f6c7). Identity lands (brand 9.0 from both); focus rings, mobile docs and loose edges hold it back.                                                                                                       |
-| R2    | 8.8*      | 8.5      | Commit 87f0d7b. Round-1 list largely closed. *Live checks were cut short: the docs dev server hit its 2-hour limit mid-review, so focus, 390px pages and motion are provisional.                                                                          |
-| R3    | 9.1       | 8.9      | Commit e505f88. Fully verified live (48 pages, 192 axe runs, Tab walks, approve/deny at three widths). A decision now moves 0px; four to five small must-fixes remain.                                                                                    |
-| R4    | 9.2       | 9.2      | Commit d5d3374. Fully verified live. All round-3 must-fixes closed except the hero clocks (live values still a second apart). New: approval shortcuts leak from other widgets; terminals break words.                                                     |
-| R5    | 9.3       | 9.4      | Commit a6b1fec. Fully verified live. Every round-4 must-fix closed, no regressions. Left: focus lost when a pressed control unmounts, approval keys acting while the prompt is off screen, small phone seams.                                             |
-| R6    | 9.3       | 9.3      | Commit 3423ff9. Fully verified live. Round-5 items closed, but one fix regressed: inline code that never wraps makes ten component pages scroll sideways. PromptQueue still loses focus in two cases and is cramped on touch.                             |
-| R7    | 9.4       | 9.4      | Commit 790728c. Fully verified live. All round-6 must-fixes closed, no regressions, sweeps clean (overflow, axe at every level, rings). Left: one Composer example crushed on phones, the docs Replay key over previews at 390, two stale manifest lines. |
+| Round | Fable 5.2 | Opus 5.5 | Notes                                                                                                                                                                                                                                                                              |
+| ----- | --------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| R1    | 8.0       | 7.8      | First full build on the dot language (commit 519f6c7). Identity lands (brand 9.0 from both); focus rings, mobile docs and loose edges hold it back.                                                                                                                                |
+| R2    | 8.8*      | 8.5      | Commit 87f0d7b. Round-1 list largely closed. *Live checks were cut short: the docs dev server hit its 2-hour limit mid-review, so focus, 390px pages and motion are provisional.                                                                                                   |
+| R3    | 9.1       | 8.9      | Commit e505f88. Fully verified live (48 pages, 192 axe runs, Tab walks, approve/deny at three widths). A decision now moves 0px; four to five small must-fixes remain.                                                                                                             |
+| R4    | 9.2       | 9.2      | Commit d5d3374. Fully verified live. All round-3 must-fixes closed except the hero clocks (live values still a second apart). New: approval shortcuts leak from other widgets; terminals break words.                                                                              |
+| R5    | 9.3       | 9.4      | Commit a6b1fec. Fully verified live. Every round-4 must-fix closed, no regressions. Left: focus lost when a pressed control unmounts, approval keys acting while the prompt is off screen, small phone seams.                                                                      |
+| R6    | 9.3       | 9.3      | Commit 3423ff9. Fully verified live. Round-5 items closed, but one fix regressed: inline code that never wraps makes ten component pages scroll sideways. PromptQueue still loses focus in two cases and is cramped on touch.                                                      |
+| R7    | 9.4       | 9.4      | Commit 790728c. Fully verified live. All round-6 must-fixes closed, no regressions, sweeps clean (overflow, axe at every level, rings). Left: one Composer example crushed on phones, the docs Replay key over previews at 390, two stale manifest lines.                          |
 | R8    | 9.4       | 9.5      | Commit 149cc9b. Fully verified live. All round-7 must-fixes closed, no regressions. Opus is at the bar with one must-fix; Fable has four: a ModelPicker popover that can leave a short viewport, the Composer count on phones, phrases inside keycaps, two manifests naming Radix. |
 
 ---
@@ -480,23 +480,23 @@ Both reviewers ran everything live: the round-7 claims one by one, a sideways-sc
 walks on 7 pages in both themes, approve and deny at three widths with and without reduced
 motion, Ctrl+K and ⌘K, phone screenshots with touch emulation.
 
-| # | Category | Fable 5.2 | Opus 5.5 |
-| --- | --- | --- | --- |
-| 1 | Visual hierarchy | 9.6 | 9.5 |
-| 2 | Typography | 9.5 | 9.5 |
-| 3 | Colour & state semantics | 9.6 | 9.6 |
-| 4 | Layout & spacing | 9.4 | 9.5 |
-| 5 | Consistency | 9.4 | 9.4 |
-| 6 | Brand distinctiveness | 9.7 | 9.7 |
-| 7 | Clarity & density | 9.5 | 9.5 |
-| 8 | Interaction states | 9.4 | 9.5 |
-| 9 | Light/dark parity | 9.6 | 9.6 |
-| 10 | Craft & polish | 9.3 | 9.4 |
-| 11 | Accessibility | 9.5 | 9.5 |
-| 12 | Responsive | 9.3 | 9.4 |
-| 13 | Motion | 9.6 | 9.6 |
-| 14 | Copy | 9.4 | 9.5 |
-| | **OVERALL** | **9.4** | **9.5** |
+| #   | Category                 | Fable 5.2 | Opus 5.5 |
+| --- | ------------------------ | --------- | -------- |
+| 1   | Visual hierarchy         | 9.6       | 9.5      |
+| 2   | Typography               | 9.5       | 9.5      |
+| 3   | Colour & state semantics | 9.6       | 9.6      |
+| 4   | Layout & spacing         | 9.4       | 9.5      |
+| 5   | Consistency              | 9.4       | 9.4      |
+| 6   | Brand distinctiveness    | 9.7       | 9.7      |
+| 7   | Clarity & density        | 9.5       | 9.5      |
+| 8   | Interaction states       | 9.4       | 9.5      |
+| 9   | Light/dark parity        | 9.6       | 9.6      |
+| 10  | Craft & polish           | 9.3       | 9.4      |
+| 11  | Accessibility            | 9.5       | 9.5      |
+| 12  | Responsive               | 9.3       | 9.4      |
+| 13  | Motion                   | 9.6       | 9.6      |
+| 14  | Copy                     | 9.4       | 9.5      |
+|     | **OVERALL**              | **9.4**   | **9.5**  |
 
 ### Round-7 verification
 

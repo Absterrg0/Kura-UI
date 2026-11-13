@@ -161,7 +161,7 @@ export default defineComponent({
       "The stats are a <dl>: each value has a term (Elapsed, Steps, Tokens, Spend), visually hidden in the bar.",
       "A polite status region announces only status changes ('Run waiting for you'); the ticking clock and counters are not announced.",
       "Stop and Pause have tooltips with their shortcuts and aria-keyshortcuts. Status is never colour-only: the glyph shape and the status word carry it.",
-      "The status glyph is decorative here (label=null) because the status word sits next to it.",
+      "The status glyph is decorative here (label=null): the status word sits next to it, and in a bar narrower than 672px, where the word is hidden to give the title room, the visually hidden status line ('Run running') carries it.",
     ],
     keyboard: [
       { keys: "Mod+.", action: "Stop the run (when onStop is set and the run is live)" },

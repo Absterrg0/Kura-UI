@@ -4,15 +4,15 @@
 
 # Kura UI
 
-**The interface layer for AI products.**
+**Components for agent interfaces.**
 
 [kuro.abstergo.fyi](https://kuro.abstergo.fyi)
 
-Beautiful, opinionated React components for AI products — prompt composers, voice, shaders,
-streaming output and agent harness surfaces — designed to be **discovered, understood and
-installed by coding agents** as easily as by people.
+Open-source React components for agent runs, plans, terminals, diffs and approvals, drawn in one
+dot language and built on Vercel's UI SDK. Copy them into your app, or let your coding agent
+**find, read and install them** itself.
 
-React 19 · Tailwind CSS v4 · motion · Radix · TypeScript strict · MIT
+React 19 · Tailwind CSS v4 · motion · ui-sdk · TypeScript strict · MIT
 
 </div>
 

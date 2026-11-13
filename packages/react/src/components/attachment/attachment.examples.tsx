@@ -72,7 +72,9 @@ export function AttachmentFull() {
         }
       />
       <p className="text-kura-fg-subtle text-xs">
-        Hover a file to remove it · Retry the failed upload · Open the +N stack
+        <span className="pointer-coarse:hidden">Hover a file to remove it</span>
+        <span className="hidden pointer-coarse:inline">Tap × to remove a file</span> · Retry the
+        failed upload · Open the +N stack
       </p>
     </div>
   );

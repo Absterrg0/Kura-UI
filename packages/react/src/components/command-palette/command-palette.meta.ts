@@ -144,7 +144,7 @@ export default defineComponent({
   a11y: {
     role: "dialog > combobox + listbox",
     notes: [
-      "A modal Radix dialog with a visually hidden title; focus moves to the search input on open and returns to the trigger on close.",
+      "A modal ui-sdk dialog with a visually hidden title; focus moves to the search input on open and returns to the trigger on close.",
       "The input is a combobox using aria-activedescendant, so screen readers read the highlighted option while focus stays in the field.",
       "The listbox is aria-busy while loading; the footer's result count is a polite live region.",
       "Nested pages are announced through the input's label (“Search Change theme…”) and shown as breadcrumbs.",
