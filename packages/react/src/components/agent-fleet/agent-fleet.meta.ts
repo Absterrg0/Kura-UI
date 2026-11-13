@@ -53,7 +53,7 @@ export default defineComponent({
       type: '"compact" | "comfortable"',
       default: '"comfortable"',
       description:
-        "comfortable = two lines (name + role, then activity; tokens, cost and clock on the right, progress under them). compact = one 36px row (name, activity, progress, tokens, clock).",
+        "comfortable = two lines (name + role, then activity; tokens and clock on the right with the status glyph, a short progress rail under them). compact = one 36px row (name, activity, tokens, clock, glyph).",
     },
     {
       name: "empty",
@@ -90,7 +90,8 @@ export default defineComponent({
     {
       name: "Progress",
       dataSlot: "agent-fleet-progress",
-      description: "A DotRail while live: ink while running, muted while waiting or paused.",
+      description:
+        "A short DotRail under the numbers while live (comfortable only): ink while running, muted while waiting or paused.",
     },
     {
       name: "Tokens",
@@ -100,7 +101,8 @@ export default defineComponent({
     {
       name: "Cost",
       dataSlot: "agent-fleet-cost",
-      description: "Mono cost (comfortable, wide containers).",
+      description:
+        "Mono cost, shown in place of tokens when tokens are not given (a row carries at most two numbers); otherwise read out only.",
     },
     {
       name: "Elapsed",

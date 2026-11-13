@@ -169,13 +169,13 @@ export function AgentFleet({
       aria-labelledby={`${id}-title`}
       data-density={density}
       className={cn(
-        "@container flex min-w-0 flex-col overflow-hidden rounded-kura-xl bg-kura-surface font-kura-sans text-kura-fg shadow-kura-sm",
+        "@container flex min-w-0 flex-col overflow-hidden rounded-kura-xl bg-kura-surface font-kura-sans text-kura-fg shadow-kura-surface",
         className,
       )}
       {...props}
     >
       <div data-slot="agent-fleet-header" className="flex h-11 shrink-0 items-center gap-3 px-4">
-        <h3 className="flex items-baseline gap-2 font-semibold text-[13px] tracking-[-0.01em]">
+        <h3 className="flex shrink-0 items-baseline gap-3 font-semibold text-[13px] tracking-[-0.01em]">
           <span id={`${id}-title`}>{title}</span>
           <span className="font-kura-mono font-normal text-[12px] text-kura-fg-subtle tabular-nums">
             {agents.length}
@@ -207,16 +207,9 @@ export function AgentFleet({
       {agents.length === 0 ? (
         <div
           data-slot="agent-fleet-empty"
-          className="flex min-h-24 flex-col items-center justify-center gap-1 px-6 py-6 text-center"
+          className="flex flex-col items-center justify-center gap-1 px-6 pt-4 pb-8 text-center"
         >
-          {empty ?? (
-            <>
-              <p className="font-medium text-[13px] text-kura-fg-muted">No subagents yet</p>
-              <p className="text-[12px] text-kura-fg-subtle">
-                Delegated work shows up here as it starts.
-              </p>
-            </>
-          )}
+          {empty ?? <p className="text-[13px] text-kura-fg-subtle">No subagents yet</p>}
         </div>
       ) : (
         <ul
@@ -302,31 +295,35 @@ function AgentRow({
     />
   ) : null;
 
+  // Two numbers at most: what it has used (tokens, or cost when tokens are not known) and how
+  // long it has run. The glyph closes the row in a fixed column.
+  const used =
+    agent.tokens != null ? (
+      <span data-slot="agent-fleet-tokens">{formatTokens(agent.tokens)}</span>
+    ) : agent.cost != null ? (
+      <span data-slot="agent-fleet-cost">{formatCost(agent.cost)}</span>
+    ) : null;
   const numbers = (
-    <span className="flex items-center gap-2.5 font-kura-mono text-[12px] text-kura-fg-subtle tabular-nums">
-      {agent.tokens != null && (
+    <span className="flex items-center gap-3 font-kura-mono text-[12px] text-kura-fg-subtle leading-5 tabular-nums">
+      {used && (
         <span
-          data-slot="agent-fleet-tokens"
           className={cn(
             "min-w-[5ch] text-right",
             compact ? "hidden @md:inline-block" : "inline-block",
           )}
         >
-          {formatTokens(agent.tokens)}
+          {used}
         </span>
       )}
-      {agent.cost != null && !compact && (
-        <span
-          data-slot="agent-fleet-cost"
-          className="hidden min-w-[5ch] text-right @lg:inline-block"
-        >
-          {formatCost(agent.cost)}
-        </span>
-      )}
-      <span data-slot="agent-fleet-elapsed" className="inline-block text-right">
+      <span
+        data-slot="agent-fleet-elapsed"
+        className={cn("inline-block min-w-[6ch] text-right", live && "text-kura-fg-muted")}
+      >
         {elapsed == null ? "" : live ? formatClock(elapsed) : formatDuration(elapsed)}
       </span>
-      <StatusGlyph status={agent.status} />
+      <span className="flex w-4 shrink-0 justify-center">
+        <StatusGlyph status={agent.status} />
+      </span>
     </span>
   );
 
@@ -334,7 +331,7 @@ function AgentRow({
     <span
       data-slot="agent-fleet-name"
       className={cn(
-        "min-w-0 truncate font-medium text-[13px]",
+        "min-w-0 truncate font-medium text-[13px] leading-5",
         (agent.status === "done" || agent.status === "skipped") && "text-kura-fg-muted",
         // In a tight row the name gives way first when the agent is waiting on a person.
         compact && agent.status === "waiting" && "min-w-[7ch] shrink-[1000]",
@@ -345,9 +342,9 @@ function AgentRow({
   );
 
   const progressText =
-    showProgress && agent.progress != null
+    (showProgress && agent.progress != null
       ? `, ${Math.round(Math.min(1, Math.max(0, agent.progress)) * 100)}%`
-      : "";
+      : "") + (agent.tokens != null && agent.cost != null ? `, ${formatCost(agent.cost)}` : "");
 
   return (
     // biome-ignore lint/a11y/useAriaPropsSupportedByRole: role is "option" whenever aria-selected is set
@@ -369,20 +366,20 @@ function AgentRow({
         selected && "bg-kura-active hover:bg-kura-active",
         compact
           ? "flex h-9 items-center gap-x-2.5"
-          : "grid grid-cols-[30px_minmax(0,1fr)_auto] items-center gap-x-3 gap-y-0.5 py-[9px]",
+          : "grid grid-cols-[22px_minmax(0,1fr)_auto] items-center gap-x-2.5 gap-y-0.5 py-2",
       )}
     >
       <AgentSigil
         name={agent.name}
-        size={compact ? "sm" : "md"}
-        className={cn(!compact && "row-span-2 self-start")}
+        size="sm"
+        className={cn(!compact && "-mt-px row-span-2 self-start")}
       />
       {compact ? (
         <>
           {name}
           <span
             className={cn(
-              "min-w-0 text-[12.5px]",
+              "min-w-0 text-[12.5px] leading-5",
               agent.status === "waiting" ? "flex-[1_1_auto]" : "flex-1",
             )}
           >
@@ -397,19 +394,20 @@ function AgentRow({
             {agent.role && (
               <span
                 data-slot="agent-fleet-role"
-                className="hidden min-w-0 truncate text-[12px] text-kura-fg-subtle @md:block"
+                className="hidden min-w-0 truncate text-[12.5px] text-kura-fg-subtle @md:block"
               >
                 {agent.role}
               </span>
             )}
           </span>
           {numbers}
-          {activity && (
-            <span className="col-span-2 col-start-2 min-w-0 text-[12.5px] leading-[18px]">
-              {activity}
-            </span>
+          {(activity || progress) && (
+            <span className="col-start-2 min-w-0 text-[12.5px] leading-[18px]">{activity}</span>
           )}
-          {progress && <span className="col-span-2 col-start-2 mt-[5px] mb-0.5">{progress}</span>}
+          {progress && (
+            // A short rail under the numbers, ending under the glyph.
+            <span className="col-start-3 flex h-[18px] items-center">{progress}</span>
+          )}
         </>
       )}
       {/* Read last: "test-writer, adding a fixture, running, 62%". */}
