@@ -1,7 +1,7 @@
 "use client";
 
 import { createParts } from "@ui-sdk/react/primitive";
-import { ChevronRight, ListTodo } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import * as React from "react";
 import { useControllableState } from "../../hooks/use-controllable-state";
 import { useElapsed } from "../../hooks/use-elapsed";
@@ -91,7 +91,7 @@ function Timer({ item }: { item: TaskListItem }) {
     <span
       data-slot="task-list-duration"
       className={cn(
-        "min-w-[4.5ch] shrink-0 text-right font-kura-mono text-[12px] tabular-nums",
+        "min-w-[4.5ch] shrink-0 text-right font-kura-mono text-[12px] leading-5 tabular-nums",
         running ? "text-kura-fg-muted" : "text-kura-fg-subtle",
       )}
     >
@@ -119,11 +119,11 @@ function Row({ item, depth, selectedId, onSelect }: RowProps) {
 
   const inner = (
     <>
-      <span className="flex h-5 shrink-0 items-center">
+      <span className="flex h-5 w-4 shrink-0 items-center justify-center">
         <StatusGlyph status={status} label={null} />
       </span>
       <span className="flex min-w-0 flex-1 flex-col gap-0.5">
-        <span className="flex min-h-5 items-center gap-2">
+        <span className="flex min-h-5 items-baseline gap-2">
           <span
             data-slot="task-list-title"
             className={cn(
@@ -131,14 +131,13 @@ function Row({ item, depth, selectedId, onSelect }: RowProps) {
               "line-clamp-2 min-w-0 text-[13px] leading-5 transition-colors duration-(--kura-duration-base)",
               textColor(status),
               status === "skipped" && "line-through decoration-kura-border-strong",
-              depth > 0 && "text-[12.5px]",
             )}
           >
             {titleNode}
             <span className="sr-only"> ({SPOKEN[status]})</span>
           </span>
           {item.children && item.children.length > 0 && (
-            <span className="shrink-0 font-kura-mono text-[11.5px] text-kura-fg-subtle tabular-nums">
+            <span className="shrink-0 font-kura-mono text-[12px] text-kura-fg-subtle tabular-nums">
               {childDone}/{item.children.length}
             </span>
           )}
@@ -147,11 +146,11 @@ function Row({ item, depth, selectedId, onSelect }: RowProps) {
           <span
             data-slot="task-list-detail"
             className={cn(
-              "text-[12px] leading-[18px]",
+              "text-[12.5px] leading-[18px]",
               status === "failed"
                 ? "text-kura-danger-text"
                 : status === "waiting"
-                  ? "font-medium text-kura-ember-text"
+                  ? "text-kura-ember-text"
                   : "text-kura-fg-subtle",
             )}
           >
@@ -159,15 +158,14 @@ function Row({ item, depth, selectedId, onSelect }: RowProps) {
           </span>
         )}
       </span>
-      <span className="flex h-5 items-center">
-        <Timer item={item} />
-      </span>
+      <Timer item={item} />
     </>
   );
 
   const rowClass = cn(
-    "relative flex w-full items-start gap-[11px] rounded-[9px] py-2 pr-2.5 text-left transition-colors duration-(--kura-duration-fast) ease-kura-snap",
-    depth === 0 ? "pl-2.5" : "pl-[calc(0.625rem+26px)]",
+    // 36px rows; a sub-task is 32px and starts where its parent's title starts.
+    "relative flex w-full items-start gap-2.5 rounded-[9px] pr-2.5 text-left transition-colors duration-(--kura-duration-fast) ease-kura-snap",
+    depth === 0 ? "py-2 pl-2.5" : "py-1.5 pl-9",
     selected && "bg-kura-active",
   );
 
@@ -177,7 +175,13 @@ function Row({ item, depth, selectedId, onSelect }: RowProps) {
       data-status={status}
       data-selected={selected || undefined}
       aria-current={status === "running" ? "step" : undefined}
-      className={rowEnter}
+      className={cn(
+        rowEnter,
+        // The tree guide: a dotted line under the parent's glyph that stops level with the last
+        // sub-task's glyph.
+        depth > 0 &&
+          "relative before:kura-leader before:absolute before:top-0 before:bottom-0 before:left-[15.5px] before:w-[5px] last:before:bottom-auto last:before:h-4",
+      )}
     >
       {interactive ? (
         <button
@@ -200,11 +204,7 @@ function Row({ item, depth, selectedId, onSelect }: RowProps) {
         </div>
       )}
       {item.children && item.children.length > 0 && (
-        <ul data-slot="task-list-children" className="relative pb-1">
-          <span
-            aria-hidden
-            className="kura-leader absolute top-0 bottom-3 left-[calc(0.625rem+5px)] w-[5px]"
-          />
+        <ul data-slot="task-list-children" className="pb-1">
           {item.children.map((child) => (
             <Row
               key={child.id}
@@ -308,17 +308,9 @@ export function TaskList({
     total === 0 ? (
       <div
         data-slot="task-list-empty"
-        className="flex flex-col items-center gap-1 px-6 py-8 text-center"
+        className="flex flex-col items-center gap-1 px-6 pt-4 pb-8 text-center text-[13px] text-kura-fg-subtle"
       >
-        {empty ?? (
-          <>
-            <ListTodo aria-hidden strokeWidth={1.75} className="mb-1 size-4 text-kura-fg-subtle" />
-            <span className="font-medium text-[13px] text-kura-fg">No plan yet</span>
-            <span className="text-[12px] text-kura-fg-subtle">
-              Tasks appear here once the agent writes its plan.
-            </span>
-          </>
-        )}
+        {empty ?? "No plan yet"}
       </div>
     ) : (
       <ul
@@ -334,9 +326,9 @@ export function TaskList({
               aria-expanded={completedOpen}
               aria-controls={groupId}
               onClick={() => setCompletedOpen((o) => !o)}
-              className="flex h-9 w-full cursor-default items-center gap-[11px] rounded-[9px] px-2.5 text-left text-[13px] text-kura-fg-subtle outline-hidden transition-colors duration-(--kura-duration-fast) ease-kura-snap hover:bg-kura-hover hover:text-kura-fg-muted focus-visible:shadow-[inset_0_0_0_2px_var(--kura-ring)]"
+              className="flex h-9 w-full cursor-default items-center gap-2.5 rounded-[9px] px-2.5 text-left text-[13px] text-kura-fg-muted outline-hidden transition-colors duration-(--kura-duration-fast) ease-kura-snap hover:bg-kura-hover hover:text-kura-fg focus-visible:shadow-[inset_0_0_0_2px_var(--kura-ring)]"
             >
-              <span className="grid size-[15px] place-items-center">
+              <span className="grid w-4 shrink-0 place-items-center text-kura-fg-subtle">
                 <ChevronRight
                   aria-hidden
                   strokeWidth={2}
@@ -346,10 +338,13 @@ export function TaskList({
                   )}
                 />
               </span>
-              <span className="flex-1">
-                Completed <span className="font-kura-mono tabular-nums">({head.length})</span>
+              <span className="flex flex-1 items-baseline gap-2">
+                Completed
+                <span className="font-kura-mono text-[12px] text-kura-fg-subtle tabular-nums">
+                  {head.length}
+                </span>
               </span>
-              <span className="font-kura-mono text-[12px] tabular-nums">
+              <span className="font-kura-mono text-[12px] text-kura-fg-subtle tabular-nums">
                 {formatDuration(sumDurations(head))}
               </span>
             </button>
@@ -381,7 +376,8 @@ export function TaskList({
       data-progress={`${doneCount}/${total}`}
       className={cn(
         "flex min-w-0 flex-col font-kura-sans text-kura-fg",
-        variant === "panel" && "overflow-hidden rounded-kura-xl bg-kura-surface shadow-kura-sm",
+        variant === "panel" &&
+          "overflow-hidden rounded-kura-xl bg-kura-surface shadow-kura-surface",
         className,
       )}
       onKeyDown={handleKeyDown}
@@ -389,7 +385,7 @@ export function TaskList({
     >
       {variant === "panel" && (
         <div data-slot="task-list-header" className="flex h-11 shrink-0 items-center gap-3 px-4">
-          <span className="font-semibold text-[13px] tracking-[-0.01em]">{title}</span>
+          <span className="truncate font-semibold text-[13px] tracking-[-0.01em]">{title}</span>
           {total > 0 && (
             <span className="font-kura-mono text-[12px] text-kura-fg-subtle tabular-nums">
               {doneCount} of {total}
@@ -402,7 +398,7 @@ export function TaskList({
               value={(doneCount + (runningIndex >= 0 || waitingItem ? 0.5 : 0)) / total}
               live={runningIndex >= 0 || waitingItem != null}
               tone={failedItem ? "danger" : "ink"}
-              className="w-[clamp(60px,26%,120px)]"
+              className="w-[clamp(60px,24%,108px)] shrink-0"
             />
           )}
           {actions}

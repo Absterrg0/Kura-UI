@@ -112,7 +112,7 @@ const SCRIPT: Beat[] = [
         set(s, "run", {
           status: "failed",
           durationMs: 38_400,
-          detail: "login.test.ts › refreshes an expired session — expected 200, received 401",
+          detail: "login.test.ts: expected 200, received 401",
         }),
         "run",
         {
@@ -210,14 +210,14 @@ export function TaskListStates() {
           id: "c",
           title: "Run database migration 0042_sessions",
           status: "waiting",
-          detail: "Needs your approval — touches production",
+          detail: "Touches production, needs your approval",
         },
         {
           id: "d",
           title: "Build preview deployment",
           status: "failed",
           durationMs: 84_100,
-          detail: "next build exited with code 1 — Type error in src/middleware.ts:31",
+          detail: "Type error in src/middleware.ts:31",
         },
         { id: "e", title: "Notify #releases", status: "paused" },
         { id: "f", title: "Tag release", status: "queued" },
@@ -270,10 +270,11 @@ export function TaskListComposition() {
     { id: "fix", title: "Fix token refresh", status: "running", startedAt: t0 - 19_000 },
   ];
   const lines = OUTPUT[selectedId] ?? ["No output yet."];
+  const selected = items.find((i) => i.id === selectedId);
   return (
-    <div className="grid w-full max-w-2xl overflow-hidden rounded-kura-xl bg-kura-surface shadow-kura-sm sm:grid-cols-[240px_1fr]">
-      <div className="border-kura-border-subtle border-b sm:border-r sm:border-b-0">
-        <div className="flex h-10 items-center px-3.5 font-medium text-[13px]">Plan</div>
+    <div className="grid w-full max-w-2xl gap-1.5 rounded-kura-xl bg-kura-surface p-1.5 shadow-kura-surface sm:grid-cols-[232px_1fr]">
+      <div className="flex min-w-0 flex-col">
+        <div className="flex h-[38px] items-center px-2.5 font-semibold text-[13px]">Plan</div>
         <TaskList
           variant="plain"
           collapseCompleted={false}
@@ -284,13 +285,10 @@ export function TaskListComposition() {
         />
       </div>
       <div className="flex min-w-0 flex-col">
-        <div className="flex h-10 items-center gap-2 border-kura-border-subtle border-b px-3.5">
-          <span className="truncate font-medium text-[13px]">
-            {items.find((i) => i.id === selectedId)?.title}
-          </span>
-          <span className="ml-auto font-kura-mono text-[12px] text-kura-fg-subtle">output</span>
+        <div className="flex h-[38px] items-center gap-2 px-2.5">
+          <span className="truncate font-semibold text-[13px]">{selected?.title}</span>
         </div>
-        <pre className="m-0 min-h-40 flex-1 whitespace-pre-wrap bg-kura-surface-sunken px-3.5 py-3 font-kura-mono text-[12px] text-kura-fg-muted leading-5 [overflow-wrap:anywhere]">
+        <pre className="m-0 min-h-40 flex-1 whitespace-pre-wrap rounded-kura-lg bg-kura-surface-sunken px-3.5 py-3 font-kura-mono text-[12px] text-kura-fg-muted leading-5 shadow-kura-sunk [overflow-wrap:anywhere]">
           {lines.join("\n")}
         </pre>
       </div>
