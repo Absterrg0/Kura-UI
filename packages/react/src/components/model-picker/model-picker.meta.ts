@@ -85,7 +85,14 @@ export default defineComponent({
       name: "size",
       type: '"sm" | "md"',
       default: '"sm"',
-      description: "Trigger height: sm 32px for toolbars, md 36px.",
+      description: "Trigger height: sm 28px for toolbars, md 32px.",
+    },
+    {
+      name: "inline",
+      type: "boolean",
+      default: "false",
+      description:
+        "Render the list in place and always shown, with no trigger (a settings page, onboarding). Choosing selects and the list stays. open/side/align/size do not apply.",
     },
   ],
   parts: [
@@ -93,7 +100,7 @@ export default defineComponent({
       name: "ModelPicker",
       dataSlot: "model-picker",
       description:
-        "The trigger button (provider mark, model name, chevron). data-state = open | closed.",
+        "The trigger button (provider mark, model name, chevron). data-state = open | closed. With `inline`, the in-place list sheet instead (data-inline).",
     },
     {
       name: "ModelPickerContent",
@@ -114,12 +121,13 @@ export default defineComponent({
       name: "ModelPickerItem",
       dataSlot: "model-picker-item",
       description:
-        "role=option row: the model's sigil, name, badge word, meta line (context, speed dots, cost), check. data-active, data-disabled. Capabilities are spoken on the row and written in the details strip.",
+        "role=option 36px row: the model's sigil, name and badge word, then fixed columns for context, speed (three dots) and cost ($$$), and a check on the selected one. data-active, data-selected, data-disabled. Capabilities are spoken on the row and written in the details strip.",
     },
     {
       name: "ModelPickerDetails",
       dataSlot: "model-picker-details",
-      description: "Footer with the highlighted model's description.",
+      description:
+        "Footer with the highlighted model's description (up to two lines) and its capabilities. Fixed height, so moving through the list never shifts it.",
     },
   ],
   a11y: {
@@ -144,7 +152,13 @@ export default defineComponent({
   related: ["composer", "command-palette", "slash-command-menu"],
   tags: ["model", "llm", "select", "combobox", "picker", "provider", "dropdown"],
   examples: [
-    { name: "ModelPickerMinimal", kind: "minimal", title: "Three models" },
+    {
+      name: "ModelPickerMinimal",
+      kind: "minimal",
+      title: "The list",
+      description:
+        "Shown in place with `inline`: five models in two providers, the selected one checked, and the highlighted model described below.",
+    },
     {
       name: "ModelPickerFull",
       kind: "full",
@@ -162,7 +176,8 @@ export default defineComponent({
   agentNotes: [
     'Pass `side="top"` inside a composer docked to the bottom of the viewport.',
     "speed: 3 = fast, 1 = slow/thorough. cost: 1 = cheap, 3 = expensive. Omit either to hide it.",
-    "`icon` takes a 16px provider logo; without it a monogram of the provider is shown.",
+    "`icon` takes a 16px provider logo; without it the model gets a dot sigil from its name.",
+    "Use `inline` only where the list itself belongs on the page; in toolbars and composers use the trigger.",
     'formatContextWindow(200000) → "200K" is exported for use elsewhere (e.g. a context-meter).',
   ],
 });

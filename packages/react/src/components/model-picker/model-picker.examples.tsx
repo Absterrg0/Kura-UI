@@ -99,7 +99,12 @@ const models: ModelPickerModel[] = [
 ];
 
 export function ModelPickerMinimal() {
-  return <ModelPicker models={models.slice(0, 3)} />;
+  return (
+    <div className="w-full max-w-[360px]">
+      {/* In place, the list itself. Leave `inline` out for the trigger and its popover. */}
+      <ModelPicker inline models={models.slice(0, 5)} defaultValue="claude-sonnet-5-5" />
+    </div>
+  );
 }
 
 export function ModelPickerFull() {

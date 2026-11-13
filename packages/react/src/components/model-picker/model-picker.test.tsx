@@ -41,6 +41,32 @@ function Controlled() {
 }
 
 describe("ModelPicker", () => {
+  it("renders the list in place with `inline` and keeps it after choosing", async () => {
+    const onValueChange = vi.fn();
+    const onOpenChange = vi.fn();
+    render(
+      <ModelPicker
+        models={models}
+        inline
+        defaultValue="c"
+        onValueChange={onValueChange}
+        onOpenChange={onOpenChange}
+      />,
+    );
+    expect(screen.queryByRole("button")).toBeNull();
+    const root = screen.getByRole("group", { name: "Choose a model" });
+    expect(root).toHaveAttribute("data-slot", "model-picker");
+    expect(screen.getByRole("option", { name: /Gamma/ })).toHaveAttribute("aria-selected", "true");
+    expect(screen.getByText("Thinks hard")).toBeInTheDocument();
+    const list = screen.getByRole("listbox", { name: "Models" });
+    expect(list).not.toHaveFocus();
+    list.focus();
+    await userEvent.keyboard("{ArrowDown}{Enter}");
+    expect(onValueChange).toHaveBeenCalledWith("d", models[3]);
+    expect(screen.getByRole("option", { name: /Delta/ })).toHaveAttribute("aria-selected", "true");
+    expect(onOpenChange).not.toHaveBeenCalled();
+  });
+
   it("renders a labelled trigger with data-slot", () => {
     render(<ModelPicker models={models} className="custom" />);
     const trigger = screen.getByRole("button", { name: "Model: Alpha" });

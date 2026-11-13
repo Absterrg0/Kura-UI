@@ -95,30 +95,28 @@ function ProviderMark({ model, className }: { model: ModelPickerModel; className
 
 function Meter({ value, label, kind }: { value: number; label: string; kind: "speed" | "cost" }) {
   return (
-    <span className="inline-flex items-center gap-1" title={label}>
-      <span aria-hidden className="inline-flex items-center gap-[3px]">
-        {[1, 2, 3].map((i) =>
-          kind === "speed" ? (
+    <span className="inline-flex items-center" title={label}>
+      {kind === "speed" ? (
+        <span aria-hidden className="inline-flex items-center gap-[3px]">
+          {[1, 2, 3].map((i) => (
             <span
               key={i}
               className={cn(
-                "size-1 rounded-full",
+                "size-[3px] rounded-full",
                 i <= value ? "bg-kura-fg-muted" : "bg-kura-dot-off",
               )}
             />
-          ) : (
-            <span
-              key={i}
-              className={cn(
-                "font-kura-mono text-[11px] leading-none",
-                i <= value ? "text-kura-fg-muted" : "text-kura-border-strong",
-              )}
-            >
+          ))}
+        </span>
+      ) : (
+        <span aria-hidden className="inline-flex">
+          {[1, 2, 3].map((i) => (
+            <span key={i} className={i <= value ? "text-kura-fg-muted" : "text-kura-faint"}>
               $
             </span>
-          ),
-        )}
-      </span>
+          ))}
+        </span>
+      )}
       <span className="sr-only">{label}</span>
     </span>
   );
@@ -152,6 +150,11 @@ export interface ModelPickerProps
   align?: "start" | "center" | "end";
   /** Trigger size. Default "sm" (28px), for toolbars. */
   size?: "sm" | "md";
+  /**
+   * Render the list in place, always shown, with no trigger: for a settings page or onboarding.
+   * Choosing a model selects it and the list stays. `open`, `side`, `align` and `size` do not apply.
+   */
+  inline?: boolean;
 }
 
 /**
@@ -175,6 +178,7 @@ export function ModelPicker({
   side = "bottom",
   align = "start",
   size = "sm",
+  inline = false,
   disabled,
   className,
   ...props
@@ -223,27 +227,29 @@ export function ModelPicker({
   const flat = React.useMemo(() => groups.flatMap(([, list]) => list), [groups]);
   const enabled = flat.filter((m) => !m.disabled);
   const activeModel = flat.find((m) => m.id === active) ?? null;
+  const shown = inline || open;
 
   // Reset the highlight to the selection when opening; keep it valid while filtering.
   React.useEffect(() => {
-    if (!open) return;
+    if (!shown) return;
     setActive((current) => {
       if (current && enabled.some((m) => m.id === current)) return current;
       if (!query && enabled.some((m) => m.id === value)) return value;
       return enabled[0]?.id ?? null;
     });
-  }, [open, enabled, query, value]);
+  }, [shown, enabled, query, value]);
 
   React.useEffect(() => {
-    if (!open || !active) return;
+    // In place, the page is not scrolled to bring the list's highlight into view.
+    if (!open || inline || !active) return;
     const el = typeof document === "undefined" ? null : document.getElementById(optionId(active));
     el?.scrollIntoView?.({ block: "nearest" });
-  }, [active, open, optionId]);
+  }, [active, open, inline, optionId]);
 
   const choose = (model: ModelPickerModel) => {
     if (model.disabled) return;
     setValue(model.id);
-    setOpen(false);
+    if (!inline) setOpen(false);
   };
 
   const move = (delta: number | "first" | "last") => {
@@ -284,6 +290,173 @@ export function ModelPicker({
       }
     }
   };
+
+  const panel = (
+    <>
+      {showSearch && (
+        <div
+          data-slot="model-picker-search"
+          className="flex h-11 shrink-0 items-center gap-2.5 px-3.5 shadow-[inset_0_-1px_0_var(--kura-border-subtle)]"
+        >
+          <Search aria-hidden className="size-4 shrink-0 text-kura-fg-subtle" />
+          {/* focus: the caret is the indicator (the one text field of the list) */}
+          <input
+            ref={inputRef}
+            role="combobox"
+            aria-expanded
+            aria-controls={listId}
+            aria-autocomplete="list"
+            aria-activedescendant={active ? optionId(active) : undefined}
+            aria-label="Search models"
+            value={query}
+            placeholder={searchPlaceholder}
+            onChange={(e) => setQuery(e.currentTarget.value)}
+            onKeyDown={onKeyDown}
+            className="h-full min-w-0 flex-1 bg-transparent text-[13.5px] text-kura-fg outline-hidden placeholder:text-kura-fg-subtle"
+          />
+        </div>
+      )}
+      <div
+        ref={listRef}
+        id={listId}
+        role="listbox"
+        aria-label="Models"
+        tabIndex={showSearch ? -1 : 0}
+        aria-activedescendant={!showSearch && active ? optionId(active) : undefined}
+        className={cn(
+          "min-h-0 shrink scroll-py-1.5 overflow-y-auto overscroll-contain p-1.5 outline-hidden [scrollbar-width:thin]",
+          !inline && "max-h-80",
+          // The list holds focus when there is no search field: its ring is drawn inset.
+          !showSearch &&
+            "rounded-[inherit] focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-kura-ring focus-visible:-outline-offset-2",
+        )}
+      >
+        {flat.length === 0 && (
+          <div className="px-3 py-6 text-center text-[13px] text-kura-fg-subtle">
+            {emptyMessage}
+          </div>
+        )}
+        {groups.map(([provider, list]) => {
+          const headingId = `${baseId}-group-${provider.replace(/\W/g, "_") || "default"}`;
+          return (
+            <div
+              key={provider || "__default"}
+              role="group"
+              aria-labelledby={provider ? headingId : undefined}
+              data-slot="model-picker-group"
+              className="not-first:mt-1"
+            >
+              {provider && (
+                <div
+                  id={headingId}
+                  className="select-none px-2.5 pt-2 pb-1 font-medium text-[12px] text-kura-fg-subtle"
+                >
+                  {provider}
+                </div>
+              )}
+              {list.map((model) => {
+                const isSelected = model.id === value;
+                const isActive = model.id === active;
+                return (
+                  <div
+                    key={model.id}
+                    id={optionId(model.id)}
+                    role="option"
+                    aria-selected={isSelected}
+                    aria-disabled={model.disabled || undefined}
+                    data-slot="model-picker-item"
+                    data-active={isActive || undefined}
+                    data-selected={isSelected || undefined}
+                    data-disabled={model.disabled || undefined}
+                    onPointerMove={() =>
+                      !model.disabled && active !== model.id && setActive(model.id)
+                    }
+                    onClick={() => choose(model)}
+                    className="flex h-9 cursor-pointer select-none items-center gap-2.5 rounded-[9px] px-2.5 data-active:bg-kura-hover data-disabled:cursor-not-allowed data-disabled:opacity-45"
+                  >
+                    <ProviderMark model={model} />
+                    <span className="flex min-w-0 flex-1 items-baseline gap-2">
+                      <span className="truncate font-medium text-[13px] text-kura-fg">
+                        {model.name}
+                      </span>
+                      {model.badge && (
+                        <span className="shrink-0 text-[12px] text-kura-fg-subtle">
+                          {model.badge}
+                        </span>
+                      )}
+                    </span>
+                    <ModelMeta model={model} />
+                    <Check
+                      aria-hidden
+                      className={cn(
+                        "size-3.5 shrink-0 text-kura-fg transition-opacity duration-(--kura-duration-fast) motion-reduce:transition-none",
+                        isSelected ? "opacity-100" : "opacity-0",
+                      )}
+                    />
+                  </div>
+                );
+              })}
+            </div>
+          );
+        })}
+      </div>
+      {showDetails && flat.length > 0 && (
+        <div
+          data-slot="model-picker-details"
+          aria-live="polite"
+          className="flex h-[76px] shrink-0 items-center px-3.5 shadow-[inset_0_1px_0_var(--kura-border-subtle)]"
+        >
+          {/* What the model is, on up to two lines, then what it can do. The strip keeps one
+              height for every model, so moving through the list never shifts it; a capability
+              that does not fit wraps out of sight whole. */}
+          <div className="flex min-w-0 flex-1 flex-col">
+            <p className="line-clamp-2 text-pretty text-[12.5px] text-kura-fg-muted leading-[18px]">
+              {activeModel?.description ?? (activeModel ? activeModel.name : "")}
+            </p>
+            {activeModel?.capabilities?.length ? (
+              <p
+                data-slot="model-picker-capabilities"
+                className="flex h-[18px] flex-wrap overflow-hidden text-[12px] text-kura-fg-subtle leading-[18px]"
+              >
+                {activeModel.capabilities.map((c, i) => (
+                  <span key={c} className="whitespace-nowrap">
+                    {i > 0 && (
+                      <span aria-hidden className="whitespace-pre">
+                        {" · "}
+                      </span>
+                    )}
+                    {CAPABILITIES[c].label}
+                  </span>
+                ))}
+              </p>
+            ) : null}
+          </div>
+        </div>
+      )}
+    </>
+  );
+
+  if (inline) {
+    return (
+      <div
+        aria-label="Choose a model"
+        role="group"
+        // Button props that make sense on any element (data-*, aria-*, style, ref…) still apply.
+        {...(props as React.ComponentProps<"div">)}
+        data-slot="model-picker"
+        data-inline=""
+        aria-disabled={disabled || undefined}
+        onKeyDown={showSearch ? undefined : onKeyDown}
+        className={cn(
+          "flex w-full flex-col overflow-hidden rounded-kura-xl bg-kura-raised font-kura-sans text-kura-fg shadow-kura-popover",
+          disabled && "pointer-events-none opacity-50",
+          className,
+        )}
+      >
+        {panel}
+      </div>
+    );
+  }
 
   return (
     <Popover
@@ -332,187 +505,43 @@ export function ModelPicker({
         aria-label="Choose a model"
         // Never taller than the room around the trigger: the list shrinks and scrolls, the search
         // row and the details strip stay on screen.
-        className="flex max-h-(--available-height) w-[340px] flex-col overflow-hidden p-0"
+        className="flex max-h-(--available-height) w-[360px] flex-col overflow-hidden p-0"
         initialFocus={() => (showSearch ? inputRef.current : listRef.current)}
         onKeyDown={showSearch ? undefined : onKeyDown}
       >
-        {showSearch && (
-          <div
-            data-slot="model-picker-search"
-            className="flex h-10 shrink-0 items-center gap-2 px-3 shadow-[inset_0_-1px_0_var(--kura-border-subtle)]"
-          >
-            <Search aria-hidden className="size-3.5 shrink-0 text-kura-fg-subtle" />
-            <input
-              ref={inputRef}
-              role="combobox"
-              aria-expanded
-              aria-controls={listId}
-              aria-autocomplete="list"
-              aria-activedescendant={active ? optionId(active) : undefined}
-              aria-label="Search models"
-              value={query}
-              placeholder={searchPlaceholder}
-              onChange={(e) => setQuery(e.currentTarget.value)}
-              onKeyDown={onKeyDown}
-              className="h-full min-w-0 flex-1 bg-transparent text-[13px] text-kura-fg outline-hidden placeholder:text-kura-fg-subtle"
-            />
-          </div>
-        )}
-        <div
-          ref={listRef}
-          id={listId}
-          role="listbox"
-          aria-label="Models"
-          tabIndex={showSearch ? -1 : 0}
-          aria-activedescendant={!showSearch && active ? optionId(active) : undefined}
-          className="max-h-80 min-h-0 shrink scroll-py-1 overflow-y-auto overscroll-contain p-1 outline-hidden [scrollbar-width:thin]"
-        >
-          {flat.length === 0 && (
-            <div className="px-3 py-6 text-center text-[13px] text-kura-fg-subtle">
-              {emptyMessage}
-            </div>
-          )}
-          {groups.map(([provider, list]) => {
-            const headingId = `${baseId}-group-${provider.replace(/\W/g, "_") || "default"}`;
-            return (
-              <div
-                key={provider || "__default"}
-                role="group"
-                aria-labelledby={provider ? headingId : undefined}
-                data-slot="model-picker-group"
-                className="not-first:mt-1"
-              >
-                {provider && (
-                  <div
-                    id={headingId}
-                    className="select-none px-2 pt-2 pb-1 text-[12px] text-kura-fg-subtle"
-                  >
-                    {provider}
-                  </div>
-                )}
-                {list.map((model) => {
-                  const isSelected = model.id === value;
-                  const isActive = model.id === active;
-                  return (
-                    <div
-                      key={model.id}
-                      id={optionId(model.id)}
-                      role="option"
-                      aria-selected={isSelected}
-                      aria-disabled={model.disabled || undefined}
-                      data-slot="model-picker-item"
-                      data-active={isActive || undefined}
-                      data-disabled={model.disabled || undefined}
-                      onPointerMove={() =>
-                        !model.disabled && active !== model.id && setActive(model.id)
-                      }
-                      onClick={() => choose(model)}
-                      className={cn(
-                        "flex cursor-pointer select-none items-center gap-2.5 rounded-[9px] px-2 py-1.5",
-                        "data-active:bg-kura-hover data-disabled:cursor-not-allowed data-disabled:opacity-45",
-                      )}
-                    >
-                      <ProviderMark model={model} className="self-start mt-0.5" />
-                      <div className="flex min-w-0 flex-1 flex-col gap-1">
-                        <div className="flex min-w-0 items-center gap-1.5">
-                          <span className="truncate font-medium text-[13px] text-kura-fg leading-4">
-                            {model.name}
-                          </span>
-                          {model.badge && (
-                            <span className="shrink-0 text-[11.5px] text-kura-fg-subtle leading-4">
-                              {model.badge}
-                            </span>
-                          )}
-                        </div>
-                        <ModelMeta model={model} />
-                      </div>
-                      <Check
-                        aria-hidden
-                        className={cn(
-                          "size-3.5 shrink-0 text-kura-fg transition-opacity duration-(--kura-duration-fast)",
-                          isSelected ? "opacity-100" : "opacity-0",
-                        )}
-                      />
-                    </div>
-                  );
-                })}
-              </div>
-            );
-          })}
-        </div>
-        {showDetails && flat.length > 0 && (
-          <div
-            data-slot="model-picker-details"
-            aria-live="polite"
-            className="flex h-[68px] shrink-0 items-center px-3 text-kura-fg-muted text-xs leading-4 shadow-[inset_0_1px_0_var(--kura-border-subtle)]"
-          >
-            {/* What the model is, on up to two lines, then what it can do. The strip keeps one
-                height for every model, so moving through the list never shifts it; a capability
-                that does not fit wraps out of sight whole. */}
-            <div className="flex min-w-0 flex-1 flex-col">
-              <p className="line-clamp-2 text-pretty">
-                {activeModel?.description ?? (activeModel ? activeModel.name : "")}
-              </p>
-              {activeModel?.capabilities?.length ? (
-                <p
-                  data-slot="model-picker-capabilities"
-                  className="flex h-4 flex-wrap overflow-hidden text-kura-fg-subtle"
-                >
-                  {activeModel.capabilities.map((c, i) => (
-                    <span key={c} className="whitespace-nowrap">
-                      {i > 0 && (
-                        <span aria-hidden className="whitespace-pre">
-                          {" · "}
-                        </span>
-                      )}
-                      {CAPABILITIES[c].label}
-                    </span>
-                  ))}
-                </p>
-              ) : null}
-            </div>
-          </div>
-        )}
+        {panel}
       </PopoverContent>
     </Popover>
   );
 }
 
 function ModelMeta({ model }: { model: ModelPickerModel }) {
-  const parts: React.ReactNode[] = [];
-  if (model.contextWindow) {
-    parts.push(
-      <span key="ctx" title={`${model.contextWindow.toLocaleString("en-US")} token context window`}>
-        <span aria-hidden>{formatContextWindow(model.contextWindow)}</span>
-        <span className="sr-only">{`${formatContextWindow(model.contextWindow)} context`}</span>
-      </span>,
-    );
-  }
-  if (model.speed)
-    parts.push(<Meter key="speed" kind="speed" value={model.speed} label={SPEED[model.speed]} />);
-  if (model.cost)
-    parts.push(<Meter key="cost" kind="cost" value={model.cost} label={COST[model.cost]} />);
   const caps = model.capabilities ?? [];
-  if (parts.length === 0 && caps.length === 0) return null;
+  if (!model.contextWindow && !model.speed && !model.cost && caps.length === 0) return null;
+  // Fixed columns, so context, speed and cost line up from row to row.
   return (
-    <div
+    <span
       data-slot="model-picker-meta"
-      className="flex items-center gap-2 font-kura-mono text-[11px] text-kura-fg-subtle tabular-nums leading-3"
+      className="flex shrink-0 items-center gap-3 font-kura-mono text-[11.5px] text-kura-fg-subtle tabular-nums leading-none"
     >
-      {parts.map((p, i) => (
-        <React.Fragment key={i}>
-          {i > 0 && (
-            <span aria-hidden className="text-kura-border-strong">
-              ·
-            </span>
-          )}
-          {p}
-        </React.Fragment>
-      ))}
+      <span className="w-[4ch] text-right">
+        {model.contextWindow ? (
+          <span title={`${model.contextWindow.toLocaleString("en-US")} token context window`}>
+            <span aria-hidden>{formatContextWindow(model.contextWindow)}</span>
+            <span className="sr-only">{`${formatContextWindow(model.contextWindow)} context`}</span>
+          </span>
+        ) : null}
+      </span>
+      <span className="flex w-[15px] justify-center">
+        {model.speed ? <Meter kind="speed" value={model.speed} label={SPEED[model.speed]} /> : null}
+      </span>
+      <span className="w-[3ch]">
+        {model.cost ? <Meter kind="cost" value={model.cost} label={COST[model.cost]} /> : null}
+      </span>
       {/* Capabilities are read out here, and spelled out in the details strip for the active row. */}
       {caps.length > 0 && (
         <span className="sr-only">{caps.map((c) => CAPABILITIES[c].label).join(", ")}</span>
       )}
-    </div>
+    </span>
   );
 }
