@@ -11,7 +11,7 @@ import { FeatureBento } from "@/components/landing/feature-bento";
 import { HeroField } from "@/components/landing/hero-field";
 import { HeroStage } from "@/components/landing/hero-stage";
 import { InstallChip } from "@/components/landing/install-chip";
-import { Reveal } from "@/components/reveal";
+import { Stagger, StaggerItem } from "@/components/motion";
 import { catalog, components } from "@/lib/catalog";
 
 // The four things generated from each component's manifest (the paragraph above them and the
@@ -58,22 +58,34 @@ export default function Home() {
       >
         {/* Reaches up under the glass nav, so the nav has something to frost. */}
         <HeroField anchorId="hero-title" className="-top-[84px] h-[760px]" />
-        <div className="hero-in relative z-10 mx-auto flex max-w-3xl flex-col items-center text-center">
-          <h1
-            id="hero-title"
-            className="font-semibold text-[42px] leading-[1.02] tracking-[-0.035em] text-balance sm:text-[56px] lg:text-[72px]"
-          >
-            Components for agent interfaces.
-          </h1>
-          <p className="max-w-[40rem] pt-6 text-[16px] sm:text-[17px] text-kura-fg-muted leading-relaxed text-pretty md:text-[18px]">
-            Open-source React components for agent runs, plans, terminals, diffs and approvals. Copy
-            them into your app, or let your coding agent install them.
-          </p>
-          <CtaLink href="/components" meta={components.length} className="mt-9">
-            Browse components
-          </CtaLink>
-          <InstallChip command={install} className="mt-5" />
-        </div>
+        <Stagger
+          onLoad
+          gap={0.08}
+          className="relative z-10 mx-auto flex max-w-3xl flex-col items-center text-center"
+        >
+          <StaggerItem>
+            <h1
+              id="hero-title"
+              className="font-semibold text-[42px] leading-[1.02] tracking-[-0.035em] text-balance sm:text-[56px] lg:text-[72px]"
+            >
+              Components for agent interfaces.
+            </h1>
+          </StaggerItem>
+          <StaggerItem>
+            <p className="max-w-[40rem] pt-6 text-[16px] sm:text-[17px] text-kura-fg-muted leading-relaxed text-pretty md:text-[18px]">
+              Open-source React components for agent runs, plans, terminals, diffs and approvals.
+              Copy them into your app, or let your coding agent install them.
+            </p>
+          </StaggerItem>
+          <StaggerItem className="pt-9">
+            <CtaLink href="/components" meta={components.length}>
+              Browse components
+            </CtaLink>
+          </StaggerItem>
+          <StaggerItem className="max-w-full pt-5">
+            <InstallChip command={install} />
+          </StaggerItem>
+        </Stagger>
 
         <div className="relative isolate mx-auto mt-20 max-w-[1180px] md:mt-24">
           {/* The ember rises with the stage, never ahead of it. */}
@@ -161,13 +173,11 @@ export default function Home() {
             The parts that usually get skipped are done for you, and checked in CI for every
             component.
           </SectionHead>
-          <Reveal>
-            <BuiltRight />
-          </Reveal>
+          <BuiltRight />
         </div>
       </section>
 
-      <CtaBand install={install} />
+      <CtaBand install={install} count={components.length} />
     </div>
   );
 }

@@ -335,10 +335,11 @@
   --kura-track: #eceef1;
   --kura-thumb: #ffffff;
 
-  /* Elevation: rings first, shadow second. A sheet is one ring, one halo, one soft drop. */
+  /* Elevation: rings first, shadow second. A sheet is one hairline and one soft drop: a single
+     ring keeps the corner crisp (a second ring beside it blurs into a smudge on the curve). */
   --kura-elev-surface:
-    0 0 0 1px rgb(17 18 20 / 0.1), 0 0 0 2px rgb(255 255 255 / 0.95),
-    0 1px 2px 1px rgb(17 18 20 / 0.04), 0 10px 28px -14px rgb(17 18 20 / 0.1);
+    0 0 0 1px rgb(17 18 20 / 0.075), 0 1px 2px rgb(17 18 20 / 0.035),
+    0 10px 28px -16px rgb(17 18 20 / 0.12);
   --kura-elev-raised:
     inset 0 1px 0 rgb(255 255 255 / 0.9), 0 0 0 1px rgb(17 18 20 / 0.09),
     0 1px 2px rgb(17 18 20 / 0.06);
@@ -437,9 +438,7 @@
   --kura-track: #0a0b0d;
   --kura-thumb: #26282d;
 
-  --kura-elev-surface:
-    inset 0 1px 0 rgb(255 255 255 / 0.05), 0 0 0 1px rgb(0 0 0 / 0.7),
-    0 0 0 2px rgb(255 255 255 / 0.055), 0 12px 32px -16px rgb(0 0 0 / 0.7);
+  --kura-elev-surface: 0 0 0 1px rgb(255 255 255 / 0.065), 0 12px 32px -16px rgb(0 0 0 / 0.7);
   --kura-elev-raised:
     inset 0 1px 0 rgb(255 255 255 / 0.07), 0 0 0 1px rgb(255 255 255 / 0.09),
     0 1px 2px rgb(0 0 0 / 0.4);

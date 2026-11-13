@@ -2,6 +2,7 @@ import { GeistMono } from "geist/font/mono";
 import { GeistSans } from "geist/font/sans";
 import type { Metadata, Viewport } from "next";
 import type * as React from "react";
+import { SiteMotion } from "@/components/motion";
 import { ScrollbarActivity } from "@/components/scrollbar-activity";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
@@ -33,16 +34,18 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
     >
       <body className="min-h-dvh">
         <ThemeProvider>
-          <a
-            href="#main"
-            className="sr-only z-50 rounded-lg bg-kura-surface px-3 py-2 shadow-kura-md focus:not-sr-only focus:fixed focus:top-3 focus:left-3"
-          >
-            Skip to content
-          </a>
-          <SiteHeader />
-          <main id="main">{children}</main>
-          <SiteFooter />
-          <ScrollbarActivity />
+          <SiteMotion>
+            <a
+              href="#main"
+              className="sr-only z-50 rounded-lg bg-kura-surface px-3 py-2 shadow-kura-md focus:not-sr-only focus:fixed focus:top-3 focus:left-3"
+            >
+              Skip to content
+            </a>
+            <SiteHeader />
+            <main id="main">{children}</main>
+            <SiteFooter />
+            <ScrollbarActivity />
+          </SiteMotion>
         </ThemeProvider>
       </body>
     </html>

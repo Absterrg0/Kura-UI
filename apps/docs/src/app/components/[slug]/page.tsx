@@ -86,7 +86,7 @@ export default async function ComponentPage({ params }: { params: Promise<{ slug
   const related = (c.related ?? []).map((r) => ({ slug: r, exists: !!getComponent(r) }));
 
   return (
-    <DocsShell>
+    <DocsShell toc={false}>
       <article data-testid="component-page" className="max-w-[56rem]">
         <header className="flex flex-col gap-4 pb-10">
           <div className="flex items-center justify-between gap-4">

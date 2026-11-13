@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { CodeBlock } from "@/components/code-block";
 import { C, DocsShell, PageHeader, Section } from "@/components/docs-shell";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/tabs";
 import { catalog } from "@/lib/catalog";
 
 export const metadata: Metadata = {
@@ -21,13 +22,52 @@ const surfaces = [
   ["/r/registry.json", "shadcn registry index (use as a namespaced registry)."],
 ];
 
+const MCP_SETUPS = [
+  {
+    id: "claude",
+    label: "Claude Code",
+    file: "Terminal",
+    lang: "bash",
+    code: "claude mcp add kura -- npx -y @kura-ui/mcp",
+  },
+  {
+    id: "cursor",
+    label: "Cursor",
+    file: ".cursor/mcp.json",
+    lang: "json",
+    code: JSON.stringify(
+      { mcpServers: { kura: { command: "npx", args: ["-y", "@kura-ui/mcp"] } } },
+      null,
+      2,
+    ),
+  },
+  {
+    id: "codex",
+    label: "Codex",
+    file: "~/.codex/config.toml",
+    lang: "toml",
+    code: `[mcp_servers.kura]\ncommand = "npx"\nargs = ["-y", "@kura-ui/mcp"]`,
+  },
+  {
+    id: "vscode",
+    label: "VS Code",
+    file: ".vscode/mcp.json",
+    lang: "json",
+    code: JSON.stringify(
+      { servers: { kura: { type: "stdio", command: "npx", args: ["-y", "@kura-ui/mcp"] } } },
+      null,
+      2,
+    ),
+  },
+] as const;
+
 export default function AgentsPage() {
   const site = catalog.homepage;
   return (
     <DocsShell>
       <div className="max-w-[46rem]">
         <PageHeader
-          title="For agents"
+          title="Agents"
           description="Humans browse; agents query. Every surface below is generated from the same component manifests, so they never drift."
         />
 
@@ -37,27 +77,21 @@ export default function AgentsPage() {
             <C>search_components</C>, <C>get_component</C>, <C>get_component_source</C>,{" "}
             <C>get_install_instructions</C>, <C>get_design_tokens</C>, <C>get_design_guidelines</C>.
           </p>
-          <div className="flex flex-col gap-3">
-            <CodeBlock
-              lang="bash"
-              title="Claude Code"
-              code="claude mcp add kura -- npx -y @kura-ui/mcp"
-            />
-            <CodeBlock
-              lang="json"
-              title=".cursor/mcp.json"
-              code={JSON.stringify(
-                { mcpServers: { kura: { command: "npx", args: ["-y", "@kura-ui/mcp"] } } },
-                null,
-                2,
-              )}
-            />
-            <CodeBlock
-              lang="toml"
-              title="~/.codex/config.toml"
-              code={`[mcp_servers.kura]\ncommand = "npx"\nargs = ["-y", "@kura-ui/mcp"]`}
-            />
-          </div>
+          {/* One block, one tab per agent: the reader picks theirs instead of scanning three. */}
+          <Tabs defaultValue="claude" className="flex flex-col gap-3">
+            <TabsList aria-label="Your agent" className="self-start">
+              {MCP_SETUPS.map((m) => (
+                <TabsTrigger key={m.id} value={m.id}>
+                  {m.label}
+                </TabsTrigger>
+              ))}
+            </TabsList>
+            {MCP_SETUPS.map((m) => (
+              <TabsContent key={m.id} value={m.id} className="rounded-kura-xl">
+                <CodeBlock lang={m.lang} title={m.file} code={m.code} />
+              </TabsContent>
+            ))}
+          </Tabs>
         </Section>
 
         <Section id="cli" title="CLI">

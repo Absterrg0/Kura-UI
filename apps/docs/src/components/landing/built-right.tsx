@@ -4,6 +4,7 @@ import { useReducedMotion } from "@kura-ui/react/hooks";
 import { Kbd } from "@kura-ui/react/kbd";
 import * as React from "react";
 import { cn } from "@/lib/cn";
+import { Stagger, StaggerItem } from "../motion";
 import { ThemeToggle } from "../theme-toggle";
 
 /**
@@ -181,21 +182,16 @@ const ITEMS = [
 
 export function BuiltRight() {
   return (
-    <ul className="grid gap-x-5 gap-y-12 sm:grid-cols-2 lg:grid-cols-4">
-      {ITEMS.map((item, i) => (
-        <li
-          key={item.title}
-          data-reveal-item
-          style={{ "--d": i } as React.CSSProperties}
-          className="flex flex-col"
-        >
+    <Stagger as="ul" className="grid gap-x-5 gap-y-12 sm:grid-cols-2 lg:grid-cols-4">
+      {ITEMS.map((item) => (
+        <StaggerItem as="li" key={item.title} className="flex flex-col">
           <div className="well flex h-36 items-center justify-center rounded-kura-xl">
             {item.specimen}
           </div>
           <h3 className="pt-5 font-semibold text-[16px] tracking-[-0.015em]">{item.title}</h3>
           <p className="pt-2 text-[14.5px] text-kura-fg-muted leading-relaxed">{item.body}</p>
-        </li>
+        </StaggerItem>
       ))}
-    </ul>
+    </Stagger>
   );
 }

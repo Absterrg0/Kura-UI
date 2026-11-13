@@ -217,66 +217,6 @@ html[data-theme-vt]::view-transition-new(root) {
   }
 }
 
-/*
- * The hero stage comes in panel by panel once it is in view (`--d` orders them), and the
- * approval prompt waits, dimmed, until the replayed run reaches the step that asks.
- */
-@media (prefers-reduced-motion: no-preference) {
-  .stage-reveal [data-reveal] {
-    opacity: 0;
-    transform: translateY(18px) scale(0.985);
-    filter: blur(6px);
-    transition:
-      opacity 700ms cubic-bezier(0.2, 0.8, 0.2, 1),
-      transform 900ms cubic-bezier(0.2, 0.8, 0.2, 1),
-      filter 700ms cubic-bezier(0.2, 0.8, 0.2, 1);
-    transition-delay: calc(250ms + var(--d, 0) * 90ms);
-  }
-  .stage-reveal[data-entered="true"] [data-reveal] {
-    opacity: 1;
-    transform: none;
-    filter: none;
-  }
-  .stage-reveal[data-entered="true"] .stage-ask[data-asked="false"] {
-    opacity: 0.38;
-    filter: grayscale(1) blur(1.5px);
-    transform: scale(0.985);
-  }
-  .stage-reveal[data-entered="true"] .stage-ask[data-asked="true"] {
-    animation: stage-ask 700ms cubic-bezier(0.2, 0.8, 0.2, 1);
-  }
-}
-@keyframes stage-ask {
-  0% {
-    transform: scale(0.985);
-  }
-  45% {
-    transform: scale(1.012);
-  }
-  100% {
-    transform: none;
-  }
-}
-
-/* Sections further down rise in as they arrive: see <Reveal>. */
-@media (prefers-reduced-motion: no-preference) {
-  [data-reveal-group] [data-reveal-item] {
-    opacity: 0;
-    transform: translateY(22px);
-    filter: blur(5px);
-    transition:
-      opacity 700ms cubic-bezier(0.2, 0.8, 0.2, 1),
-      transform 900ms cubic-bezier(0.2, 0.8, 0.2, 1),
-      filter 700ms cubic-bezier(0.2, 0.8, 0.2, 1);
-    transition-delay: calc(var(--d, 0) * 80ms);
-  }
-  [data-reveal-group][data-in="true"] [data-reveal-item] {
-    opacity: 1;
-    transform: none;
-    filter: none;
-  }
-}
-
 /* The agent demo: the component the agent is reading or using wears a dotted ring meanwhile. */
 .agent-focus {
   position: relative;
@@ -356,32 +296,10 @@ html[data-theme-vt]::view-transition-new(root) {
   }
 }
 
-/*
- * The page load, in order: the headline and its lines rise in, the dot field fades up under
- * them, then the stage (and the ember with it) comes in panel by panel.
- */
+/* The hero's dot field fades up under the headline (the rest of the load is motion/react). */
 @media (prefers-reduced-motion: no-preference) {
-  .hero-in > * {
-    animation: hero-rise 900ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
-  }
-  .hero-in > :nth-child(2) {
-    animation-delay: 80ms;
-  }
-  .hero-in > :nth-child(3) {
-    animation-delay: 160ms;
-  }
-  .hero-in > :nth-child(4) {
-    animation-delay: 230ms;
-  }
   [data-slot="hero-field"] {
-    animation: field-in 1600ms 150ms ease-out both;
-  }
-}
-@keyframes hero-rise {
-  from {
-    opacity: 0;
-    transform: translateY(14px);
-    filter: blur(6px);
+    animation: field-in 1400ms 200ms ease-out both;
   }
 }
 @keyframes field-in {

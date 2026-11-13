@@ -25,8 +25,8 @@ The source of truth for values is `packages/react/src/styles/kura.css`.
    that shrink as they fade) in the top-right corner of the thing that needs a person, on its
    glyph and on its label. When the person decides, ember leaves the screen. Never ember for
    decoration, hover, links, warnings or brand chrome inside components.
-5. **One way to draw an edge.** A _sheet_ is a flat fill with one crisp 1px ring, a faint 1px
-   halo outside it and an etched top edge; radius 14px. A _well_ (code, commands, terminals,
+5. **One way to draw an edge.** A _sheet_ is a flat fill with one subtle 1px hairline and one
+   soft drop shadow; radius 14px. Never a second ring beside it: two rings smear on the curve. A _well_ (code, commands, terminals,
    inputs) is sunk: darker fill, inner shadow, radius 10px. Nothing else has a border. No glows,
    no blur, no grain, no gradients on surfaces, no boxes inside boxes beyond sheet → well.
 6. **Buttons are keycaps**: raised, radius 9px, 32px tall, with the shortcut printed on the key
@@ -71,7 +71,7 @@ Contrast: text ≥ 4.5:1 on its surface in both themes; state marks and control 
 
 | Recipe (utility)      | What it is                                               |
 | --------------------- | -------------------------------------------------------- |
-| `shadow-kura-surface` | a sheet: ring + halo + etched top edge + one soft drop   |
+| `shadow-kura-surface` | a sheet: one hairline + one soft drop                    |
 | `shadow-kura-sunk`    | a well: inner shadow + inner hairline                    |
 | `shadow-kura-raised`  | a key or tile: top highlight + ring + 1px drop           |
 | `shadow-kura-ink`     | the primary key's edge                                   |

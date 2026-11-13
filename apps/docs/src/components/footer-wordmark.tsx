@@ -88,12 +88,17 @@ export function FooterWordmark({ className }: { className?: string }) {
       const data = c2.getImageData(0, 0, cols, rows).data;
       cells = new Uint8Array(cols * rows);
       for (let i = 0; i < cols * rows; i++) cells[i] = data[i * 4 + 3]! > 110 ? 1 : 0;
-      // The ember stop: a square of whole cells sitting on the baseline.
-      const side = Math.max(2, Math.round(size * stop));
+      // The ember stop: a round dot of whole cells on the baseline, like the mark's one ember dot.
+      const side = Math.max(3, Math.round(size * stop));
       const sx = Math.round(left + textW + size * stop * 0.5);
+      const rad = side / 2;
       for (let y = baseline - side; y < baseline; y++)
-        for (let x = sx; x < sx + side; x++)
-          if (x >= 0 && x < cols && y >= 0 && y < rows) cells[y * cols + x] = 2;
+        for (let x = sx; x < sx + side; x++) {
+          const dx = x + 0.5 - (sx + rad);
+          const dy = y + 0.5 - (baseline - rad);
+          if (dx * dx + dy * dy <= rad * rad && x >= 0 && x < cols && y >= 0 && y < rows)
+            cells[y * cols + x] = 2;
+        }
     };
 
     const draw = (now: number) => {

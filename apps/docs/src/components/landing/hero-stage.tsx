@@ -8,6 +8,8 @@ import { RunHeader } from "@kura-ui/react/run-header";
 import { TaskList, type TaskListItem } from "@kura-ui/react/task-list";
 import { Terminal } from "@kura-ui/react/terminal";
 import { type TraceSpan, TraceWaterfall } from "@kura-ui/react/trace-waterfall";
+import { springs } from "@kura-ui/react/utils";
+import { motion, type Variants } from "motion/react";
 import * as React from "react";
 import { cn } from "@/lib/cn";
 
@@ -74,6 +76,16 @@ function useStream(
   }, [key, instant, active]);
   return { lines: lines.slice(0, state.n), startedAt: state.startedAt };
 }
+
+// Each panel rises in on its own beat (`custom` is its place in the order), after the headline.
+const stageItem: Variants = {
+  hidden: { opacity: 0, y: 18 },
+  show: (i: number) => ({
+    opacity: 1,
+    y: 0,
+    transition: { ...springs.gentle, visualDuration: 0.75, delay: 0.25 + i * 0.08 },
+  }),
+};
 
 // The replay: which step of the plan the run has reached (0 = mapping call sites, 3 = asking to
 // migrate), and when each step lands after the stage comes into view.
@@ -346,26 +358,28 @@ export function HeroStage({
   const grow = (tokens: number) => Math.round(tokens * [0.52, 0.68, 0.86, 1][step]!);
 
   return (
-    <div
+    <motion.div
       ref={root}
       data-slot="hero-stage"
       data-entered={entered}
-      className={cn("stage-reveal flex flex-col gap-3", className)}
+      initial="hidden"
+      animate={entered ? "show" : "hidden"}
+      className={cn("flex flex-col gap-3", className)}
     >
       {backdrop != null && (
-        <div
-          data-reveal
+        <motion.div
+          custom={0}
+          variants={stageItem}
           className="pointer-events-none absolute inset-x-0 top-0 -z-10"
-          style={{ "--d": 0 } as React.CSSProperties}
         >
           {backdrop}
-        </div>
+        </motion.div>
       )}
       {/* On a phone the run header is not shown: the stage still has a heading above the prompt. */}
       <h2 className="sr-only md:hidden">Migrate session API to @acme/auth: an agent run</h2>
-      <div
-        data-reveal
-        style={{ "--d": 0 } as React.CSSProperties}
+      <motion.div
+        custom={0}
+        variants={stageItem}
         className="hidden min-w-0 md:block max-lg:[&_[data-slot=run-header-model]]:hidden"
       >
         <RunHeader
@@ -381,36 +395,42 @@ export function HeroStage({
           progress={{ done, total: tasks.length }}
           shortcuts={false}
         />
-      </div>
+      </motion.div>
       {/* Phone: prompt, terminal, plan. Tablet: prompt and terminal beside plan and subagents.
           Desktop: the full three columns. The prompt never gets less than half the row. */}
       <div className="grid items-start gap-3 md:grid-cols-[minmax(0,1fr)_minmax(0,320px)] md:grid-rows-[auto_1fr] md:items-stretch xl:grid-cols-[330px_minmax(0,1fr)_320px] xl:grid-rows-none xl:[&>div>div:last-child>*]:flex-1 xl:[&>div>div:last-child]:flex xl:[&>div>div:last-child]:flex-1 xl:[&>div>div:last-child]:flex-col">
         {/* Two columns on a tablet: the terminal and the subagents take up the slack, so both end level. */}
         <div className="flex min-w-0 flex-col gap-3 md:row-span-2 md:[&>div:last-child>*]:flex-1 md:[&>div:last-child]:flex md:[&>div:last-child]:flex-1 md:[&>div:last-child]:flex-col xl:order-2 xl:row-span-1">
-          <div
-            data-reveal
-            data-asked={asked}
-            style={{ "--d": 2 } as React.CSSProperties}
-            className="stage-ask min-w-0"
-            inert={!asked}
-          >
-            <ApprovalPrompt
-              title="Run the sessions migration on production"
-              agent={{ name: "migrator", detail: "for step 4 of the plan" }}
-              requestedAt={askedAt ?? t0 - 14_000}
-              command="pnpm db:migrate --env production"
-              facts={[
-                { label: "Target", value: "acme-prod · Postgres 16" },
-                { label: "Rows affected", value: "48,210" },
-                { label: "Rollback", value: "Snapshot first, about 2 min" },
-              ]}
-              risk="high"
-              decision={decision}
-              onDecisionChange={decide}
-              approveLabel="Run migration"
-            />
-          </div>
-          <div data-reveal style={{ "--d": 4 } as React.CSSProperties} className="min-w-0">
+          <motion.div custom={2} variants={stageItem} className="min-w-0">
+            {/* Until the run reaches step 4 the prompt waits, dimmed; then it lands. */}
+            <motion.div
+              inert={!asked}
+              initial={false}
+              animate={
+                asked
+                  ? { opacity: 1, scale: 1, filter: "grayscale(0)" }
+                  : { opacity: 0.4, scale: 0.985, filter: "grayscale(1)" }
+              }
+              transition={springs.gentle}
+            >
+              <ApprovalPrompt
+                title="Run the sessions migration on production"
+                agent={{ name: "migrator", detail: "for step 4 of the plan" }}
+                requestedAt={askedAt ?? t0 - 14_000}
+                command="pnpm db:migrate --env production"
+                facts={[
+                  { label: "Target", value: "acme-prod · Postgres 16" },
+                  { label: "Rows affected", value: "48,210" },
+                  { label: "Rollback", value: "Snapshot first, about 2 min" },
+                ]}
+                risk="high"
+                decision={decision}
+                onDecisionChange={decide}
+                approveLabel="Run migration"
+              />
+            </motion.div>
+          </motion.div>
+          <motion.div custom={4} variants={stageItem} className="min-w-0">
             <Terminal
               title="Terminal"
               cwd="~/acme-web"
@@ -424,34 +444,26 @@ export function HeroStage({
               copyable={false}
               className="[&_[data-slot=terminal-output]]:min-h-[196px]"
             />
-          </div>
+          </motion.div>
         </div>
         <div className="flex min-w-0 flex-col gap-3 md:col-start-2 xl:order-1 xl:col-start-auto">
-          <div data-reveal style={{ "--d": 1 } as React.CSSProperties} className="min-w-0">
+          <motion.div custom={1} variants={stageItem} className="min-w-0">
             <TaskList title="Plan" items={tasks} collapseCompleted={false} />
-          </div>
-          <div
-            data-reveal
-            style={{ "--d": 3 } as React.CSSProperties}
-            className="hidden min-w-0 xl:block"
-          >
+          </motion.div>
+          <motion.div custom={3} variants={stageItem} className="hidden min-w-0 xl:block">
             <TraceWaterfall spans={spans} startedAt={RUN} />
-          </div>
+          </motion.div>
         </div>
         <div className="hidden min-w-0 flex-col gap-3 md:col-start-2 md:flex xl:order-3 xl:col-start-auto">
-          <div
-            data-reveal
-            style={{ "--d": 2 } as React.CSSProperties}
+          <motion.div
+            custom={2}
+            variants={stageItem}
             className="min-w-0 md:max-xl:flex md:max-xl:flex-1 md:max-xl:flex-col md:max-xl:[&>*]:flex-1"
           >
             {/* The height of four agents with two progress rails: a rail leaving does not move the stage. */}
             <AgentFleet agents={fleet} title="Subagents" className="min-h-[312px]" />
-          </div>
-          <div
-            data-reveal
-            style={{ "--d": 4 } as React.CSSProperties}
-            className="hidden min-w-0 xl:block"
-          >
+          </motion.div>
+          <motion.div custom={4} variants={stageItem} className="hidden min-w-0 xl:block">
             <ContextPanel
               max={200_000}
               segments={[
@@ -462,9 +474,9 @@ export function HeroStage({
               ]}
               footer="Older turns are summarized at 90%."
             />
-          </div>
+          </motion.div>
         </div>
       </div>
-    </div>
+    </motion.div>
   );
 }

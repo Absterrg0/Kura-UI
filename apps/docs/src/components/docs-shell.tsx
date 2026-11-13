@@ -1,13 +1,24 @@
 import type * as React from "react";
 import { cn } from "@/lib/cn";
+import { DocsPager } from "./docs-pager";
+import { OnThisPage } from "./on-this-page";
 import { Sidebar } from "./sidebar";
 
-export function DocsShell({ children }: { children: React.ReactNode }) {
+/**
+ * The docs layout: the index on the left, the page, and (on wide screens) the page's own
+ * sections on the right. A component page is wide enough to fill the row, so it leaves the
+ * right rail out with `toc={false}`.
+ */
+export function DocsShell({ children, toc = true }: { children: React.ReactNode; toc?: boolean }) {
   return (
     <div className="px-5 md:px-6">
-      <div className="mx-auto flex max-w-[1180px] gap-12">
+      <div className="mx-auto flex max-w-[1180px] gap-10 xl:gap-12">
         <Sidebar />
-        <div className="min-w-0 flex-1 pt-12 pb-28 md:pt-16">{children}</div>
+        <div id="docs-content" className="min-w-0 flex-1 pt-12 pb-28 md:pt-16">
+          {children}
+          <DocsPager />
+        </div>
+        {toc && <OnThisPage />}
       </div>
     </div>
   );

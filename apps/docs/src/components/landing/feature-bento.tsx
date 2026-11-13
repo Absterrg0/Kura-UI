@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type * as React from "react";
 import { cn } from "@/lib/cn";
-import { Reveal } from "../reveal";
+import { Stagger, StaggerItem } from "../motion";
 import {
   BrowserDemo,
   CheckpointsDemo,
@@ -79,14 +79,16 @@ const FEATURES: Feature[] = [
 
 export function FeatureBento() {
   return (
-    <Reveal className="grid gap-x-4 gap-y-12 md:grid-cols-2 lg:grid-cols-12 lg:gap-y-14">
-      {FEATURES.map((f, i) => {
+    <Stagger
+      gap={0.06}
+      className="grid gap-x-4 gap-y-12 md:grid-cols-2 lg:grid-cols-12 lg:gap-y-14"
+    >
+      {FEATURES.map((f) => {
         const Demo = f.demo;
         return (
-          <figure
+          <StaggerItem
+            as="figure"
             key={f.slug}
-            data-reveal-item
-            style={{ "--d": i } as React.CSSProperties}
             className={cn("flex min-w-0 flex-col gap-4", f.span)}
           >
             <figcaption className="flex flex-col gap-0.5 px-0.5">
@@ -104,9 +106,9 @@ export function FeatureBento() {
             <div className="flex min-w-0 flex-1 flex-col [&>*]:flex-1">
               {Demo ? <Demo /> : <LiveExample slug={f.slug} name={f.example ?? ""} lazy />}
             </div>
-          </figure>
+          </StaggerItem>
         );
       })}
-    </Reveal>
+    </Stagger>
   );
 }
