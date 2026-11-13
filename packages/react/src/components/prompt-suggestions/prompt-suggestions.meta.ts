@@ -35,7 +35,7 @@ export default defineComponent({
       type: '"chips" | "cards" | "list"',
       default: '"cards"',
       description:
-        "chips = wrapping keycaps (titles only), cards = two-column sheets with icon and description, list = bare rows.",
+        "chips = wrapping keycaps (titles only), cards = one sheet of two-column cells with title and description, list = bare rows.",
     },
     {
       name: "stagger",
@@ -71,7 +71,8 @@ export default defineComponent({
     {
       name: "PromptSuggestionsIcon",
       dataSlot: "prompt-suggestions-icon",
-      description: "Optional icon; a 28px tile in cards.",
+      description:
+        "Optional icon, bare and 16px, beside the title (cards, list) or inside the keycap (chips).",
     },
   ],
   a11y: {
