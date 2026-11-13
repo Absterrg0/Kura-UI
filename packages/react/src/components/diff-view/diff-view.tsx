@@ -216,8 +216,13 @@ function RatioBar({ additions, deletions }: { additions: number; deletions: numb
 function Counts({ additions, deletions }: { additions: number; deletions: number }) {
   return (
     <span className="flex shrink-0 items-center gap-1.5 font-kura-mono text-[12px] tabular-nums">
-      <span className="text-kura-success-text">+{additions}</span>
-      <span className="text-kura-danger-text">−{deletions}</span>
+      {/* A side with nothing on it is left out: a deleted file reads "−10", not "+0 −10". */}
+      {(additions > 0 || deletions === 0) && (
+        <span className="text-kura-success-text">+{additions}</span>
+      )}
+      {(deletions > 0 || additions === 0) && (
+        <span className="text-kura-danger-text">−{deletions}</span>
+      )}
       <span className="sr-only">
         {additions} additions, {deletions} deletions
       </span>

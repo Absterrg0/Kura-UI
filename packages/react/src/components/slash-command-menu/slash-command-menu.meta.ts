@@ -52,7 +52,8 @@ export default defineComponent({
       name: "side",
       type: '"auto" | "top" | "bottom"',
       default: '"auto"',
-      description: "auto opens below the caret and flips above when there is no room.",
+      description:
+        "auto opens below the caret and flips above when there is no room. A fixed side is kept while it can show a few commands (about 120px) and flips otherwise. Either way the menu is never taller than the room it has: the list scrolls.",
     },
     {
       name: "emptyMessage",

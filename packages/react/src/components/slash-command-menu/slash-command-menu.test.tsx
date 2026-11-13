@@ -52,6 +52,21 @@ describe("SlashCommandMenu", () => {
     );
   });
 
+  it("is never taller than the room it has, and leaves a side it cannot be read on", async () => {
+    const height = window.innerHeight;
+    // A short screen with the caret at its top edge: nothing above, 186px below.
+    Object.defineProperty(window, "innerHeight", { value: 200, configurable: true });
+    render(<Field side="top" />);
+    await userEvent.type(screen.getByRole("textbox", { name: "Prompt" }), "/");
+    const menu = document.querySelector<HTMLElement>("[data-slot=slash-command-menu]")!;
+    // Asked to open upward, but there is no room there: it opens downward instead...
+    expect(menu).toHaveAttribute("data-side", "bottom");
+    // ...and stops short of the bottom edge; the list inside scrolls.
+    expect(Number.parseFloat(menu.style.maxHeight)).toBeLessThanOrEqual(200);
+    expect(Number.parseFloat(menu.style.maxHeight)).toBeGreaterThan(0);
+    Object.defineProperty(window, "innerHeight", { value: height, configurable: true });
+  });
+
   it("does not open mid-word", async () => {
     render(<Field />);
     await userEvent.type(screen.getByRole("textbox"), "and/or");

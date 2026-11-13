@@ -131,14 +131,18 @@ npx @kura-ui/cli doctor --json                   # checks Tailwind v4 + Kura tok
   slug: "shimmer-text",
   name: "ShimmerText",
   category: "feedback",
-  description: "Animated gradient sweep across text — the canonical “Thinking…” label.",
+  description: "A light sweeping across text: the “Thinking…” label.",
   whenToUse: ["Show that a model or agent is working…"],
   whenNotToUse: ["Determinate progress — use context-meter."],
-  props: [{ name: "active", type: "boolean", default: "true", description: "…" }],
+  props: [
+    { name: "active", type: "boolean", default: "true", description: "…" },
+  ],
   a11y: { notes: ["…"], reducedMotion: "The sweep is removed." },
   dependencies: { npm: [], kura: [] },
   tags: ["loading", "thinking", "status"],
-  examples: [{ name: "ShimmerTextMinimal", kind: "minimal", title: "Thinking label" }],
+  examples: [
+    { name: "ShimmerTextMinimal", kind: "minimal", title: "Thinking label" },
+  ],
 });`}
           />
         </Section>

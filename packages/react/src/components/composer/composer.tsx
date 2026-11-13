@@ -501,11 +501,7 @@ export function ComposerToolbar({ className, ...props }: ComposerToolbarProps) {
   return (
     <div
       data-slot="composer-toolbar"
-      // A size container: the hint in it shortens itself in a narrow toolbar.
-      className={cn(
-        "@container flex min-h-12 items-center justify-between gap-2 p-2 pt-1",
-        className,
-      )}
+      className={cn("flex min-h-12 items-center justify-between gap-2 p-2 pt-1", className)}
       {...props}
     />
   );
@@ -518,7 +514,9 @@ export function ComposerTools({ className, ...props }: ComposerToolsProps) {
   return (
     <div
       data-slot="composer-tools"
-      className={cn("flex min-w-0 flex-1 items-center gap-1", className)}
+      // As wide as its tools (and no wider): what is left of the row belongs to the actions,
+      // so the hint there can see how much room is really free.
+      className={cn("flex min-w-0 flex-initial items-center gap-1", className)}
       {...props}
     />
   );
@@ -531,7 +529,9 @@ export function ComposerActions({ className, ...props }: ComposerActionsProps) {
   return (
     <div
       data-slot="composer-actions"
-      className={cn("flex shrink-0 items-center gap-2", className)}
+      // Takes what the tools leave, but never less than its own keys: squeezed, the tools give
+      // way (a model name shortens) and the hint, which is the only soft part here, steps out.
+      className={cn("flex flex-1 items-center justify-end gap-2", className)}
       {...props}
     />
   );
@@ -604,12 +604,25 @@ export function ComposerHint({
   const level = ratio > 1 ? "over" : ratio >= 0.9 ? "near" : "ok";
   const visible = length > 0 && (!maxLength || ratio >= showAt);
 
-  const label =
+  // The figure, and what it is measured in or against. In a tight toolbar the second half goes
+  // first, then the whole hint: it never lands on a tool. The spoken text is always complete.
+  const figure = resolved === "tokens" ? `~${nf.format(tokens)}` : nf.format(length);
+  const unit =
     resolved === "tokens"
-      ? `~${nf.format(tokens)} ${tokens === 1 ? "token" : "tokens"}`
+      ? tokens === 1
+        ? " token"
+        : " tokens"
       : maxLength
-        ? `${nf.format(length)} / ${nf.format(maxLength)}`
-        : nf.format(length);
+        ? ` / ${nf.format(maxLength)}`
+        : "";
+  const spoken =
+    resolved === "tokens"
+      ? `About ${nf.format(tokens)} ${tokens === 1 ? "token" : "tokens"}`
+      : maxLength
+        ? `${nf.format(length)} of ${nf.format(maxLength)} characters${
+            level === "over" ? ", over the limit" : level === "near" ? ", close to the limit" : ""
+          }`
+        : `${nf.format(length)} ${length === 1 ? "character" : "characters"}`;
 
   return (
     <span
@@ -618,36 +631,30 @@ export function ComposerHint({
       id={hintId}
       aria-hidden={!visible || undefined}
       className={cn(
-        "inline-flex select-none items-center gap-1.5 text-xs text-kura-fg-subtle tabular-nums",
+        // It takes the room the row has left and measures it (a size container), so what it
+        // shows depends on what is actually free, not on how wide the composer is.
+        "@container/hint flex min-w-0 flex-1 select-none items-center justify-end text-xs text-kura-fg-subtle tabular-nums",
         "transition-[opacity,color] duration-(--kura-duration-base) ease-kura-out",
-        // Hidden, it takes no room either: the tools beside it keep the whole toolbar.
-        !visible && "pointer-events-none -mr-2 w-0 overflow-hidden opacity-0",
+        !visible && "pointer-events-none opacity-0",
         level === "near" && "text-kura-fg",
         level === "over" && "text-kura-danger-text",
         className,
       )}
       {...props}
     >
-      {maxLength !== undefined && resolved === "characters" && (
-        <AttachmentProgressRing progress={Math.min(1, ratio)} className="size-[13px]" />
-      )}
-      {maxLength !== undefined && resolved === "characters" ? (
-        // Against a limit the ring already shows how full it is: in a narrow toolbar the limit
-        // goes first, then the count, so the hint never lands on a tool. (Read out in full below.)
-        <span aria-hidden className="hidden @[20rem]:inline">
-          {nf.format(length)}
-          <span className="hidden @[23rem]:inline"> / {nf.format(maxLength)}</span>
+      <span
+        aria-hidden
+        className="hidden items-center gap-1.5 whitespace-nowrap @[4rem]/hint:inline-flex"
+      >
+        {maxLength !== undefined && resolved === "characters" && (
+          <AttachmentProgressRing progress={Math.min(1, ratio)} className="size-[13px]" />
+        )}
+        <span>
+          {figure}
+          {unit && <span className="hidden @[8rem]/hint:inline">{unit}</span>}
         </span>
-      ) : (
-        <span aria-hidden>{label}</span>
-      )}
-      {maxLength !== undefined && (
-        <span className="sr-only">
-          {level === "over"
-            ? `Message exceeds the ${nf.format(maxLength)} character limit`
-            : `${nf.format(maxLength)} character limit`}
-        </span>
-      )}
+      </span>
+      <span className="sr-only">{spoken}</span>
     </span>
   );
 }

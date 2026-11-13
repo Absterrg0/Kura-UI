@@ -263,7 +263,8 @@
   background-image: radial-gradient(circle at center, var(--kura-faint) 0.8px, transparent 1.2px);
   background-size: 5px 5px;
   background-position: 0 0;
-  background-repeat: repeat;
+  /* Whole dots only, spread evenly: a leader never ends in half a dot. */
+  background-repeat: space;
 }
 
 /* ------------------------------------------------------------------------------------------ */

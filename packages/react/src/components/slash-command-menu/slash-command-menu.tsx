@@ -103,6 +103,10 @@ function replaceRange(field: Field, start: number, end: number, text: string): v
 
 const MENU_WIDTH = 320;
 const GAP = 6;
+/** The menu's own cap, the least room worth opening into, and the margin kept to the screen edge. */
+const MAX_HEIGHT = 288;
+const MIN_ROOM = 120;
+const EDGE = 8;
 
 /**
  * An inline "/" command menu anchored to the caret of a textarea. It never takes focus: typing
@@ -125,6 +129,8 @@ export function SlashCommandMenu({
   const [active, setActive] = React.useState<string | null>(null);
   const [caret, setCaret] = React.useState<CaretRect | null>(null);
   const [placement, setPlacement] = React.useState<"top" | "bottom">("bottom");
+  // How tall the menu may be: the room on the side it opens to, never more than its own cap.
+  const [room, setRoom] = React.useState(MAX_HEIGHT);
   const dismissedAt = React.useRef<number | null>(null);
   const menuRef = React.useRef<HTMLDivElement>(null);
   // First pointer position seen over the open menu. A menu that opens under a resting cursor
@@ -238,19 +244,34 @@ export function SlashCommandMenu({
     }
   }, [open, onOpenChange]);
 
-  // Position at the trigger character, flipping above when there is no room below.
+  // Position at the trigger character, on the side that has room, and never taller than that
+  // room: the list scrolls instead of the menu leaving the screen.
   const reposition = React.useCallback(() => {
     const field = textareaRef.current;
     if (!field || !match) return;
     const rect = getCaretRect(field, match.start);
     if (!rect) return;
     setCaret(rect);
-    const menuHeight = menuRef.current?.offsetHeight ?? 280;
-    const below = window.innerHeight - (rect.top + rect.height);
-    const above = rect.top;
-    setPlacement(
-      side === "auto" ? (below < menuHeight + GAP + 8 && above > below ? "top" : "bottom") : side,
-    );
+    const below = window.innerHeight - (rect.top + rect.height) - GAP - EDGE;
+    const above = rect.top - GAP - EDGE;
+    // What the menu would like: its content, up to the cap (the list is the part that scrolls).
+    const menu = menuRef.current;
+    const list = menu?.querySelector<HTMLElement>("[role=listbox]");
+    const wanted =
+      menu && list
+        ? Math.min(MAX_HEIGHT, menu.offsetHeight - list.offsetHeight + list.scrollHeight)
+        : MAX_HEIGHT;
+    let next: "top" | "bottom";
+    if (side === "auto") next = below >= wanted || below >= above ? "bottom" : "top";
+    else {
+      // A side that was asked for is kept while it can show a few commands; with next to no
+      // room there and more on the other side, the menu opens where it can be read.
+      const own = side === "top" ? above : below;
+      const other = side === "top" ? below : above;
+      next = own < MIN_ROOM && other > own ? (side === "top" ? "bottom" : "top") : side;
+    }
+    setPlacement(next);
+    setRoom(Math.max(0, Math.min(MAX_HEIGHT, next === "top" ? above : below)));
   }, [textareaRef, match, side]);
 
   React.useLayoutEffect(() => {
@@ -367,9 +388,9 @@ export function SlashCommandMenu({
       data-side={placement}
       data-state="open"
       onMouseDown={(e) => e.preventDefault()}
-      style={{ ...positioned, width: MENU_WIDTH, ...style }}
+      style={{ ...positioned, width: MENU_WIDTH, maxHeight: room, ...style }}
       className={cn(
-        "fixed z-50 flex max-h-[min(18rem,50vh)] max-w-[calc(100vw-16px)] flex-col overflow-hidden rounded-kura-xl bg-kura-raised font-kura-sans text-kura-fg shadow-kura-popover",
+        "fixed z-50 flex max-w-[calc(100vw-16px)] flex-col overflow-hidden rounded-kura-xl bg-kura-raised font-kura-sans text-kura-fg shadow-kura-popover",
         "animate-kura-pop-in data-[side=bottom]:origin-top-left data-[side=top]:origin-bottom-left",
         className,
       )}
@@ -379,7 +400,7 @@ export function SlashCommandMenu({
         id={listId}
         role="listbox"
         aria-label="Commands"
-        className="scroll-py-1 overflow-y-auto overscroll-contain p-1 [scrollbar-width:thin]"
+        className="min-h-0 scroll-py-1 overflow-y-auto overscroll-contain p-1 [scrollbar-width:thin]"
       >
         {results.length === 0 && (
           <div className="px-3 py-5 text-center text-[13px] text-kura-fg-subtle">

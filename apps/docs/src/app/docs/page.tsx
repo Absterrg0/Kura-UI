@@ -132,7 +132,7 @@ export default function DocsPage() {
           <CodeBlock
             lang="ts"
             title="Motion presets — @kura-ui/react/utils"
-            code={`springs = ${JSON.stringify(t.motion.springs, null, 2)}\n\ndurations = ${JSON.stringify(t.motion.durations)}\neasings   = ${JSON.stringify(t.motion.easings)}`}
+            code={`springs = ${JSON.stringify(t.motion.springs, null, 2)}\n\ndurations = ${JSON.stringify(t.motion.durations)}\neasings = ${JSON.stringify(t.motion.easings, null, 2)}`}
           />
         </Section>
 

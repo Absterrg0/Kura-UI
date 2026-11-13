@@ -11,7 +11,7 @@ export default [
       "useControllableState<T>({ value?: T, defaultValue: T, onChange?: (value: T) => void }): [T, (next: T | ((prev: T) => T)) => void]",
     returns: "[value, setValue] — setValue skips unchanged values and always calls onChange.",
     example:
-      "const [open, setOpen] = useControllableState({ value: props.open, defaultValue: false, onChange: props.onOpenChange });",
+      "const [open, setOpen] = useControllableState({\n  value: props.open,\n  defaultValue: false,\n  onChange: props.onOpenChange,\n});",
     tags: ["state", "controlled", "uncontrolled"],
   }),
   defineHook({
@@ -64,7 +64,7 @@ export default [
       "A media element is wired once and kept audible; mic streams are never connected to speakers.",
     ],
     example:
-      "const rec = useMediaRecorder();\nconst analyser = useAudioAnalyser({ source: rec.stream, simulate: !rec.stream && 'silence', bands: 24 });\nconst { bands } = useAudioFrame(analyser, { fps: 30 });",
+      "const rec = useMediaRecorder();\nconst analyser = useAudioAnalyser({\n  source: rec.stream,\n  simulate: !rec.stream && 'silence',\n  bands: 24,\n});\nconst { bands } = useAudioFrame(analyser, { fps: 30 });",
     tags: ["audio", "voice", "waveform", "visualizer", "microphone", "web-audio"],
   }),
   defineHook({
@@ -128,7 +128,7 @@ export default [
       "Focus only moves when it was really lost (document.activeElement is <body>); a person who already moved elsewhere is left alone.",
     ],
     example:
-      "const root = React.useRef<HTMLUListElement>(null);\nuseFocusFallback(root, (gap) => (gap.next ?? gap.previous)?.querySelector<HTMLElement>('button'));\nreturn <ul ref={root} tabIndex={-1}>…</ul>;",
+      "const root = React.useRef<HTMLUListElement>(null);\nuseFocusFallback(root, (gap) =>\n  (gap.next ?? gap.previous)?.querySelector<HTMLElement>('button'),\n);\nreturn <ul ref={root} tabIndex={-1}>…</ul>;",
     tags: ["focus", "a11y", "keyboard"],
   }),
 ];

@@ -6,7 +6,7 @@ export default defineComponent({
   category: "feedback",
   status: "beta",
   description:
-    "Animated gradient sweep across text — the canonical “Thinking…” / “Searching…” label for in-progress AI work.",
+    "A light sweeping across text — the canonical “Thinking…” / “Searching…” label for in-progress AI work.",
   whenToUse: [
     "Show that a model or agent is working: “Thinking…”, “Searching the web…”, “Reading 12 files…”.",
     "Label the current step of a running tool call or reasoning trace.",

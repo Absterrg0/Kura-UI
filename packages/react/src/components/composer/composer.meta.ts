@@ -181,7 +181,7 @@ export default defineComponent({
       name: "ComposerHint",
       dataSlot: "composer-hint",
       description:
-        "Character count with a mini gauge (with maxLength) or a ~token estimate. data-level = ok | near | over.",
+        "Character count with a dial (with maxLength) or a ~token estimate. It takes the room the row has left and measures it: in a tight toolbar the limit (or the unit) goes first, then the whole hint, so it never lands on a tool. The field's spoken description is always complete. data-level = ok | near | over.",
       props: [
         {
           name: "mode",
@@ -231,7 +231,7 @@ export default defineComponent({
   a11y: {
     notes: [
       "The textarea is labelled “Message” by default (override with aria-label or aria-labelledby) and has enterkeyhint=send.",
-      "Over the character limit the textarea gets aria-invalid and the hint tells screen readers the limit was exceeded (announced once, not per keystroke).",
+      "The hint is the field's description: “3,400 of 4,000 characters, close to the limit” (read on focus, not per keystroke). Over the limit the textarea also gets aria-invalid.",
       "The submit button swaps its accessible name between “Send message” and “Stop generating”; the root sets aria-busy while a response is pending.",
       "The focus glow is on the whole composer (focus-within), so the textarea's own outline is replaced, never just removed.",
       "Attachments are a labelled list with “Remove <file>” buttons; removing returns focus to the textarea.",

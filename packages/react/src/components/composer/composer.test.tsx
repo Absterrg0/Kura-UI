@@ -128,12 +128,15 @@ describe("Composer", () => {
     );
     const input = screen.getByRole("textbox");
     expect(input).toHaveAttribute("aria-invalid", "true");
-    // The count and its limit are separate pieces, so a narrow toolbar can drop the limit first.
+    // The hint measures the room it has: the limit goes first in a tight toolbar, then the count.
     const hint = document.querySelector("[data-slot=composer-hint]")!;
-    expect(hint).toHaveTextContent("6 / 5");
-    expect(hint.querySelector(".hidden")).toHaveTextContent("6 / 5");
+    expect(hint).toHaveClass("@container/hint");
+    expect(hint.querySelector("[aria-hidden]")).toHaveTextContent("6 / 5");
     expect(hint).toHaveAttribute("data-level", "over");
-    expect(document.querySelector("[data-slot=composer-toolbar]")).toHaveClass("@container");
+    // What is read out is always complete, whatever fits on screen.
+    expect(screen.getByRole("textbox")).toHaveAccessibleDescription(
+      "6 of 5 characters, over the limit",
+    );
     expect(screen.getByRole("button", { name: "Send message" })).toBeDisabled();
     fireEvent.keyDown(input, { key: "Enter" });
     expect(onSubmit).not.toHaveBeenCalled();

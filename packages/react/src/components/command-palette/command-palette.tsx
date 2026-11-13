@@ -354,7 +354,7 @@ export function CommandPalette({
         data-page={page?.id}
         initialFocus={() => inputRef.current}
         className={cn(
-          "-translate-x-1/2 fixed top-[min(20vh,160px)] left-1/2 z-50 flex max-h-[min(520px,calc(100vh-120px))] w-[min(640px,calc(100vw-32px))] flex-col overflow-hidden",
+          "-translate-x-1/2 fixed top-[min(20vh,160px)] left-1/2 z-50 flex max-h-[min(520px,calc(100vh-min(20vh,160px)-16px))] w-[min(640px,calc(100vw-32px))] flex-col overflow-hidden",
           "m-0 rounded-kura-xl border-0 bg-kura-surface p-0 font-kura-sans text-kura-fg shadow-kura-popover outline-hidden backdrop:bg-transparent",
           "origin-top transition-[opacity,scale] duration-(--kura-duration-base) ease-kura-snap data-ending-style:scale-[0.98] data-ending-style:opacity-0 data-starting-style:scale-[0.98] data-starting-style:opacity-0 motion-reduce:transition-none",
           className,

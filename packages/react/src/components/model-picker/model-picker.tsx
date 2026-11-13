@@ -312,7 +312,12 @@ export function ModelPicker({
           {...props}
         >
           {selected && <ProviderMark model={selected} />}
-          <span className="truncate">{selected?.name ?? placeholder}</span>
+          {/* Squeezed, the name loses its start, not its end: "…Sonnet 5.5" still says which. */}
+          <span className="truncate text-left [direction:rtl]">
+            <span className="[direction:ltr] [unicode-bidi:isolate]">
+              {selected?.name ?? placeholder}
+            </span>
+          </span>
           <ChevronDown
             aria-hidden
             className="size-3.5 shrink-0 text-kura-fg-subtle transition-transform duration-(--kura-duration-base) ease-kura-out group-data-[state=open]/model-picker:rotate-180 motion-reduce:transition-none"

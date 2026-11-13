@@ -17,7 +17,13 @@ type RunEvent =
   | { type: "run.started"; title: string; model: string; at: number }
   | { type: "plan.updated"; steps: { id: string; title: string }[] }
   | { type: "step.started"; id: string; at: number }
-  | { type: "step.finished"; id: string; ok: boolean; at: number; error?: string }
+  | {
+      type: "step.finished";
+      id: string;
+      ok: boolean;
+      at: number;
+      error?: string;
+    }
   | { type: "tool.output"; chunk: string }
   | { type: "approval.requested"; id: string; command: string; risk: Risk }
   | { type: "usage"; input: number; output: number; cost: number };`;
@@ -31,7 +37,7 @@ interface RunState {
   status: "running" | "waiting" | "done" | "failed";
   tasks: TaskListItem[];
   output: string[];
-  approval: { id: string; command: string; risk: "low" | "medium" | "high" } | null;
+  approval: { id: string; command: string; risk: Risk } | null;
   tokens: { input: number; output: number };
   cost: number;
 }
@@ -83,7 +89,8 @@ function reduce(state: RunState, e: RunEvent): RunState {
   }
 }
 
-const patch = (tasks: TaskListItem[], id: string, next: Partial<TaskListItem>) =>
+type Patch = Partial<TaskListItem>;
+const patch = (tasks: TaskListItem[], id: string, next: Patch) =>
   tasks.map((t) => (t.id === id ? { ...t, ...next } : t));`;
 
 const VIEW = `"use client";

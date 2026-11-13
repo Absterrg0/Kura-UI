@@ -72,7 +72,7 @@ export default defineComponent({
       name: "branch",
       type: "string",
       description:
-        "Git branch in mono with a branch icon. In the bar it shows from ~768px container width.",
+        "Git branch in mono with a branch icon. In the bar it shows from ~1024px container width.",
     },
     {
       name: "progress",
