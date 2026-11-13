@@ -154,14 +154,14 @@ export default defineComponent({
       name: "FileChangesMinimal",
       kind: "minimal",
       title: "Changed files",
-      description: "Seven files from the auth migration as a folder tree.",
+      description: "Seven files from the auth migration as a folder tree, one still being edited.",
     },
     {
       name: "FileChangesFull",
       kind: "full",
       title: "Live run",
       description:
-        "Files appear as the agent reads and edits them — the active one carries the running glyph and an “editing” marker — then the run settles. Controlled selection.",
+        "Files join the changeset as the agent edits them — the active one carries the running glyph and an “editing” marker — then the run settles. Controlled selection.",
     },
     {
       name: "FileChangesList",

@@ -322,16 +322,16 @@ export function FileChanges({
       data-slot="file-changes"
       data-view={view}
       className={cn(
-        "@container/files flex min-w-0 flex-col overflow-hidden rounded-kura-xl bg-kura-surface font-kura-sans text-[13px] text-kura-fg shadow-kura-sm",
+        "@container/files flex min-w-0 flex-col overflow-hidden rounded-kura-xl bg-kura-surface font-kura-sans text-[13px] text-kura-fg shadow-kura-surface",
         className,
       )}
       {...props}
     >
       <div
         data-slot="file-changes-header"
-        className="flex h-11 shrink-0 items-center gap-2.5 pr-1.5 pl-4"
+        className="flex h-11 shrink-0 items-center gap-2.5 pr-1.5 pl-3.5"
       >
-        <span className="min-w-[3rem] truncate font-medium tracking-[-0.006em]">{title}</span>
+        <span className="min-w-[3rem] truncate font-semibold tracking-[-0.01em]">{title}</span>
         <span
           data-slot="file-changes-summary"
           className="flex shrink-0 items-baseline gap-2 font-kura-mono text-[12px] text-kura-fg-subtle tabular-nums"
