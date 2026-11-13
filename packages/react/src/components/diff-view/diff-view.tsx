@@ -224,7 +224,14 @@ function Counts({ additions, deletions }: { additions: number; deletions: number
         <span className="text-kura-danger-text">−{deletions}</span>
       )}
       <span className="sr-only">
-        {additions} additions, {deletions} deletions
+        {[
+          (additions > 0 || deletions === 0) &&
+            `${additions} ${additions === 1 ? "addition" : "additions"}`,
+          (deletions > 0 || additions === 0) &&
+            `${deletions} ${deletions === 1 ? "deletion" : "deletions"}`,
+        ]
+          .filter(Boolean)
+          .join(", ")}
       </span>
     </span>
   );

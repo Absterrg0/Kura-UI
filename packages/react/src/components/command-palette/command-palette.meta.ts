@@ -134,9 +134,10 @@ export default defineComponent({
         },
         {
           name: "shortcut",
-          type: "readonly KeyName[]",
+          type: "readonly KeyName[] | null",
           default: '["mod", "k"]',
-          description: "Shortcut keys shown on the right.",
+          description:
+            "Shortcut keys printed on the right (not on touch screens). Print only what the palette's `hotkey` binds; null prints nothing.",
         },
       ],
     },
@@ -169,7 +170,7 @@ export default defineComponent({
       kind: "full",
       title: "Agent actions, recents and nested pages",
       description:
-        "Controlled open state, Mod+K, recents, a nested “Switch agent…” page and an async “Run workflow…” page.",
+        "Controlled open state, its own shortcut (Mod+J, because Mod+K is the docs search on this page), recents, a nested “Switch agent…” page and an async “Run workflow…” page.",
     },
     {
       name: "CommandPaletteAsyncSearch",

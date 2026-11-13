@@ -133,10 +133,15 @@ describe("Composer", () => {
     expect(hint).toHaveClass("@container/hint");
     expect(hint.querySelector("[aria-hidden]")).toHaveTextContent("6 / 5");
     expect(hint).toHaveAttribute("data-level", "over");
-    // What is read out is always complete, whatever fits on screen.
+    // What is read out is always complete, whatever fits on screen (and said once).
     expect(screen.getByRole("textbox")).toHaveAccessibleDescription(
       "6 of 5 characters, over the limit",
     );
+    // Over the limit the count has to show: it keeps its width, and a full row may wrap for it.
+    expect(hint).toHaveClass("min-w-[4.5rem]");
+    const toolbar = document.querySelector("[data-slot=composer-toolbar]")!;
+    expect(toolbar).toHaveAttribute("data-over", "true");
+    expect(toolbar).toHaveClass("flex-wrap");
     expect(screen.getByRole("button", { name: "Send message" })).toBeDisabled();
     fireEvent.keyDown(input, { key: "Enter" });
     expect(onSubmit).not.toHaveBeenCalled();

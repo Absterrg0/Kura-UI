@@ -26,7 +26,7 @@ export function CommandPaletteMinimal() {
     <div className="w-72">
       <CommandPalette
         hotkey={null}
-        trigger={<CommandPaletteTrigger />}
+        trigger={<CommandPaletteTrigger shortcut={null} />}
         items={[
           { id: "new", label: "New chat", icon: <MessageSquarePlus /> },
           { id: "search", label: "Search files", icon: <FileSearch /> },
@@ -156,7 +156,8 @@ export function CommandPaletteFull() {
         items={items}
         open={open}
         onOpenChange={setOpen}
-        hotkey={["mod", "k"]}
+        // ⌘K belongs to the page this example sits on, so the palette takes ⌘J here.
+        hotkey={["mod", "j"]}
         recent={recent}
         onRecentChange={setRecent}
         recentLimit={3}
@@ -164,7 +165,7 @@ export function CommandPaletteFull() {
         emptyMessage="No commands match"
         label="Agent commands"
       />
-      <KbdShortcut keys={["mod", "k"]} label="or press" />
+      <KbdShortcut keys={["mod", "j"]} label="or press" className="pointer-coarse:hidden" />
       <p className="text-kura-fg-subtle text-xs" aria-live="polite">
         {last}
       </p>
@@ -215,9 +216,7 @@ export function CommandPaletteAsyncSearch() {
     <div className="w-80">
       <CommandPalette
         hotkey={null}
-        trigger={
-          <CommandPaletteTrigger placeholder="Search the codebase…" shortcut={["mod", "p"]} />
-        }
+        trigger={<CommandPaletteTrigger placeholder="Search the codebase…" shortcut={null} />}
         items={results}
         loading={loading}
         onQueryChange={search}

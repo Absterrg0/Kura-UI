@@ -498,10 +498,19 @@ export interface ComposerToolbarProps extends React.ComponentProps<"div"> {}
 
 /** Bottom row. Put `ComposerTools` (left) and `ComposerActions` (right) inside. */
 export function ComposerToolbar({ className, ...props }: ComposerToolbarProps) {
+  const { value, maxLength } = useComposer();
+  // Over the limit the count is the reason Send is blocked, so it must show: a row too full for
+  // it lets the actions wrap onto a second line instead of squeezing the count out.
+  const over = maxLength !== undefined && value.length > maxLength;
   return (
     <div
       data-slot="composer-toolbar"
-      className={cn("flex min-h-12 items-center justify-between gap-2 p-2 pt-1", className)}
+      data-over={over || undefined}
+      className={cn(
+        "flex min-h-12 items-center justify-between gap-2 p-2 pt-1",
+        over && "flex-wrap",
+        className,
+      )}
       {...props}
     />
   );
@@ -628,7 +637,6 @@ export function ComposerHint({
     <span
       data-slot="composer-hint"
       data-level={level}
-      id={hintId}
       aria-hidden={!visible || undefined}
       className={cn(
         // It takes the room the row has left and measures it (a size container), so what it
@@ -637,7 +645,8 @@ export function ComposerHint({
         "transition-[opacity,color] duration-(--kura-duration-base) ease-kura-out",
         !visible && "pointer-events-none opacity-0",
         level === "near" && "text-kura-fg",
-        level === "over" && "text-kura-danger-text",
+        // Over the limit it keeps the width of its dial and count, whatever the row has left.
+        level === "over" && "min-w-[4.5rem] text-kura-danger-text",
         className,
       )}
       {...props}
@@ -654,7 +663,10 @@ export function ComposerHint({
           {unit && <span className="hidden @[8rem]/hint:inline">{unit}</span>}
         </span>
       </span>
-      <span className="sr-only">{spoken}</span>
+      {/* The field's description is this sentence alone, whatever fits on screen. */}
+      <span id={hintId} className="sr-only">
+        {spoken}
+      </span>
     </span>
   );
 }

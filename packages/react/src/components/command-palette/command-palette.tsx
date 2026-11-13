@@ -517,8 +517,11 @@ export interface CommandPaletteTriggerProps
   extends Omit<React.ComponentProps<"button">, "children"> {
   /** Default "Search or ask…". */
   placeholder?: string;
-  /** Shortcut shown on the right. Default ["mod", "k"]. */
-  shortcut?: readonly KeyName[];
+  /**
+   * Shortcut printed on the right. Default ["mod", "k"]. Print only a key the palette really
+   * binds (its `hotkey`): pass null when it has none.
+   */
+  shortcut?: readonly KeyName[] | null;
 }
 
 /** A search-field-looking button that opens the palette. Pass it as `trigger`. */
@@ -541,7 +544,8 @@ export function CommandPaletteTrigger({
     >
       <Search aria-hidden className="size-3.5 shrink-0" />
       <span className="flex-1 truncate text-left">{placeholder}</span>
-      <Kbd keys={shortcut} size="sm" />
+      {/* A key hint is for a keyboard: it is not printed on a touch screen. */}
+      {shortcut && <Kbd keys={shortcut} size="sm" className="pointer-coarse:hidden" />}
     </button>
   );
 }

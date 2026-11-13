@@ -76,7 +76,13 @@ export function CommandMenu({
   React.useEffect(() => {
     if (!open) setQuery("");
   }, [open]);
-  useHotkey(["mod", "k"], () => show((o) => !o));
+  useHotkey(["mod", "k"], (e) => {
+    // Pressed inside another modal (a palette in an example): the site search stays behind it
+    // rather than stacking on top. The key is still taken, so the browser does nothing with it.
+    const modal = e.target instanceof Element && e.target.closest('[role="dialog"]');
+    if (!open && modal) return;
+    show((o) => !o);
+  });
   useHotkey(["/"], () => show(true));
 
   const go = (href: string) => {

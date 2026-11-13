@@ -220,6 +220,24 @@ export function ComposerStates() {
         </Composer>
       </div>
       <div>
+        <StateLabel>Over the character limit: the count turns red and Send waits</StateLabel>
+        <Composer
+          defaultValue="Draft release notes for v2.4 — keep it under 200 words, lead with the breaking change to the auth middleware, and thank the contributors."
+          maxLength={120}
+        >
+          <ComposerInput />
+          <ComposerToolbar>
+            <ComposerTools>
+              <ComposerAttachButton />
+            </ComposerTools>
+            <ComposerActions>
+              <ComposerHint />
+              <ComposerSubmit />
+            </ComposerActions>
+          </ComposerToolbar>
+        </Composer>
+      </div>
+      <div>
         <StateLabel>Disabled</StateLabel>
         <Composer
           disabled

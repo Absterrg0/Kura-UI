@@ -9,7 +9,12 @@ import {
   userEvent,
   waitFor,
 } from "../../../test/utils";
-import { CommandPalette, type CommandPaletteItem, scoreCommand } from "./command-palette";
+import {
+  CommandPalette,
+  type CommandPaletteItem,
+  CommandPaletteTrigger,
+  scoreCommand,
+} from "./command-palette";
 import {
   CommandPaletteAsyncSearch,
   CommandPaletteFull,
@@ -134,6 +139,14 @@ describe("CommandPalette", () => {
     render(<CommandPalette items={[]} defaultOpen loading />);
     const bar = document.querySelector("[data-slot=command-palette-loading] span")!;
     expect(bar.className).toContain("motion-reduce:animate-none");
+  });
+
+  it("the trigger prints a key only when it is given one", () => {
+    const { container, rerender } = render(<CommandPaletteTrigger />);
+    expect(container.querySelector("[data-slot=kbd]")).not.toBeNull();
+    // A palette with no hotkey prints no key: `shortcut={null}`.
+    rerender(<CommandPaletteTrigger shortcut={null} />);
+    expect(container.querySelector("[data-slot=kbd]")).toBeNull();
   });
 
   it("examples render without a11y violations (closed and open)", async () => {

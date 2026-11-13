@@ -244,48 +244,68 @@ export function SlashCommandMenu({
     }
   }, [open, onOpenChange]);
 
+  // The side is picked once for each "/" (and again when the page scrolls or resizes), so the
+  // menu does not jump across the caret as typing filters the list; its height follows the room.
+  const picked = React.useRef<{ start: number; side: "top" | "bottom" } | null>(null);
+
   // Position at the trigger character, on the side that has room, and never taller than that
   // room: the list scrolls instead of the menu leaving the screen.
-  const reposition = React.useCallback(() => {
-    const field = textareaRef.current;
-    if (!field || !match) return;
-    const rect = getCaretRect(field, match.start);
-    if (!rect) return;
-    setCaret(rect);
-    const below = window.innerHeight - (rect.top + rect.height) - GAP - EDGE;
-    const above = rect.top - GAP - EDGE;
-    // What the menu would like: its content, up to the cap (the list is the part that scrolls).
-    const menu = menuRef.current;
-    const list = menu?.querySelector<HTMLElement>("[role=listbox]");
-    const wanted =
-      menu && list
-        ? Math.min(MAX_HEIGHT, menu.offsetHeight - list.offsetHeight + list.scrollHeight)
-        : MAX_HEIGHT;
-    let next: "top" | "bottom";
-    if (side === "auto") next = below >= wanted || below >= above ? "bottom" : "top";
-    else {
-      // A side that was asked for is kept while it can show a few commands; with next to no
-      // room there and more on the other side, the menu opens where it can be read.
-      const own = side === "top" ? above : below;
-      const other = side === "top" ? below : above;
-      next = own < MIN_ROOM && other > own ? (side === "top" ? "bottom" : "top") : side;
-    }
-    setPlacement(next);
-    setRoom(Math.max(0, Math.min(MAX_HEIGHT, next === "top" ? above : below)));
-  }, [textareaRef, match, side]);
+  const reposition = React.useCallback(
+    (repick = false) => {
+      const field = textareaRef.current;
+      if (!field || !match) return;
+      const rect = getCaretRect(field, match.start);
+      if (!rect) return;
+      setCaret(rect);
+      // The visible part of the screen: an on-screen keyboard shrinks it, the layout viewport not.
+      const view = window.visualViewport;
+      const top = view?.offsetTop ?? 0;
+      const bottom = top + (view?.height ?? window.innerHeight);
+      const below = bottom - (rect.top + rect.height) - GAP - EDGE;
+      const above = rect.top - top - GAP - EDGE;
+      // What the menu would like: its content, up to the cap (the list is the part that scrolls).
+      const menu = menuRef.current;
+      const list = menu?.querySelector<HTMLElement>("[role=listbox]");
+      const wanted =
+        menu && list
+          ? Math.min(MAX_HEIGHT, menu.offsetHeight - list.offsetHeight + list.scrollHeight)
+          : MAX_HEIGHT;
+      let next: "top" | "bottom";
+      const kept = picked.current;
+      if (!repick && kept && kept.start === match.start) next = kept.side;
+      else {
+        if (side === "auto") next = below >= wanted || below >= above ? "bottom" : "top";
+        else {
+          // A side that was asked for is kept while it can show a few commands; with next to no
+          // room there and more on the other side, the menu opens where it can be read.
+          const own = side === "top" ? above : below;
+          const other = side === "top" ? below : above;
+          next = own < MIN_ROOM && other > own ? (side === "top" ? "bottom" : "top") : side;
+        }
+        picked.current = { start: match.start, side: next };
+      }
+      setPlacement(next);
+      setRoom(Math.max(0, Math.min(MAX_HEIGHT, next === "top" ? above : below)));
+    },
+    [textareaRef, match, side],
+  );
 
   React.useLayoutEffect(() => {
     if (open) reposition();
+    else picked.current = null;
   }, [open, reposition]);
 
   React.useEffect(() => {
     if (!open) return;
-    const onChange = () => reposition();
+    const onChange = () => reposition(true);
+    const view = window.visualViewport;
     window.addEventListener("resize", onChange);
     window.addEventListener("scroll", onChange, true);
+    view?.addEventListener("resize", onChange);
     return () => {
       window.removeEventListener("resize", onChange);
       window.removeEventListener("scroll", onChange, true);
+      view?.removeEventListener("resize", onChange);
     };
   }, [open, reposition]);
 
