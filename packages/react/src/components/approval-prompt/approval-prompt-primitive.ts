@@ -1,4 +1,4 @@
-import { type ChangeDetails, createChange, definePrimitive } from "@ui-sdk/core";
+import { type ChangeDetails, createChange, definePrimitive, type SlotFactory } from "@ui-sdk/core";
 
 export type ApprovalDecision = "pending" | "approved" | "denied" | "always";
 
@@ -7,12 +7,28 @@ type ApprovalPromptOptions = {
   onValueChange?: (value: ApprovalDecision, details: ChangeDetails<"deny">) => void;
 };
 
+type ApprovalPromptState = { value: ApprovalDecision };
+type ApprovalPromptApi = { deny: (event?: Event) => boolean };
+
+/**
+ * The primitive's type, written out with ui-sdk's public types. Left to inference, it mentions
+ * a helper ui-sdk does not export, and the package's declarations cannot be built.
+ */
+type ApprovalPromptPrimitive = ReturnType<
+  typeof definePrimitive<
+    ApprovalPromptOptions,
+    ApprovalPromptState,
+    ApprovalPromptApi,
+    { root: ReturnType<SlotFactory<ApprovalPromptState, ApprovalPromptApi>> }
+  >
+>;
+
 /**
  * The approval prompt's behavior for agents. An agent connected through `createAgent` reads the
  * prompt by its title, sees the decision as its value, and may only `deny`. Approving is a press
  * on a button marked `data-agent-confirm`, so a person always decides.
  */
-export const approvalPrompt = definePrimitive({
+export const approvalPrompt: ApprovalPromptPrimitive = definePrimitive({
   name: "approval-prompt",
   options: { value: "string", onValueChange: "callback" },
   controlled: ["value"],

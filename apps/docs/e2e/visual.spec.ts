@@ -50,5 +50,5 @@ test("⌘K search finds components", async ({ page }) => {
   await open(page, "/", "light");
   await page.getByTestId("search-trigger").click();
   await page.getByRole("combobox").fill("thinking");
-  await expect(page.getByRole("option", { name: /Shimmer Text/ })).toBeVisible();
+  await expect(page.getByRole("option", { name: /Shimmer text/i })).toBeVisible();
 });

@@ -1,4 +1,4 @@
-import { definePrimitive } from "@ui-sdk/core";
+import { definePrimitive, type SlotFactory } from "@ui-sdk/core";
 
 /** One thing an agent can name in an action, like a queued prompt or a diff hunk. */
 export interface AgentItem {
@@ -17,6 +17,22 @@ export interface AgentSurfaceOptions {
   onAction?: (action: string, args: unknown[]) => unknown;
 }
 
+type SurfaceState = { value: string; items: AgentItem[] };
+type SurfaceApi<Action extends string> = Record<Action, (...args: unknown[]) => unknown>;
+
+/**
+ * What `agentSurface` returns, written out with ui-sdk's public types. Left to inference, the
+ * type mentions a helper ui-sdk does not export, and the package's declarations cannot be built.
+ */
+export type AgentSurfacePrimitive<Action extends string> = ReturnType<
+  typeof definePrimitive<
+    AgentSurfaceOptions,
+    SurfaceState,
+    SurfaceApi<Action>,
+    { root: ReturnType<SlotFactory<SurfaceState, SurfaceApi<Action>>> }
+  >
+>;
+
 /**
  * A ui-sdk primitive that makes a Kura component readable and operable by an agent connected
  * through `createAgent` (from `@ui-sdk/react/agent`). The component stays in charge of its own
@@ -30,7 +46,7 @@ export function agentSurface<const Action extends string>(
   name: string,
   actions: readonly Action[],
   extra: { closed?: boolean } = {},
-) {
+): AgentSurfacePrimitive<Action> {
   return definePrimitive({
     name,
     options: { value: "string", items: "value", onAction: "value" },
@@ -48,7 +64,7 @@ export function agentSurface<const Action extends string>(
           action,
           (...args: unknown[]) => context.options().onAction?.(action, args),
         ]),
-      ) as Record<Action, (...args: unknown[]) => unknown>,
+      ) as SurfaceApi<Action>,
     slots: (slot) => ({ root: slot({}) }),
     agent: { actions: [...actions], ...(extra.closed ? { closed: true } : {}) },
   });
