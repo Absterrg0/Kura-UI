@@ -41,11 +41,13 @@ describe("StatusGlyph", () => {
       unmount();
       return n;
     };
-    expect(count("queued")).toBe(12);
-    expect(count("waiting")).toBe(13);
-    expect(count("done")).toBe(21);
+    expect(count("queued")).toBe(8);
+    expect(count("waiting")).toBe(9);
+    expect(count("done")).toBe(1);
     expect(count("failed")).toBe(9);
-    expect(count("running")).toBe(12);
+    expect(count("skipped")).toBe(3);
+    expect(count("paused")).toBe(6);
+    expect(count("running")).toBe(8);
   });
 
   it("stops the chasing light under reduced motion", () => {

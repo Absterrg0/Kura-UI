@@ -10,12 +10,12 @@ export interface SpinnerProps extends Omit<React.ComponentProps<"span">, "childr
 
 const sizes = { sm: "size-[13px]", md: "size-[15px]", lg: "size-5" } as const;
 
-// The ring of a 5×5 dot matrix, clockwise from the top.
-// biome-ignore format: a 5×5 ring reads better as two rows of pairs
-const RING: readonly (readonly [number, number])[] = [
-  [1, 0], [2, 0], [3, 0], [4, 1], [4, 2], [4, 3],
-  [3, 4], [2, 4], [1, 4], [0, 3], [0, 2], [0, 1],
-];
+// Eight dots on a true circle in a 15-unit box, clockwise from twelve o'clock: the same ring as
+// the running status glyph.
+const RING: readonly (readonly [number, number])[] = Array.from({ length: 8 }, (_, i) => {
+  const a = (i / 8) * Math.PI * 2;
+  return [7.5 + Math.sin(a) * 5.4, 7.5 - Math.cos(a) * 5.4] as const;
+});
 
 /**
  * The Kura spinner: a ring of dots with a light chasing round it (the same motion as a running
@@ -35,13 +35,13 @@ export function Spinner({ size = "md", label = "Loading", className, ...props }:
       <svg aria-hidden viewBox="0 0 15 15" className="size-full">
         {RING.map(([x, y], i) => (
           <circle
-            key={`${x}-${y}`}
-            cx={1.5 + x * 3}
-            cy={1.5 + y * 3}
-            r={1.1}
-            style={{ animationDelay: `${i * 100}ms` }}
+            key={i}
+            cx={x}
+            cy={y}
+            r={1.25}
+            style={{ animationDelay: `${i * 150}ms` }}
             className={
-              i < 4
+              i < 3
                 ? "animate-kura-chase fill-current opacity-20 motion-reduce:animate-none motion-reduce:opacity-100"
                 : "animate-kura-chase fill-current opacity-20 motion-reduce:animate-none"
             }

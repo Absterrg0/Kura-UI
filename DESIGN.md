@@ -11,10 +11,11 @@ The source of truth for values is `packages/react/src/styles/kura.css`.
 
 ## 1. The seven rules
 
-1. **Status is a 5×5 dot glyph**, never an icon or a coloured pill (`StatusGlyph`).
-   queued = hollow ring · running = a light chasing round the ring · waiting on a person = ember
-   ring with a blinking centre · done = solid disc · failed = a cross · skipped = a dash ·
-   paused = two bars.
+1. **Status is a dot glyph**, never an icon or a coloured pill (`StatusGlyph`): a ring of eight
+   dots on a true circle (a square of dots reads as a dashed marquee at 13px).
+   queued = the ring · running = a light chasing round the ring · waiting on a person = ember
+   ring with a blinking centre · done = a solid disc · failed = a cross ·
+   skipped = a dash · paused = two bars.
 2. **Every agent has a face**: a symmetric 5×5 dot sigil generated from its name, in a small
    raised tile (`AgentSigil`). Same name, same face. No letter avatars, no robot icons.
 3. **Anything measured is a row of dots** (`DotRail`): run progress, subagent progress, trace
@@ -99,7 +100,7 @@ dividers. A hairline is allowed only to separate a footer of actions from conten
 | `Halftone`          | the ember corner; the parent must be `relative isolate`                      |
 | `Spinner`           | the chasing ring, for loading that is not an agent state                     |
 
-Dots sit on a 3-unit grid inside a 15-unit glyph (r 1.1); rails use a 6px pitch (r 1.1); leaders
+A glyph is drawn in a 15-unit box: eight dots of r 1.25 on a circle of r 5.4; rails use a 6px pitch (r 1.1); leaders
 a 5px pitch (r 0.8). Rails snap to whole dots: a dot is never cut in half.
 
 ---
