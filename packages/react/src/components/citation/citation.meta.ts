@@ -29,7 +29,7 @@ export default defineComponent({
       type: "CitationSource",
       required: true,
       description:
-        "{ title, url, snippet?, favicon?, siteName?, date? }. The domain is derived from `url`; without `favicon` a monogram tile is shown (no third-party favicon service is called).",
+        "{ title, url, snippet?, favicon?, siteName?, date? }. The domain is derived from `url`; without `favicon` no icon is drawn (no third-party favicon service is called).",
     },
     {
       name: "display",
@@ -76,7 +76,7 @@ export default defineComponent({
     {
       name: "Favicon",
       dataSlot: "citation-favicon",
-      description: "16px favicon or monogram tile (aria-hidden).",
+      description: "16px favicon (aria-hidden); rendered only when the source has one.",
     },
     {
       name: "Sources",

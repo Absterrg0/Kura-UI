@@ -36,7 +36,7 @@ export interface MessageProps extends React.ComponentProps<"div"> {
   error?: React.ReactNode;
   /** Shows a Retry button in the error row. */
   onRetry?: () => void;
-  /** Action bar under the content, usually `<MessageActions>`. */
+  /** Action bar, usually `<MessageActions>`: under an assistant message, beside a user bubble. */
   actions?: React.ReactNode;
 }
 
@@ -59,6 +59,30 @@ export function Message({
   ...props
 }: MessageProps) {
   const user = from === "user";
+  const bodyEl = (
+    <div
+      data-slot="message-body"
+      className={cn(
+        "flex min-w-0 max-w-full flex-col gap-3 text-[15px] text-kura-fg leading-relaxed",
+        // Markdown-friendly defaults for rendered HTML. Links and lists skip anything that is (or
+        // sits inside) a nested Kura component, so e.g. a Sources strip keeps its own styling.
+        "[&_a:not([data-slot],[data-slot=message-body]_[data-slot]_*)]:underline [&_a:not([data-slot],[data-slot=message-body]_[data-slot]_*)]:decoration-kura-border-strong [&_a:not([data-slot],[data-slot=message-body]_[data-slot]_*)]:underline-offset-[3px] [&_a:not([data-slot],[data-slot=message-body]_[data-slot]_*):hover]:decoration-current",
+        "[&_strong]:font-semibold [&_ol:not([data-slot],[data-slot=message-body]_[data-slot]_*)]:list-decimal [&_ol:not([data-slot],[data-slot=message-body]_[data-slot]_*)]:pl-5 [&_ul:not([data-slot],[data-slot=message-body]_[data-slot]_*)]:list-disc [&_ul:not([data-slot],[data-slot=message-body]_[data-slot]_*)]:pl-5 [&_li:not([data-slot],[data-slot=message-body]_[data-slot]_*)+li]:mt-1 [&_li:not([data-slot],[data-slot=message-body]_[data-slot]_*)]:pl-0.5 [&_li::marker]:text-kura-fg-subtle",
+        "[&_:not(pre)>code:not([data-slot])]:rounded-kura-xs [&_:not(pre)>code:not([data-slot])]:bg-kura-active [&_:not(pre)>code:not([data-slot])]:px-[0.3em] [&_:not(pre)>code:not([data-slot])]:py-[0.1em] [&_:not(pre)>code:not([data-slot])]:font-kura-mono [&_:not(pre)>code:not([data-slot])]:text-[0.86em]",
+        "[&_blockquote]:border-kura-border-strong [&_blockquote]:border-l-2 [&_blockquote]:pl-3 [&_blockquote]:text-kura-fg-muted",
+        "[&_h1]:font-semibold [&_h1]:text-xl [&_h2]:font-semibold [&_h2]:text-lg [&_h3]:font-semibold [&_h3]:text-base",
+        user
+          ? // What a person typed sits on a raised tile, like a key; the agent's words are bare.
+            "w-fit max-w-[min(80%,36rem)] whitespace-pre-wrap break-words rounded-kura-xl bg-kura-raised px-3.5 py-2 shadow-kura-raised"
+          : "w-full",
+        status === "error" && "text-kura-fg-muted",
+        // Without a header, the first line sits on the avatar's centre line.
+        !user && avatar != null && name == null && timestamp == null && "pt-[3px]",
+      )}
+    >
+      {children}
+    </div>
+  );
   return (
     <div
       data-slot="message"
@@ -80,7 +104,8 @@ export function Message({
           <div
             data-slot="message-header"
             className={cn(
-              "flex h-7 items-center gap-2 text-[13px] leading-none",
+              // As tall as the avatar, so the name sits on its centre line.
+              "flex h-[30px] items-center gap-2 text-[13px] leading-none",
               user && "flex-row-reverse",
             )}
           >
@@ -88,26 +113,22 @@ export function Message({
             {timestamp != null && <MessageTime value={timestamp} />}
           </div>
         )}
-        <div
-          data-slot="message-body"
-          className={cn(
-            "flex min-w-0 max-w-full flex-col gap-3 text-[15px] text-kura-fg leading-relaxed",
-            // Markdown-friendly defaults for rendered HTML. Links and lists skip anything that is (or
-            // sits inside) a nested Kura component, so e.g. a Sources strip keeps its own styling.
-            "[&_a:not([data-slot],[data-slot=message-body]_[data-slot]_*)]:underline [&_a:not([data-slot],[data-slot=message-body]_[data-slot]_*)]:decoration-kura-border-strong [&_a:not([data-slot],[data-slot=message-body]_[data-slot]_*)]:underline-offset-[3px] [&_a:not([data-slot],[data-slot=message-body]_[data-slot]_*):hover]:decoration-current",
-            "[&_strong]:font-semibold [&_ol:not([data-slot],[data-slot=message-body]_[data-slot]_*)]:list-decimal [&_ol:not([data-slot],[data-slot=message-body]_[data-slot]_*)]:pl-5 [&_ul:not([data-slot],[data-slot=message-body]_[data-slot]_*)]:list-disc [&_ul:not([data-slot],[data-slot=message-body]_[data-slot]_*)]:pl-5 [&_li:not([data-slot],[data-slot=message-body]_[data-slot]_*)+li]:mt-1 [&_li:not([data-slot],[data-slot=message-body]_[data-slot]_*)]:pl-0.5 [&_li::marker]:text-kura-fg-subtle",
-            "[&_:not(pre)>code:not([data-slot])]:rounded-kura-xs [&_:not(pre)>code:not([data-slot])]:bg-kura-active [&_:not(pre)>code:not([data-slot])]:px-[0.3em] [&_:not(pre)>code:not([data-slot])]:py-[0.1em] [&_:not(pre)>code:not([data-slot])]:font-kura-mono [&_:not(pre)>code:not([data-slot])]:text-[0.86em]",
-            "[&_blockquote]:border-kura-border-strong [&_blockquote]:border-l-2 [&_blockquote]:pl-3 [&_blockquote]:text-kura-fg-muted",
-            "[&_h1]:font-semibold [&_h1]:text-xl [&_h2]:font-semibold [&_h2]:text-lg [&_h3]:font-semibold [&_h3]:text-base",
-            user
-              ? // What a person typed sits on a raised tile, like a key; the agent's words are bare.
-                "w-fit max-w-[min(80%,36rem)] whitespace-pre-wrap break-words rounded-kura-xl bg-kura-raised px-3.5 py-2 shadow-kura-raised"
-              : "w-full",
-            status === "error" && "text-kura-fg-muted",
-          )}
-        >
-          {children}
-        </div>
+        {user && actions != null ? (
+          // A person's actions sit beside their bubble, on its last line: no row is reserved
+          // under it, so the thread keeps an even rhythm.
+          <div className="flex w-full min-w-0 items-end justify-end gap-1">
+            <div
+              data-slot="message-actions-row"
+              className="mb-[7px] shrink-0"
+              inert={status === "streaming" || undefined}
+            >
+              <div className={cn(status === "streaming" && "invisible")}>{actions}</div>
+            </div>
+            {bodyEl}
+          </div>
+        ) : (
+          bodyEl
+        )}
         {status === "error" && (
           <div
             data-slot="message-error"
@@ -123,9 +144,9 @@ export function Message({
             )}
           </div>
         )}
-        {actions != null && (
+        {!user && actions != null && (
           <div
-            className={cn("flex", user ? "justify-end" : "-ml-1.5 justify-start")}
+            className="-ml-1.5 flex justify-start"
             // Keep the row laid out while streaming so actions appearing never shift the thread.
             data-slot="message-actions-row"
             inert={status === "streaming" || undefined}

@@ -641,7 +641,7 @@ export function ComposerHint({
       className={cn(
         // It takes the room the row has left and measures it (a size container), so what it
         // shows depends on what is actually free, not on how wide the composer is.
-        "@container/hint flex min-w-0 flex-1 select-none items-center justify-end text-xs text-kura-fg-subtle tabular-nums",
+        "@container/hint flex min-w-0 flex-1 select-none items-center justify-end font-kura-mono text-[12px] text-kura-fg-subtle tabular-nums",
         "transition-[opacity,color] duration-(--kura-duration-base) ease-kura-out",
         !visible && "pointer-events-none opacity-0",
         level === "near" && "text-kura-fg",

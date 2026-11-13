@@ -11,7 +11,12 @@ const photo = (tone: number) =>
   )}`;
 
 export function AttachmentMinimal() {
-  return <Attachment name="q3-board-report.pdf" type="application/pdf" size={2_480_000} />;
+  return (
+    <div className="flex flex-wrap items-center gap-2">
+      <Attachment name="q3-board-report.pdf" type="application/pdf" size={2_480_000} />
+      <Attachment name="revenue-by-region.csv" type="text/csv" size={318_000} />
+    </div>
+  );
 }
 
 const initial: AttachmentItem[] = [
@@ -58,7 +63,7 @@ export function AttachmentFull() {
   }, []);
 
   return (
-    <div className="flex w-full max-w-xl flex-col gap-3">
+    <div className="w-full max-w-xl">
       <AttachmentList
         items={items}
         max={4}
@@ -71,11 +76,6 @@ export function AttachmentFull() {
           )
         }
       />
-      <p className="text-kura-fg-subtle text-xs">
-        <span className="pointer-coarse:hidden">Hover a file to remove it</span>
-        <span className="hidden pointer-coarse:inline">Tap × to remove a file</span> · Retry the
-        failed upload · Open the +N stack
-      </p>
     </div>
   );
 }

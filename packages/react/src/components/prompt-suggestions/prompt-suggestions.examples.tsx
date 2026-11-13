@@ -79,25 +79,20 @@ const sets: PromptSuggestion[][] = [
 
 export function PromptSuggestionsFull() {
   const [set, setSet] = React.useState(0);
-  const [picked, setPicked] = React.useState<string | null>(null);
   return (
-    <div className="flex w-full max-w-xl flex-col gap-3">
+    <div className="flex w-full max-w-xl flex-col items-end gap-2">
       <PromptSuggestions
         variant="cards"
         label="Try one of these"
         stagger={0.05}
         suggestions={sets[set] ?? []}
-        onSelect={(prompt) => setPicked(prompt)}
+        onSelect={(prompt) => console.log(prompt)}
+        className="w-full"
       />
-      <div className="flex items-center justify-between gap-3 px-1">
-        <p className="min-w-0 truncate text-kura-fg-subtle text-xs" aria-live="polite">
-          {picked ? `Prompt: ${picked}` : "Pick a card"}
-        </p>
-        <Button variant="ghost" size="xs" onClick={() => setSet((s) => (s + 1) % sets.length)}>
-          <RefreshCw />
-          More ideas
-        </Button>
-      </div>
+      <Button variant="ghost" size="xs" onClick={() => setSet((s) => (s + 1) % sets.length)}>
+        <RefreshCw />
+        More ideas
+      </Button>
     </div>
   );
 }
@@ -113,7 +108,7 @@ export function PromptSuggestionsEmptyChat() {
   const input = React.useRef<HTMLTextAreaElement>(null);
   return (
     <div className="flex w-full max-w-xl flex-col gap-5">
-      <p className="text-balance text-center font-medium text-2xl text-kura-fg tracking-tight">
+      <p className="text-balance text-center font-semibold text-[19px] text-kura-fg tracking-[-0.022em]">
         What should we work on?
       </p>
       <Composer value={value} onValueChange={setValue} onSubmit={() => {}}>
@@ -129,6 +124,7 @@ export function PromptSuggestionsEmptyChat() {
       </Composer>
       <PromptSuggestions
         variant="list"
+        className="px-2"
         suggestions={starters}
         onSelect={(prompt) => {
           setValue(prompt);

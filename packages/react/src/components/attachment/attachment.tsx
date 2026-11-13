@@ -1,7 +1,6 @@
 "use client";
 
 import {
-  CloudUpload,
   FileArchive,
   FileAudio,
   FileCode,
@@ -156,10 +155,21 @@ export function Attachment({
   const pct =
     typeof progress === "number" ? Math.round(Math.min(1, Math.max(0, progress)) * 100) : null;
 
+  // Type and size are one technical line, in Geist Mono; a status is words, with its figure in mono.
+  const mono = "font-kura-mono text-[11.5px]";
   let meta: React.ReactNode;
-  if (status === "uploading") meta = pct === null ? "Uploading…" : `Uploading · ${pct}%`;
+  if (status === "uploading")
+    meta =
+      pct === null ? (
+        "Uploading…"
+      ) : (
+        <>
+          Uploading · <span className={mono}>{pct}%</span>
+        </>
+      );
   else if (status === "error") meta = error ? "Failed" : "Upload failed";
-  else meta = [ext, sizeLabel].filter(Boolean).join(" · ") || "File";
+  else
+    meta = <span className={mono}>{[ext, sizeLabel].filter(Boolean).join(" · ") || "File"}</span>;
 
   const description = `${name}${status === "uploading" ? `, uploading${pct !== null ? ` ${pct}%` : ""}` : ""}${
     status === "error" ? `, upload failed${error ? `: ${error}` : ""}` : ""
@@ -278,14 +288,17 @@ export function Attachment({
           <Icon className="size-4" aria-hidden />
         )}
       </span>
-      <span className="flex min-w-0 flex-col gap-0.5 leading-none">
-        <span data-slot="attachment-name" className="truncate font-medium text-[13px] text-kura-fg">
+      <span className="flex min-w-0 flex-col">
+        <span
+          data-slot="attachment-name"
+          className="truncate font-medium text-[13px] text-kura-fg leading-[18px]"
+        >
           {name}
         </span>
         <span
           data-slot="attachment-meta"
           className={cn(
-            "flex items-center gap-1 text-[11px] tabular-nums",
+            "flex items-center gap-1 text-[12px] leading-4 tabular-nums",
             status === "error" ? "text-kura-danger-text" : "text-kura-fg-subtle",
           )}
         >
@@ -446,7 +459,7 @@ export interface AttachmentDropzoneProps
   /** Reject files larger than this many bytes. */
   maxSize?: number;
   disabled?: boolean;
-  /** Headline. Default "Drop files or browse". */
+  /** Headline. Default "Drop files or browse" (with "browse" underlined). */
   title?: React.ReactNode;
   /** Hint under the headline, e.g. "PNG, PDF or CSV up to 10 MB". */
   description?: React.ReactNode;
@@ -462,7 +475,7 @@ export function AttachmentDropzone({
   multiple = true,
   maxSize,
   disabled = false,
-  title = "Drop files or browse",
+  title,
   description,
   className,
   ...props
@@ -512,7 +525,7 @@ export function AttachmentDropzone({
         deliver(filesFromDataTransfer(e.dataTransfer));
       }}
       className={cn(
-        "group/dropzone relative isolate flex min-h-36 w-full rounded-kura-xl font-kura-sans",
+        "group/dropzone relative isolate flex min-h-32 w-full rounded-kura-xl font-kura-sans",
         "bg-kura-surface-sunken transition-[background-color] duration-(--kura-duration-base) ease-kura-out",
         "data-dragging:bg-kura-hover",
         disabled && "cursor-not-allowed opacity-50",
@@ -542,27 +555,25 @@ export function AttachmentDropzone({
         disabled={disabled}
         aria-describedby={description ? descId : undefined}
         onClick={() => inputRef.current?.click()}
-        className="flex w-full cursor-pointer flex-col items-center justify-center gap-3 rounded-[inherit] p-6 text-center outline-hidden focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-kura-ring disabled:cursor-not-allowed"
+        className="group/browse flex w-full cursor-pointer flex-col items-center justify-center gap-1 rounded-[inherit] p-6 text-center outline-hidden focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-kura-ring disabled:cursor-not-allowed"
       >
-        <span
-          aria-hidden
-          className={cn(
-            "flex size-10 items-center justify-center rounded-[11px] bg-kura-raised text-kura-fg-muted shadow-kura-raised",
-            "transition-colors duration-(--kura-duration-base) ease-kura-snap group-data-dragging/dropzone:text-kura-fg",
-          )}
-        >
-          <CloudUpload className="size-[18px]" strokeWidth={1.75} />
+        <span className="font-medium text-[13px] text-kura-fg">
+          {dragging
+            ? "Release to attach"
+            : (title ?? (
+                <>
+                  Drop files or{" "}
+                  <span className="underline decoration-kura-border-strong underline-offset-[3px] transition-[text-decoration-color] duration-(--kura-duration-fast) group-hover/browse:decoration-current">
+                    browse
+                  </span>
+                </>
+              ))}
         </span>
-        <span className="flex flex-col gap-1">
-          <span className="font-medium text-[13px] text-kura-fg">
-            {dragging ? "Release to attach" : title}
+        {description && (
+          <span id={descId} className="text-[12.5px] text-kura-fg-subtle">
+            {description}
           </span>
-          {description && (
-            <span id={descId} className="text-kura-fg-subtle text-xs">
-              {description}
-            </span>
-          )}
-        </span>
+        )}
       </button>
       <input
         ref={inputRef}

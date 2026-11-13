@@ -239,7 +239,7 @@ export function PromptQueue({
         }}
         aria-labelledby={`${id}-title`}
         aria-describedby={`${id}-help`}
-        className="flex flex-col py-1"
+        className={cn("flex flex-col pb-1.5", variant === "tray" && "pb-2.5")}
       >
         {items.map((item, index) => (
           <QueueRow
@@ -397,16 +397,18 @@ function QueueRow({
           {firstAttachment && (
             <span
               data-slot="prompt-queue-attachments"
-              className="inline-flex h-5 min-w-0 max-w-[40%] shrink items-center gap-1 rounded-kura-sm bg-kura-hover px-1.5 font-kura-mono text-[11px] text-kura-fg-muted"
+              // A quiet caption after the prompt, not a chip; the row's keys take its place while
+              // they show, so the prompt keeps its width.
+              className="inline-flex min-w-0 max-w-[36%] shrink-0 items-center gap-1.5 pr-2 pl-1 font-kura-mono text-[12px] text-kura-fg-subtle group-focus-within/item:hidden group-hover/item:hidden"
             >
               {firstAttachment.type === "image" ? (
-                <ImageIcon aria-hidden className="size-3 shrink-0" strokeWidth={1.75} />
+                <ImageIcon aria-hidden className="size-3.5 shrink-0" strokeWidth={1.75} />
               ) : (
-                <FileText aria-hidden className="size-3 shrink-0" strokeWidth={1.75} />
+                <FileText aria-hidden className="size-3.5 shrink-0" strokeWidth={1.75} />
               )}
               <span className="sr-only @md:not-sr-only @md:truncate">{firstAttachment.name}</span>
               {attachments.length > 1 && (
-                <span className="shrink-0 text-kura-fg-subtle">+{attachments.length - 1}</span>
+                <span className="shrink-0 tabular-nums">+{attachments.length - 1}</span>
               )}
             </span>
           )}

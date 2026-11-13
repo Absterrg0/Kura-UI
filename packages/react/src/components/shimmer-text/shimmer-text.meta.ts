@@ -83,15 +83,17 @@ export default defineComponent({
         "Every prop: element, speed, band width, and toggling `active` when work completes.",
     },
     {
-      name: "ShimmerTextInToolStep",
+      name: "ShimmerTextInMessage",
       kind: "composition",
-      title: "Agent step with status region",
-      description: "A tool-call style row announcing progress politely to screen readers.",
+      title: "A step inside an assistant turn",
+      description:
+        "The agent's current step shimmers in a polite status region, then settles to plain text when the answer arrives.",
     },
   ],
   agentNotes: [
     'Server-component safe: no hooks, pure CSS animation. No "use client" needed to render it.',
     "Flip `active` to false instead of unmounting when work completes, so layout does not jump.",
     "Keep the label under ~6 words and end with an ellipsis (…) while active.",
+    "Don't shimmer a label that already has a StatusGlyph beside it (a tool-call row, a task step): the glyph is the signal there.",
   ],
 });

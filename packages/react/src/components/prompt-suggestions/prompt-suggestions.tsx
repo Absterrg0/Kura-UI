@@ -72,7 +72,9 @@ export function PromptSuggestions({
       className={cn(
         "font-kura-sans",
         variant === "chips" && "flex flex-wrap justify-center gap-2",
-        variant === "cards" && "grid grid-cols-1 gap-2 sm:grid-cols-2",
+        // Cards are cells of one sheet, not a grid of sheets.
+        variant === "cards" &&
+          "grid grid-cols-1 gap-0.5 rounded-kura-xl bg-kura-surface p-1.5 shadow-kura-surface sm:grid-cols-2",
         variant === "list" && "flex flex-col",
         className,
       )}
@@ -100,11 +102,11 @@ export function PromptSuggestions({
                   "group/suggestion relative flex w-full min-w-0 cursor-pointer items-center text-left outline-hidden",
                   "transition-[background-color,color,transform] duration-(--kura-duration-fast) ease-kura-snap",
                   "focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-kura-ring focus-visible:outline-offset-2 disabled:cursor-not-allowed disabled:opacity-50 motion-reduce:transform-none",
-                  // Chips are keycaps; cards are sheets; the list is bare rows.
+                  // Chips are keycaps; cards are cells of one sheet; the list is bare rows.
                   variant === "chips" &&
                     "h-8 gap-1.5 rounded-[9px] bg-kura-raised px-[11px] font-medium text-[13px] text-kura-fg shadow-kura-raised hover:not-disabled:bg-kura-raised-hover active:not-disabled:translate-y-px [&_[data-slot=prompt-suggestions-icon]_svg]:size-3.5",
                   variant === "cards" &&
-                    "flex-col items-start gap-2.5 rounded-kura-xl bg-kura-surface p-3.5 shadow-kura-surface hover:not-disabled:bg-kura-raised active:not-disabled:translate-y-px",
+                    "items-start gap-3 rounded-[9px] px-3 py-2.5 hover:not-disabled:bg-kura-hover focus-visible:-outline-offset-2",
                   variant === "list" &&
                     "gap-3 rounded-[9px] px-2 py-2.5 text-[13px] text-kura-fg-muted hover:not-disabled:bg-kura-hover hover:not-disabled:text-kura-fg",
                 )}
@@ -115,8 +117,7 @@ export function PromptSuggestions({
                     aria-hidden
                     className={cn(
                       "flex shrink-0 items-center justify-center text-kura-fg-subtle transition-colors duration-(--kura-duration-fast) group-hover/suggestion:text-kura-fg-muted",
-                      variant === "cards" &&
-                        "size-[30px] rounded-[9px] bg-kura-raised shadow-kura-raised [&_svg]:size-3.5",
+                      variant === "cards" && "h-5 [&_svg]:size-4",
                       variant === "list" && "[&_svg]:size-4",
                     )}
                   >
@@ -130,7 +131,7 @@ export function PromptSuggestions({
                     <span
                       className={cn(
                         "truncate font-medium",
-                        variant === "cards" ? "text-[13px] text-kura-fg" : "text-inherit",
+                        variant === "cards" ? "text-[13px] text-kura-fg leading-5" : "text-inherit",
                       )}
                     >
                       {s.title}
@@ -140,8 +141,8 @@ export function PromptSuggestions({
                         className={cn(
                           "text-kura-fg-subtle",
                           variant === "cards"
-                            ? "line-clamp-2 text-xs leading-4"
-                            : "truncate text-xs",
+                            ? "line-clamp-2 text-[12.5px] leading-[18px]"
+                            : "truncate text-[12.5px]",
                         )}
                       >
                         {s.description}
@@ -156,7 +157,7 @@ export function PromptSuggestions({
                       "size-3.5 shrink-0 text-kura-fg-subtle opacity-0 transition-[opacity,transform] duration-(--kura-duration-base) ease-kura-out",
                       "-translate-x-0.5 translate-y-0.5 group-hover/suggestion:translate-x-0 group-hover/suggestion:translate-y-0 group-hover/suggestion:opacity-100 group-focus-visible/suggestion:opacity-100",
                       "motion-reduce:translate-x-0 motion-reduce:translate-y-0",
-                      variant === "cards" && "absolute top-3.5 right-3.5",
+                      variant === "cards" && "mt-[3px]",
                     )}
                   />
                 )}

@@ -1,9 +1,7 @@
 "use client";
 
-import { ChartLine, Code, FileText, Globe, Lightbulb, Mail } from "lucide-react";
 import * as React from "react";
 import type { AttachmentItem } from "../attachment";
-import { KbdShortcut } from "../kbd-shortcut";
 import { ModelPicker, type ModelPickerModel } from "../model-picker";
 import { type PromptSuggestion, PromptSuggestions } from "../prompt-suggestions";
 import { VoiceDictation } from "../voice-dictation";
@@ -24,7 +22,11 @@ import {
 export function ComposerMinimal() {
   return (
     <div className="w-full max-w-xl">
-      <Composer placeholder="Ask anything…" onSubmit={(m) => console.log(m.text)} />
+      <Composer
+        defaultValue="Why does the like button lag on slow networks?"
+        placeholder="Ask anything…"
+        onSubmit={(m) => console.log(m.text)}
+      />
     </div>
   );
 }
@@ -65,12 +67,10 @@ const models: ModelPickerModel[] = [
 function ToolToggle({
   pressed,
   onPressedChange,
-  icon,
   children,
 }: {
   pressed: boolean;
   onPressedChange: (pressed: boolean) => void;
-  icon: React.ReactNode;
   children: React.ReactNode;
 }) {
   return (
@@ -78,11 +78,10 @@ function ToolToggle({
       type="button"
       aria-pressed={pressed}
       onClick={() => onPressedChange(!pressed)}
-      className="inline-flex h-8 cursor-pointer items-center gap-1.5 rounded-[9px] px-2.5 font-medium text-[13px] text-kura-fg-muted outline-hidden transition-colors duration-(--kura-duration-fast) ease-kura-snap hover:bg-kura-hover hover:text-kura-fg focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-kura-ring aria-pressed:bg-kura-active aria-pressed:text-kura-fg [&_svg]:size-3.5"
+      // Off it is bare text; on it is a raised key, like a pressed segment.
+      className="inline-flex h-8 cursor-pointer items-center rounded-[9px] px-2.5 font-medium text-[13px] text-kura-fg-muted outline-hidden transition-[background-color,color,box-shadow] duration-(--kura-duration-fast) ease-kura-snap hover:bg-kura-hover hover:text-kura-fg focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-kura-ring aria-pressed:bg-kura-raised aria-pressed:text-kura-fg aria-pressed:shadow-kura-raised"
     >
-      {icon}
-      {/* On a phone the toolbar keeps the icons; the words are still read out. */}
-      <span className="sr-only sm:not-sr-only">{children}</span>
+      {children}
     </button>
   );
 }
@@ -100,7 +99,6 @@ export function ComposerFull() {
   const [model, setModel] = React.useState("sonnet");
   const [search, setSearch] = React.useState(false);
   const [think, setThink] = React.useState(true);
-  const [last, setLast] = React.useState<ComposerMessage | null>(null);
   const timers = React.useRef<ReturnType<typeof setTimeout>[]>([]);
 
   const clear = React.useCallback(() => {
@@ -110,7 +108,7 @@ export function ComposerFull() {
   React.useEffect(() => clear, [clear]);
 
   return (
-    <div className="flex w-full max-w-xl flex-col gap-2.5">
+    <div className="w-full max-w-xl">
       <Composer
         value={value}
         onValueChange={setValue}
@@ -122,8 +120,8 @@ export function ComposerFull() {
         maxFileSize={20 * 1024 * 1024}
         submitKey="enter"
         clearOnSubmit
-        onSubmit={(message) => {
-          setLast(message);
+        onSubmit={(message: ComposerMessage) => {
+          console.log(message.text, message.attachments);
           setStatus("submitted");
           timers.current.push(setTimeout(() => setStatus("streaming"), 1200));
           timers.current.push(setTimeout(() => setStatus("idle"), 4200));
@@ -143,11 +141,10 @@ export function ComposerFull() {
           <ComposerTools>
             <ComposerAttachButton />
             <ModelPicker models={models} value={model} onValueChange={setModel} side="top" />
-            <span aria-hidden className="mx-0.5 h-4 w-px bg-kura-border" />
-            <ToolToggle pressed={think} onPressedChange={setThink} icon={<Lightbulb />}>
+            <ToolToggle pressed={think} onPressedChange={setThink}>
               Think
             </ToolToggle>
-            <ToolToggle pressed={search} onPressedChange={setSearch} icon={<Globe />}>
+            <ToolToggle pressed={search} onPressedChange={setSearch}>
               Search
             </ToolToggle>
           </ComposerTools>
@@ -157,34 +154,19 @@ export function ComposerFull() {
           </ComposerActions>
         </ComposerToolbar>
       </Composer>
-      <div className="flex min-h-5 items-center justify-between gap-3 px-1.5">
-        <p className="text-pretty text-kura-fg-subtle text-xs" aria-live="polite">
-          {status === "submitted"
-            ? "Sending…"
-            : status === "streaming"
-              ? "Responding · Esc to stop"
-              : last
-                ? `Sent with ${last.attachments.length} ${last.attachments.length === 1 ? "file" : "files"}`
-                : "Kura reads attachments in full; tables over 50k rows are sampled."}
-        </p>
-        <div className="hidden shrink-0 items-center gap-3 sm:flex">
-          <KbdShortcut keys={["enter"]} label="Send" variant="ghost" />
-          <KbdShortcut keys={["shift", "enter"]} label="New line" variant="ghost" />
-        </div>
-      </div>
     </div>
   );
 }
 
 function StateLabel({ children }: { children: React.ReactNode }) {
-  return <p className="px-1.5 pb-1.5 font-medium text-kura-fg-subtle text-xs">{children}</p>;
+  return <p className="px-4 pb-2 text-[12.5px] text-kura-fg-subtle">{children}</p>;
 }
 
 export function ComposerStates() {
   return (
     <div className="flex w-full max-w-xl flex-col gap-5">
       <div>
-        <StateLabel>Submitted: waiting for the first token</StateLabel>
+        <StateLabel>Waiting for the first token</StateLabel>
         <Composer
           defaultValue="Summarize the attached incident report for the #eng-oncall channel."
           status="submitted"
@@ -201,7 +183,7 @@ export function ComposerStates() {
         </Composer>
       </div>
       <div>
-        <StateLabel>Streaming: close to the character limit</StateLabel>
+        <StateLabel>Streaming, near the limit</StateLabel>
         <Composer
           defaultValue="Draft release notes for v2.4 — keep it under 200 words and lead with the breaking change to the auth middleware."
           status="streaming"
@@ -220,7 +202,7 @@ export function ComposerStates() {
         </Composer>
       </div>
       <div>
-        <StateLabel>Over the limit: the count turns red and Send waits</StateLabel>
+        <StateLabel>Over the limit</StateLabel>
         <Composer
           defaultValue="Draft release notes for v2.4 — keep it under 200 words, lead with the breaking change to the auth middleware, and thank the contributors."
           maxLength={120}
@@ -252,22 +234,18 @@ const starters: PromptSuggestion[] = [
   {
     title: "Analyze a CSV",
     prompt: "Find the three biggest drivers of churn in the attached CSV.",
-    icon: <ChartLine />,
   },
   {
     title: "Summarize a doc",
     prompt: "Summarize this doc in five bullets for an exec audience.",
-    icon: <FileText />,
   },
   {
     title: "Review a diff",
     prompt: "Review this diff for bugs and missing tests.",
-    icon: <Code />,
   },
   {
     title: "Draft a reply",
     prompt: "Draft a friendly reply that moves the meeting to next week.",
-    icon: <Mail />,
   },
 ];
 
@@ -282,14 +260,9 @@ export function ComposerNewChat() {
 
   return (
     <div className="flex w-full max-w-xl flex-col items-center gap-5">
-      <div className="flex flex-col items-center gap-1 text-center">
-        <h3 className="font-medium text-2xl text-kura-fg tracking-[-0.02em]">
-          What are we working on?
-        </h3>
-        <p className="text-kura-fg-muted text-sm">
-          Start typing, dictate, or pick a starting point.
-        </p>
-      </div>
+      <h3 className="text-center font-semibold text-[19px] text-kura-fg tracking-[-0.022em]">
+        What are we working on?
+      </h3>
       <Composer
         value={value}
         onValueChange={setValue}

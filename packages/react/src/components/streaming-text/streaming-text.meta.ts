@@ -116,7 +116,7 @@ export default defineComponent({
       kind: "composition",
       title: "Custom renderer with useStreamingText",
       description:
-        "“Thinking…” until the first token, then a hand-rolled renderer built on the hook, with a Stop button.",
+        "An assistant turn: “Thinking…” until the first token, then a hand-rolled renderer built on the hook, with a Stop key that is laid out even when hidden.",
     },
   ],
   agentNotes: [

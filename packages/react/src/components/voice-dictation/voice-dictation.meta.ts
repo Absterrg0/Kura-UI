@@ -76,6 +76,13 @@ export default defineComponent({
       default: '"Listening…"',
       description: "Text in the transcript card before words arrive.",
     },
+    {
+      name: "autoStart",
+      type: "boolean",
+      default: "false",
+      description:
+        "Start listening on mount: a voice mode opened by a click (that click counts as the user gesture for the microphone), or a live demo with `simulate`. Unmounting cancels.",
+    },
     { name: "disabled", type: "boolean", default: "false", description: "Disable the control." },
   ],
   parts: [
@@ -143,23 +150,30 @@ export default defineComponent({
     "waveform",
   ],
   examples: [
-    { name: "VoiceDictationMinimal", kind: "minimal", title: "Toggle with live transcript" },
+    {
+      name: "VoiceDictationMinimal",
+      kind: "minimal",
+      title: "Dictating into a composer",
+      description:
+        "Starts listening on mount (autoStart + simulate). Interim words preview in the placeholder; stopping appends the final transcript to the composer value.",
+    },
     {
       name: "VoiceDictationFull",
       kind: "full",
-      title: "Toggle or hold, hotkey and collected notes",
-      description: "Switch modes, use the shortcut, and watch final transcripts collect below.",
+      title: "Live transcript and a hotkey",
+      description:
+        "The standalone control with its transcript card, the Mod+Shift+D shortcut, and finished transcripts collected as notes.",
     },
     {
       name: "VoiceDictationInComposer",
       kind: "composition",
-      title: "Dictating into a composer",
-      description:
-        "Interim words preview in the placeholder; the final transcript is appended to the composer value.",
+      title: "Push to talk in a composer",
+      description: 'mode="hold": dictate while the mic is held, and the words join the draft.',
     },
   ],
   agentNotes: [
     "In docs, demos and tests pass `simulate` — real recognition needs a user gesture, mic permission and (for Chrome) a network connection.",
+    "`autoStart` without `simulate` should only mount in response to a click (e.g. opening a voice mode); on page load browsers may refuse the microphone.",
     "Feed a Composer by controlling its value: onTranscript={(t) => setValue((v) => (v ? v + ' ' + t : t))}; pass showTranscript={false}.",
     "Provide `transcribe` for Firefox/other browsers without SpeechRecognition; without it those browsers record but emit nothing.",
     "Only one mounted instance should own a given hotkey; pass hotkey={null} on the others.",

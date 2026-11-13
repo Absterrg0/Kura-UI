@@ -48,7 +48,10 @@ describe("Reasoning", () => {
     act(() => vi.advanceTimersByTime(2_000));
     rerender(<Reasoning active={false}>trace</Reasoning>);
     expect(root).toHaveAttribute("data-state", "closed");
-    expect(container.querySelector("[data-slot=status-glyph]")).toBeNull();
+    expect(container.querySelector("[data-slot=status-glyph]")).toHaveAttribute(
+      "data-status",
+      "done",
+    );
     expect(screen.getByRole("button")).toHaveTextContent("Thought for 14s");
   });
 

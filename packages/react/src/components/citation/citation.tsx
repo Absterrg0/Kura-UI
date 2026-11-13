@@ -1,7 +1,7 @@
 "use client";
 
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "@ui-sdk/react/hover-card";
-import { ArrowUpRight, Globe } from "lucide-react";
+import { ArrowUpRight } from "lucide-react";
 import * as React from "react";
 import { useControllableState } from "../../hooks/use-controllable-state";
 import { cn } from "../../lib/cn";
@@ -13,7 +13,7 @@ export interface CitationSource {
   url: string;
   /** Short excerpt the model relied on. */
   snippet?: string;
-  /** Favicon URL. Without one, a monogram tile is shown (no third-party favicon service is called). */
+  /** Favicon URL. Without one, no icon is drawn (no third-party favicon service is called). */
   favicon?: string;
   /** Publisher name shown instead of the domain, e.g. "React Docs". */
   siteName?: string;
@@ -29,27 +29,25 @@ export function sourceDomain(url: string): string {
   }
 }
 
+/** The source's own favicon, when it has one. Without it nothing is drawn: no stand-in globe. */
 function Favicon({ source, className }: { source: CitationSource; className?: string }) {
   const [broken, setBroken] = React.useState(false);
+  if (!source.favicon || broken) return null;
   return (
     <span
       aria-hidden
       data-slot="citation-favicon"
       className={cn(
-        "grid size-4 shrink-0 place-items-center overflow-hidden rounded-kura-xs text-kura-fg-subtle",
+        "grid size-4 shrink-0 place-items-center overflow-hidden rounded-kura-xs",
         className,
       )}
     >
-      {source.favicon && !broken ? (
-        <img
-          src={source.favicon}
-          alt=""
-          className="size-full object-cover"
-          onError={() => setBroken(true)}
-        />
-      ) : (
-        <Globe aria-hidden strokeWidth={1.75} className="size-3.5" />
-      )}
+      <img
+        src={source.favicon}
+        alt=""
+        className="size-full object-cover"
+        onError={() => setBroken(true)}
+      />
     </span>
   );
 }
@@ -71,14 +69,14 @@ export function CitationCard({ source, index, className, ...props }: CitationCar
   return (
     <div
       data-slot="citation-card"
-      className={cn("flex flex-col gap-1.5 font-kura-sans", className)}
+      className={cn("flex flex-col gap-1 font-kura-sans", className)}
       {...props}
     >
-      <div className="flex items-center gap-2 text-kura-fg-subtle text-xs">
+      <div className="flex items-center gap-2 text-[12px] text-kura-fg-subtle">
         <Favicon source={source} />
         <span className="min-w-0 flex-1 truncate">
           {source.siteName ?? domain}
-          {source.date && <span className="text-kura-fg-subtle"> · {source.date}</span>}
+          {source.date && <span> · {source.date}</span>}
         </span>
         {index != null && <span className="font-kura-mono tabular-nums">{index}</span>}
       </div>
@@ -86,7 +84,7 @@ export function CitationCard({ source, index, className, ...props }: CitationCar
         href={source.url}
         target="_blank"
         rel="noreferrer"
-        className="group/title -mx-1 line-clamp-2 rounded-kura-xs px-1 font-medium text-kura-fg text-sm leading-snug outline-hidden hover:underline hover:decoration-kura-border-strong hover:underline-offset-2 focus-visible:shadow-kura-focus"
+        className="group/title -mx-1 line-clamp-2 rounded-kura-xs px-1 font-medium text-[13px] text-kura-fg leading-5 outline-hidden hover:underline hover:decoration-kura-border-strong hover:underline-offset-2 focus-visible:shadow-kura-focus"
       >
         {source.title}
         <ArrowUpRight
@@ -95,7 +93,7 @@ export function CitationCard({ source, index, className, ...props }: CitationCar
         />
       </a>
       {source.snippet && (
-        <p className="line-clamp-3 text-[13px] text-kura-fg-muted leading-relaxed">
+        <p className="line-clamp-3 text-[12.5px] text-kura-fg-subtle leading-[18px]">
           {source.snippet}
         </p>
       )}
@@ -219,7 +217,10 @@ export function Sources({
       {...props}
     >
       {label != null && (
-        <div id={id} className="flex items-center gap-2 font-medium text-kura-fg-muted text-xs">
+        <div
+          id={id}
+          className="flex items-center gap-2 font-medium text-[12.5px] text-kura-fg-muted"
+        >
           {label}
           <span className="font-kura-mono text-kura-fg-subtle tabular-nums">{sources.length}</span>
         </div>
@@ -230,26 +231,30 @@ export function Sources({
         className={cn(
           variant === "strip"
             ? "-mx-1 -my-1 flex snap-x gap-2 overflow-x-auto px-1 py-1 [scrollbar-width:none]"
-            : "flex flex-col gap-1",
+            : "flex flex-col",
         )}
       >
         {sources.map((source, i) => {
           const domain = sourceDomain(source.url);
           return (
-            <li key={source.url + i} data-slot="citation-source" className="shrink-0 snap-start">
+            <li
+              key={source.url + i}
+              data-slot="citation-source"
+              className="flex shrink-0 snap-start"
+            >
               {variant === "strip" ? (
                 <a
                   href={source.url}
                   target="_blank"
                   rel="noreferrer"
-                  className="flex w-44 flex-col gap-1.5 rounded-kura-lg bg-kura-raised px-3 py-2.5 shadow-kura-raised outline-hidden transition-colors duration-(--kura-duration-fast) ease-kura-snap hover:bg-kura-raised-hover focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-kura-ring focus-visible:outline-offset-2"
+                  className="flex w-44 flex-col gap-1 rounded-kura-lg bg-kura-raised px-3 py-2.5 shadow-kura-raised outline-hidden transition-colors duration-(--kura-duration-fast) ease-kura-snap hover:bg-kura-raised-hover focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-kura-ring focus-visible:outline-offset-2"
                 >
-                  <span className="flex items-center gap-1.5 text-kura-fg-subtle text-xs">
+                  <span className="flex items-center gap-1.5 text-[12px] text-kura-fg-subtle">
                     <Favicon source={source} className="size-3.5" />
                     <span className="min-w-0 flex-1 truncate">{source.siteName ?? domain}</span>
-                    <span className="tabular-nums">{i + 1}</span>
+                    <span className="font-kura-mono tabular-nums">{i + 1}</span>
                   </span>
-                  <span className="line-clamp-2 min-h-[2lh] font-medium text-[13px] text-kura-fg leading-snug">
+                  <span className="line-clamp-2 font-medium text-[13px] text-kura-fg leading-5">
                     {source.title}
                   </span>
                 </a>
@@ -258,22 +263,27 @@ export function Sources({
                   href={source.url}
                   target="_blank"
                   rel="noreferrer"
-                  className="-mx-2 flex gap-3 rounded-[9px] px-2 py-2 outline-hidden transition-colors duration-(--kura-duration-fast) ease-kura-snap hover:bg-kura-hover focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-kura-ring"
+                  className="-mx-2 flex w-[calc(100%+16px)] gap-3 rounded-[9px] px-2 py-2 outline-hidden transition-colors duration-(--kura-duration-fast) ease-kura-snap hover:bg-kura-hover focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-kura-ring"
                 >
-                  <span className="w-4 shrink-0 pt-px text-right font-kura-mono text-kura-fg-subtle text-xs tabular-nums">
+                  <span className="w-4 shrink-0 text-right font-kura-mono text-[12px] text-kura-fg-subtle leading-5 tabular-nums">
                     {i + 1}
                   </span>
                   <span className="flex min-w-0 flex-1 flex-col gap-0.5">
-                    <span className="truncate font-medium text-kura-fg text-sm">
-                      {source.title}
-                    </span>
-                    <span className="flex items-center gap-1.5 text-kura-fg-subtle text-xs">
-                      <Favicon source={source} className="size-3.5" />
-                      <span className="truncate">{source.siteName ?? domain}</span>
-                      {source.date && <span>· {source.date}</span>}
+                    {/* One line for what it is and where it is from, one for what it says. */}
+                    <span className="flex min-w-0 items-baseline gap-3">
+                      <span className="min-w-0 flex-1 truncate font-medium text-[13px] text-kura-fg leading-5">
+                        {source.title}
+                      </span>
+                      <span className="flex max-w-[45%] shrink-0 items-center gap-1.5 self-center text-[12px] text-kura-fg-subtle">
+                        <Favicon source={source} className="size-3.5" />
+                        <span className="truncate">
+                          {source.siteName ?? domain}
+                          {source.date && ` · ${source.date}`}
+                        </span>
+                      </span>
                     </span>
                     {source.snippet && (
-                      <span className="line-clamp-2 pt-0.5 text-[13px] text-kura-fg-muted leading-relaxed">
+                      <span className="line-clamp-2 text-[12.5px] text-kura-fg-subtle leading-[18px]">
                         {source.snippet}
                       </span>
                     )}

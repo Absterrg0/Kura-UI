@@ -61,7 +61,7 @@ export default defineComponent({
       name: "actions",
       type: "React.ReactNode",
       description:
-        "Action bar under the content, usually `<MessageActions>` with MessageCopyButton, MessageAction, MessageFeedback, MessageBranch.",
+        "Action bar, usually `<MessageActions>` with MessageCopyButton, MessageAction, MessageFeedback, MessageBranch. Under an assistant message (its row is always reserved); beside a user bubble, on its last line.",
     },
   ],
   parts: [

@@ -50,6 +50,12 @@ export interface VoiceDictationProps extends Omit<React.ComponentProps<"div">, "
   showTranscript?: boolean;
   /** Placeholder in the transcript card before any words arrive. Default "Listening…". */
   transcriptPlaceholder?: string;
+  /**
+   * Start listening as soon as it mounts, e.g. when a voice mode opens from a click (that click is
+   * the user gesture most browsers want for the microphone), or for a live demo with `simulate`.
+   * Default false.
+   */
+  autoStart?: boolean;
   disabled?: boolean;
 }
 
@@ -87,6 +93,7 @@ export function VoiceDictation({
   simulate,
   showTranscript = true,
   transcriptPlaceholder = "Listening…",
+  autoStart = false,
   disabled = false,
   className,
   ...props
@@ -319,6 +326,15 @@ export function VoiceDictation({
     setStatus("idle");
   }, [simulating, speech, recorder, setStatus, clearTimers]);
 
+  // Mount-only: a voice mode that opens listening. The cleanup cancels, so a remount (or React's
+  // strict-mode double effect) starts from idle instead of a half-started session.
+  // biome-ignore lint/correctness/useExhaustiveDependencies: runs once, on mount.
+  React.useEffect(() => {
+    if (!autoStart) return;
+    void start();
+    return () => cancel();
+  }, []);
+
   const toggle = () => {
     const s = statusRef.current;
     if (s === "listening" || s === "requesting") void stop();
@@ -483,10 +499,10 @@ export function VoiceDictation({
                     barWidth={2}
                     barGap={2}
                     active={status === "listening"}
-                    className="h-5 w-16"
+                    className="h-6 w-20"
                     aria-hidden
                   />
-                  <span className="w-8 text-right font-medium text-xs tabular-nums">
+                  <span className="w-8 text-right font-kura-mono text-[12px] tabular-nums">
                     {formatElapsed(elapsed)}
                   </span>
                   <button
@@ -526,7 +542,7 @@ export function VoiceDictation({
         <div
           data-slot="voice-dictation-transcript"
           className={cn(
-            "w-full min-w-0 animate-kura-fade-in rounded-kura-xl bg-kura-surface px-4 py-3 text-[14px] leading-6 shadow-kura-surface",
+            "w-full min-w-0 animate-kura-fade-in rounded-kura-xl bg-kura-surface px-4 py-3 text-[15px] leading-6 shadow-kura-surface",
           )}
         >
           {transcript ? (

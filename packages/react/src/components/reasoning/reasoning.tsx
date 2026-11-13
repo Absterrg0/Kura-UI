@@ -118,7 +118,13 @@ export function Reasoning({
           "transition-colors duration-(--kura-duration-fast) ease-kura-snap hover:text-kura-fg focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-kura-ring",
         )}
       >
-        {active && <StatusGlyph status="running" size="sm" label={null} className="mr-0.5" />}
+        {/* Running while it thinks, a solid disc once done: the label never moves. */}
+        <StatusGlyph
+          status={active ? "running" : "done"}
+          size="sm"
+          label={null}
+          className="mr-0.5"
+        />
         <span data-slot="reasoning-label">{label}</span>
         <ChevronRight
           aria-hidden
@@ -141,8 +147,9 @@ export function Reasoning({
         )}
       >
         <div className="min-h-0 overflow-hidden">
-          <div className="relative mt-1 whitespace-pre-wrap py-0.5 pl-[18px] text-[13px] text-kura-fg-muted leading-relaxed [&_[data-slot=streaming-text]]:text-[13px] [&_[data-slot=streaming-text]]:text-kura-fg-muted">
-            <span aria-hidden className="kura-leader absolute inset-y-1 left-[1.5px] w-[5px]" />
+          {/* The trace hangs from the glyph on a dotted spine, its text on the label's edge. */}
+          <div className="relative mt-1 whitespace-pre-wrap py-0.5 pl-[19px] text-[13px] text-kura-fg-muted leading-relaxed [&_[data-slot=streaming-text]]:text-[13px] [&_[data-slot=streaming-text]]:text-kura-fg-muted">
+            <span aria-hidden className="kura-leader absolute inset-y-1 left-[4px] w-[5px]" />
             {children}
           </div>
         </div>

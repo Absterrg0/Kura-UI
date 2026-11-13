@@ -88,18 +88,24 @@ export default defineComponent({
   related: ["shimmer-text", "agent-orb", "streaming-text", "message", "run-header"],
   tags: ["loading", "thinking", "typing", "dots", "status", "indicator", "pending", "ai"],
   examples: [
-    { name: "ThinkingIndicatorMinimal", kind: "minimal", title: "Thinking dots" },
+    {
+      name: "ThinkingIndicatorMinimal",
+      kind: "minimal",
+      title: "A pending assistant turn",
+      description: "Dots in a Message while the first token is on its way.",
+    },
     {
       name: "ThinkingIndicatorFull",
       kind: "full",
-      title: "Every variant and size",
-      description: "Every variant at sm, md and lg, and a label that cycles through messages.",
+      title: "Cycling status lines",
+      description:
+        "The text variant with a label, messages and an interval, as the reply to a prompt.",
     },
     {
-      name: "ThinkingIndicatorInMessage",
+      name: "ThinkingIndicatorInThreadList",
       kind: "composition",
-      title: "Pending assistant message",
-      description: "Text variant inside a message bubble with a Stop Button.",
+      title: "Live marks in a chat list",
+      description: "Small dots on the threads an agent is still answering.",
     },
   ],
   agentNotes: [
