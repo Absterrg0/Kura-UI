@@ -6,7 +6,7 @@ export default defineComponent({
   category: "primitives",
   status: "beta",
   description:
-    "The Kura status glyph: a ring of eight dots and the marks inside it, for queued, running, waiting on you, done, failed, skipped and paused. Every agent surface draws state with it.",
+    "The Kura status glyph: a ring of dots for queued, running, waiting on you, done, failed, skipped and paused. Every agent surface draws state with it.",
   whenToUse: [
     "Inside an agent surface (task list, fleet, trace, run header) to show the state of a run, step or subagent the same way everywhere.",
   ],
