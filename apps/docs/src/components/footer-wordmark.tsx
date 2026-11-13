@@ -62,6 +62,13 @@ export function FooterWordmark({ className }: { className?: string }) {
       cols = Math.floor(w / cell);
       rows = Math.floor(h / cell);
       ox = (w - cols * cell) / 2;
+      // Not laid out yet (hidden, or fonts resolved before layout): nothing to set until it is.
+      if (cols < 1 || rows < 1) {
+        cells = new Uint8Array(0);
+        cols = 0;
+        rows = 0;
+        return;
+      }
 
       const off2 = document.createElement("canvas");
       off2.width = cols;
