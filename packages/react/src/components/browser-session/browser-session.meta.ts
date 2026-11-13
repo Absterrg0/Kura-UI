@@ -30,7 +30,8 @@ export default defineComponent({
     {
       name: "title",
       type: "string",
-      description: "Page title next to the address bar (hidden in narrow containers).",
+      description:
+        "Page title, shown quietly after the status in the header (`statusText` takes its place; hidden in narrow containers).",
     },
     {
       name: "children",

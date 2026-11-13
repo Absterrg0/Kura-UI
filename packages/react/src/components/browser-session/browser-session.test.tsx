@@ -41,6 +41,12 @@ describe("BrowserSession", () => {
     expect(screen.getByLabelText("Secure connection")).toBeInTheDocument();
     expect(screen.getByText("Page")).toBeInTheDocument();
     expect(screen.getByText("Agent is browsing")).toBeInTheDocument();
+    // The page title rides in the header, after the status.
+    expect(
+      container.querySelector(
+        "[data-slot=browser-session-header] [data-slot=browser-session-title]",
+      ),
+    ).toHaveTextContent("PR · acme/web");
   });
 
   it("draws the cursor, highlight and a ripple for click steps", () => {
