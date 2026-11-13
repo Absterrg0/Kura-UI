@@ -12,51 +12,38 @@ export function AgentOrbMinimal() {
 }
 
 const states: AgentOrbState[] = ["idle", "listening", "thinking", "speaking", "error"];
-const densities = [13, 19, 27] as const;
+
+const KEY: Record<AgentOrbState, string> = {
+  idle: "Talk",
+  listening: "Done",
+  thinking: "Interrupt",
+  speaking: "Interrupt",
+  error: "Try again",
+};
 
 export function AgentOrbFull() {
-  const [state, setState] = React.useState<AgentOrbState>("speaking");
-  const [dots, setDots] = React.useState<number>(19);
+  const [state, setState] = React.useState<AgentOrbState>("idle");
   // Simulated audio for the demo; pass `source: micStream` in a real app.
   const analyser = useAudioAnalyser({ simulate: "speech" });
+  // After you finish talking the agent thinks, answers, then waits for you again.
+  React.useEffect(() => {
+    if (state !== "thinking" && state !== "speaking") return;
+    const id = setTimeout(
+      () => setState(state === "thinking" ? "speaking" : "idle"),
+      state === "thinking" ? 1600 : 3600,
+    );
+    return () => clearTimeout(id);
+  }, [state]);
   return (
-    <div className="flex w-full max-w-md flex-col items-center gap-5">
-      <AgentOrb state={state} dots={dots} analyser={analyser} className="size-64" />
-      <div
-        role="radiogroup"
-        aria-label="Agent state"
-        className="flex flex-wrap justify-center gap-1"
+    <div className="flex flex-col items-center gap-6">
+      <AgentOrb state={state} analyser={analyser} className="size-56" />
+      <Button
+        variant={state === "listening" ? "primary" : "secondary"}
+        className="min-w-24"
+        onClick={() => setState(state === "listening" ? "thinking" : "listening")}
       >
-        {states.map((s) => (
-          <Button
-            key={s}
-            size="xs"
-            variant={s === state ? "secondary" : "ghost"}
-            role="radio"
-            aria-checked={s === state}
-            onClick={() => setState(s)}
-            className="capitalize"
-          >
-            {s}
-          </Button>
-        ))}
-      </div>
-      <div role="radiogroup" aria-label="Dots across" className="flex items-center gap-1">
-        {densities.map((d) => (
-          <Button
-            key={d}
-            size="xs"
-            variant={d === dots ? "secondary" : "ghost"}
-            role="radio"
-            aria-checked={d === dots}
-            aria-label={`${d} dots across`}
-            onClick={() => setDots(d)}
-            className="font-kura-mono"
-          >
-            {d}
-          </Button>
-        ))}
-      </div>
+        {KEY[state]}
+      </Button>
     </div>
   );
 }

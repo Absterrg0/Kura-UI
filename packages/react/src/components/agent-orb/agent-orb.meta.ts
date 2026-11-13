@@ -126,8 +126,9 @@ export default defineComponent({
     {
       name: "AgentOrbFull",
       kind: "full",
-      title: "States, density and audio",
-      description: "Every state at three dot densities, driven by a simulated speech analyser.",
+      title: "Talk to it",
+      description:
+        "One key drives a turn: listening while you talk, then thinking, then speaking, with a simulated speech analyser.",
     },
     {
       name: "AgentOrbStates",
@@ -139,7 +140,7 @@ export default defineComponent({
       name: "AgentOrbVoiceSession",
       kind: "composition",
       title: "Voice session card",
-      description: "A scripted call with captions and IconButton controls.",
+      description: "A scripted call with a caption and mute and end-call keys.",
     },
   ],
   agentNotes: [
