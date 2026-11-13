@@ -13,6 +13,7 @@ reviewer (`design/v2/REVIEW-LOG.md`). The owner then rejected the look itself; v
 | R2    | 8.8*      | 8.5      | Commit 87f0d7b. Round-1 list largely closed. *Live checks were cut short: the docs dev server hit its 2-hour limit mid-review, so focus, 390px pages and motion are provisional.                      |
 | R3    | 9.1       | 8.9      | Commit e505f88. Fully verified live (48 pages, 192 axe runs, Tab walks, approve/deny at three widths). A decision now moves 0px; four to five small must-fixes remain.                                |
 | R4    | 9.2       | 9.2      | Commit d5d3374. Fully verified live. All round-3 must-fixes closed except the hero clocks (live values still a second apart). New: approval shortcuts leak from other widgets; terminals break words. |
+| R5    | 9.3       | 9.4      | Commit a6b1fec. Fully verified live. Every round-4 must-fix closed, no regressions. Left: focus lost when a pressed control unmounts, approval keys acting while the prompt is off screen, small phone seams. |
 
 ---
 
@@ -277,3 +278,72 @@ Hero decision choreography (0px at three widths), ember discipline, the stacked 
 focus rings on every stop, ⌘K, the components filter and its empty state, mobile nav, DiffView
 review flow, the whole component set in both themes, home sections at 1440 and 390, axe clean on
 all 48 pages, one h1 and no horizontal overflow everywhere.
+
+## Round 5 — commit a6b1fec
+
+Both reviewers ran everything live: Tab walks (20 and 7 pages, both themes), axe on 48 pages × 4
+configurations (0 serious/critical), approve and deny at five widths, reduced motion, ⌘K, 390px
+full pages, clocks sampled every 60ms.
+
+| # | Category | Fable 5.2 | Opus 5.5 |
+| --- | --- | --- | --- |
+| 1 | Visual hierarchy | 9.5 | 9.5 |
+| 2 | Typography | 9.4 | 9.4 |
+| 3 | Colour & state semantics | 9.6 | 9.6 |
+| 4 | Layout & spacing | 9.4 | 9.4 |
+| 5 | Consistency | 9.3 | 9.4 |
+| 6 | Brand distinctiveness | 9.7 | 9.6 |
+| 7 | Clarity & density | 9.4 | 9.4 |
+| 8 | Interaction states | 9.1 | 9.3 |
+| 9 | Light/dark parity | 9.6 | 9.5 |
+| 10 | Craft & polish | 9.3 | 9.2 |
+| 11 | Accessibility | 9.1 | 9.4 |
+| 12 | Responsive | 9.3 | 9.3 |
+| 13 | Motion | 9.4 | 9.5 |
+| 14 | Copy | 9.5 | 9.4 |
+| | **OVERALL** | **9.3** | **9.4** |
+
+### Round-4 verification
+
+All six must-fixes fixed: approval keys stay put from a composer, ⌘K and the mobile nav; focus
+lands on the card with a ring after a keyboard decision; every hero clock agrees and the
+migration takes the 5.1s it reports; terminals wrap at spaces; manifests are clean; "Paused for
+you" is whole (the compact fleet row is better, still cut mid-word). Polish: hero level from 768
+to 1680 with 0px movement, no stretched sheet, skipped glyph, whole install transcript, steady
+demo terminal, whole-line ArtifactCard preview, still Spinner. Not fixed: a DiffView example line
+still overflows. No regressions.
+
+### Must-fix (merged, ranked)
+
+1. **Approval keys decide a prompt that is off screen** (Opus): Ctrl+Enter from the footer
+   approved the hero's migration.
+2. **Focus drops to `<body>` when the pressed control unmounts** (Fable): PromptQueue Remove and
+   Send now, RunHeader Stop, DiffView Accept all / Reject all, Terminal "Show all", BrowserSession
+   Resume, AttachmentList Remove; two examples.
+3. **Esc with a tooltip showing denies the request** (Fable) and leaves the tooltip up.
+4. **AgentTimeline ticks decimal seconds** (Fable) where everything else shows a clock.
+5. **StreamingText's caret pulses under reduced motion** (Fable): the data variant outranks
+   `motion-reduce`.
+6. **BrowserSession target label is clipped** (both): past the frame at 390, ellipsised by 3px
+   at 1440.
+
+### Polish (merged)
+
+Wrapped terminal lines have no hanging indent; inline code and paths break at hyphens; CodeBlock
+repeats the language beside a filename and truncates the name at 390; DiffView minimal example is
+too narrow for its longest line; the fleet summary hides a count after deny; the test terminal's
+clock reads 0:02 then "1.8s"; phone labels cut to a few letters (Checkpoints, RunHeader title,
+PromptQueue hint, compact fleet); RunHeader compact title cut by 5px with room to spare;
+ModelPicker footer clamps mid-item; VoiceDictation minimal is a lone ghost mic; a typing caret in
+a BrowserSession example pulses under reduced motion; the dark install well nearly vanishes on the
+canvas; the approval card states the decision twice; moderate axe (heading order at 390, duplicate
+landmark names); "⌘↵" hard-coded in one manifest line; "Your agent can install it." right column
+ends 150px short.
+
+### Verified good (do not touch)
+
+Hero choreography and the shared clock, approval key scoping for composer/⌘K/nav, the ring on the
+card after a keyboard decision, focus return from ⌘K/Popover/CommandPalette/ModelPicker, rings on
+every stop, 0 running animations under reduced motion on every other page, ember discipline, the
+stacked narrow Trace, AgentFleet layouts, DiffView per-hunk flow, home at 390, the components
+index and docs pages, axe clean on all 48 pages.
