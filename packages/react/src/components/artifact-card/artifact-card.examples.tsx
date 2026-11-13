@@ -1,8 +1,7 @@
 "use client";
 
-import { Copy, Download, Pencil, X } from "lucide-react";
+import { Copy, Pencil, X } from "lucide-react";
 import * as React from "react";
-import { Button } from "../button";
 import { CodeBlock } from "../code-block";
 import { IconButton } from "../icon-button";
 import { Message } from "../message";
@@ -22,11 +21,9 @@ export function ArtifactCardMinimal() {
   );
 }
 
-const PLAN = [
-  "Pricing page rewrite",
-  "Lead with the outcome, not the plan names. Most visitors arrive from a comparison search and decide in the first screen.",
-  "Collapse the four tiers into three. Team and Business overlap on every feature that matters to a buyer under fifty seats.",
-  "Move the FAQ above the fold on mobile and answer the two questions sales hears most: data residency and seat changes.",
+const EXCERPT = [
+  "Lead with the outcome, not the plan names.",
+  "Most visitors arrive from a comparison search and decide in the first screen. Collapse the four tiers into three: Team and Business overlap on every feature that matters to a buyer under fifty seats.",
 ];
 const STEPS = ["Outlining…", "Writing the summary…", "Writing section 2 of 3…", "Polishing…"];
 
@@ -50,64 +47,49 @@ export function ArtifactCardFull() {
     return () => clearInterval(id);
   }, [run]);
 
-  const visible = busy ? Math.max(1, Math.ceil(progress * PLAN.length)) : PLAN.length;
   const versions = run + 1;
 
   return (
-    <div className="flex w-full max-w-sm flex-col gap-3">
-      <ArtifactCard
-        variant="preview"
-        kind="document"
-        title="Pricing page rewrite"
-        status={busy ? (run === 0 ? "generating" : "updating") : "ready"}
-        statusText={STEPS[Math.min(STEPS.length - 1, Math.floor(progress * STEPS.length))]}
-        progress={progress}
-        meta={`Markdown · ${version === versions ? "412" : "386"} words · edited just now`}
-        versions={busy ? Math.max(1, versions - 1) : versions}
-        version={busy ? Math.max(1, versions - 1) : version}
-        onVersionChange={setVersion}
-        selected={open}
-        onOpen={() => setOpen((o) => !o)}
-        actions={
-          <>
-            <IconButton size="sm" label="Copy" icon={<Copy />} disabled={busy} />
-            <IconButton size="sm" label="Download" icon={<Download />} disabled={busy} />
-          </>
-        }
-        preview={
-          // The well is 144px tall and clips: a title and two clamped paragraphs end on a whole line.
-          <div className="flex flex-col gap-2 p-5 text-[11px] text-kura-fg-muted leading-[18px]">
-            {PLAN.slice(0, Math.min(visible, 3)).map((line, i) =>
-              i === 0 ? (
-                <p
-                  key={line}
-                  className="truncate font-semibold text-[13px] text-kura-fg leading-5 tracking-tight"
-                >
-                  {line}
-                </p>
-              ) : (
-                <p key={line} className="line-clamp-2 animate-kura-fade-in">
-                  {line}
-                </p>
-              ),
-            )}
-          </div>
-        }
-      />
-      <Button
-        size="xs"
-        variant="ghost"
-        className="self-end"
-        disabled={busy}
-        onClick={() => {
-          setRun((r) => r + 1);
-          setVersion(run + 2);
-        }}
-      >
-        <Pencil />
-        Ask for an edit
-      </Button>
-    </div>
+    <ArtifactCard
+      variant="preview"
+      kind="document"
+      title="Pricing page rewrite"
+      status={busy ? (run === 0 ? "generating" : "updating") : "ready"}
+      statusText={STEPS[Math.min(STEPS.length - 1, Math.floor(progress * STEPS.length))]}
+      progress={progress}
+      meta={`Markdown · ${version === versions ? "412" : "386"} words`}
+      versions={busy ? Math.max(1, versions - 1) : versions}
+      version={busy ? Math.max(1, versions - 1) : version}
+      onVersionChange={setVersion}
+      selected={open}
+      onOpen={() => setOpen((o) => !o)}
+      className="max-w-sm"
+      actions={
+        <>
+          <IconButton
+            size="sm"
+            label="Ask for an edit"
+            icon={<Pencil />}
+            disabled={busy}
+            onClick={() => {
+              setRun((r) => r + 1);
+              setVersion(run + 2);
+            }}
+          />
+          <IconButton size="sm" label="Copy" icon={<Copy />} disabled={busy} />
+        </>
+      }
+      preview={
+        // The thumbnail is 112px tall and clips: a lead line and a three-line paragraph end on a
+        // whole line. It is the document's body, never its title again.
+        <div className="flex flex-col gap-2 px-4 pt-3.5 text-[12px] text-kura-fg-muted leading-[18px]">
+          <p className="truncate font-medium text-kura-fg">{EXCERPT[0]}</p>
+          {(progress > 0.3 || !busy) && (
+            <p className="line-clamp-3 animate-kura-fade-in">{EXCERPT[1]}</p>
+          )}
+        </div>
+      }
+    />
   );
 }
 
@@ -228,8 +210,10 @@ export function ArtifactCardComposition() {
           aria-label="rate-limiter.ts"
           className="hidden w-[22rem] shrink-0 animate-kura-fade-in flex-col overflow-hidden rounded-kura-xl bg-kura-surface shadow-kura-md md:flex"
         >
-          <header className="flex h-11 items-center gap-2 pr-1.5 pl-3.5 shadow-[inset_0_-1px_0_var(--kura-border-subtle)]">
-            <span className="min-w-0 flex-1 truncate font-medium text-sm">rate-limiter.ts</span>
+          <header className="flex h-11 items-center gap-2 pr-1.5 pl-4">
+            <span className="min-w-0 flex-1 truncate font-kura-mono text-[12.5px]">
+              rate-limiter.ts
+            </span>
             <IconButton size="sm" label="Close panel" icon={<X />} onClick={() => setOpen(false)} />
           </header>
           <CodeBlock

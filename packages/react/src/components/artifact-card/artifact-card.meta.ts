@@ -71,13 +71,13 @@ export default defineComponent({
       type: '"compact" | "preview"',
       default: '"compact"',
       description:
-        "compact = one-row chip sized to its content, for message text and lists; preview = full-width card with a 144px thumbnail area above the title.",
+        "compact = one-row chip sized to its content, for message text and lists; preview = full-width card whose top 112px is a flush thumbnail of the artifact, above the title.",
     },
     {
       name: "preview",
       type: "React.ReactNode",
       description:
-        'Thumbnail content for variant="preview": a text excerpt, an <img className="size-full object-cover">, a headerless CodeBlock. It sits in a sunk well, clipped at the bottom, and is aria-hidden/inert. Default: the kind sketched in rows of dots.',
+        'Thumbnail content for variant="preview": a text excerpt, an <img className="size-full object-cover">, a headerless CodeBlock. It fills the top of the card edge to edge on the sunken fill, clipped at the bottom, and is aria-hidden/inert. Default: the kind sketched in rows of dots.',
     },
     {
       name: "versions",
@@ -206,7 +206,7 @@ export default defineComponent({
       kind: "full",
       title: "Written live, then edited",
       description:
-        "Preview variant generating with progress and statusText, then ready with versions, Copy/Download actions and an edit that creates v2.",
+        "Preview variant generating with progress and statusText, then ready with versions and Edit/Copy actions; an edit writes v2 in place.",
     },
     {
       name: "ArtifactCardStates",
@@ -235,7 +235,7 @@ export default defineComponent({
     'Use variant="compact" inside message text and lists (it sizes to content — give it a width like w-full or max-w-sm when stacking); use "preview" when there is room for a thumbnail.',
     'For images pass preview={<img src={url} alt="" className="size-full object-cover" />} — the thumbnail is decorative, the title carries the name.',
     "Pass `progress` only when you really know it (e.g. sections written / planned); otherwise leave it out: the icon tile shows the running glyph and no rail is drawn.",
-    "The preview well is 144px tall and clips. Give a text excerpt whole lines (a fixed line-height and `line-clamp-2` per paragraph) so nothing is cut through its letters.",
+    "The thumbnail is 112px tall and clips. Give a text excerpt whole lines (a fixed line-height and `line-clamp-*` per paragraph) so nothing is cut through its letters, and do not repeat the title inside it: the header already says it.",
     "Map Anthropic/OpenAI canvas or artifact tool calls (create → generating, update/rewrite → updating with versions + 1) onto one card per artifact id.",
   ],
 });
