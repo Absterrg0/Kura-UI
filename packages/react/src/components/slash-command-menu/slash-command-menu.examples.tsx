@@ -27,23 +27,55 @@ import { KbdShortcut } from "../kbd-shortcut";
 import { type SlashCommand, SlashCommandMenu } from "./slash-command-menu";
 
 const basic: SlashCommand[] = [
-  { id: "summarize", label: "Summarize", insert: "Summarize the following:\n" },
-  { id: "translate", label: "Translate", insert: "Translate into " },
-  { id: "explain", label: "Explain", insert: "Explain like I'm new to this: " },
+  {
+    id: "summarize",
+    label: "Summarize",
+    description: "Condense text into key points",
+    icon: <AlignLeft />,
+    insert: "Summarize the following:\n",
+  },
+  {
+    id: "rewrite",
+    label: "Rewrite",
+    description: "Change tone, length or clarity",
+    icon: <PenLine />,
+    insert: "Rewrite this to be clearer:\n",
+  },
+  {
+    id: "debug",
+    label: "Debug",
+    description: "Find the cause of an error",
+    icon: <Bug />,
+    insert: "Here is an error. Find the root cause:\n",
+  },
+  {
+    id: "plan",
+    label: "Plan",
+    description: "Break a goal into steps first",
+    icon: <ListTodo />,
+    insert: "Before doing anything, write a step-by-step plan for: ",
+  },
 ];
 
 export function SlashCommandMenuMinimal() {
   const ref = React.useRef<HTMLTextAreaElement>(null);
+  const [value, setValue] = React.useState("/");
   return (
-    <div className="w-full max-w-md">
-      <textarea
-        ref={ref}
-        aria-label="Prompt"
-        placeholder="Type / for commands"
-        rows={3}
-        className="w-full resize-none rounded-kura-xl bg-kura-surface-raised px-3.5 py-3 text-sm leading-6 shadow-kura-sm outline-hidden placeholder:text-kura-fg-subtle focus-visible:shadow-kura-focus"
-      />
-      <SlashCommandMenu textareaRef={ref} commands={basic} />
+    // Room above the composer for the menu, which opens upward from the caret.
+    <div className="w-full max-w-xl pt-60">
+      <Composer value={value} onValueChange={setValue} onSubmit={() => setValue("")}>
+        <ComposerInput ref={ref} placeholder="Ask anything, or type / for commands" />
+        <ComposerToolbar>
+          <ComposerTools>
+            <ComposerAttachButton />
+          </ComposerTools>
+          <ComposerActions>
+            <ComposerSubmit />
+          </ComposerActions>
+        </ComposerToolbar>
+      </Composer>
+      {/* defaultOpen: the draft already ends in "/", so the menu starts open. */}
+      <SlashCommandMenu textareaRef={ref} commands={basic} side="top" defaultOpen />
     </div>
   );
 }
@@ -128,9 +160,10 @@ const commands: SlashCommand[] = [
 export function SlashCommandMenuFull() {
   const ref = React.useRef<HTMLTextAreaElement>(null);
   const [value, setValue] = React.useState("");
-  const [log, setLog] = React.useState("Type / at the start of a line");
+  const [log, setLog] = React.useState("");
   return (
     <div className="flex w-full max-w-md flex-col gap-2">
+      {/* Any textarea works: here a plain well. */}
       <textarea
         ref={ref}
         aria-label="Prompt"
@@ -138,7 +171,7 @@ export function SlashCommandMenuFull() {
         onChange={(e) => setValue(e.currentTarget.value)}
         placeholder="Write a message… try /sum or /debug"
         rows={4}
-        className="w-full resize-none rounded-kura-xl bg-kura-surface-raised px-3.5 py-3 text-sm leading-6 shadow-kura-sm outline-hidden placeholder:text-kura-fg-subtle focus-visible:shadow-kura-focus"
+        className="w-full resize-none rounded-kura-lg bg-kura-surface-sunken px-3.5 py-3 text-[14px] text-kura-fg leading-6 shadow-kura-sunk outline-hidden placeholder:text-kura-fg-subtle focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-kura-ring focus-visible:outline-offset-2"
       />
       <SlashCommandMenu
         textareaRef={ref}
@@ -146,13 +179,12 @@ export function SlashCommandMenuFull() {
         trigger="/"
         side="auto"
         emptyMessage="No matching command"
-        onOpenChange={(open) => setLog(open ? "Menu open" : "Menu closed")}
         onSelect={(command, { query }) => {
           if (command.id === "clear") setValue("");
           setLog(`Ran /${command.label}${query ? ` (typed “/${query}”)` : ""}`);
         }}
       />
-      <p className="px-1 text-kura-fg-subtle text-xs" aria-live="polite">
+      <p className="min-h-4 px-1 text-kura-fg-subtle text-xs" aria-live="polite">
         {log}
       </p>
     </div>

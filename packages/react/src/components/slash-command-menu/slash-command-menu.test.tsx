@@ -36,6 +36,17 @@ function InComposer({ onSubmit }: { onSubmit: () => void }) {
   );
 }
 
+function Draft({ text }: { text: string }) {
+  const ref = React.useRef<HTMLTextAreaElement>(null);
+  return (
+    <>
+      <textarea ref={ref} aria-label="Prompt" defaultValue={text} />
+      <button type="button">Elsewhere</button>
+      <SlashCommandMenu textareaRef={ref} commands={commands} defaultOpen />
+    </>
+  );
+}
+
 describe("SlashCommandMenu", () => {
   it("opens on / at the start of a line with data-slot and groups", async () => {
     render(<Field className="custom" />);
@@ -65,6 +76,18 @@ describe("SlashCommandMenu", () => {
     expect(Number.parseFloat(menu.style.maxHeight)).toBeLessThanOrEqual(200);
     expect(Number.parseFloat(menu.style.maxHeight)).toBeGreaterThan(0);
     Object.defineProperty(window, "innerHeight", { value: height, configurable: true });
+  });
+
+  it("defaultOpen opens on mount from the draft's end, and an outside press closes it", async () => {
+    const { unmount } = render(<Draft text="Hello /tr" />);
+    expect(screen.getByRole("textbox")).not.toHaveFocus();
+    expect(screen.getAllByRole("option")).toHaveLength(1);
+    expect(screen.getByRole("option", { name: /Translate/ })).toBeInTheDocument();
+    await userEvent.click(screen.getByRole("button", { name: "Elsewhere" }));
+    expect(screen.queryByRole("listbox")).not.toBeInTheDocument();
+    unmount();
+    render(<Draft text="no trigger here" />);
+    expect(screen.queryByRole("listbox")).not.toBeInTheDocument();
   });
 
   it("does not open mid-word", async () => {
