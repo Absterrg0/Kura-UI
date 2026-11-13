@@ -79,7 +79,12 @@ export default defineComponent({
   related: ["tooltip", "model-picker", "slash-command-menu"],
   tags: ["popover", "overlay", "floating", "panel", "menu", "dropdown"],
   examples: [
-    { name: "PopoverMinimal", kind: "minimal", title: "Basic" },
+    {
+      name: "PopoverMinimal",
+      kind: "minimal",
+      title: "A usage card",
+      description: "Starts open (`defaultOpen`); the trigger or Esc closes it.",
+    },
     { name: "PopoverFull", kind: "full", title: "Controlled settings panel" },
     {
       name: "PopoverShareChat",

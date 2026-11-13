@@ -1,5 +1,6 @@
 "use client";
 
+import { ArrowDown, ArrowLeft, ArrowRight, ArrowUp, CornerDownLeft } from "lucide-react";
 import type * as React from "react";
 import { useIsApplePlatform } from "../../hooks/use-platform";
 import { cn } from "../../lib/cn";
@@ -19,7 +20,7 @@ export interface KbdProps extends React.ComponentProps<"kbd"> {
 }
 
 const keyBase =
-  "inline-flex min-w-[1.6em] items-center justify-center font-kura-sans font-medium tabular-nums leading-none tracking-normal " +
+  "relative inline-flex min-w-[1.6em] items-center justify-center font-kura-sans font-medium tabular-nums leading-none tracking-normal " +
   "transition-[transform,background-color,box-shadow,color] duration-(--kura-duration-instant) ease-kura-out";
 
 const keyVariants = {
@@ -35,6 +36,35 @@ const keySizes = {
   sm: "h-[18px] min-w-[18px] px-1 text-[11px]",
   md: "h-[22px] min-w-[22px] px-1.5 text-xs",
 } as const;
+
+/**
+ * Glyphs the text fonts draw small or not at all (they fall back to a system font): these are
+ * drawn as icons instead. The character stays in the key, transparent, so the key keeps its text
+ * baseline next to running text and its text content.
+ */
+const ICONS: Record<string, typeof ArrowUp> = {
+  "↵": CornerDownLeft,
+  "↑": ArrowUp,
+  "↓": ArrowDown,
+  "←": ArrowLeft,
+  "→": ArrowRight,
+};
+
+function Glyph({ children }: { children: React.ReactNode }) {
+  const Icon = typeof children === "string" ? ICONS[children] : undefined;
+  if (!Icon) return <>{children}</>;
+  return (
+    <>
+      <span className="text-transparent">{children}</span>
+      <Icon
+        aria-hidden
+        absoluteStrokeWidth
+        strokeWidth={1.5}
+        className="pointer-events-none absolute inset-0 m-auto size-[1.1em]"
+      />
+    </>
+  );
+}
 
 /**
  * A keyboard key or key combination. Platform-aware (⌘ on Apple, Ctrl elsewhere) and
@@ -59,7 +89,7 @@ export function Kbd({
         className={cn(keyBase, keyVariants[variant], keySizes[size], className)}
         {...props}
       >
-        {children}
+        <Glyph>{children}</Glyph>
       </kbd>
     );
   }
@@ -69,7 +99,7 @@ export function Kbd({
     <kbd
       data-slot="kbd"
       data-pressed={pressed}
-      className={cn("inline-flex items-center gap-0.5 font-kura-sans", className)}
+      className={cn("inline-flex items-center gap-[3px] font-kura-sans", className)}
       {...props}
     >
       <span className="sr-only">{label}</span>
@@ -81,7 +111,7 @@ export function Kbd({
           data-pressed={pressed}
           className={cn(keyBase, keyVariants[variant], keySizes[size])}
         >
-          {formatKey(k, apple)}
+          <Glyph>{formatKey(k, apple)}</Glyph>
         </kbd>
       ))}
     </kbd>

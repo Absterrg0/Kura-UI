@@ -73,22 +73,17 @@ export function KbdShortcutSheet() {
   return (
     <section
       aria-labelledby="shortcut-sheet-title"
-      className="w-full max-w-2xl rounded-kura-xl bg-kura-surface shadow-kura-md"
+      className="w-full max-w-2xl rounded-kura-xl bg-kura-surface shadow-kura-surface"
     >
-      <header className="flex items-center justify-between gap-4 border-kura-border-subtle border-b px-5 py-4">
-        <div className="flex flex-col gap-0.5">
-          <h3 id="shortcut-sheet-title" className="font-medium text-[15px] text-kura-fg">
-            Keyboard shortcuts
-          </h3>
-          <p className="text-kura-fg-muted text-[13px]">
-            Press <Kbd keys={["mod", "/"]} size="sm" /> any time to open this sheet.
-          </p>
-        </div>
+      <header className="flex h-11 items-center justify-between gap-4 pr-2 pl-5">
+        <h3 id="shortcut-sheet-title" className="font-semibold text-[13px] text-kura-fg">
+          Keyboard shortcuts
+        </h3>
         <IconButton label="Close" icon={<X />} size="sm" shortcut={["esc"]} tooltipSide="left" />
       </header>
-      <div className="grid gap-x-8 gap-y-5 px-5 py-4 sm:grid-cols-2">
+      <div className="grid gap-x-10 gap-y-4 px-5 pt-1 pb-4 sm:grid-cols-2">
         {shortcutGroups.map((group) => (
-          <div key={group.title} className="flex flex-col gap-1">
+          <div key={group.title} className="flex flex-col">
             <h4 className="pb-1 font-medium text-kura-fg-subtle text-xs">{group.title}</h4>
             <dl className="flex flex-col">
               {group.items.map((item) => (
@@ -96,7 +91,7 @@ export function KbdShortcutSheet() {
                   key={item.label}
                   className="flex h-8 items-center justify-between gap-4 text-[13px]"
                 >
-                  <dt className="truncate text-kura-fg-muted">{item.label}</dt>
+                  <dt className="truncate text-kura-fg">{item.label}</dt>
                   <dd className="flex shrink-0 items-center gap-1.5">
                     <Kbd keys={item.keys} size="sm" />
                     {item.alt && (
@@ -112,6 +107,11 @@ export function KbdShortcutSheet() {
           </div>
         ))}
       </div>
+      <footer className="flex h-10 items-center px-5 text-[12.5px] text-kura-fg-subtle shadow-[inset_0_1px_0_var(--kura-border-subtle)]">
+        <p>
+          Press <Kbd keys={["mod", "/"]} size="sm" /> any time to open this sheet.
+        </p>
+      </footer>
     </section>
   );
 }

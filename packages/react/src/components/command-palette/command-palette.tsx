@@ -12,7 +12,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@ui-sdk/react/dialog";
-import { ChevronRight, Search } from "lucide-react";
+import { ArrowLeft, ChevronRight, Search } from "lucide-react";
 import * as React from "react";
 import { useControllableState } from "../../hooks/use-controllable-state";
 import { useHotkey } from "../../hooks/use-hotkey";
@@ -74,6 +74,12 @@ export interface CommandPaletteProps
   emptyMessage?: string;
   /** Accessible title of the dialog. Default "Command palette". */
   label?: string;
+  /**
+   * Render the palette in place, always shown, instead of as a modal dialog: for a launcher page,
+   * a settings panel or a docs preview. `open`, `trigger` and the dialog title do not apply, and
+   * `hotkey` moves focus to its search field.
+   */
+  inline?: boolean;
 }
 
 interface Page {
@@ -142,6 +148,7 @@ export function CommandPalette({
   placeholder = "Search or run a command…",
   emptyMessage = "No results",
   label = "Command palette",
+  inline = false,
   className,
   ...props
 }: CommandPaletteProps) {
@@ -177,6 +184,11 @@ export function CommandPalette({
   useHotkey(
     hotkey,
     (e) => {
+      if (inline) {
+        e.preventDefault();
+        inputRef.current?.focus();
+        return;
+      }
       // It closes from anywhere, but does not open on top of another modal.
       if (!open && e.target instanceof Element && e.target.closest('[aria-modal="true"]')) return;
       setOpen((o) => !o);
@@ -300,7 +312,12 @@ export function CommandPalette({
     }
     item.onSelect?.();
     onSelect?.(item);
-    setOpen(false);
+    if (inline) {
+      // In place, the palette stays: it starts again from the top.
+      setPages([]);
+      setQueryState("");
+      setActive(null);
+    } else setOpen(false);
   };
 
   const move = (delta: number | "first" | "last") => {
@@ -338,6 +355,9 @@ export function CommandPalette({
     } else if (e.key === "Backspace" && !query && pages.length > 0) {
       e.preventDefault();
       popPage();
+    } else if (e.key === "Escape" && inline && !pages.length && query) {
+      e.preventDefault();
+      setQuery("");
     } else if (e.key === "Escape" && pages.length > 0) {
       e.preventDefault();
       e.stopPropagation();
@@ -347,6 +367,208 @@ export function CommandPalette({
 
   let lastGroup: string | null = null;
   const activeRow = rows.find((r) => r.key === current);
+  const onPage = pages.length > 0;
+
+  const body = (
+    <>
+      <div
+        data-slot="command-palette-search"
+        className="flex h-14 shrink-0 items-center gap-3 px-4 shadow-[inset_0_-1px_0_var(--kura-border-subtle)]"
+      >
+        {onPage ? (
+          <button
+            type="button"
+            aria-label="Back"
+            onClick={() => {
+              popPage();
+              inputRef.current?.focus();
+            }}
+            className="-ml-1 inline-flex size-7 shrink-0 cursor-pointer items-center justify-center rounded-[7px] text-kura-fg-subtle outline-hidden transition-colors duration-(--kura-duration-fast) ease-kura-snap hover:bg-kura-hover hover:text-kura-fg focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-kura-ring motion-reduce:transition-none"
+          >
+            <ArrowLeft aria-hidden className="size-4" />
+          </button>
+        ) : (
+          <Search aria-hidden className="size-[18px] shrink-0 text-kura-fg-subtle" />
+        )}
+        {onPage && (
+          <span
+            data-slot="command-palette-breadcrumbs"
+            className="flex shrink-0 items-center gap-1.5 font-medium text-[14px] text-kura-fg-muted"
+          >
+            {pages.map((p) => (
+              <React.Fragment key={p.id}>
+                <span className="max-w-40 truncate">{p.title.replace(/(…|\.\.\.)$/, "")}</span>
+                <span aria-hidden className="text-kura-fg-subtle">
+                  /
+                </span>
+              </React.Fragment>
+            ))}
+          </span>
+        )}
+        {/* focus: the caret is the indicator (the one text field of the palette) */}
+        <input
+          ref={inputRef}
+          role="combobox"
+          aria-expanded
+          aria-controls={listId}
+          aria-autocomplete="list"
+          aria-activedescendant={current ? optionId(current) : undefined}
+          aria-label={page ? `Search ${page.title}` : "Search commands"}
+          value={query}
+          onChange={(e) => setQuery(e.currentTarget.value)}
+          onKeyDown={onKeyDown}
+          placeholder={
+            page?.placeholder ??
+            (page ? `Search ${page.title.replace(/(…|\.\.\.)$/, "").toLowerCase()}…` : placeholder)
+          }
+          className="h-full min-w-0 flex-1 bg-transparent text-[15px] text-kura-fg outline-hidden placeholder:text-kura-fg-subtle"
+        />
+      </div>
+
+      <div
+        id={listId}
+        role="listbox"
+        aria-label={page ? page.title : "Commands"}
+        aria-busy={isLoading || undefined}
+        className="min-h-0 flex-1 scroll-py-1.5 overflow-y-auto overscroll-contain p-1.5 [scrollbar-width:thin]"
+      >
+        {rows.map((row) => {
+          const heading = row.group !== lastGroup ? row.group : null;
+          lastGroup = row.group;
+          const isActive = row.key === current;
+          const { item } = row;
+          return (
+            <React.Fragment key={row.key}>
+              {heading !== null && heading !== "" && (
+                <div
+                  role="presentation"
+                  data-slot="command-palette-group"
+                  className="select-none px-3 pt-3 pb-1.5 font-medium text-[12px] text-kura-fg-subtle first:pt-1.5"
+                >
+                  {heading}
+                </div>
+              )}
+              <div
+                id={optionId(row.key)}
+                role="option"
+                aria-selected={isActive}
+                aria-disabled={item.disabled || undefined}
+                data-slot="command-palette-item"
+                data-active={isActive || undefined}
+                data-disabled={item.disabled || undefined}
+                onPointerMove={(e) => {
+                  const o = pointerOrigin.current;
+                  if (!o) {
+                    pointerOrigin.current = { x: e.clientX, y: e.clientY };
+                    return;
+                  }
+                  if (o.x === e.clientX && o.y === e.clientY) return;
+                  if (!item.disabled && !isActive) setActive(row.key);
+                }}
+                onClick={() => choose(item)}
+                className="group/item flex h-10 cursor-pointer select-none items-center gap-3 rounded-[9px] px-3 font-medium text-[14px] text-kura-fg-muted data-active:bg-kura-hover data-active:text-kura-fg data-disabled:cursor-not-allowed data-disabled:opacity-45"
+              >
+                {item.icon && (
+                  <span
+                    aria-hidden
+                    className="flex size-4 shrink-0 items-center justify-center text-kura-fg-subtle group-data-active/item:text-kura-fg [&_svg]:size-4"
+                  >
+                    {item.icon}
+                  </span>
+                )}
+                <span className="flex min-w-0 flex-1 items-baseline gap-2.5">
+                  <span className="max-w-full shrink-0 truncate">{item.label}</span>
+                  {item.description && (
+                    <span className="truncate font-normal text-[12.5px] text-kura-fg-subtle">
+                      {item.description}
+                    </span>
+                  )}
+                </span>
+                {nested(item) ? (
+                  <ChevronRight
+                    aria-hidden
+                    className="size-4 shrink-0 text-kura-fg-subtle group-data-active/item:text-kura-fg-muted"
+                  />
+                ) : item.shortcut ? (
+                  <Kbd keys={item.shortcut} size="sm" className="shrink-0 pointer-coarse:hidden" />
+                ) : (
+                  // A row with no shortcut of its own shows the key that runs it while it is active.
+                  <Kbd
+                    aria-hidden
+                    keys={["enter"]}
+                    size="sm"
+                    className="shrink-0 opacity-0 group-data-active/item:opacity-100 pointer-coarse:hidden"
+                  />
+                )}
+              </div>
+            </React.Fragment>
+          );
+        })}
+        {isLoading && (
+          <div data-slot="command-palette-loading" aria-hidden className="flex flex-col pt-1">
+            {[0.42, 0.3, 0.36].map((w, i) => (
+              <div key={i} className="flex h-10 items-center pr-3 pl-10">
+                <span
+                  className="kura-dots h-1.5 animate-kura-pulse motion-reduce:animate-none"
+                  style={{ width: `${w * 100}%`, animationDelay: `${i * 120}ms` }}
+                />
+              </div>
+            ))}
+          </div>
+        )}
+        {!isLoading && rows.length === 0 && (
+          <div className="px-4 py-10 text-center text-[13px] text-kura-fg-subtle">
+            {emptyMessage}
+          </div>
+        )}
+      </div>
+
+      <div
+        data-slot="command-palette-footer"
+        className="flex h-11 shrink-0 items-center gap-4 px-4 text-[12px] text-kura-fg-subtle shadow-[inset_0_1px_0_var(--kura-border-subtle)] pointer-coarse:hidden"
+      >
+        <span className="flex items-center gap-1.5">
+          <Kbd aria-hidden keys={["up", "down"]} size="sm" />
+          navigate
+        </span>
+        <span className="flex items-center gap-1.5">
+          <Kbd aria-hidden keys={["enter"]} size="sm" />
+          {activeRow && nested(activeRow.item) ? "open" : "select"}
+        </span>
+        {(onPage || !inline) && (
+          <span className="flex items-center gap-1.5">
+            <Kbd aria-hidden keys={[onPage ? "backspace" : "esc"]} size="sm" />
+            {onPage ? "back" : "close"}
+          </span>
+        )}
+        <span aria-live="polite" className="ml-auto truncate">
+          {isLoading ? "Loading…" : null}
+          <span className="sr-only">
+            {isLoading
+              ? ""
+              : `${enabledRows.length} ${enabledRows.length === 1 ? "result" : "results"}`}
+          </span>
+        </span>
+      </div>
+    </>
+  );
+
+  const surface =
+    "flex flex-col overflow-hidden rounded-kura-2xl bg-kura-surface font-kura-sans text-kura-fg shadow-kura-popover";
+
+  if (inline) {
+    return (
+      <div
+        data-slot="command-palette"
+        data-inline=""
+        data-page={page?.id}
+        className={cn(surface, "w-full", className)}
+        {...props}
+      >
+        {body}
+      </div>
+    );
+  }
 
   return (
     <DialogPrimitive open={open} onOpenChange={(next) => setOpen(next)}>
@@ -362,161 +584,15 @@ export function CommandPalette({
         data-page={page?.id}
         initialFocus={() => inputRef.current}
         className={cn(
-          "-translate-x-1/2 fixed top-[min(20vh,160px)] left-1/2 z-50 flex max-h-[min(520px,calc(100vh-min(20vh,160px)-16px))] w-[min(640px,calc(100vw-32px))] flex-col overflow-hidden",
-          "m-0 rounded-kura-xl border-0 bg-kura-surface p-0 font-kura-sans text-kura-fg shadow-kura-popover outline-hidden backdrop:bg-transparent",
+          surface,
+          "-translate-x-1/2 fixed top-[min(20vh,160px)] left-1/2 z-50 m-0 max-h-[min(520px,calc(100vh-min(20vh,160px)-16px))] w-[min(640px,calc(100vw-32px))] border-0 p-0 outline-hidden backdrop:bg-transparent",
           "origin-top transition-[opacity,scale] duration-(--kura-duration-base) ease-kura-snap data-ending-style:scale-[0.98] data-ending-style:opacity-0 data-starting-style:scale-[0.98] data-starting-style:opacity-0 motion-reduce:transition-none",
           className,
         )}
         {...props}
       >
         <DialogTitle className="sr-only">{label}</DialogTitle>
-        <div
-          data-slot="command-palette-search"
-          className="flex h-12 shrink-0 items-center gap-2.5 px-4 shadow-[inset_0_-1px_0_var(--kura-border-subtle)]"
-        >
-          <Search aria-hidden className="size-4 shrink-0 text-kura-fg-subtle" />
-          {pages.length > 0 && (
-            <span
-              data-slot="command-palette-breadcrumbs"
-              className="flex shrink-0 items-center gap-1"
-            >
-              {pages.map((p) => (
-                <span
-                  key={p.id}
-                  className="rounded-[5px] bg-kura-raised px-1.5 py-0.5 font-medium text-kura-fg-muted text-xs shadow-kura-key"
-                >
-                  {p.title}
-                </span>
-              ))}
-            </span>
-          )}
-          <input
-            ref={inputRef}
-            role="combobox"
-            aria-expanded
-            aria-controls={listId}
-            aria-autocomplete="list"
-            aria-activedescendant={current ? optionId(current) : undefined}
-            aria-label={page ? `Search ${page.title}` : "Search commands"}
-            value={query}
-            onChange={(e) => setQuery(e.currentTarget.value)}
-            onKeyDown={onKeyDown}
-            placeholder={
-              page?.placeholder ??
-              (page
-                ? `Search ${page.title.replace(/(…|\.\.\.)$/, "").toLowerCase()}…`
-                : placeholder)
-            }
-            className="h-full min-w-0 flex-1 bg-transparent text-[14px] text-kura-fg outline-hidden placeholder:text-kura-fg-subtle"
-          />
-          {/* Key hints are for a keyboard: they are not printed on a touch screen. */}
-          <Kbd keys={["esc"]} size="sm" className="shrink-0 pointer-coarse:hidden" />
-        </div>
-
-        <div
-          id={listId}
-          role="listbox"
-          aria-label={page ? page.title : "Commands"}
-          aria-busy={isLoading || undefined}
-          className="min-h-0 flex-1 scroll-py-1.5 overflow-y-auto overscroll-contain p-1.5 [scrollbar-width:thin]"
-        >
-          {rows.map((row) => {
-            const heading = row.group !== lastGroup ? row.group : null;
-            lastGroup = row.group;
-            const isActive = row.key === current;
-            const { item } = row;
-            return (
-              <React.Fragment key={row.key}>
-                {heading !== null && heading !== "" && (
-                  <div
-                    role="presentation"
-                    data-slot="command-palette-group"
-                    className="select-none px-2.5 pt-3 pb-1.5 text-[12px] text-kura-fg-subtle first:pt-1.5"
-                  >
-                    {heading}
-                  </div>
-                )}
-                <div
-                  id={optionId(row.key)}
-                  role="option"
-                  aria-selected={isActive}
-                  aria-disabled={item.disabled || undefined}
-                  data-slot="command-palette-item"
-                  data-active={isActive || undefined}
-                  data-disabled={item.disabled || undefined}
-                  onPointerMove={(e) => {
-                    const o = pointerOrigin.current;
-                    if (!o) {
-                      pointerOrigin.current = { x: e.clientX, y: e.clientY };
-                      return;
-                    }
-                    if (o.x === e.clientX && o.y === e.clientY) return;
-                    if (!item.disabled && !isActive) setActive(row.key);
-                  }}
-                  onClick={() => choose(item)}
-                  className="flex h-9 cursor-pointer select-none items-center gap-3 rounded-[9px] px-2.5 text-[13px] data-active:bg-kura-hover data-disabled:cursor-not-allowed data-disabled:opacity-45"
-                >
-                  <span
-                    aria-hidden
-                    className="flex size-4 shrink-0 items-center justify-center text-kura-fg-muted [&_svg]:size-4"
-                  >
-                    {item.icon}
-                  </span>
-                  <span className="flex min-w-0 flex-1 items-baseline gap-2">
-                    <span className="truncate text-kura-fg">{item.label}</span>
-                    {item.description && (
-                      <span className="truncate text-[13px] text-kura-fg-subtle">
-                        {item.description}
-                      </span>
-                    )}
-                  </span>
-                  {item.shortcut && <Kbd keys={item.shortcut} size="sm" className="shrink-0" />}
-                  {nested(item) && (
-                    <ChevronRight aria-hidden className="size-4 shrink-0 text-kura-fg-subtle" />
-                  )}
-                </div>
-              </React.Fragment>
-            );
-          })}
-          {isLoading && (
-            <div
-              data-slot="command-palette-loading"
-              aria-hidden
-              className="flex flex-col gap-1 pt-1"
-            >
-              {[0.62, 0.48, 0.55].map((w, i) => (
-                <div key={i} className="flex h-9 items-center px-2.5">
-                  <span
-                    className="kura-dots h-1.5 animate-kura-pulse motion-reduce:animate-none"
-                    style={{ width: `${w * 100}%`, animationDelay: `${i * 120}ms` }}
-                  />
-                </div>
-              ))}
-            </div>
-          )}
-          {!isLoading && rows.length === 0 && (
-            <div className="px-3 py-10 text-center text-[13px] text-kura-fg-subtle">
-              {emptyMessage}
-            </div>
-          )}
-        </div>
-
-        <div
-          data-slot="command-palette-footer"
-          className="flex h-10 shrink-0 items-center justify-between gap-3 px-4 text-kura-fg-subtle text-xs shadow-[inset_0_1px_0_var(--kura-border-subtle)]"
-        >
-          <span className="truncate" aria-live="polite">
-            {isLoading
-              ? "Loading…"
-              : pages.length > 0
-                ? "⌫ to go back"
-                : `${enabledRows.length} ${enabledRows.length === 1 ? "result" : "results"}`}
-          </span>
-          <span className="flex shrink-0 items-center gap-1.5">
-            {activeRow && nested(activeRow.item) ? "Open" : "Run"}
-            <Kbd aria-hidden keys={["enter"]} size="sm" className="pointer-coarse:hidden" />
-          </span>
-        </div>
+        {body}
       </DialogContent>
     </DialogPrimitive>
   );
@@ -543,13 +619,14 @@ export function CommandPaletteTrigger({
   return (
     <button
       type="button"
-      data-slot="command-palette-trigger"
       className={cn(
         "inline-flex h-8 w-full min-w-0 cursor-pointer items-center gap-2 rounded-[9px] bg-kura-surface-sunken pr-1.5 pl-2.5 font-kura-sans text-[13px] text-kura-fg-subtle shadow-kura-sunk outline-hidden",
         "transition-colors duration-(--kura-duration-fast) ease-kura-snap hover:text-kura-fg-muted focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-kura-ring focus-visible:outline-offset-2",
         className,
       )}
       {...props}
+      // After the props: as a dialog trigger it is handed ui-sdk's own data-slot, which must not win.
+      data-slot="command-palette-trigger"
     >
       <Search aria-hidden className="size-3.5 shrink-0" />
       <span className="flex-1 truncate text-left">{placeholder}</span>

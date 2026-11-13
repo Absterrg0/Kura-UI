@@ -91,7 +91,9 @@ describe("CommandPalette", () => {
     const input = screen.getByRole("combobox");
     await userEvent.click(screen.getByRole("option", { name: /Change theme/ }));
     expect(screen.getByRole("combobox", { name: "Search Change theme…" })).toBeInTheDocument();
-    expect(screen.getAllByRole("option").map((o) => o.textContent)).toEqual(["Light", "Dark"]);
+    expect(screen.getAllByRole("option")).toHaveLength(2);
+    expect(screen.getByRole("option", { name: "Light" })).toBeInTheDocument();
+    expect(screen.getByRole("option", { name: "Dark" })).toBeInTheDocument();
     await userEvent.keyboard("{Backspace}");
     expect(screen.getByRole("option", { name: /New chat/ })).toBeInTheDocument();
     await userEvent.type(input, "work");
@@ -124,6 +126,23 @@ describe("CommandPalette", () => {
     expect(document.querySelector("[data-slot=command-palette-loading]")).toBeInTheDocument();
     rerender(<CommandPalette items={[]} defaultOpen emptyMessage="Nothing here" />);
     expect(screen.getByText("Nothing here")).toBeInTheDocument();
+  });
+
+  it("renders in place with `inline`, runs an item and starts again from the top", async () => {
+    run.mockClear();
+    const onOpenChange = vi.fn();
+    render(<CommandPalette items={items} inline hotkey={null} onOpenChange={onOpenChange} />);
+    const root = dialog();
+    expect(root).toHaveAttribute("data-inline");
+    expect(screen.queryByRole("dialog")).toBeNull();
+    const input = screen.getByRole("combobox", { name: "Search commands" });
+    expect(input).not.toHaveFocus();
+    await userEvent.click(screen.getByRole("option", { name: /Change theme/ }));
+    expect(screen.getByRole("button", { name: "Back" })).toBeInTheDocument();
+    await userEvent.keyboard("{Enter}");
+    expect(run).toHaveBeenCalledWith("light");
+    expect(screen.getByRole("option", { name: /New chat/ })).toBeInTheDocument();
+    expect(onOpenChange).not.toHaveBeenCalled();
   });
 
   it("scores word-start and subsequence matches", () => {

@@ -67,6 +67,13 @@ export default defineComponent({
       default: "false",
       description: "Stop watching the field without unmounting.",
     },
+    {
+      name: "defaultOpen",
+      type: "boolean",
+      default: "false",
+      description:
+        "Open on mount when the field's text already ends in a trigger query (a restored draft, a demo), as if the caret stood at the end. Closes on a press outside the field and the menu, or as usual once the field is used.",
+    },
   ],
   parts: [
     {
@@ -84,7 +91,13 @@ export default defineComponent({
       name: "SlashCommandMenuItem",
       dataSlot: "slash-command-menu-item",
       description:
-        "role=option row: icon tile, label (matched text emphasised), description, shortcut. data-active, data-disabled.",
+        "role=option row (44px with a description, 36px without): a 16px icon, the label (matched text emphasised), the description on a second line, the shortcut as keycaps. data-active, data-disabled.",
+    },
+    {
+      name: "SlashCommandMenuFooter",
+      dataSlot: "slash-command-menu-footer",
+      description:
+        "Key hints under the list: ↑↓ navigate, ↵ insert, Esc dismiss. aria-hidden (the keys are in the keyboard map); hidden on touch screens.",
     },
   ],
   a11y: {
@@ -108,13 +121,19 @@ export default defineComponent({
   related: ["composer", "command-palette", "prompt-suggestions"],
   tags: ["slash", "commands", "autocomplete", "mention", "caret", "menu", "composer", "textarea"],
   examples: [
-    { name: "SlashCommandMenuMinimal", kind: "minimal", title: "On a plain textarea" },
+    {
+      name: "SlashCommandMenuMinimal",
+      kind: "minimal",
+      title: "Over a composer",
+      description:
+        "The draft starts with “/”, so `defaultOpen` shows the menu at once. Type to filter, ↑↓ and ↵ to insert.",
+    },
     {
       name: "SlashCommandMenuFull",
       kind: "full",
       title: "Groups, icons, shortcuts and actions",
       description:
-        "Ten commands in four groups, a disabled command, keywords (/tldr finds Summarize) and an action that clears the input.",
+        "On a plain textarea: ten commands in four groups, a disabled command, keywords (/tldr finds Summarize) and an action that clears the input.",
     },
     {
       name: "SlashCommandMenuInComposer",
@@ -129,6 +148,7 @@ export default defineComponent({
     "It works with controlled fields: the replacement dispatches a native input event, so React onChange / Composer onValueChange fire.",
     'Use `insert` for prompt templates; omit it for actions and handle them in onSelect (e.g. id === "clear").',
     "Its keydown listener runs before React handlers and stops Enter/Tab/arrows while open, so Composer will not send mid-selection.",
+    "`defaultOpen` only opens if the field's text already ends in “/query” when the menu mounts; it never moves focus.",
     "getCaretRect(field, offset) is exported if you need caret coordinates for something else.",
   ],
 });

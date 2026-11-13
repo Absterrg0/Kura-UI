@@ -8,27 +8,32 @@ import { Popover, PopoverClose, PopoverContent, PopoverTrigger } from "./popover
 
 export function PopoverMinimal() {
   return (
-    <Popover>
-      <PopoverTrigger asChild>
-        <Button variant="outline">
-          <Gauge /> Usage
-        </Button>
-      </PopoverTrigger>
-      <PopoverContent aria-labelledby="usage-title" className="w-64">
-        <div className="flex flex-col gap-2.5">
-          <div className="flex items-baseline justify-between">
-            <h3 id="usage-title" className="font-medium text-sm">
-              Weekly usage
-            </h3>
-            <span className="text-kura-fg-muted text-xs tabular-nums">38 / 50</span>
+    // Open at first, with room below for it; press the key or Esc to see it come and go.
+    <div className="pb-32">
+      <Popover defaultOpen>
+        <PopoverTrigger asChild>
+          <Button variant="outline">
+            <Gauge /> Usage
+          </Button>
+        </PopoverTrigger>
+        <PopoverContent aria-labelledby="usage-title" className="w-64">
+          <div className="flex flex-col gap-2.5">
+            <div className="flex items-baseline justify-between">
+              <h3 id="usage-title" className="font-medium text-sm">
+                Weekly usage
+              </h3>
+              <span className="font-kura-mono text-kura-fg-muted text-xs tabular-nums">
+                38 / 50
+              </span>
+            </div>
+            <DotRail value={0.76} label="Weekly usage" />
+            <p className="text-kura-fg-muted text-xs leading-relaxed">
+              Opus messages reset on Monday at 09:00. Haiku is unlimited.
+            </p>
           </div>
-          <DotRail value={0.76} label="Weekly usage" />
-          <p className="text-kura-fg-muted text-xs leading-relaxed">
-            Opus messages reset on Monday at 09:00. Haiku is unlimited.
-          </p>
-        </div>
-      </PopoverContent>
-    </Popover>
+        </PopoverContent>
+      </Popover>
+    </div>
   );
 }
 

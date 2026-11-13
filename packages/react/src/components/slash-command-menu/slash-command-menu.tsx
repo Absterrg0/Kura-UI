@@ -61,6 +61,12 @@ export interface SlashCommandMenuProps
   emptyMessage?: string | null;
   /** Turn the menu off without unmounting it. */
   disabled?: boolean;
+  /**
+   * Open on mount when the field's text already ends in a trigger query (e.g. a restored draft
+   * "…/sum", or a demo), as if the caret stood at the end. It closes on a press outside the field
+   * and the menu, or as usual once the field is used.
+   */
+  defaultOpen?: boolean;
 }
 
 interface Match {
@@ -121,6 +127,7 @@ export function SlashCommandMenu({
   side = "auto",
   emptyMessage = "No commands",
   disabled = false,
+  defaultOpen = false,
   className,
   style,
   ...props
@@ -167,38 +174,52 @@ export function SlashCommandMenu({
   const enabled = React.useMemo(() => ordered.filter((c) => !c.disabled), [ordered]);
   const open = !!match && !disabled && (results.length > 0 || emptyMessage !== null);
 
-  // Detect "/query" right before the caret.
-  const detect = React.useCallback(() => {
+  // Detect "/query" right before the caret (or before `at`, for a field that has no caret yet).
+  const detect = React.useCallback(
+    (at?: number) => {
+      const field = textareaRef.current;
+      if (!field || disabled) {
+        setMatch(null);
+        return;
+      }
+      const caretPos = at ?? field.selectionStart ?? 0;
+      if (at === undefined && caretPos !== field.selectionEnd) {
+        setMatch(null);
+        return;
+      }
+      const before = field.value.slice(0, caretPos);
+      const re = new RegExp(
+        `(^|\\s)${escapeRegExp(trigger)}([^\\s${escapeRegExp(trigger)}]{0,32})$`,
+      );
+      const m = re.exec(before);
+      if (!m) {
+        dismissedAt.current = null;
+        setMatch(null);
+        return;
+      }
+      const q = m[2] ?? "";
+      const start = caretPos - q.length - trigger.length;
+      if (dismissedAt.current === start) {
+        setMatch(null);
+        return;
+      }
+      setMatch((prev) =>
+        prev && prev.start === start && prev.end === caretPos && prev.query === q
+          ? prev
+          : { start, end: caretPos, query: q },
+      );
+    },
+    [textareaRef, trigger, disabled],
+  );
+
+  // `defaultOpen`: read the field once, on mount, as if its caret stood at the end.
+  const openOnMount = React.useRef(defaultOpen);
+  React.useEffect(() => {
+    if (!openOnMount.current) return;
+    openOnMount.current = false;
     const field = textareaRef.current;
-    if (!field || disabled) {
-      setMatch(null);
-      return;
-    }
-    const caretPos = field.selectionStart ?? 0;
-    if (caretPos !== field.selectionEnd) {
-      setMatch(null);
-      return;
-    }
-    const before = field.value.slice(0, caretPos);
-    const re = new RegExp(`(^|\\s)${escapeRegExp(trigger)}([^\\s${escapeRegExp(trigger)}]{0,32})$`);
-    const m = re.exec(before);
-    if (!m) {
-      dismissedAt.current = null;
-      setMatch(null);
-      return;
-    }
-    const q = m[2] ?? "";
-    const start = caretPos - q.length - trigger.length;
-    if (dismissedAt.current === start) {
-      setMatch(null);
-      return;
-    }
-    setMatch((prev) =>
-      prev && prev.start === start && prev.end === caretPos && prev.query === q
-        ? prev
-        : { start, end: caretPos, query: q },
-    );
-  }, [textareaRef, trigger, disabled]);
+    if (field && document.activeElement !== field) detect(field.value.length);
+  }, [textareaRef, detect]);
 
   // Watch the field. Input is observed on `document` (after React's own root listener) so a
   // controlled field has committed its new value before we react to it.
@@ -212,13 +233,14 @@ export function SlashCommandMenu({
       if (document.activeElement === field) detect();
     };
     const onBlur = () => setMatch(null);
+    const onClick = () => detect();
     document.addEventListener("input", onInput);
-    field.addEventListener("click", detect);
+    field.addEventListener("click", onClick);
     field.addEventListener("blur", onBlur);
     document.addEventListener("selectionchange", onSelectionChange);
     return () => {
       document.removeEventListener("input", onInput);
-      field.removeEventListener("click", detect);
+      field.removeEventListener("click", onClick);
       field.removeEventListener("blur", onBlur);
       document.removeEventListener("selectionchange", onSelectionChange);
     };
@@ -285,8 +307,10 @@ export function SlashCommandMenu({
         picked.current = { start: match.start, side: next };
       }
       setPlacement(next);
-      // A caret that has scrolled out of sight has no room on either side: the menu waits, hidden.
-      const inSight = rect.top + rect.height > top && rect.top < bottom;
+      // A caret that has scrolled out of sight, or a field that is not shown at all (a hidden
+      // tab), has no room on either side: the menu waits, hidden.
+      const inSight =
+        (field.checkVisibility?.() ?? true) && rect.top + rect.height > top && rect.top < bottom;
       setRoom(inSight ? Math.max(0, Math.min(MAX_HEIGHT, next === "top" ? above : below)) : 0);
     },
     [textareaRef, match, side],
@@ -304,12 +328,33 @@ export function SlashCommandMenu({
     window.addEventListener("resize", onChange);
     window.addEventListener("scroll", onChange, true);
     view?.addEventListener("resize", onChange);
+    // The field itself changing size (a late font, a hidden tab) moves the caret too.
+    const field = textareaRef.current;
+    const observer =
+      field && typeof ResizeObserver !== "undefined" ? new ResizeObserver(onChange) : null;
+    if (field) observer?.observe(field);
     return () => {
       window.removeEventListener("resize", onChange);
       window.removeEventListener("scroll", onChange, true);
       view?.removeEventListener("resize", onChange);
+      observer?.disconnect();
     };
-  }, [open, reposition]);
+  }, [open, reposition, textareaRef]);
+
+  // Opened without focus (`defaultOpen`), the field has no blur to close it: a press anywhere
+  // else does. While the field has focus, its blur closes the menu as usual.
+  React.useEffect(() => {
+    if (!open) return;
+    const onDown = (e: PointerEvent) => {
+      const field = textareaRef.current;
+      const target = e.target as Node | null;
+      if (!field || document.activeElement === field) return;
+      if (target && (field.contains(target) || menuRef.current?.contains(target))) return;
+      setMatch(null);
+    };
+    document.addEventListener("pointerdown", onDown);
+    return () => document.removeEventListener("pointerdown", onDown);
+  }, [open, textareaRef]);
 
   const choose = React.useCallback(
     (cmd: SlashCommand) => {
@@ -428,7 +473,7 @@ export function SlashCommandMenu({
         id={listId}
         role="listbox"
         aria-label="Commands"
-        className="min-h-0 scroll-py-1 overflow-y-auto overscroll-contain p-1 [scrollbar-width:thin]"
+        className="min-h-0 scroll-py-1.5 overflow-y-auto overscroll-contain p-1.5 [scrollbar-width:thin]"
       >
         {results.length === 0 && (
           <div className="px-3 py-5 text-center text-[13px] text-kura-fg-subtle">
@@ -448,7 +493,7 @@ export function SlashCommandMenu({
               {group && (
                 <div
                   id={headingId}
-                  className="select-none px-2 pt-1.5 pb-1 text-[12px] text-kura-fg-subtle"
+                  className="select-none px-2.5 pt-1.5 pb-1 font-medium text-[12px] text-kura-fg-subtle"
                 >
                   {group}
                 </div>
@@ -475,27 +520,36 @@ export function SlashCommandMenu({
                       if (!cmd.disabled && !isActive) setActive(cmd.id);
                     }}
                     onClick={() => choose(cmd)}
-                    className="flex cursor-pointer select-none items-center gap-2.5 rounded-[9px] px-1.5 py-1.5 data-active:bg-kura-hover data-disabled:cursor-not-allowed data-disabled:opacity-45"
+                    className={cn(
+                      "group/item flex cursor-pointer select-none items-center gap-3 rounded-[9px] px-2.5 data-active:bg-kura-hover data-disabled:cursor-not-allowed data-disabled:opacity-45",
+                      cmd.description ? "h-11" : "h-9",
+                    )}
                   >
                     <span
                       aria-hidden
-                      className="flex size-7 shrink-0 items-center justify-center text-kura-fg-muted [&_svg]:size-4"
+                      className="flex size-4 shrink-0 items-center justify-center text-kura-fg-subtle group-data-active/item:text-kura-fg [&_svg]:size-4"
                     >
                       {cmd.icon ?? (
-                        <span className="font-kura-mono text-[11px] leading-none">{trigger}</span>
+                        <span className="font-kura-mono text-[12px] leading-none">{trigger}</span>
                       )}
                     </span>
                     <span className="flex min-w-0 flex-1 flex-col">
-                      <span className="truncate font-medium text-[13px] leading-5">
+                      <span className="truncate font-medium text-[13px] text-kura-fg leading-[18px]">
                         <Highlight text={cmd.label} query={query} />
                       </span>
                       {cmd.description && (
-                        <span className="truncate text-kura-fg-subtle text-xs leading-4">
+                        <span className="truncate text-[12.5px] text-kura-fg-subtle leading-4">
                           {cmd.description}
                         </span>
                       )}
                     </span>
-                    {cmd.shortcut && <Kbd keys={cmd.shortcut} size="sm" className="shrink-0" />}
+                    {cmd.shortcut && (
+                      <Kbd
+                        keys={cmd.shortcut}
+                        size="sm"
+                        className="shrink-0 pointer-coarse:hidden"
+                      />
+                    )}
                   </div>
                 );
               })}
@@ -503,6 +557,26 @@ export function SlashCommandMenu({
           );
         })}
       </div>
+      {results.length > 0 && (
+        <div
+          data-slot="slash-command-menu-footer"
+          aria-hidden
+          className="flex h-9 shrink-0 items-center gap-3.5 px-3.5 text-[12px] text-kura-fg-subtle shadow-[inset_0_1px_0_var(--kura-border-subtle)] pointer-coarse:hidden"
+        >
+          <span className="flex items-center gap-1.5">
+            <Kbd keys={["up", "down"]} size="sm" />
+            navigate
+          </span>
+          <span className="flex items-center gap-1.5">
+            <Kbd keys={["enter"]} size="sm" />
+            insert
+          </span>
+          <span className="flex items-center gap-1.5">
+            <Kbd keys={["esc"]} size="sm" />
+            dismiss
+          </span>
+        </div>
+      )}
       <span role="status" className="sr-only">
         {results.length === 0
           ? (emptyMessage ?? "")

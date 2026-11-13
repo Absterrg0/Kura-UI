@@ -1,15 +1,20 @@
 "use client";
 
-import { Bold, Cloud, Code, Italic, Link, PenLine, Redo2, Undo2 } from "lucide-react";
+import { Bold, Cloud, Code, Copy, Italic, Link, PenLine, Redo2, Undo2 } from "lucide-react";
 import * as React from "react";
 import { Button } from "../button";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipRoot, TooltipTrigger } from "./tooltip";
 
 export function TooltipMinimal() {
   return (
-    <Tooltip content="Copy to clipboard">
-      <Button variant="secondary">Hover me</Button>
-    </Tooltip>
+    // Open at first so the label shows; hover or focus the key to see it come and go.
+    <div className="pt-8">
+      <Tooltip content="Copy to clipboard" shortcut={["mod", "c"]} defaultOpen>
+        <Button variant="secondary">
+          <Copy /> Copy
+        </Button>
+      </Tooltip>
+    </div>
   );
 }
 
