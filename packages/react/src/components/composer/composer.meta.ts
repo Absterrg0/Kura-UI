@@ -263,7 +263,8 @@ export default defineComponent({
       name: "ComposerMinimal",
       kind: "minimal",
       title: "Default layout",
-      description: "No children: textarea, attach button, hint and send button.",
+      description:
+        "No children: textarea, attach button, hint and send button, here with a draft (defaultValue).",
     },
     {
       name: "ComposerFull",
