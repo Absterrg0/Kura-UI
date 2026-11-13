@@ -77,7 +77,7 @@ export default defineComponent({
       name: "Current",
       dataSlot: "checkpoints-current",
       description:
-        "The word 'Current' after the label; in a narrow row it is read out only, and the filled glyph marks the row.",
+        "'(current)', read out after the label. On screen the current row is the ink disc and the ink label; points passed are muted discs, undone points are rings.",
     },
     {
       name: "Files",

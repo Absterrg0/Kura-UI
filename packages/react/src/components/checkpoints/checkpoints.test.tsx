@@ -43,7 +43,7 @@ describe("Checkpoints", () => {
     expect(items[0]).toHaveAttribute("data-ahead", "true");
     expect(items[1]).toHaveAttribute("data-current", "true");
     expect(items[2]).toHaveAttribute("data-kind", "manual");
-    expect(screen.getByText("Current")).toBeInTheDocument();
+    expect(screen.getByText("(current)")).toBeInTheDocument();
     expect(screen.getByText("3 files")).toBeInTheDocument();
     expect(screen.getByText("3m ago")).toBeInTheDocument();
     expect(screen.getByText("(undone)")).toBeInTheDocument();

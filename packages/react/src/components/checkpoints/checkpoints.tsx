@@ -110,7 +110,7 @@ export function Checkpoints({
     <div
       data-slot="checkpoints"
       className={cn(
-        "@container flex min-w-0 flex-col overflow-hidden rounded-kura-xl bg-kura-surface font-kura-sans text-kura-fg shadow-kura-sm",
+        "@container flex min-w-0 flex-col overflow-hidden rounded-kura-xl bg-kura-surface font-kura-sans text-kura-fg shadow-kura-surface",
         className,
       )}
       {...props}
@@ -119,7 +119,7 @@ export function Checkpoints({
         data-slot="checkpoints-header"
         className="flex h-11 shrink-0 items-center gap-2 pr-2 pl-4"
       >
-        <h3 className="flex items-baseline gap-2 font-medium text-[13px]">
+        <h3 className="flex items-baseline gap-3 font-semibold text-[13px] tracking-[-0.01em]">
           <span id={`${id}-title`}>{title}</span>
           <span className="font-kura-mono font-normal text-[12px] text-kura-fg-subtle tabular-nums">
             {checkpoints.length}
@@ -142,16 +142,9 @@ export function Checkpoints({
       {checkpoints.length === 0 ? (
         <div
           data-slot="checkpoints-empty"
-          className="flex min-h-24 flex-col items-center justify-center gap-1 px-6 py-6 text-center"
+          className="flex flex-col items-center justify-center gap-1 px-6 pt-4 pb-8 text-center"
         >
-          {empty ?? (
-            <>
-              <p className="font-medium text-[13px] text-kura-fg-muted">No checkpoints yet</p>
-              <p className="text-[12px] text-kura-fg-subtle">
-                One is saved automatically before the agent edits files.
-              </p>
-            </>
-          )}
+          {empty ?? <p className="text-[13px] text-kura-fg-subtle">No checkpoints yet</p>}
         </div>
       ) : (
         // Restoring rewinds the workspace, so an agent's restore always waits for the person.
@@ -196,14 +189,14 @@ export function Checkpoints({
                   <span
                     aria-hidden
                     className={cn(
-                      "kura-leader absolute left-[19.5px] w-[5px]",
-                      first ? "top-[26px] bottom-0" : last ? "top-0 h-[10px]" : "inset-y-0",
+                      "kura-leader absolute left-[21.5px] w-[5px]",
+                      first ? "top-[27px] bottom-0" : last ? "top-0 h-[9px]" : "inset-y-0",
                     )}
                   />
                 )}
                 <div
                   className={cn(
-                    "relative mx-1.5 flex h-9 items-center gap-2.5 rounded-[9px] pr-1.5 pl-2 transition-colors duration-(--kura-duration-instant) ease-kura-out",
+                    "relative mx-1.5 flex h-9 items-center gap-2.5 rounded-[9px] pr-2.5 pl-2.5 transition-colors duration-(--kura-duration-instant) ease-kura-out",
                     !c.current && "hover:bg-kura-hover",
                     open && "bg-kura-hover",
                   )}
@@ -212,15 +205,13 @@ export function Checkpoints({
                     aria-hidden
                     className={cn(
                       "relative grid w-4 shrink-0 place-items-center bg-kura-surface py-0.5 group-hover/cp:bg-transparent",
-                      c.current
-                        ? "text-kura-fg"
-                        : ahead
-                          ? "text-kura-faint"
-                          : "text-kura-fg-subtle",
+                      // A disc for every point the workspace has passed, ink for where it is now; an
+                      // undone point is an empty ring.
+                      c.current ? "text-kura-fg" : "text-kura-fg-subtle",
                     )}
                   >
                     <StatusGlyph
-                      status={c.current ? "done" : "queued"}
+                      status={ahead ? "queued" : "done"}
                       label={null}
                       className="text-inherit"
                     />
@@ -229,79 +220,75 @@ export function Checkpoints({
                     data-slot="checkpoints-label"
                     className={cn(
                       "min-w-0 truncate text-[13px]",
-                      c.current && "font-medium",
-                      ahead && "text-kura-fg-subtle",
+                      c.current
+                        ? "text-kura-fg"
+                        : ahead
+                          ? "text-kura-fg-subtle"
+                          : "text-kura-fg-muted",
                     )}
                   >
                     {c.label}
                   </span>
-                  {/* In a narrow row the label keeps the room: the tags are still read out, and
-                      the filled glyph and the heavier label mark the current one. */}
+                  {/* In a narrow row the label keeps the room; the word is still read out. */}
                   {c.kind === "manual" && (
-                    <span className="sr-only shrink-0 text-[12px] text-kura-fg-subtle @sm:not-sr-only">
+                    <span className="sr-only shrink-0 text-[13px] text-kura-fg-subtle @sm:not-sr-only">
                       Saved
                     </span>
                   )}
                   {c.current && (
-                    <span
-                      data-slot="checkpoints-current"
-                      className="sr-only shrink-0 text-[12px] text-kura-fg-subtle @sm:not-sr-only"
-                    >
-                      Current
+                    <span data-slot="checkpoints-current" className="sr-only">
+                      (current)
                     </span>
                   )}
                   {ahead && <span className="sr-only">(undone)</span>}
-                  <span className="ml-auto flex shrink-0 items-center gap-3 font-kura-mono text-[12px] text-kura-fg-subtle tabular-nums">
-                    {c.filesChanged != null && (
-                      <span data-slot="checkpoints-files" className="hidden @sm:inline">
-                        {c.filesChanged} {c.filesChanged === 1 ? "file" : "files"}
-                      </span>
-                    )}
+                  {/* Files and time share one column on the right; Restore takes their place on
+                      hover and focus, so nothing moves. */}
+                  <span className="relative ml-auto flex min-w-[5.5rem] shrink-0 items-center justify-end">
                     <span
                       className={cn(
-                        "grid w-16 justify-items-end [grid-template-areas:'cell'] @sm:w-[5.5rem]",
-                        // On a phone a restorable row shows only the Restore key here, so the cell
-                        // is the key's width and the label keeps the rest.
-                        !c.current && onRestore && !open && "@max-sm:[@media(hover:none)]:w-6",
+                        "flex items-center gap-4 font-kura-mono text-[12px] text-kura-fg-subtle tabular-nums transition-opacity duration-(--kura-duration-fast) ease-kura-snap",
+                        !c.current &&
+                          onRestore &&
+                          !open &&
+                          "group-focus-within/cp:opacity-0 group-hover/cp:opacity-0 [@media(hover:none)]:opacity-0",
                       )}
                     >
+                      {c.filesChanged != null && (
+                        <span data-slot="checkpoints-files" className="hidden @sm:inline">
+                          {c.filesChanged} {c.filesChanged === 1 ? "file" : "files"}
+                        </span>
+                      )}
                       <time
                         dateTime={now != null ? new Date(at).toISOString() : undefined}
                         title={now != null ? new Date(at).toLocaleString() : undefined}
-                        className={cn(
-                          "min-w-[7ch] text-right [grid-area:cell]",
-                          !c.current &&
-                            onRestore &&
-                            !open &&
-                            "group-hover/cp:opacity-0 group-focus-within/cp:opacity-0 [@media(hover:none)]:opacity-0 @max-sm:[@media(hover:none)]:sr-only",
-                        )}
+                        className="min-w-[8ch] text-right"
                       >
                         {now != null ? formatAgo(now - at) : ""}
                       </time>
-                      {!c.current && onRestore && (
-                        <Button
-                          ref={(el) => {
-                            if (el) triggers.current.set(c.id, el);
-                            else triggers.current.delete(c.id);
-                          }}
-                          data-slot="checkpoints-restore"
-                          aria-label={`Restore to ${c.label}`}
-                          variant="ghost"
-                          size="xs"
-                          aria-expanded={confirm ? open : undefined}
-                          aria-controls={confirm ? `${id}-confirm-${c.id}` : undefined}
-                          disabled={pendingId != null}
-                          onClick={() => (confirm ? setConfirmId(open ? null : c.id) : restore(c))}
-                          className={cn(
-                            "-my-1 font-kura-sans opacity-0 [grid-area:cell] focus-visible:opacity-100",
-                            !open && "group-hover/cp:opacity-100 [@media(hover:none)]:opacity-100",
-                          )}
-                        >
-                          <RotateCcw />
-                          <span className="hidden @sm:inline">Restore</span>
-                        </Button>
-                      )}
                     </span>
+                    {!c.current && onRestore && (
+                      <Button
+                        ref={(el) => {
+                          if (el) triggers.current.set(c.id, el);
+                          else triggers.current.delete(c.id);
+                        }}
+                        data-slot="checkpoints-restore"
+                        aria-label={`Restore to ${c.label}`}
+                        variant="ghost"
+                        size="xs"
+                        aria-expanded={confirm ? open : undefined}
+                        aria-controls={confirm ? `${id}-confirm-${c.id}` : undefined}
+                        disabled={pendingId != null}
+                        onClick={() => (confirm ? setConfirmId(open ? null : c.id) : restore(c))}
+                        className={cn(
+                          "absolute top-1/2 right-0 -mr-1.5 -translate-y-1/2 font-kura-sans opacity-0 focus-visible:opacity-100",
+                          !open && "group-hover/cp:opacity-100 [@media(hover:none)]:opacity-100",
+                        )}
+                      >
+                        <RotateCcw />
+                        <span className="hidden @sm:inline">Restore</span>
+                      </Button>
+                    )}
                   </span>
                 </div>
                 {confirm && !c.current && onRestore && (

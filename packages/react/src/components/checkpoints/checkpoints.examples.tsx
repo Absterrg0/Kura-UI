@@ -60,7 +60,7 @@ export function CheckpointsFull() {
       setCheckpoints((list) => [
         {
           id: "fix",
-          label: "Fixed expired-session refresh in src/auth/client.ts",
+          label: "Fixed session refresh in src/auth/client.ts",
           at: Date.now(),
           filesChanged: 1,
           kind: "auto",
