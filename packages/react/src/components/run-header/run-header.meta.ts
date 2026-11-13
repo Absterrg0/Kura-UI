@@ -66,13 +66,12 @@ export default defineComponent({
       name: "budget",
       type: "number",
       description:
-        "Budget in USD. Shows the cost with 'of $5.00' under it; the cost turns red past 100%.",
+        "Budget in USD. Shows the cost as '$1.28 of $5.00'; the cost turns red past 100%.",
     },
     {
       name: "branch",
       type: "string",
-      description:
-        "Git branch in mono with a branch icon. In the bar it shows from ~1024px container width.",
+      description: "Git branch in mono. In the bar it shows from ~1024px container width.",
     },
     {
       name: "progress",
@@ -107,7 +106,7 @@ export default defineComponent({
       type: '"bar" | "panel"',
       default: '"panel"',
       description:
-        "bar = one 44px row (glyph, title, status, branch, steps, tokens, cost, clock, controls; stats drop out as the container narrows). panel = title + meta line + a stats strip (Elapsed, Steps, Tokens, Spend).",
+        "bar = one 44px row (glyph, title, status, branch, steps, cost, clock, controls; figures drop out as the container narrows). panel = sigil, title and meta line, status and controls; then the progress rail with the figures (spend against budget, clock) at its end.",
     },
     {
       name: "shortcuts",
@@ -137,7 +136,7 @@ export default defineComponent({
     },
     { name: "Agent", dataSlot: "run-header-agent", description: "Agent name (panel)." },
     { name: "Model", dataSlot: "run-header-model", description: "Model id in mono (panel)." },
-    { name: "Branch", dataSlot: "run-header-branch", description: "Branch icon + mono name." },
+    { name: "Branch", dataSlot: "run-header-branch", description: "Mono branch name." },
     {
       name: "Controls",
       dataSlot: "run-header-controls",
@@ -147,7 +146,7 @@ export default defineComponent({
       name: "Stats",
       dataSlot: "run-header-stats",
       description:
-        "<dl>. In the panel each cell is run-header-stat with `data-stat` = elapsed | steps | tokens | cost, separated by hairlines.",
+        "<dl> of figures in mono. In the panel each cell is run-header-stat with `data-stat` = elapsed | steps | tokens | cost. Steps are read out only (the rail draws them); tokens are shown only when there is no cost, and read out otherwise (also as a title: '412k in, 38.1k out').",
     },
     {
       name: "Elapsed",
@@ -158,7 +157,7 @@ export default defineComponent({
   a11y: {
     role: "region (section labelled by the title)",
     notes: [
-      "The stats are a <dl>: each value has a term (Elapsed, Steps, Tokens, Spend), visually hidden in the bar.",
+      "The figures are a <dl>: each value has a visually hidden term (Steps, Tokens, Cost, Elapsed).",
       "A polite status region announces only status changes ('Run waiting for you'); the ticking clock and counters are not announced.",
       "Stop and Pause have tooltips with their shortcuts and aria-keyshortcuts. Status is never colour-only: the glyph shape and the status word carry it.",
       "The status glyph is decorative here (label=null): the status word sits next to it, and in a bar narrower than 672px, where the word is hidden to give the title room, the visually hidden status line ('Run running') carries it.",

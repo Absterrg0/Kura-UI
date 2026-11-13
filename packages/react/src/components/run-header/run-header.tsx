@@ -1,6 +1,6 @@
 "use client";
 
-import { GitBranch, Pause, Play, Square } from "lucide-react";
+import { Pause, Play, Square } from "lucide-react";
 import * as React from "react";
 import { useElapsed } from "../../hooks/use-elapsed";
 import { useFocusFallback } from "../../hooks/use-focus-fallback";
@@ -237,10 +237,10 @@ export function RunHeader({
   const branchChip = branch != null && (
     <span
       data-slot="run-header-branch"
-      className="inline-flex min-w-0 items-center gap-1 font-kura-mono text-[12px] text-kura-fg-subtle"
+      className="min-w-0 truncate font-kura-mono text-[12px] text-kura-fg-subtle"
     >
-      <GitBranch aria-hidden className="size-3 shrink-0" strokeWidth={2} />
-      <span className="truncate">{branch}</span>
+      <span className="sr-only">Branch </span>
+      {branch}
     </span>
   );
 
@@ -253,7 +253,7 @@ export function RunHeader({
         data-status={status}
         tabIndex={-1}
         className={cn(
-          "@container flex h-11 min-w-0 items-center gap-3 rounded-kura-xl bg-kura-surface pr-2 pl-3.5 font-kura-sans text-[13px] text-kura-fg shadow-kura-sm outline-hidden focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-kura-ring",
+          "@container flex h-11 min-w-0 items-center gap-3 rounded-kura-xl bg-kura-surface pr-2 pl-4 font-kura-sans text-[13px] text-kura-fg shadow-kura-surface outline-hidden focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-kura-ring",
           className,
         )}
         {...props}
@@ -288,8 +288,9 @@ export function RunHeader({
               </dd>
             </div>
           )}
+          {/* Tokens are read out; on screen the bar keeps to progress, spend and time. */}
           {totalTokens != null && (
-            <div className="hidden @4xl:block">
+            <div className={cn(cost != null ? "sr-only" : "hidden @xl:block")}>
               <dt className="sr-only">Tokens</dt>
               <dd className="inline-block min-w-[5ch] text-right">
                 {formatTokens(totalTokens)}
@@ -325,13 +326,6 @@ export function RunHeader({
             apply: stacked runs share columns, and nothing shifts when a run changes state. */}
         {(actions != null || onPause != null || onResume != null || onStop != null) && (
           <>
-            <span
-              aria-hidden
-              className={cn(
-                "h-4 w-px shrink-0 bg-kura-border",
-                !controls && "hidden @sm:invisible @sm:block",
-              )}
-            />
             {/* In a narrow bar the columns cannot line up anyway: empty slots give the title room. */}
             <div
               data-slot="run-header-controls"
@@ -350,33 +344,66 @@ export function RunHeader({
     );
   }
 
-  const stats: { key: string; label: string; value: React.ReactNode; title?: string }[] = [
-    {
-      key: "elapsed",
-      label: "elapsed",
-      value: <span data-slot="run-header-elapsed">{clock}</span>,
-    },
-  ];
-  if (tokens && totalTokens != null) {
-    stats.push({
-      key: "tokens",
-      label: "tokens",
-      value: formatTokens(totalTokens),
-      title: `${formatTokens(tokens.input)} in, ${formatTokens(tokens.output)} out`,
-    });
-  }
-  if (cost != null) {
-    stats.push({
-      key: "cost",
-      label: budget != null ? `of ${formatCost(budget)}` : "cost",
-      value: <span className={over ? "text-kura-danger-text" : undefined}>{formatCost(cost)}</span>,
-    });
-  }
-  // The rail draws progress; the count is kept for assistive technology only.
+  // The run's numbers, inline and in mono: the clock, then spend against the budget (or tokens
+  // when there is no cost). Labels are for assistive technology; the figures speak for themselves.
   const steps =
     progress && progress.total > 0
       ? { done: Math.min(progress.done, progress.total), total: progress.total }
       : null;
+  const figures = (
+    <dl
+      data-slot="run-header-stats"
+      className="flex shrink-0 items-baseline gap-4 font-kura-mono text-[12px] text-kura-fg-subtle tabular-nums"
+    >
+      {steps && (
+        <div data-slot="run-header-stat" data-stat="steps" className="sr-only">
+          <dt>Steps</dt>
+          <dd>
+            {steps.done} of {steps.total}
+          </dd>
+        </div>
+      )}
+      {tokens && totalTokens != null && (
+        <div
+          data-slot="run-header-stat"
+          data-stat="tokens"
+          title={`${formatTokens(tokens.input)} in, ${formatTokens(tokens.output)} out`}
+          className={cn(cost != null && "sr-only")}
+        >
+          <dt className="sr-only">Tokens</dt>
+          <dd>
+            <span className="text-kura-fg">{formatTokens(totalTokens)}</span>
+            <span className="font-kura-sans"> tokens</span>
+          </dd>
+        </div>
+      )}
+      {cost != null && (
+        <div data-slot="run-header-stat" data-stat="cost">
+          <dt className="sr-only">Cost</dt>
+          <dd>
+            <span className={over ? "text-kura-danger-text" : "text-kura-fg"}>
+              {formatCost(cost)}
+            </span>
+            {budget != null && (
+              <>
+                <span className="font-kura-sans"> of </span>
+                {formatCost(budget)}
+              </>
+            )}
+          </dd>
+        </div>
+      )}
+      <div data-slot="run-header-stat" data-stat="elapsed">
+        <dt className="sr-only">Elapsed</dt>
+        <dd
+          data-slot="run-header-elapsed"
+          className="inline-block min-w-[5ch] text-right text-kura-fg"
+        >
+          {clock}
+        </dd>
+      </div>
+    </dl>
+  );
 
   return (
     <section
@@ -386,16 +413,16 @@ export function RunHeader({
       data-status={status}
       tabIndex={-1}
       className={cn(
-        "@container flex min-w-0 flex-col rounded-kura-xl bg-kura-surface px-[18px] pt-4 pb-3.5 font-kura-sans text-[13px] text-kura-fg leading-5 shadow-kura-sm outline-hidden focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-kura-ring",
+        "@container flex min-w-0 flex-col gap-3.5 rounded-kura-xl bg-kura-surface px-4 pt-4 pb-3.5 font-kura-sans text-[13px] text-kura-fg leading-5 shadow-kura-surface outline-hidden focus-visible:outline-2 focus-visible:outline-solid focus-visible:outline-offset-2 focus-visible:outline-kura-ring",
         className,
       )}
       {...props}
       ref={mergeRefs(rootRef, ref)}
     >
-      <div className="flex flex-wrap items-center gap-x-[22px] gap-y-3">
+      <div className="flex flex-wrap items-center gap-x-5 gap-y-3">
         <div className="flex min-w-[min(100%,15rem)] flex-1 items-center gap-3">
           {agent != null && <AgentSigil name={agent} />}
-          <div className="flex min-w-0 flex-col">
+          <div className="flex min-w-0 flex-col gap-0.5">
             <h2
               id={`${id}-title`}
               data-slot="run-header-title"
@@ -404,7 +431,7 @@ export function RunHeader({
               {title}
             </h2>
             {(agent != null || branch != null || model != null) && (
-              <div className="flex min-w-0 items-center gap-2 text-[12px] text-kura-fg-subtle leading-4">
+              <div className="flex min-w-0 items-baseline gap-2.5 text-[12.5px] text-kura-fg-muted leading-4">
                 {agent != null && (
                   <span data-slot="run-header-agent" className="shrink-0">
                     {agent}
@@ -414,7 +441,7 @@ export function RunHeader({
                 {model != null && (
                   <span
                     data-slot="run-header-model"
-                    className="hidden truncate font-kura-mono @sm:inline"
+                    className="hidden truncate font-kura-mono text-[12px] text-kura-fg-subtle @sm:inline"
                   >
                     {model}
                   </span>
@@ -423,41 +450,19 @@ export function RunHeader({
             )}
           </div>
         </div>
-        <span className="inline-flex h-7 shrink-0 items-center gap-2 font-medium text-[12.5px]">
+        <span className="inline-flex h-7 shrink-0 items-center gap-2 text-[13px]">
           <StatusGlyph status={status} label={null} />
           <StatusLabel status={status} />
         </span>
-        <dl
-          data-slot="run-header-stats"
-          className="flex shrink-0 items-start gap-[22px] font-kura-mono tabular-nums"
-        >
-          {stats.map((s) => (
-            <div
-              key={s.key}
-              data-slot="run-header-stat"
-              data-stat={s.key}
-              title={s.title}
-              className="flex flex-col-reverse items-end"
-            >
-              <dt className="font-kura-sans text-[11.5px] text-kura-fg-subtle leading-4">
-                {s.label}
-              </dt>
-              <dd className="font-medium text-[15px] leading-5">{s.value}</dd>
-            </div>
-          ))}
-          {steps && (
-            <div data-slot="run-header-stat" data-stat="steps" className="sr-only">
-              <dt>Steps</dt>
-              <dd>
-                {steps.done} of {steps.total}
-              </dd>
-            </div>
-          )}
-        </dl>
+        {!steps && figures}
         {controls}
       </div>
-      {progress && progress.total > 0 && (
-        <StepsRail progress={progress} status={status} className="mt-3.5" />
+      {steps && progress && (
+        // The measured line: plan progress as a rail of dots, and the figures at its end.
+        <div className="flex items-center gap-5">
+          <StepsRail progress={progress} status={status} className="min-w-0 flex-1" />
+          {figures}
+        </div>
       )}
       {announce}
     </section>

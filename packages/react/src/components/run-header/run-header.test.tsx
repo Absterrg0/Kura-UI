@@ -51,8 +51,8 @@ describe("RunHeader", () => {
       "title",
       "412k in, 38.1k out",
     );
-    expect(stats.querySelector("[data-stat=cost] dd")).toHaveTextContent("$1.82");
-    expect(stats.querySelector("[data-stat=cost] dt")).toHaveTextContent("of $5.00");
+    expect(stats.querySelector("[data-stat=cost] dd")).toHaveTextContent("$1.82 of $5.00");
+    expect(stats.querySelector("[data-stat=cost] dt")).toHaveTextContent("Cost");
     // Progress is a rail of dots, not a bar.
     expect(document.querySelector("[data-slot=run-header-progress]")).toHaveAttribute(
       "data-tone",
