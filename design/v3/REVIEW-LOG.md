@@ -17,6 +17,7 @@ reviewer (`design/v2/REVIEW-LOG.md`). The owner then rejected the look itself; v
 | R6    | 9.3       | 9.3      | Commit 3423ff9. Fully verified live. Round-5 items closed, but one fix regressed: inline code that never wraps makes ten component pages scroll sideways. PromptQueue still loses focus in two cases and is cramped on touch.                                                      |
 | R7    | 9.4       | 9.4      | Commit 790728c. Fully verified live. All round-6 must-fixes closed, no regressions, sweeps clean (overflow, axe at every level, rings). Left: one Composer example crushed on phones, the docs Replay key over previews at 390, two stale manifest lines.                          |
 | R8    | 9.4       | 9.5      | Commit 149cc9b. Fully verified live. All round-7 must-fixes closed, no regressions. Opus is at the bar with one must-fix; Fable has four: a ModelPicker popover that can leave a short viewport, the Composer count on phones, phrases inside keycaps, two manifests naming Radix. |
+| R9    | 9.5       | 9.5      | Commit ba72162. Fully verified live. Both at the bar; every round-8 claim holds. Not passed yet: three must-fixes remain (SlashCommandMenu and CommandPalette can leave a short viewport; the Composer count hides in a roomy toolbar on phones). |
 
 ---
 
@@ -535,3 +536,65 @@ sticky "Show all", focus rings, axe, ember discipline, reduced motion.
 Kept on purpose: the approval card's state label plus outcome sentence; single-line compact rows
 end in an ellipsis; SlashCommandMenu previews rest empty (a preview must not take focus on load);
 BrowserSession's highlight tag is an overlay and may sit over the page it annotates.
+
+## Round 9 — commit ba72162
+
+Both reviewers ran everything live: the round-8 claims one by one (75 ModelPicker opens, 42 pages
+of install chips and keyboard tables), a sideways-scroll sweep (0 of 48 pages), axe on 48 pages ×
+4 configurations (0 serious/critical), Tab walks on 7 pages in both themes (about 690 stops per
+theme, 0 missing rings), approve and deny at three widths with and without reduced motion, every
+popover, menu and dialog at 390×667 and 1440×600.
+
+| # | Category | Fable 5.2 | Opus 5.5 |
+| --- | --- | --- | --- |
+| 1 | Visual hierarchy | 9.6 | 9.5 |
+| 2 | Typography | 9.6 | 9.5 |
+| 3 | Colour & state semantics | 9.6 | 9.5 |
+| 4 | Layout & spacing | 9.5 | 9.5 |
+| 5 | Consistency | 9.5 | 9.5 |
+| 6 | Brand distinctiveness | 9.7 | 9.7 |
+| 7 | Clarity & density | 9.6 | 9.4 |
+| 8 | Interaction states | 9.4 | 9.5 |
+| 9 | Light/dark parity | 9.6 | 9.6 |
+| 10 | Craft & polish | 9.4 | 9.4 |
+| 11 | Accessibility | 9.5 | 9.5 |
+| 12 | Responsive | 9.4 | 9.5 |
+| 13 | Motion | 9.6 | 9.6 |
+| 14 | Copy | 9.5 | 9.5 |
+| | **OVERALL** | **9.5** | **9.5** |
+
+### Round-8 verification
+
+All fixed, no regressions in what was claimed: ModelPicker inside the viewport at four sizes; no
+count-over-tools overlap at 360/390/430; the renamed file's name; keyboard tables; ui-sdk wording;
+the install command (0 bad breaks on 42 pages × 2 places, copies exactly); the wiring page; TaskList
+titles; the smaller items. Spot-checks hold: 0px hero movement, agreeing clocks, rings, approval
+key scoping, Ctrl+K.
+
+### Must-fix (merged, ranked)
+
+1. **SlashCommandMenu leaves the viewport** (Fable): with `side="top"` and the field near the top
+   of the screen its first commands are off screen (−144px at 390×667); `auto` misses by a few px
+   on short screens. It picks a side but never limits its height to the room there.
+2. **Composer: the count disappears in a roomy toolbar** (Opus; a regression from round 8's
+   fix): the hint shortens itself by the toolbar's width, not by the room that is actually free,
+   so on a phone it shows a bare ring beside two buttons, which reads like a queued glyph.
+3. **CommandPalette runs 2–8px past the bottom** (Fable) at viewport heights 600–650.
+
+### Polish (merged)
+
+Code lines still cut at 1440 on /docs/hooks, /docs and /agents; the count ring over a key at
+320px; a RunHeader manifest threshold (branch shows from ~1024px, not ~768px); AgentFleet sample
+activity a few px too long; a duplicated title in a FileChanges example; dotted guides ending in
+half a dot; "gradient" in ShimmerText's description; the squeezed ModelPicker trigger should keep
+the end of the name ("…Sonnet 5.5"); a deleted file's name cut beside "+0"; the character count
+is not in the field's spoken description.
+
+Follow-up, not part of this loop: the docs site's own chrome (tabs, mobile nav, ⌘K dialog) still
+runs on radix-ui and cmdk; moving it to ui-sdk is plumbing nobody sees.
+
+### Verified good (do not touch)
+
+ModelPicker's fit rule, DiffView's rename header, the Keys renderer, InstallChip and wrapping
+shell blocks, TaskList's two-line titles, hero choreography and clocks, the overflow guard, focus
+rings and hand-offs, approval key scoping, the mobile nav, ember discipline, reduced motion.
