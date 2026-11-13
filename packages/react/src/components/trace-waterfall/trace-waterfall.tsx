@@ -158,31 +158,43 @@ function barTone(span: TraceSpan, selected: boolean): string {
 
 // In a narrow panel (under 24rem) a span is two lines: its name and duration, then its rail at
 // the full width of the panel. From 24rem up, name and rail share one row.
-const TRACK = "absolute inset-y-0 left-4 right-4 @sm:left-3 @sm:right-5";
+const TRACK = "absolute inset-y-0 left-2.5 right-2.5 @sm:left-2 @sm:right-2.5";
 const GRID =
-  "grid grid-cols-1 @sm:grid-cols-[minmax(150px,50%)_1fr] @lg:grid-cols-[minmax(176px,46%)_1fr] @3xl:grid-cols-[minmax(300px,40%)_1fr]";
+  "grid grid-cols-1 @sm:grid-cols-[minmax(150px,52%)_1fr] @lg:grid-cols-[minmax(200px,50%)_1fr] @3xl:grid-cols-[minmax(300px,42%)_1fr]";
 
-function Text({ children, tone }: { children: React.ReactNode; tone?: "danger" }) {
+/** A path is cut from the left, so its file name survives: "…/auth/client.ts". */
+const isPath = (s: string) => s.includes("/") && !/\s/.test(s);
+
+function Well({
+  label,
+  children,
+  tone,
+}: {
+  label: string;
+  children: React.ReactNode;
+  tone?: "danger";
+}) {
   return (
-    <div
-      className={cn(
-        // Code in a well, straight on the sheet: the one edge recipe, as ToolCall draws it.
-        "max-h-44 overflow-auto whitespace-pre-wrap break-words rounded-kura-lg bg-kura-surface-sunken px-3 py-2 font-kura-mono text-[12px] leading-[18px] shadow-kura-sunk",
-        tone === "danger" ? "text-kura-danger-text" : "text-kura-fg-muted",
-      )}
-    >
-      {children}
+    // Code in a well, straight on the sheet: the one edge recipe, as ToolCall draws it.
+    <div className="flex min-w-0 flex-col gap-1 rounded-kura-lg bg-kura-surface-sunken px-3 pt-2 pb-2.5 shadow-kura-sunk">
+      <span className="text-[12px] text-kura-fg-subtle leading-4">{label}</span>
+      <div
+        className={cn(
+          "max-h-40 overflow-auto whitespace-pre-wrap break-words font-kura-mono text-[12px] leading-[18px]",
+          tone === "danger" ? "text-kura-danger-text" : "text-kura-fg-muted",
+        )}
+      >
+        {children}
+      </div>
     </div>
   );
 }
 
-function Stat({ label, children }: { label: string; children: React.ReactNode }) {
+function Fact({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <div className="flex min-w-0 flex-col gap-0.5">
-      <dt className="text-[11.5px] text-kura-fg-subtle">{label}</dt>
-      <dd className="truncate font-kura-mono text-[12.5px] text-kura-fg tabular-nums">
-        {children}
-      </dd>
+    <div className="flex min-w-0 items-baseline gap-1.5">
+      <dt className="text-[12px] text-kura-fg-subtle">{label}</dt>
+      <dd className="truncate font-kura-mono text-[12px] text-kura-fg tabular-nums">{children}</dd>
     </div>
   );
 }
@@ -190,42 +202,31 @@ function Stat({ label, children }: { label: string; children: React.ReactNode })
 function Details({ span, end }: { span: TraceSpan; end: number }) {
   const running = span.status === "running";
   return (
-    <div className="flex flex-col gap-3">
-      <dl className="flex flex-wrap gap-x-8 gap-y-2">
-        <Stat label="Kind">{span.kind}</Stat>
-        <Stat label="Start">+{formatDuration(span.start)}</Stat>
-        <Stat label="Duration">
-          {formatDuration(end - span.start)}
-          {running && <span className="text-kura-fg-subtle"> so far</span>}
-        </Stat>
-        {span.model && <Stat label="Model">{span.model}</Stat>}
+    <div className="flex flex-col gap-2.5">
+      <dl className="flex flex-wrap gap-x-5 gap-y-1 px-2.5">
+        <Fact label="Start">+{formatDuration(span.start)}</Fact>
+        <Fact label={running ? "So far" : "Took"}>{formatDuration(end - span.start)}</Fact>
+        {span.model && <Fact label="Model">{span.model}</Fact>}
         {span.tokens && (
-          <Stat label="Tokens">
+          <Fact label="Tokens">
             {formatTokens(span.tokens.input)}
             <span className="text-kura-fg-subtle"> in · </span>
             {formatTokens(span.tokens.output)}
             <span className="text-kura-fg-subtle"> out</span>
-          </Stat>
+          </Fact>
         )}
-        {span.cost != null && <Stat label="Cost">{formatCost(span.cost)}</Stat>}
+        {span.cost != null && <Fact label="Cost">{formatCost(span.cost)}</Fact>}
       </dl>
       {(span.input != null || span.output != null || span.error != null) && (
-        <div className="grid gap-3 @xl:grid-cols-2">
-          {span.input != null && (
-            <div className="flex min-w-0 flex-col gap-1.5">
-              <span className="text-[11.5px] text-kura-fg-subtle">Input</span>
-              <Text>{span.input}</Text>
-            </div>
-          )}
+        <div className="grid items-start gap-1.5 @xl:grid-cols-2">
+          {span.input != null && <Well label="Input">{span.input}</Well>}
           {(span.output != null || span.error != null) && (
-            <div className="flex min-w-0 flex-col gap-1.5">
-              <span className="text-[11.5px] text-kura-fg-subtle">
-                {span.error != null ? "Error" : "Output"}
-              </span>
-              <Text tone={span.error != null ? "danger" : undefined}>
-                {span.error ?? span.output}
-              </Text>
-            </div>
+            <Well
+              label={span.error != null ? "Error" : "Output"}
+              tone={span.error != null ? "danger" : undefined}
+            >
+              {span.error ?? span.output}
+            </Well>
           )}
         </div>
       )}
@@ -398,7 +399,7 @@ export function TraceWaterfall({
       data-slot="trace-waterfall"
       data-state={anyRunning ? "running" : "idle"}
       className={cn(
-        "@container flex min-w-0 flex-col overflow-hidden rounded-kura-xl bg-kura-surface font-kura-sans text-kura-fg shadow-kura-sm",
+        "@container flex min-w-0 flex-col overflow-hidden rounded-kura-xl bg-kura-surface font-kura-sans text-kura-fg shadow-kura-surface",
         className,
       )}
       {...props}
@@ -407,36 +408,29 @@ export function TraceWaterfall({
         data-slot="trace-waterfall-header"
         className="flex h-11 shrink-0 items-center gap-3 px-4"
       >
-        <span className="font-semibold text-[13px] tracking-[-0.01em]">{title}</span>
+        <span className="flex min-w-0 items-baseline gap-3">
+          <span className="truncate font-semibold text-[13px] tracking-[-0.01em]">{title}</span>
+          {count > 0 && (
+            <span className="shrink-0 font-kura-mono text-[12px] text-kura-fg-subtle tabular-nums">
+              {count} spans
+            </span>
+          )}
+        </span>
         <span className="flex-1" />
         {count > 0 && (
+          // Two numbers: how long the run took, and what it cost (or its tokens, without a cost).
           <span
             data-slot="trace-waterfall-summary"
-            className="flex items-center gap-1.5 whitespace-nowrap font-kura-mono text-[12px] text-kura-fg-subtle tabular-nums"
+            className="flex items-center gap-3 whitespace-nowrap font-kura-mono text-[12px] text-kura-fg-subtle tabular-nums"
           >
-            <span className="hidden @md:inline">{count} spans</span>
-            <span aria-hidden className="hidden @md:inline">
-              ·
-            </span>
-            <span className={cn("min-w-[6ch] text-right", anyRunning && "text-kura-fg-muted")}>
+            {hasCost ? (
+              <span className="hidden @md:inline">{formatCost(cost)}</span>
+            ) : hasTokens ? (
+              <span className="hidden @md:inline">{formatTokens(tokens)} tok</span>
+            ) : null}
+            <span className={cn(anyRunning && "text-kura-fg-muted")}>
               {anyRunning ? formatClock(total) : formatDuration(total)}
             </span>
-            {hasTokens && (
-              <>
-                <span aria-hidden className="hidden @lg:inline">
-                  ·
-                </span>
-                <span className="hidden @lg:inline">{formatTokens(tokens)} tok</span>
-              </>
-            )}
-            {hasCost && (
-              <>
-                <span aria-hidden className="hidden @lg:inline">
-                  ·
-                </span>
-                <span className="hidden @lg:inline">{formatCost(cost)}</span>
-              </>
-            )}
           </span>
         )}
         {actions}
@@ -445,32 +439,25 @@ export function TraceWaterfall({
       {count === 0 ? (
         <div
           data-slot="trace-waterfall-empty"
-          className="flex flex-col items-center gap-1 px-6 py-10 text-center"
+          className="flex flex-col items-center gap-1 px-6 pt-4 pb-8 text-center"
         >
-          {empty ?? (
-            <>
-              <span className="font-medium text-[13px]">No spans yet</span>
-              <span className="text-[12px] text-kura-fg-subtle">
-                Spans appear here as the agent calls models and tools.
-              </span>
-            </>
-          )}
+          {empty ?? <span className="text-[13px] text-kura-fg-subtle">No spans yet</span>}
         </div>
       ) : (
-        <div data-slot="trace-waterfall-body" className="relative min-h-0 flex-1 overflow-auto">
+        <div
+          data-slot="trace-waterfall-body"
+          className="relative min-h-0 flex-1 overflow-auto px-1.5"
+        >
           {/* Axis */}
           <div
             data-slot="trace-waterfall-axis"
             aria-hidden
             className={cn(
               GRID,
-              "sticky top-0 z-20 h-7 bg-kura-surface text-[11.5px] text-kura-fg-subtle",
+              "sticky top-0 z-20 h-6 bg-kura-surface text-[11.5px] text-kura-fg-subtle",
             )}
           >
-            <div className="hidden items-center justify-between px-4 @sm:flex">
-              <span>Span</span>
-              <span className="hidden @md:inline">Duration</span>
-            </div>
+            <div className="hidden @sm:block" />
             <div className="relative">
               <div className={TRACK}>
                 {ticks.map((t, i) => {
@@ -578,14 +565,15 @@ export function TraceWaterfall({
                       }}
                       className={cn(
                         GRID,
-                        "relative cursor-default pt-1 pb-1.5 transition-colors duration-(--kura-duration-fast) ease-kura-snap @sm:h-8 @sm:py-0",
+                        "relative cursor-default rounded-[9px] pt-1 pb-1.5 transition-colors duration-(--kura-duration-fast) ease-kura-snap @sm:h-8 @sm:py-0",
                         "group-focus-visible/item:shadow-[inset_0_0_0_2px_var(--kura-ring)]",
                         selected ? "bg-kura-active" : "hover:bg-kura-hover",
                       )}
                     >
                       <div
-                        className="flex h-6 min-w-0 items-center gap-1.5 pr-4 @sm:h-auto @sm:pr-3.5"
-                        style={{ paddingLeft: `${(flat ? 16 : 10) + depth * 16}px` }}
+                        className="flex h-6 min-w-0 items-center gap-1.5 pr-2.5 @sm:h-auto @sm:pr-3"
+                        // The first chevron sits on the header's left edge, 16px in from the sheet.
+                        style={{ paddingLeft: `${(flat ? 10 : 7) + depth * 16}px` }}
                       >
                         {hasKids ? (
                           // biome-ignore lint/a11y/noStaticElementInteractions: mouse affordance; ArrowLeft/Right on the treeitem do the same.
@@ -634,8 +622,14 @@ export function TraceWaterfall({
                         {span.meta && (
                           <>
                             {" "}
-                            <span className="hidden min-w-0 flex-1 truncate font-kura-mono text-[12px] text-kura-fg-subtle @md:inline">
-                              {span.meta}
+                            <span
+                              title={span.meta}
+                              className={cn(
+                                "hidden min-w-0 flex-1 truncate font-kura-mono text-[12px] text-kura-fg-subtle @md:inline",
+                                isPath(span.meta) && "text-left [direction:rtl]",
+                              )}
+                            >
+                              <bdi dir="ltr">{span.meta}</bdi>
                             </span>
                           </>
                         )}
@@ -644,7 +638,7 @@ export function TraceWaterfall({
                         <span
                           data-slot="trace-waterfall-duration"
                           className={cn(
-                            "min-w-[5ch] shrink-0 text-right font-kura-mono text-[12px] tabular-nums",
+                            "ml-1.5 min-w-[5ch] shrink-0 text-right font-kura-mono text-[12px] tabular-nums",
                             span.status === "running"
                               ? "text-kura-fg-muted"
                               : "text-kura-fg-subtle",
@@ -696,7 +690,7 @@ export function TraceWaterfall({
                       <div
                         id={detailsId}
                         data-slot="trace-waterfall-details"
-                        className="relative px-4 pt-2 pb-3.5 animate-kura-fade-in"
+                        className="relative pt-2 pb-2.5 animate-kura-fade-in"
                       >
                         {details}
                       </div>

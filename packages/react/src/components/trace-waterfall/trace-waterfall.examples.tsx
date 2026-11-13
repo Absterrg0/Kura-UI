@@ -64,7 +64,7 @@ const RUN: TraceSpan = {
   id: "run",
   name: "Kura",
   kind: "agent",
-  meta: "acme/web · kura/auth-client",
+  meta: "kura/auth-client",
   start: 0,
   end: 11 * M + 52 * S,
   status: "done",
@@ -99,7 +99,7 @@ const RUN: TraceSpan = {
       id: "search",
       name: "search_code",
       kind: "retrieval",
-      meta: "fetchUser(",
+      meta: "fetchUser",
       start: 10.4 * S,
       end: 12.1 * S,
       status: "done",
@@ -109,7 +109,6 @@ const RUN: TraceSpan = {
       id: "explorer",
       name: "explorer",
       kind: "agent",
-      meta: "subagent",
       start: 12.5 * S,
       end: 62 * S,
       status: "done",
@@ -180,7 +179,6 @@ const RUN: TraceSpan = {
       id: "tests",
       name: "test-writer",
       kind: "agent",
-      meta: "subagent",
       start: 2 * M + 12 * S,
       end: 5 * M + 28 * S,
       status: "done",
@@ -244,7 +242,6 @@ const RUN: TraceSpan = {
       id: "review",
       name: "reviewer",
       kind: "agent",
-      meta: "subagent",
       start: 7 * M + 42 * S,
       end: 10 * M + 48 * S,
       status: "done",
@@ -357,7 +354,6 @@ export function TraceWaterfallLive() {
           id: "tw",
           name: "test-writer",
           kind: "agent",
-          meta: "subagent",
           start: 0,
           status: "running",
           children: [
@@ -464,6 +460,7 @@ export function TraceWaterfallCustomDetails() {
           <CodeBlock
             language="ts"
             filename="src/auth/client.ts"
+            header={false}
             code={`if (res.status === 401 && session.refreshToken) {\n  session = await auth.refresh(session.refreshToken)\n  return retry(req, session)\n}`}
           />
         ) : null
