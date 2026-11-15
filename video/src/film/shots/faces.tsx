@@ -1,9 +1,10 @@
 import type * as React from "react";
-import { AbsoluteFill, useCurrentFrame } from "remotion";
+import { AbsoluteFill } from "remotion";
 import { clamp, E, mix, spr, tw } from "../ease";
 import { G } from "../glyph";
 import { K, MONO, SANS } from "../palette";
 import { camera, discMatrix, FOCAL, lerpCam } from "../proj";
+import { useF } from "../shot";
 import { face, TILE_RX } from "../sigil";
 import { B } from "../timing";
 
@@ -78,7 +79,7 @@ export function Tile({
  */
 export const FACES_FROM = 14;
 export function FaceIntro() {
-  const f = useCurrentFrame() + B(FACES_FROM);
+  const f = useF();
   const m = spr(f, B(14), "land");
   const size = 660;
   const disc = G.DONE * 64 * 2;
@@ -154,7 +155,7 @@ const CUTS = [
   },
 ] as const;
 export function FaceCuts() {
-  const f = useCurrentFrame() + B(16);
+  const f = useF();
   const i = Math.min(2, Math.max(0, Math.floor((f - B(16)) / (B(17) - B(16)))));
   const c = CUTS[i];
   const at = B(16 + i);
@@ -236,7 +237,7 @@ const NAMES = [
 const COLS = 8;
 const PITCH = 230;
 export function FaceWall() {
-  const f = useCurrentFrame() + B(19);
+  const f = useF();
   const focus = NAMES.indexOf("test-writer");
   const fx = ((focus % COLS) - (COLS - 1) / 2) * PITCH;
   const fy = (Math.floor(focus / COLS) - 1.5) * PITCH;

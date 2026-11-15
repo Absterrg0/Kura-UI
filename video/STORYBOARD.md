@@ -1,4 +1,45 @@
-# Kura UI launch film, v2
+# Kura UI launch film, v3
+
+53.9 s · 1920×1080 · 60 fps · graphite and ember · cut to "Kraft Twerk" at 118 BPM (a beat is
+0.5085 s, 30.5 frames). The copy and why it was chosen: `SCRIPT.md`. The edit is
+`src/film/film.tsx` (every shot in beats); sound cues are `src/film/film-sfx.tsx`. Render:
+`pnpm render:film` → `out/kura-launch-v3.mp4`.
+
+What changed from v2 (the proof below): the copy no longer narrates the design system. It tells a
+developer what their users see (a spinner) and what Kura gives them instead. The dots stay on
+screen. Real components are staged on the raised surface token so they read on film. Ember
+appears only on the glyph that waits for a person and on the two approval prompts. The X of the
+failed glyph is gone. The end card is the token-gate mark assembling round the dot.
+
+| Beats      | Time        | Shot                                                                                                   | Sound                    |
+| ---------- | ----------- | ------------------------------------------------------------------------------------------------------ | ------------------------ |
+| 0–4        | 0:00.0      | macro token → an agent writing a page of dots, turned into depth                                       | riff                     |
+| 4–8        | 0:02.0      | **Your / agents / run / for hours.** one group a beat; the full stop is the live dot                   | tick on the stop         |
+| 8–16       | 0:04.1      | wordless work: three subagents (one beat each), the wall of 32 lighting up, five rails, the context     | tick per cut             |
+| 16–21      | 0:08.1      | **Your users / see / a spinner.** → scanned to dots, wrapped round the ring, condensed into eight dots | 8 ticks as dots land     |
+| 21–24      | 0:10.7      | the ring running, laid into depth and orbited                                                          |                          |
+| 24–32      | 0:12.2      | the spinner intercut with the hidden work, 2 → 1 → ½ beat                                              | tick per cut             |
+| 32–36      | 0:16.3      | **pocket**: the spinner collapses to one dot; it bursts into **Kura UI**, full width                   | thump; ticks             |
+| 36–39      | 0:18.3      | **Show / every / step.**                                                                               |                          |
+| 39–42      | 0:19.8      | the full stop opens into a running ring = the running step of the real TaskList; pull back; steps tick | ticks                    |
+| 42–44      | 0:21.4      | TraceWaterfall, spans growing                                                                          |                          |
+| 44 / 47 / 50 | 0:22.4    | **Every tool call.** → ToolCalls turn from edge-on · **Every diff.** → DiffView · **Every subagent.** → AgentFleet | tick per word   |
+| 53–56      | 0:27.0      | Terminal: the suite streams in, 31 passed                                                              |                          |
+| 56–62      | 0:28.5      | the run, faster: crops of timeline, plan, trace, fleet (1 beat), diff, terminal, context, tools (½)    | rising ticks             |
+| 62–64      | 0:31.5      | a wall of running glyphs; one turns ember (waiting)                                                    | low tick                 |
+| 64–65      | 0:32.5      | **pocket, the hard stop**: the ember glyph alone, its centre blinking                                  | thump                    |
+| 65–67      | 0:33.1      | **Step in / when it matters.**                                                                         |                          |
+| 67–69      | 0:34.1      | the real ApprovalPrompt; a person clicks _Run migration_ on the downbeat of bar 17                      | key                      |
+| 69–74      | 0:35.1      | the approved glyph among running ones; pull back; on bar 18 everything goes done in a wave             | 8 ticks                  |
+| 74–76      | 0:37.6      | **Your agent / can drive it.**                                                                         |                          |
+| 76–84      | 0:38.6      | `agent.snapshot()` lists the screen by name; the agent presses _Accept all_; it reaches for _Deploy_, which is marked for a person, and waits | ticks; key; low tick |
+| 84–92      | 0:42.7      | `npx @kura-ui/cli add approval-prompt` typed into a sunken well; on bar 22 it runs; six files land     | key; ticks               |
+| 92–96      | 0:46.8      | pull back from the approved prompt into a wall of every part of the run, live; it collapses to a dot   |                          |
+| 96–106     | 0:48.8      | the mark's two stepped walls slide in along the diagonal and lock round the dot; **Kura UI**, Components for agent interfaces., Open source · kuro.abstergo.fyi | thump on the lock |
+
+---
+
+# v2: the proof (history)
 
 ~55 s · 1920×1080 · 60 fps · graphite and ember · cut to "Kraft Twerk" at 118 BPM
 (a beat is 0.5085 s, 30.5 frames; a bar is 2.034 s). Research: `research/BREAKDOWN.md`.

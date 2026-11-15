@@ -8,6 +8,7 @@
     "music": "node scripts/music.mjs",
     "sfx": "node scripts/sfx.mjs",
     "still": "remotion still src/index.ts",
+    "render:film": "node scripts/music.mjs && node scripts/sfx.mjs && remotion render src/index.ts KuraLaunch out/kura-launch-v3.mp4",
     "render:proof": "node scripts/music.mjs && node scripts/sfx.mjs && remotion render src/index.ts KuraProof out/proof-v2.mp4"
   },
   "dependencies": {

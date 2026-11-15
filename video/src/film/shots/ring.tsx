@@ -1,9 +1,10 @@
 import type * as React from "react";
-import { AbsoluteFill, useCurrentFrame } from "remotion";
+import { AbsoluteFill } from "remotion";
 import { clamp, E, mix, spr, tw } from "../ease";
 import { chase, G, RING } from "../glyph";
 import { K } from "../palette";
 import { type Cam, camera, discMatrix, FOCAL, lerpCam } from "../proj";
+import { useF } from "../shot";
 import { B } from "../timing";
 import { RING_C, U } from "./words";
 
@@ -16,21 +17,22 @@ import { RING_C, U } from "./words";
  */
 export const RING_FROM = 10;
 
-const DONE_AT = 13;
+const DONE_AT_BEAT = 13;
 
-export function Ring() {
-  const f = useCurrentFrame() + B(RING_FROM);
+export function Ring({ done = true }: { done?: boolean }) {
+  const f = useF();
+  const DONE_AT = done ? DONE_AT_BEAT : 1e6;
   const face: Cam = { tx: 0, ty: 0, tz: 0, dist: FOCAL, sx: RING_C.x, sy: RING_C.y };
   const laid: Cam = {
     tx: 0,
     ty: 0,
     tz: 0,
-    dist: 860,
+    dist: 1150,
     yaw: 18,
-    pitch: 66,
-    roll: -22,
-    sx: 980,
-    sy: 500,
+    pitch: 50,
+    roll: -18,
+    sx: 960,
+    sy: 540,
   };
   const back = spr(f, B(12), "snap");
   const out = tw(f, B(10), B(11.9), 0, 1, E.inOut);

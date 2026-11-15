@@ -1,9 +1,10 @@
 import type * as React from "react";
-import { AbsoluteFill, useCurrentFrame } from "remotion";
+import { AbsoluteFill } from "remotion";
 import { clamp, E, mix, spr, stepped, tw } from "../ease";
-import { K, SANS } from "../palette";
+import { K } from "../palette";
 import { type Cam, camera, discMatrix, FOCAL, lerpCam } from "../proj";
 import { Roll } from "../roll";
+import { useF } from "../shot";
 import { B } from "../timing";
 
 /**
@@ -17,7 +18,7 @@ const RP = 40;
 // DotRail: r 1.1 on a 6 px pitch.
 const RR = (1.1 / 6) * RP * 1.25;
 export function Rail() {
-  const f = useCurrentFrame() + B(RAIL_FROM);
+  const f = useF();
   const open = spr(f, B(21), "snap");
   // Whole dots only, on the sixteenths: 0 → 44 of 64.
   const steps = Math.max(0, Math.floor((f - B(21.25)) / (B(21.5) - B(21.25))) + 1);
@@ -123,7 +124,7 @@ const SEGMENTS = [
 const CP = 66;
 const CR = CP * 0.27;
 export function Context() {
-  const f = useCurrentFrame() + B(CONTEXT_FROM);
+  const f = useF();
   const steps = Math.max(0, Math.floor((f - B(22.5)) / (B(22.75) - B(22.5))) + 1);
   const filled = Math.min(72, steps * 12);
   const shades: number[] = [];
@@ -159,26 +160,12 @@ export function Context() {
     <AbsoluteFill>
       <svg width={1920} height={1080} viewBox="0 0 1920 1080" aria-hidden>
         {nodes}
-        <text
-          x={140}
-          y={330}
-          style={{
-            fontFamily: SANS,
-            fontWeight: 600,
-            fontSize: 168,
-            letterSpacing: "-0.045em",
-            fill: "var(--kura-fg)",
-          }}
-        >
-          Context
-        </text>
         <Roll
           value={stepped(f, B(22.5), B(22.75) - B(22.5), 12, 72)}
-          x={1780}
+          x={140}
           y={330}
-          size={168}
+          size={220}
           suffix="%"
-          anchor="end"
         />
       </svg>
     </AbsoluteFill>

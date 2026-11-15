@@ -1,8 +1,9 @@
 import type * as React from "react";
-import { AbsoluteFill, useCurrentFrame } from "remotion";
+import { AbsoluteFill } from "remotion";
 import { clamp, E, mix, pulse, spr, tw } from "../ease";
 import { K } from "../palette";
 import { type Cam, camera, FOCAL, lerpCam } from "../proj";
+import { useF } from "../shot";
 import { B, riffBeats, sinceLast } from "../timing";
 
 /**
@@ -53,7 +54,7 @@ function headCell(f: number) {
 }
 
 export function Tokens() {
-  const f = useCurrentFrame();
+  const f = useF();
   const head = headCell(f);
   const hx = head * PITCH;
   const hy = 0;

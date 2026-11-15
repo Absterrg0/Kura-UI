@@ -1,9 +1,10 @@
 # Kura UI launch film
 
 The launch film, made with [Remotion](https://remotion.dev) from the library's own components and
-cut to a licensed track. v2 is in progress: the first 18 s (the proof) are built.
+cut to a licensed track. v3 is the full film (53.9 s).
 
-- `STORYBOARD.md`: the film language, the proof's shot list on the beat grid, the rest of the film.
+- `SCRIPT.md`: the copy, three candidate scripts and why one was chosen, mapped to the beats.
+- `STORYBOARD.md`: the v3 shot list on the beat grid (and the v2 proof, as history).
 - `research/BREAKDOWN.md`: nine launch films analysed frame by frame, and the techniques taken.
 - `MUSIC.md`: the track, its licence, the beat map.
 
@@ -12,9 +13,10 @@ cd video
 pnpm install                 # its own pnpm root: Remotion stays out of the library's workspace
 pnpm music                   # fetch, verify and trim the track → public/audio/kraft-twerk.wav
 pnpm sfx                     # synthesise the dot ticks → public/audio/sfx/
-pnpm render:proof            # → out/proof-v2.mp4 (1920×1080, 60 fps, with sound)
+pnpm render:film             # → out/kura-launch-v3.mp4 (1920×1080, 60 fps, H.264 + AAC)
+pnpm render:proof            # → out/proof-v2.mp4 (the v2 proof)
 pnpm studio                  # scrub it in Remotion Studio
-OUT=out/stills SCALE=0.5 node scripts/stills.mjs 0 244 488   # draft stills of chosen frames
+COMP=KuraLaunchSilent OUT=out/stills SCALE=0.5 node scripts/stills.mjs 0 244 488   # draft stills
 scripts/sheet.sh out/stills out/sheet.png                    # tile them into a contact sheet
 ```
 

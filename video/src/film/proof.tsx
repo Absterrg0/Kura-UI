@@ -2,6 +2,7 @@ import { AbsoluteFill, Audio, Sequence, staticFile, useCurrentFrame } from "remo
 import { setFilmTime } from "../lib/clock";
 import { FrameSync } from "../lib/frame-sync";
 import { Sfx } from "./sfx";
+import { ShotOrigin } from "./shot";
 import { FACES_FROM, FaceCuts, FaceIntro, FaceWall } from "./shots/faces";
 import { CONTEXT_FROM, Context, RAIL_FROM, Rail } from "./shots/measure";
 import { MFleet, MPlan, MTools, MTrace } from "./shots/montage";
@@ -40,7 +41,9 @@ export function Proof({ audio = true }: { audio?: boolean }) {
       <FrameSync />
       {SHOTS.map(({ id, from, to, C }) => (
         <Sequence key={id} from={B(from)} durationInFrames={B(to) - B(from)} name={id}>
-          <C />
+          <ShotOrigin.Provider value={B(from)}>
+            <C />
+          </ShotOrigin.Provider>
         </Sequence>
       ))}
       {audio && <Audio src={staticFile("audio/kraft-twerk.wav")} volume={0.78} />}
