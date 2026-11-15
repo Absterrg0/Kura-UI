@@ -15,13 +15,14 @@ const serveUrl = await bundle({ entryPoint: path.join(root, "src/index.ts"), web
 const browser = await openBrowser("chrome");
 const composition = await selectComposition({
   serveUrl,
-  id: "KuraLaunchSilent",
+  id: process.env.COMP ?? "KuraProofSilent",
   puppeteerInstance: browser,
 });
 const frames = every
   ? Array.from({ length: Math.ceil(composition.durationInFrames / every) }, (_, i) => i * every)
   : args.map(Number);
-mkdirSync(path.join(root, "out/stills"), { recursive: true });
+const outDir = path.join(root, process.env.OUT ?? "out/stills");
+mkdirSync(outDir, { recursive: true });
 const queue = [...frames];
 await Promise.all(
   Array.from({ length: 6 }, async () => {
@@ -31,7 +32,7 @@ await Promise.all(
         serveUrl,
         composition,
         frame,
-        output: path.join(root, `out/stills/f${String(frame).padStart(4, "0")}.png`),
+        output: path.join(outDir, `f${String(frame).padStart(4, "0")}.png`),
         puppeteerInstance: browser,
         scale,
       });

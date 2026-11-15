@@ -1,14 +1,14 @@
 {
   "name": "kura-launch-video",
   "private": true,
-  "description": "The Kura UI launch film, built with Remotion from the library's own components.",
+  "description": "The Kura UI launch film, built with Remotion from the library's own components and cut to a licensed track.",
   "type": "module",
   "scripts": {
     "studio": "remotion studio src/index.ts",
-    "audio": "node scripts/synth.mjs",
+    "music": "node scripts/music.mjs",
+    "sfx": "node scripts/sfx.mjs",
     "still": "remotion still src/index.ts",
-    "render": "node scripts/synth.mjs && remotion render src/index.ts KuraLaunch out/kura-launch.mp4",
-    "render:square": "node scripts/synth.mjs && remotion render src/index.ts KuraLaunchSquare out/kura-launch-square.mp4"
+    "render:proof": "node scripts/music.mjs && node scripts/sfx.mjs && remotion render src/index.ts KuraProof out/proof-v2.mp4"
   },
   "dependencies": {
     "@remotion/cli": "4.0.543",
