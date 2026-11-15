@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "jsx": "react-jsx",
+    "strict": true,
+    "noEmit": true,
+    "skipLibCheck": true,
+    "lib": ["DOM", "DOM.Iterable", "ES2023"],
+    "types": [],
+    "paths": {
+      "@kura/*": ["../packages/react/src/*"],
+      "@geist-fonts/*": ["./node_modules/geist/dist/fonts/*"],
+      "react": ["../packages/react/node_modules/@types/react"],
+      "react/*": ["../packages/react/node_modules/@types/react/*"]
+    }
+  },
+  "include": ["src", "remotion.config.ts"]
+}

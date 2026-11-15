@@ -1,0 +1,29 @@
+{
+  "name": "kura-launch-video",
+  "private": true,
+  "description": "The Kura UI launch film, built with Remotion from the library's own components.",
+  "type": "module",
+  "scripts": {
+    "studio": "remotion studio src/index.ts",
+    "audio": "node scripts/synth.mjs",
+    "still": "remotion still src/index.ts",
+    "render": "node scripts/synth.mjs && remotion render src/index.ts KuraLaunch out/kura-launch.mp4",
+    "render:square": "node scripts/synth.mjs && remotion render src/index.ts KuraLaunchSquare out/kura-launch-square.mp4"
+  },
+  "dependencies": {
+    "@remotion/cli": "4.0.543",
+    "@remotion/tailwind-v4": "4.0.543",
+    "geist": "^1.9.2",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
+    "remotion": "4.0.543",
+    "tailwindcss": "^4.3.5"
+  },
+  "devDependencies": {
+    "@remotion/bundler": "4.0.543",
+    "@remotion/renderer": "4.0.543",
+    "@types/react": "^19.3.0",
+    "typescript": "~6.0.3",
+    "webpack": "5.105.0"
+  }
+}

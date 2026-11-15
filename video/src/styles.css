@@ -1,0 +1,20 @@
+@import "tailwindcss";
+@import "../../packages/react/src/styles/kura.css";
+
+@source "./";
+
+/* The film draws every frame from the frame number: CSS transitions would lag a frame behind. */
+*,
+*::before,
+*::after {
+  transition: none !important;
+}
+
+html,
+body {
+  margin: 0;
+  background: var(--kura-canvas);
+  -webkit-font-smoothing: antialiased;
+  font-family: var(--font-kura-sans);
+  font-feature-settings: "ss01";
+}

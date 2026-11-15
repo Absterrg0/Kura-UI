@@ -1,0 +1,10 @@
+# The film is its own pnpm root on purpose: Remotion and its renderer stay out of the library's
+# workspace, lockfile and `pnpm check`. It reads the library's source directly (see remotion.config.ts).
+packages:
+  - .
+
+allowBuilds:
+  esbuild: true
+  "@tailwindcss/oxide": true
+  "@remotion/compositor-linux-x64-gnu": true
+  "@remotion/compositor-linux-x64-musl": true
