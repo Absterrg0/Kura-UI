@@ -1,6 +1,6 @@
 {
   "name": "@kura-ui/mcp",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "MCP server for Kura UI: lets coding agents search, inspect and install Kura components.",
   "license": "MIT",
   "type": "module",

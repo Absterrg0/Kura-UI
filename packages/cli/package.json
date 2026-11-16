@@ -1,6 +1,6 @@
 {
   "name": "@kura-ui/cli",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Kura UI CLI: list, search, inspect and add AI-native components to your project. Every command supports --json for agents.",
   "license": "MIT",
   "type": "module",

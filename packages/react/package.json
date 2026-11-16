@@ -1,6 +1,6 @@
 {
   "name": "@kura-ui/react",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "description": "Agent-first, AI-native React components: composers, voice, shaders, agent surfaces. Tailwind v4 + motion.",
   "license": "MIT",
   "type": "module",
